@@ -19,6 +19,7 @@
         .search-box {
             position: relative;
         }
+
         .search-box .search-icon {
             position: absolute;
             top: 50%;
@@ -26,14 +27,17 @@
             transform: translateY(-50%);
             color: #878a99;
         }
+
         .search-box input {
             padding-left: 30px;
         }
 
         #clientes-table {
-            width: 100% !important;
+            width: auto !important;
+            /* El ancho justo del contenido */
             font-size: 13px;
-            min-width: 1200px;
+            min-width: 0 !important;
+            /* No forzar ancho mínimo */
         }
 
         #clientes-table th,
@@ -42,30 +46,11 @@
             vertical-align: middle;
         }
 
+        /* Acciones: Ancho mínimo fijo */
         #clientes-table th:last-child,
         #clientes-table td:last-child {
-            width: 48px;
-            min-width: 40px;
-            max-width: 60px;
-            text-align: center;
-        }
-
-        #clientes-table th:nth-last-child(2),
-        #clientes-table td:nth-last-child(2) {
-            width: 100px;
-            min-width: 80px;
-            max-width: 120px;
-            text-align: center;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        #clientes-table th:nth-child(5),
-        #clientes-table td:nth-child(5) {
-            width: 100px;
-            min-width: 80px;
-            max-width: 120px;
+            width: 80px;
+            /* Suficiente para 3 botones */
             text-align: center;
         }
 
@@ -89,13 +74,7 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Clientes</h5>
-                        <div class="flex-shrink-0 d-flex align-items-center gap-3">
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input" placeholder="Buscar cliente...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
-                            <div class="d-flex gap-2">
+                        <div class="flex-shrink-0 d-flex gap-2">
                             <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                 data-bs-target="#showModal">
                                 <i class="ri-add-line align-bottom me-1"></i> Agregar Cliente
@@ -103,7 +82,6 @@
                             <a href="{{ route('clientes.reporte.pdf') }}" class="btn btn-danger" target="_blank">
                                 <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
                             </a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -112,15 +90,10 @@
                         <thead>
                             <tr>
                                 <th>Documento</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
+                                <th>Cliente</th>
                                 <th>Tipo</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
-                                <th>Dirección</th>
-                                <th>Estado</th>
-                                <th>Ciudad</th>
-                                <th>Estatus</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -359,7 +332,7 @@
                 <form id="clienteForm">
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
-                        
+
                         <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
                         <div class="row mb-3">
                             <div class="col-md-5">
@@ -390,8 +363,8 @@
                                 <label class="form-label d-block">Estatus</label>
                                 <div class="form-check form-switch form-switch-success mt-2">
                                     <input type="hidden" name="estatus" value="0" />
-                                    <input class="form-check-input" type="checkbox" role="switch" 
-                                        id="estatus-field" name="estatus" value="1" checked />
+                                    <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
+                                        name="estatus" value="1" checked />
                                     <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
                                 </div>
                             </div>
@@ -401,13 +374,13 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="nombre-field" class="form-label required">Nombre</label>
-                                <input type="text" id="nombre-field" name="nombre" class="form-control" 
-                                    placeholder="Nombre" maxlength="100" required />
+                                <input type="text" id="nombre-field" name="nombre" class="form-control" placeholder="Nombre"
+                                    maxlength="100" required />
                                 <div id="nombre-error" class="invalid-feedback"></div>
                             </div>
                             <div class="col-md-6">
                                 <label for="apellido-field" class="form-label required">Apellido</label>
-                                <input type="text" id="apellido-field" name="apellido" class="form-control" 
+                                <input type="text" id="apellido-field" name="apellido" class="form-control"
                                     placeholder="Apellido" maxlength="100" required />
                                 <div id="apellido-error" class="invalid-feedback"></div>
                             </div>
@@ -424,7 +397,8 @@
                             <div class="col-md-6">
                                 <label for="telefono-field" class="form-label required">Teléfono</label>
                                 <div class="input-group">
-                                    <select class="form-select" id="telefono-prefix-field" style="max-width: 100px; min-width: 100px;">
+                                    <select class="form-select" id="telefono-prefix-field"
+                                        style="max-width: 100px; min-width: 100px;">
                                         <option value="0412">0412</option>
                                         <option value="0422">0422</option>
                                         <option value="0414">0414</option>
@@ -432,8 +406,8 @@
                                         <option value="0416">0416</option>
                                         <option value="0426">0426</option>
                                     </select>
-                                    <input type="text" id="telefono-number-field" class="form-control"
-                                        placeholder="1234567" maxlength="7" required />
+                                    <input type="text" id="telefono-number-field" class="form-control" placeholder="1234567"
+                                        maxlength="7" required />
                                 </div>
                                 <input type="hidden" id="telefono-field" name="telefono" />
                                 <div id="telefono-error" class="invalid-feedback"></div>
@@ -453,7 +427,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="estado_territorial-field" class="form-label required">Estado</label>
-                                <select name="estado_territorial" id="estado_territorial-field" class="form-select" required>
+                                <select name="estado_territorial" id="estado_territorial-field" class="form-select"
+                                    required>
                                     <option value="">Seleccione estado</option>
                                     <option value="Amazonas">Amazonas</option>
                                     <option value="Anzoátegui">Anzoátegui</option>
@@ -529,7 +504,7 @@
         });
 
         // === Capitalizar solo la primera letra del campo dirección ===
-        $(document).on('blur', '#direccion-field', function() {
+        $(document).on('blur', '#direccion-field', function () {
             var val = $(this).val();
             if (val && val.length > 0) {
                 $(this).val(val.charAt(0).toUpperCase() + val.slice(1));
@@ -576,14 +551,43 @@
         });
 
         // Validación onblur para documento
+        // Validación onblur para documento
         $(document).on('blur', '#documento-number-field', function () {
             let value = $(this).val().trim();
+            let $input = $(this);
+            let $error = $('#documento-error');
+            let isEditMode = $('#id-field').val() !== ''; // Comprobar si estamos en edición
+
             if (value.length < 6) {
-                $(this).addClass('is-invalid');
-                $('#documento-error').text('El documento debe tener al menos 6 dígitos.').show();
+                $input.addClass('is-invalid');
+                $error.text('El documento debe tener al menos 6 dígitos.').show();
             } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                $('#documento-error').hide();
+                // Si la longitud es válida y NO estamos en edición, verificamos duplicados
+                if (!isEditMode) {
+                    $.ajax({
+                        url: "{{ route('clientes.check-documento') }}",
+                        method: 'GET',
+                        data: { numero: value },
+                        success: function (response) {
+                            if (response.exists) {
+                                $input.addClass('is-invalid');
+                                $error.text('Este cliente ya se encuentra registrado.').show();
+                                // Opcional: Deshabilitar el botón de agregar
+                                $('#add-btn').prop('disabled', true);
+                            } else {
+                                $input.removeClass('is-invalid').addClass('is-valid');
+                                $error.hide();
+                                $('#add-btn').prop('disabled', false);
+                            }
+                        },
+                        error: function () {
+                            console.error('Error al verificar documento');
+                        }
+                    });
+                } else {
+                    $input.removeClass('is-invalid').addClass('is-valid');
+                    $error.hide();
+                }
             }
         });
 
@@ -603,13 +607,49 @@
         // Validación onblur para email
         $(document).on('blur', '#email-field', function () {
             let value = $(this).val().trim();
+            let $input = $(this);
+            let $error = $('#email-error');
+            let isEditMode = $('#id-field').val() !== '';
             let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (value.length > 0 && !regex.test(value)) {
-                $(this).addClass('is-invalid');
-                $('#email-error').text('Ingrese un email válido.').show();
+
+            if (value.length > 0) {
+                if (!regex.test(value)) {
+                    $input.addClass('is-invalid');
+                    $error.text('Ingrese un email válido.').show();
+                } else {
+                    // Si formato es válido y NO es edición, verificar duplicado
+                    if (!isEditMode) {
+                        $.ajax({
+                            url: "{{ route('clientes.check-email') }}",
+                            method: 'GET',
+                            data: { email: value },
+                            success: function (response) {
+                                if (response.exists) {
+                                    $input.addClass('is-invalid');
+                                    $error.text('Este correo ya está registrado.').show();
+                                    $('#add-btn').prop('disabled', true);
+                                } else {
+                                    $input.removeClass('is-invalid').addClass('is-valid');
+                                    $error.hide();
+                                    $('#add-btn').prop('disabled', false);
+                                }
+                            },
+                            error: function () {
+                                console.error('Error al verificar email');
+                            }
+                        });
+                    } else {
+                        // En modo edición no validamos duplicado (limitación por now)
+                        $input.removeClass('is-invalid').addClass('is-valid');
+                        $error.hide();
+                    }
+                }
             } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                $('#email-error').hide();
+                // Si está vacío, quitar clases (o mostrar error si required)
+                // Es opcional en el html? No tiene "required" en el html form, pero tiene validator?
+                // En el HTML no tiene 'required'.
+                $input.removeClass('is-invalid').removeClass('is-valid');
+                $error.hide();
             }
         });
 
@@ -636,47 +676,47 @@
             });
             function generateButtons(clienteId) {
                 return `
-                    <div class="d-flex gap-2 justify-content-center">
-                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
-                            <i class="ri-eye-fill"></i>
-                        </button>
-                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
-                            <i class="ri-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
-                            <i class="ri-delete-bin-fill"></i>
-                        </button>
-                    </div>
-                `;
+                                                                                    <div class="d-flex gap-2 justify-content-center">
+                                                                                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
+                                                                                            <i class="ri-eye-fill"></i>
+                                                                                        </button>
+                                                                                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
+                                                                                            <i class="ri-pencil-fill"></i>
+                                                                                        </button>
+                                                                                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
+                                                                                            <i class="ri-delete-bin-fill"></i>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                `;
             }
             var table = $('#clientes-table').DataTable({
                 ajax: { url: "{{ route('clientes.data') }}", dataSrc: 'data' },
                 columns: [
                     { data: 'documento' },
-                    { data: 'nombre' },
-                    { data: 'apellido' },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            return row.nombre + ' ' + row.apellido;
+                        }
+                    },
                     { data: 'tipo_cliente', render: function (data) { return data === 'natural' ? 'Natural' : 'Jurídico'; } },
                     { data: 'email' },
                     { data: 'telefono' },
-                    { data: 'direccion' },
-                    { data: 'estado_territorial' },
-                    { data: 'ciudad' },
-                    { data: 'estatus', render: function (data) { return data == 1 ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>'; } },
                     { data: null, render: function (data, type, row) { return generateButtons(row.id); } }
                 ],
                 order: [[0, 'asc']], // Ordenar por documento (primera columna)
-                dom: 'rtip',
+                dom: 'frtip',
                 buttons: [
                     {
                         extend: 'copy',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            columns: [0, 1, 2, 3, 4]
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            columns: [0, 1, 2, 3, 4]
                         }
                     }
                 ],
@@ -714,10 +754,7 @@
                 }
             });
 
-            // Buscador personalizado
-            $('#custom-search-input').on('keyup', function () {
-                table.search(this.value).draw();
-            });
+
             // Ajustar columnas cuando se redimensiona la ventana
             $(window).on('resize', function () {
                 table.columns.adjust();
@@ -733,7 +770,9 @@
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 $("#documento-prefix-field").val("V-");
+                $("#documento-prefix-field").prop('disabled', false); // Habilitar
                 $("#documento-number-field").val("");
+                $("#documento-number-field").prop('disabled', false); // Habilitar
                 // Reset teléfono
                 $("#telefono-prefix-field").val("0424");
                 $("#telefono-number-field").val("");
@@ -742,38 +781,41 @@
                 $("#modalTitle").text("Actualizar Cliente");
                 $("#add-btn").hide();
                 $("#edit-btn").show();
+                // Bloquear edición de documento
+                $("#documento-prefix-field").prop('disabled', true);
+                $("#documento-number-field").prop('disabled', true);
             }
             $("#create-btn").click(function () { resetForm(); });
             $("#showModal").on('hidden.bs.modal', function () { resetForm(); });
-            
+
             // Listener para actualizar label del checkbox de estatus
-            $("#estatus-field").on('change', function() {
+            $("#estatus-field").on('change', function () {
                 if ($(this).is(':checked')) {
                     $("#estatus-label").text('Activo');
                 } else {
                     $("#estatus-label").text('Inactivo');
                 }
             });
-            
+
             // Dropdown dependiente: Poblar municipios cuando cambia el estado
-            $("#estado_territorial-field").on('change', function() {
+            $("#estado_territorial-field").on('change', function () {
                 const estado = $(this).val();
                 const municipios = getMunicipios(estado);
                 const ciudadSelect = $("#ciudad-field");
-                
+
                 // Limpiar opciones anteriores
                 ciudadSelect.empty();
-                
+
                 if (estado === '') {
                     ciudadSelect.append('<option value="">Primero seleccione un estado</option>');
                 } else {
                     ciudadSelect.append('<option value="">Seleccione municipio</option>');
-                    municipios.forEach(function(municipio) {
+                    municipios.forEach(function (municipio) {
                         ciudadSelect.append('<option value="' + municipio + '">' + municipio + '</option>');
                     });
                 }
             });
-            
+
             const validator = new FormValidator('clienteForm');
 
             $('#add-btn').click(function (e) {
@@ -859,10 +901,10 @@
                         $("#documento-number-field").val(data.documento.slice(2));
                     }
                     $("#direccion-field").val(data.direccion || '');
-                    
+
                     // Primero establecer el estado
                     $("#estado_territorial-field").val(data.estado_territorial || '');
-                    
+
                     // Poblar los municipios del estado seleccionado
                     const estado = data.estado_territorial || '';
                     const municipios = getMunicipios(estado);
@@ -872,11 +914,11 @@
                         ciudadSelect.append('<option value="">Primero seleccione un estado</option>');
                     } else {
                         ciudadSelect.append('<option value="">Seleccione municipio</option>');
-                        municipios.forEach(function(municipio) {
+                        municipios.forEach(function (municipio) {
                             ciudadSelect.append('<option value="' + municipio + '">' + municipio + '</option>');
                         });
                     }
-                    
+
                     // Ahora seleccionar el municipio guardado
                     $("#ciudad-field").val(data.ciudad || '');
                     // Manejar checkbox de estatus
