@@ -114,15 +114,10 @@
     <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                <!-- Header con gradiente marca Atlantico -->
-                <div class="modal-header py-3"
-                    style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                    <h5 class="modal-title text-white d-flex align-items-center">
-                        <i class="ri-t-shirt-2-line me-2 fs-4"></i>Detalles del Producto
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Detalles del Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <!-- Imagen del Producto centrada -->
@@ -320,9 +315,9 @@
     <div class="modal fade" id="tiposModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="ri-settings-3-line me-2"></i>Gestionar Tipos de Producto</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Gestionar Tipos de Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="table-responsive">
@@ -355,10 +350,10 @@
     <div class="modal fade" id="addTipoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="tipoModalTitle"><i class="ri-add-line me-2"></i>Agregar Tipo de Producto
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title" id="tipoModalTitle">Agregar Tipo de Producto
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="tipoForm">
                     <div class="modal-body">

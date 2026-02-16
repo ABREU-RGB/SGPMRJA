@@ -261,15 +261,10 @@
         <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true"
             data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content border-0 shadow-lg">
-                    <!-- Header con gradiente marca Atlantico -->
-                    <div class="modal-header py-3"
-                        style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                        <h5 class="modal-title text-white d-flex align-items-center" id="productosModalLabel">
-                            <i class="ri-search-line me-2 fs-4"></i>Buscar y Seleccionar Producto
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                <div class="modal-content">
+                    <div class="modal-header bg-light p-3">
+                        <h5 class="modal-title" id="productosModalLabel">Buscar y Seleccionar Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-4">
                         <!-- Card de Filtros -->
@@ -331,10 +326,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer" style="background: rgba(0, 217, 165, 0.05);">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            <i class="ri-close-line me-1"></i>Cancelar
-                        </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
             </div>
@@ -393,15 +386,10 @@
         <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
             data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content border-0 shadow-lg">
-                    <!-- Header con gradiente marca Atlantico -->
-                    <div class="modal-header py-3"
-                        style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                        <h5 class="modal-title text-white d-flex align-items-center">
-                            <i class="ri-shopping-cart-line me-2 fs-4"></i>Detalles del Pedido
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                <div class="modal-content">
+                    <div class="modal-header bg-light p-3">
+                        <h5 class="modal-title">Detalles del Pedido</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-4">
                         <div class="row g-4">

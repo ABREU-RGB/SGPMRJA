@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
-use App\Models\Insumo;
-use App\Models\OrdenProduccion;
-use App\Models\ProduccionDiaria;
-use App\Models\MovimientoInsumo;
+use App\Models\Cliente;
+use App\Models\Producto;
+use App\Models\Empleado;
+use App\Models\Proveedor;
+use App\Models\Pedido;
 
 class HomeController extends Controller
 {
@@ -29,35 +30,35 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtener datos para el dashboard
-        $totalInsumos = Insumo::count();
-        $ordenesEnProceso = OrdenProduccion::where('estado', 'En Proceso')->count();
-        $produccionTotal = ProduccionDiaria::sum('cantidad_producida');
-        $alertasStock = Insumo::whereRaw('stock_actual <= stock_minimo')->count();
-        
-        // Datos para gráfico de inventario
-        $insumos = Insumo::all();
-        
-        // Datos para gráfico de órdenes por estado
-        $ordenesPendientes = OrdenProduccion::where('estado', 'Pendiente')->count();
-        $ordenesEnProceso = OrdenProduccion::where('estado', 'En Proceso')->count();
-        $ordenesFinalizadas = OrdenProduccion::where('estado', 'Finalizado')->count();
-        $ordenesCanceladas = OrdenProduccion::where('estado', 'Cancelado')->count();
-        
-        // Últimos movimientos de inventario
-        $ultimosMovimientos = MovimientoInsumo::with('insumo')->latest()->take(5)->get();
-        
+        // Widgets: conteos de Maestros
+        $totalClientes = Cliente::count();
+        $totalProductos = Producto::count();
+        $totalEmpleados = Empleado::count();
+        $totalProveedores = Proveedor::count();
+
+        // Gráfico 1: Estado de Pedidos
+        $pedidosPendientes = Pedido::where('estado', 'Pendiente')->count();
+        $pedidosEnProceso = Pedido::where('estado', 'En Proceso')->count();
+        $pedidosCompletados = Pedido::where('estado', 'Completado')->count();
+        $pedidosCancelados = Pedido::where('estado', 'Cancelado')->count();
+
+        // Gráfico 2: Personal por Departamento
+        $personalPorDepto = Empleado::whereNotNull('departamento')
+            ->selectRaw('departamento, COUNT(*) as total')
+            ->groupBy('departamento')
+            ->orderBy('total', 'desc')
+            ->get();
+
         return view('dashboard', compact(
-            'totalInsumos', 
-            'ordenesEnProceso', 
-            'produccionTotal', 
-            'alertasStock',
-            'insumos',
-            'ordenesPendientes',
-            'ordenesEnProceso',
-            'ordenesFinalizadas',
-            'ordenesCanceladas',
-            'ultimosMovimientos'
+            'totalClientes',
+            'totalProductos',
+            'totalEmpleados',
+            'totalProveedores',
+            'pedidosPendientes',
+            'pedidosEnProceso',
+            'pedidosCompletados',
+            'pedidosCancelados',
+            'personalPorDepto'
         ));
     }
  

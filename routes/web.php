@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
         Route::get('empleados-check-email', [EmpleadoController::class, 'checkEmail'])->name('empleados.check-email');
         Route::get('empleados-check-codigo', [EmpleadoController::class, 'checkCodigo'])->name('empleados.check-codigo');
         Route::get('/empleados/reporte/pdf', [EmpleadoController::class, 'reportePdf'])->name('empleados.reporte.pdf');
+        Route::post('empleados-store-departamento', [EmpleadoController::class, 'storeDepartamento'])->name('empleados.store-departamento');
     });
 
     // ============================================

@@ -15,7 +15,29 @@ class EmpleadoController extends Controller
 {
     public function index()
     {
-        return view('admin.empleados.index');
+        // Departamentos dinámicos para el select del modal
+        $departamentos = Empleado::whereNotNull('departamento')
+            ->pluck('departamento')
+            ->unique()
+            ->mapWithKeys(fn($d) => [$d => $d])
+            ->toArray();
+
+        return view('admin.empleados.index', compact('departamentos'));
+    }
+
+    /**
+     * Mostrar formulario de creación de empleado
+     */
+    public function create()
+    {
+        // Obtener departamentos existentes para el dropdown
+        $departamentos = Empleado::whereNotNull('departamento')
+            ->pluck('departamento')
+            ->unique()
+            ->mapWithKeys(fn($d) => [$d => $d])
+            ->toArray();
+
+        return view('admin.empleados.create', compact('departamentos'));
     }
 
     public function getEmpleados()
@@ -358,5 +380,25 @@ class EmpleadoController extends Controller
             return response()->json(['exists' => false]);
         $exists = Empleado::where('codigo_empleado', $codigo)->exists();
         return response()->json(['exists' => $exists]);
+    }
+
+    /**
+     * Guardar un nuevo departamento on-the-fly (AJAX)
+     */
+    public function storeDepartamento(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|min:3|max:100',
+        ]);
+
+        $nombre = trim($request->nombre);
+
+        // Verificar si ya existe
+        $existe = Empleado::whereRaw('LOWER(departamento) = ?', [strtolower($nombre)])->exists();
+        if ($existe) {
+            return response()->json(['message' => 'Este departamento ya existe.'], 422);
+        }
+
+        return response()->json(['departamento' => $nombre]);
     }
 }
