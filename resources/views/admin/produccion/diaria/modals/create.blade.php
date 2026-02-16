@@ -42,9 +42,7 @@
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                             <i class="ri-close-line me-1"></i>Cerrar
                         </button>
-                        <button type="submit" class="btn btn-success" id="add-btn">
-                            <i class="ri-add-line me-1"></i>Registrar
-                        </button>
+                        <x-ui.button-save id="add-btn" text="Registrar" icon="ri-add-line" loading-text="Registrando..." />
                     </div>
                 </div>
             </form>

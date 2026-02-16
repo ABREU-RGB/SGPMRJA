@@ -318,13 +318,12 @@
     <!-- Modal para agregar/editar -->
     <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <form id="clienteForm" class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Cliente</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="clienteForm">
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
 
@@ -405,7 +404,7 @@
                         <!-- Fila 4: Dirección -->
                         <div class="row mb-3">
                             <div class="col-12">
-                                <x-forms.input name="direccion" label="Dirección" placeholder="Dirección completa" maxlength="500" required id="direccion-field" />
+                                <x-forms.textarea name="direccion" label="Dirección" placeholder="Dirección completa" maxlength="500" required id="direccion-field" rows="3" />
                             </div>
                         </div>
 
@@ -452,8 +451,6 @@
 
 
                     </div>
-                        </div>
-                    </div>
                     <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
@@ -464,7 +461,6 @@
                         </div>
                     </div>
                 </form>
-            </div>
         </div>
     </div>
 @endsection

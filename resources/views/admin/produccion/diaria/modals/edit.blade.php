@@ -38,9 +38,7 @@
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                             <i class="ri-close-line me-1"></i>Cerrar
                         </button>
-                        <button type="submit" class="btn btn-success" id="update-btn">
-                            <i class="ri-save-line me-1"></i>Actualizar
-                        </button>
+                        <x-ui.button-save id="update-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." />
                     </div>
                 </div>
             </form>

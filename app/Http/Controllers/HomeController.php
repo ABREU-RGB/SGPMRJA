@@ -36,11 +36,15 @@ class HomeController extends Controller
         $totalEmpleados = Empleado::count();
         $totalProveedores = Proveedor::count();
 
-        // Gráfico 1: Estado de Pedidos
-        $pedidosPendientes = Pedido::where('estado', 'Pendiente')->count();
-        $pedidosEnProceso = Pedido::where('estado', 'En Proceso')->count();
-        $pedidosCompletados = Pedido::where('estado', 'Completado')->count();
-        $pedidosCancelados = Pedido::where('estado', 'Cancelado')->count();
+        // Gráfico 1: Estado de Pedidos (Preparado para Chart)
+        $pedidosLabels = ['Pendiente', 'En Proceso', 'Completado', 'Cancelado'];
+        $pedidosValues = [
+            Pedido::where('estado', 'Pendiente')->count(),
+            Pedido::where('estado', 'En Proceso')->count(),
+            Pedido::where('estado', 'Completado')->count(),
+            Pedido::where('estado', 'Cancelado')->count(),
+        ];
+        $totalPedidos = array_sum($pedidosValues);
 
         // Gráfico 2: Personal por Departamento
         $personalPorDepto = Empleado::whereNotNull('departamento')
@@ -48,17 +52,22 @@ class HomeController extends Controller
             ->groupBy('departamento')
             ->orderBy('total', 'desc')
             ->get();
+        
+        $empleadosLabels = $personalPorDepto->pluck('departamento')->toArray();
+        $empleadosValues = $personalPorDepto->pluck('total')->toArray();
+        $totalEmpleadosChart = array_sum($empleadosValues);
 
         return view('dashboard', compact(
             'totalClientes',
             'totalProductos',
             'totalEmpleados',
             'totalProveedores',
-            'pedidosPendientes',
-            'pedidosEnProceso',
-            'pedidosCompletados',
-            'pedidosCancelados',
-            'personalPorDepto'
+            'pedidosLabels',
+            'pedidosValues',
+            'totalPedidos',
+            'empleadosLabels',
+            'empleadosValues',
+            'totalEmpleadosChart'
         ));
     }
  

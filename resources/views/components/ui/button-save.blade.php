@@ -26,7 +26,7 @@
     data-loading-text="{{ $loadingText }}"
 >
     {{-- Icono normal (visible cuando NO está cargando) --}}
-    <i class="{{ $icon }} align-bottom me-1 btn-icon"></i>
+    <i class="{{ $icon }} me-1"></i>
     {{-- Spinner (oculto por defecto, visible al cargar) --}}
     <span class="spinner-border spinner-border-sm align-middle me-1 d-none btn-spinner"></span>
     {{-- Texto del botón --}}

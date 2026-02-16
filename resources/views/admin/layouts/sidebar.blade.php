@@ -95,11 +95,11 @@
                         {{-- ================================== --}}
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarMaestros" data-bs-toggle="collapse" role="button"
-                                aria-expanded="{{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('inventario*') || request()->is('empleados*') ? 'true' : 'false' }}"
+                                aria-expanded="{{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarMaestros">
                                 <i class="ri-database-2-line"></i> <span data-key="t-maestros">Gestión General</span>
                             </a>
-                            <div class="collapse menu-dropdown {{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('inventario*') || request()->is('empleados*') ? 'show' : '' }}"
+                            <div class="collapse menu-dropdown {{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') ? 'show' : '' }}"
                                 id="sidebarMaestros">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
@@ -121,9 +121,9 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('inventario.movimientos.index') }}"
-                                            class="nav-link {{ request()->is('inventario*') || request()->is('insumos*') ? 'active' : '' }}">
-                                            <i class="ri-archive-line me-1"></i> Inventario
+                                        <a href="{{ url('insumos') }}"
+                                            class="nav-link {{ request()->is('insumos*') ? 'active' : '' }}">
+                                            <i class="ri-archive-line me-1"></i> Insumos
                                         </a>
                                     </li>
                                     <li class="nav-item">
@@ -141,11 +141,11 @@
                         {{-- ================================== --}}
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarTransacciones" data-bs-toggle="collapse" role="button"
-                                aria-expanded="{{ request()->is('cotizaciones*') || request()->is('pedidos*') || request()->is('ordenes*') || request()->is('calidad*') || request()->is('garantias*') ? 'true' : 'false' }}"
+                                aria-expanded="{{ request()->is('cotizaciones*') || request()->is('pedidos*') || request()->is('ordenes*') || request()->is('calidad*') || request()->is('inventario*') || request()->is('garantias*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarTransacciones">
                                 <i class="ri-exchange-funds-line"></i> <span data-key="t-transacciones">Gestión Operativa</span>
                             </a>
-                            <div class="collapse menu-dropdown {{ request()->is('cotizaciones*') || request()->is('pedidos*') || request()->is('ordenes*') || request()->is('calidad*') || request()->is('garantias*') ? 'show' : '' }}"
+                            <div class="collapse menu-dropdown {{ request()->is('cotizaciones*') || request()->is('pedidos*') || request()->is('ordenes*') || request()->is('calidad*') || request()->is('inventario*') || request()->is('garantias*') ? 'show' : '' }}"
                                 id="sidebarTransacciones">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
@@ -239,43 +239,7 @@
 
                     @endif
 
-                    {{-- ================================== --}}
-                    {{-- 5. CONFIGURACIÓN (Solo Admin) --}}
-                    {{-- ================================== --}}
-                    @if (Auth::user()->isAdmin())
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarConfiguracion" data-bs-toggle="collapse" role="button"
-                                aria-expanded="{{ request()->is('users*') || request()->is('roles*') || request()->is('ajustes*') ? 'true' : 'false' }}"
-                                aria-controls="sidebarConfiguracion">
-                                <i class="ri-settings-3-line"></i> <span data-key="t-configuracion">Configuración</span>
-                            </a>
-                            <div class="collapse menu-dropdown {{ request()->is('users*') || request()->is('roles*') || request()->is('ajustes*') ? 'show' : '' }}"
-                                id="sidebarConfiguracion">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ url('users') }}"
-                                            class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
-                                            <i class="ri-user-add-line me-1"></i> Gestión de Usuarios
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        {{-- TODO: Crear módulo de Roles y Permisos --}}
-                                        <a href="#"
-                                            class="nav-link {{ request()->is('roles*') ? 'active' : '' }}">
-                                            <i class="ri-shield-user-line me-1"></i> Roles y Permisos
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        {{-- TODO: Crear módulo de Ajustes del Sistema --}}
-                                        <a href="#"
-                                            class="nav-link {{ request()->is('ajustes*') ? 'active' : '' }}">
-                                            <i class="ri-tools-line me-1"></i> Ajustes del Sistema
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                    @endif
+
                 @endauth
             </ul>
         </div>

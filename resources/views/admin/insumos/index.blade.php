@@ -171,13 +171,8 @@
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                 <i class="ri-close-line me-1"></i>Cerrar
                             </button>
-                            <button type="submit" class="btn btn-success" id="add-btn">
-                                <i class="ri-add-line me-1"></i>Agregar
-                            </button>
-                            <button type="submit" class="btn btn-success" id="edit-btn"
-                                style="display: none;">
-                                <i class="ri-save-line me-1"></i>Actualizar
-                            </button>
+                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>

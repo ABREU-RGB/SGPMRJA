@@ -123,106 +123,150 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ===== Gráfico 1: Estado de Pedidos (Donut) =====
-            var pedidosOptions = {
-                series: [{{ $pedidosPendientes }}, {{ $pedidosEnProceso }}, {{ $pedidosCompletados }}, {{ $pedidosCancelados }}],
-                chart: {
-                    type: 'donut',
-                    height: 350
-                },
-                labels: ['Pendiente', 'En Proceso', 'Completado', 'Cancelado'],
-                colors: ['#3577f1', '#f7b84b', '#0ab39c', '#f06548'],
-                legend: {
-                    position: 'bottom'
-                },
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            size: '65%',
-                            labels: {
-                                show: true,
-                                total: {
+            // ==========================================
+            // DATOS DEL BACKEND
+            // ==========================================
+            const pedidosLabels = @json($pedidosLabels);
+            const pedidosValues = @json($pedidosValues);
+            const totalPedidos = {{ $totalPedidos }};
+
+            const empleadosLabels = @json($empleadosLabels);
+            const empleadosValues = @json($empleadosValues);
+            const totalEmpleados = {{ $totalEmpleadosChart }};
+
+            // ==========================================
+            // GRÁFICO 1: ESTADO DE PEDIDOS (DONUT)
+            // ==========================================
+            const pedidosContainer = document.querySelector("#estadoPedidosChart");
+            
+            if (totalPedidos > 0 && pedidosContainer) {
+                var pedidosOptions = {
+                    series: pedidosValues,
+                    chart: {
+                        type: 'donut',
+                        height: 350
+                    },
+                    labels: pedidosLabels,
+                    colors: ['#3577f1', '#f7b84b', '#0ab39c', '#f06548'],
+                    legend: {
+                        position: 'bottom'
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%',
+                                labels: {
                                     show: true,
-                                    label: 'Total Pedidos',
-                                    fontSize: '14px',
-                                    fontWeight: 600
+                                    total: {
+                                        show: true,
+                                        label: 'Total Pedidos',
+                                        fontSize: '14px',
+                                        fontWeight: 600,
+                                        color: '#878a99'
+                                    }
                                 }
                             }
                         }
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    formatter: function(val, opts) {
-                        return opts.w.config.series[opts.seriesIndex];
-                    }
-                },
-                responsive: [{
-                    breakpoint: 480,
-                    options: {
-                        chart: { height: 280 },
-                        legend: { position: 'bottom' }
-                    }
-                }]
-            };
-            var pedidosChart = new ApexCharts(document.querySelector("#estadoPedidosChart"), pedidosOptions);
-            pedidosChart.render();
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function(val, opts) {
+                            return opts.w.config.series[opts.seriesIndex];
+                        }
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: { height: 280 },
+                            legend: { position: 'bottom' }
+                        }
+                    }]
+                };
+                new ApexCharts(pedidosContainer, pedidosOptions).render();
+            } else if (pedidosContainer) {
+                // Mensaje Elegante: No hay datos
+                pedidosContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <div class="avatar-md mx-auto mb-3">
+                            <div class="avatar-title bg-soft-light rounded-circle text-muted fs-1">
+                                <i class="ri-folder-info-line"></i>
+                            </div>
+                        </div>
+                        <h5 class="text-muted">No hay datos suficientes</h5>
+                        <p class="text-muted mb-0">Registre nuevos pedidos para ver estadísticas.</p>
+                    </div>
+                `;
+            }
 
-            // ===== Gráfico 2: Personal por Departamento (Bar horizontal) =====
-            var deptoLabels = {!! json_encode($personalPorDepto->pluck('departamento')->toArray()) !!};
-            var deptoData = {!! json_encode($personalPorDepto->pluck('total')->toArray()) !!};
+            // ==========================================
+            // GRÁFICO 2: PERSONAL POR DEPARTAMENTO (BAR)
+            // ==========================================
+            const personalContainer = document.querySelector("#personalDeptoChart");
 
-            var deptoOptions = {
-                series: [{
-                    name: 'Empleados',
-                    data: deptoData
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    toolbar: { show: false }
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 4,
-                        horizontal: true,
-                        barHeight: '50%',
-                        distributed: true
-                    }
-                },
-                colors: ['#3577f1', '#0ab39c', '#f7b84b', '#f06548', '#299cdb', '#405189', '#66d1d1'],
-                dataLabels: {
-                    enabled: true,
-                    style: {
-                        fontSize: '13px',
-                        fontWeight: 600
-                    }
-                },
-                xaxis: {
-                    categories: deptoLabels,
-                    labels: {
-                        style: { fontSize: '12px' }
-                    }
-                },
-                yaxis: {
-                    labels: {
-                        style: { fontSize: '13px' }
-                    }
-                },
-                legend: { show: false },
-                tooltip: {
-                    y: {
-                        formatter: function(val) {
-                            return val + ' empleado(s)';
+            if (totalEmpleados > 0 && personalContainer) {
+                var deptoOptions = {
+                    series: [{
+                        name: 'Empleados',
+                        data: empleadosValues
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        toolbar: { show: false }
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            horizontal: true,
+                            barHeight: '50%',
+                            distributed: true
+                        }
+                    },
+                    colors: ['#3577f1', '#0ab39c', '#f7b84b', '#f06548', '#299cdb', '#405189', '#66d1d1'],
+                    dataLabels: {
+                        enabled: true,
+                        style: {
+                            fontSize: '13px',
+                            fontWeight: 600
+                        }
+                    },
+                    xaxis: {
+                        categories: empleadosLabels,
+                        labels: {
+                            style: { fontSize: '12px' }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: { fontSize: '13px' }
+                        }
+                    },
+                    legend: { show: false },
+                    tooltip: {
+                        y: {
+                            formatter: function(val) {
+                                return val + ' empleado(s)';
+                            }
                         }
                     }
-                }
-            };
-            var deptoChart = new ApexCharts(document.querySelector("#personalDeptoChart"), deptoOptions);
-            deptoChart.render();
+                };
+                new ApexCharts(personalContainer, deptoOptions).render();
+            } else if (personalContainer) {
+                // Mensaje Elegante: No hay datos
+                personalContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <div class="avatar-md mx-auto mb-3">
+                            <div class="avatar-title bg-soft-light rounded-circle text-muted fs-1">
+                                <i class="ri-user-unfollow-line"></i>
+                            </div>
+                        </div>
+                        <h5 class="text-muted">No hay datos suficientes</h5>
+                        <p class="text-muted mb-0">Asigne departamentos a los empleados para ver estadísticas.</p>
+                    </div>
+                `;
+            }
         });
     </script>
 @endpush

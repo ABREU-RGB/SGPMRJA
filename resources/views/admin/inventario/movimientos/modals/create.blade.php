@@ -62,9 +62,7 @@
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                         <i class="ri-close-line me-1"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="ri-save-line me-1"></i>Guardar
-                    </button>
+                    <x-ui.button-save text="Guardar" icon="ri-save-line" loading-text="Guardando..." />
                 </div>
             </form>
         </div>

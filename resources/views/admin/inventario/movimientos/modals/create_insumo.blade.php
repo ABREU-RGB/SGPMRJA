@@ -54,9 +54,7 @@
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                         <i class="ri-close-line me-1"></i>Cancelar
                     </button>
-                    <button type="button" class="btn btn-success" id="add-btn-insumo">
-                        <i class="ri-add-line me-1"></i>Agregar Insumo
-                    </button>
+                    <x-ui.button-save id="add-btn-insumo" type="button" text="Agregar Insumo" icon="ri-add-line" loading-text="Agregando..." />
                 </div>
             </form>
         </div>
