@@ -37,7 +37,7 @@ class Insumo extends Model
 
     public function ordenesProduccion()
     {
-        return $this->belongsToMany(OrdenProduccion::class, 'detalle_orden_insumos')
+        return $this->belongsToMany(OrdenProduccion::class, 'detalle_orden_insumo')
             ->withPivot(['cantidad_estimada', 'cantidad_utilizada'])
             ->withTimestamps();
     }

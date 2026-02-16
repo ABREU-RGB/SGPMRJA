@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Cotizacion;
 use App\Models\Producto;
-use App\Models\DetalleCotizacion;
 use App\Models\Pedido;
-use App\Models\DetallePedido;
 use App\Models\Insumo;
-use App\Models\MovimientoInsumo;
 use App\Models\Banco;
 use App\Models\Cliente;
+use App\Services\CotizacionService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +19,10 @@ use PDF;
 
 class CotizacionController extends Controller
 {
+    public function __construct(
+        private CotizacionService $cotizacionService
+    ) {
+    }
     public function index()
     {
         $productos = Producto::with('tipoProducto')->where('estado', true)->get();
@@ -146,38 +148,7 @@ class CotizacionController extends Controller
             'productos.*.insumos.*.cantidad_estimada.min' => 'La cantidad estimada debe ser mayor a 0.',
         ]);
 
-        DB::transaction(function () use ($request) {
-            $total_cotizacion = 0;
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $total_cotizacion += $producto->precio_base * $item['cantidad'];
-            }
-
-            $cotizacion = Cotizacion::create([
-                'cliente_id' => $request->cliente_id,
-                'fecha_cotizacion' => $request->fecha_cotizacion,
-                'fecha_validez' => $request->fecha_validez,
-                'estado' => 'Pendiente',
-                'total' => $total_cotizacion,
-                'user_id' => Auth::id(),
-            ]);
-
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $detalleCotizacion = DetalleCotizacion::create([
-                    'cotizacion_id' => $cotizacion->id,
-                    'producto_id' => $item['producto_id'],
-                    'cantidad' => $item['cantidad'],
-                    'descripcion' => $item['descripcion'] ?? null,
-                    'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                    'nombre_logo' => $item['nombre_logo'] ?? null,
-                    'ubicacion_logo' => $item['ubicacion_logo'] ?? null,
-                    'cantidad_logo' => $item['cantidad_logo'] ?? null,
-                    'talla' => $item['talla'] ?? null,
-                    'precio_unitario' => $producto->precio_base,
-                ]);
-            }
-        });
+        $this->cotizacionService->crear($request->all());
 
         return response()->json(['success' => 'Cotización creada exitosamente.']);
     }
@@ -265,44 +236,9 @@ class CotizacionController extends Controller
             'productos.*.insumos.*.cantidad_estimada.min' => 'La cantidad estimada debe ser mayor a 0.',
         ]);
 
-        DB::transaction(function () use ($request, $id) {
-            $cotizacion = Cotizacion::findOrFail($id);
+        $cotizacion = Cotizacion::findOrFail($id);
 
-            // Eliminar los detalles de cotización existentes
-            $cotizacion->productos()->delete();
-
-            $total_cotizacion = 0;
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $total_cotizacion += $producto->precio_base * $item['cantidad'];
-            }
-
-            $cotizacion->update([
-                'cliente_id' => $request->cliente_id,
-                'fecha_cotizacion' => $request->fecha_cotizacion,
-                'fecha_validez' => $request->fecha_validez,
-                'estado' => $request->estado,
-                'total' => $total_cotizacion,
-                'user_id' => Auth::id(),
-            ]);
-
-            // Sincronizar productos de la cotización
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $detalleCotizacion = DetalleCotizacion::create([
-                    'cotizacion_id' => $cotizacion->id,
-                    'producto_id' => $item['producto_id'],
-                    'cantidad' => $item['cantidad'],
-                    'descripcion' => $item['descripcion'] ?? null,
-                    'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                    'nombre_logo' => $item['nombre_logo'] ?? null,
-                    'ubicacion_logo' => $item['ubicacion_logo'] ?? null,
-                    'cantidad_logo' => $item['cantidad_logo'] ?? null,
-                    'talla' => $item['talla'] ?? null,
-                    'precio_unitario' => $producto->precio_base,
-                ]);
-            }
-        });
+        $this->cotizacionService->actualizar($cotizacion, $request->all());
 
         return response()->json(['success' => 'Cotización actualizada exitosamente.']);
     }
@@ -311,6 +247,14 @@ class CotizacionController extends Controller
     {
         $cotizacion = Cotizacion::findOrFail($id);
         $cotizacion->delete();
+
+        \Log::warning('Cotización eliminada', [
+            'cotizacion_id' => $id,
+            'cliente_id' => $cotizacion->cliente_id,
+            'total' => $cotizacion->total,
+            'user_id' => auth()->id(),
+        ]);
+
         return response()->json(['success' => 'Cotización eliminada exitosamente.']);
     }
 
@@ -463,61 +407,11 @@ class CotizacionController extends Controller
     {
         $cotizacion = Cotizacion::with(['cliente', 'productos'])->findOrFail($id);
 
-        // Verificar que esté aprobada
-        if ($cotizacion->estado !== 'Aprobada') {
-            return response()->json([
-                'error' => 'Solo se pueden convertir cotizaciones con estado Aprobada.'
-            ], 422);
+        try {
+            $pedido = $this->cotizacionService->convertirAPedido($cotizacion);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
         }
-
-        // Verificar que no haya sido convertida previamente
-        $pedidoExistente = Pedido::where('cotizacion_id', $cotizacion->id)->first();
-        if ($pedidoExistente) {
-            return response()->json([
-                'error' => 'Esta cotización ya fue convertida a pedido anteriormente.',
-                'pedido_id' => $pedidoExistente->id
-            ], 422);
-        }
-
-        $pedido = null;
-
-        DB::transaction(function () use ($cotizacion, &$pedido) {
-            // Crear el pedido con los datos de la cotización
-            $pedido = Pedido::create([
-                'cotizacion_id' => $cotizacion->id,
-                'cliente_id' => $cotizacion->cliente_id,
-                'fecha_pedido' => now(),
-                'fecha_entrega_estimada' => now()->addDays(7), // Por defecto 7 días
-                'total' => $cotizacion->total,
-                'abono' => 0,
-                'efectivo_pagado' => 0,
-                'transferencia_pagado' => 0,
-                'pago_movil_pagado' => 0,
-                'prioridad' => 'Normal',
-                'estado' => 'Pendiente',
-                'user_id' => Auth::id(),
-            ]);
-
-            // Copiar los productos de la cotización al pedido
-            foreach ($cotizacion->productos as $detalleCotizacion) {
-                DetallePedido::create([
-                    'pedido_id' => $pedido->id,
-                    'producto_id' => $detalleCotizacion->producto_id,
-                    'cantidad' => $detalleCotizacion->cantidad,
-                    'precio_unitario' => $detalleCotizacion->precio_unitario,
-                    'descripcion' => $detalleCotizacion->descripcion,
-                    'lleva_bordado' => $detalleCotizacion->lleva_bordado ?? false,
-                    'nombre_logo' => $detalleCotizacion->nombre_logo,
-                    'ubicacion_logo' => $detalleCotizacion->ubicacion_logo,
-                    'cantidad_logo' => $detalleCotizacion->cantidad_logo,
-                    'talla' => $detalleCotizacion->talla,
-                    'color' => null, // El color se puede agregar después al editar el pedido
-                ]);
-            }
-
-            // Marcar la cotización como convertida
-            $cotizacion->update(['estado' => 'Convertida']);
-        });
 
         return response()->json([
             'success' => 'Cotización convertida a pedido exitosamente.',

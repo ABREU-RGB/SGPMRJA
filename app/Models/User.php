@@ -21,6 +21,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'persona_id',
         'avatar',
         'role',
         'email',
@@ -28,8 +29,37 @@ class User extends Authenticatable
         'estado',
     ];
 
-    // Nota: Si necesitas relacionar usuarios con personas, debes crear
-    // una migración que agregue la columna persona_id a la tabla user
+    /**
+     * Relación con Persona (datos personales normalizados)
+     */
+    public function persona()
+    {
+        return $this->belongsTo(Persona::class);
+    }
+
+    /**
+     * Nombre completo desde la relación persona
+     */
+    public function getNombreCompletoAttribute()
+    {
+        return $this->persona ? $this->persona->nombre_completo : $this->name;
+    }
+
+    /**
+     * Teléfono principal desde la relación persona
+     */
+    public function getTelefonoAttribute()
+    {
+        return $this->persona ? $this->persona->telefono_principal : null;
+    }
+
+    /**
+     * Dirección principal desde la relación persona
+     */
+    public function getDireccionAttribute()
+    {
+        return $this->persona ? $this->persona->direccion_principal : null;
+    }
 
     public function ordenesCreadas()
     {

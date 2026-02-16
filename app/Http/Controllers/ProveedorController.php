@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Proveedor;
 use App\Models\Persona;
-use App\Models\Telefono;
-use App\Models\Direccion;
+use App\Services\ProveedorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class ProveedorController extends Controller
 {
+    public function __construct(
+        private ProveedorService $proveedorService
+    ) {
+    }
     public function index()
     {
         return view('admin.proveedores.index');
@@ -56,50 +59,8 @@ class ProveedorController extends Controller
                 'estado_territorial' => 'nullable|string|max:50',
             ]);
 
-            DB::beginTransaction();
-            try {
-                // Crear persona
-                $persona = Persona::create([
-                    'nombre' => $request->nombre,
-                    'apellido' => $request->apellido,
-                    'tipo_documento' => $request->tipo_documento,
-                    'documento_identidad' => $request->documento_identidad,
-                    'email' => $request->email,
-                ]);
-
-                // Crear teléfono principal
-                Telefono::create([
-                    'persona_id' => $persona->id,
-                    'numero' => $request->telefono,
-                    'tipo' => 'movil',
-                    'es_principal' => true,
-                ]);
-
-                // Crear dirección si se proporcionó
-                if ($request->filled('direccion')) {
-                    Direccion::create([
-                        'persona_id' => $persona->id,
-                        'direccion' => $request->direccion,
-                        'ciudad' => $request->ciudad,
-                        'estado' => $request->estado_territorial,
-                        'tipo' => 'trabajo',
-                        'es_principal' => true,
-                    ]);
-                }
-
-                // Crear proveedor natural
-                Proveedor::create([
-                    'tipo_proveedor' => 'natural',
-                    'persona_id' => $persona->id,
-                    'estado' => $request->input('estado', true),
-                ]);
-
-                DB::commit();
-                return response()->json(['success' => 'Proveedor natural creado exitosamente.']);
-            } catch (\Exception $e) {
-                DB::rollBack();
-                return response()->json(['error' => 'Error al crear el proveedor: ' . $e->getMessage()], 500);
-            }
+            $this->proveedorService->crearNatural($request->all());
+            return response()->json(['success' => 'Proveedor natural creado exitosamente.']);
         } else {
             // Validación para proveedor jurídico (empresa)
             $request->validate([
@@ -114,18 +75,7 @@ class ProveedorController extends Controller
                 'estado' => 'nullable|boolean',
             ]);
 
-            Proveedor::create([
-                'tipo_proveedor' => 'juridico',
-                'razon_social' => $request->razon_social,
-                'rif' => $request->rif,
-                'direccion' => $request->direccion,
-                'telefono' => $request->telefono,
-                'email' => $request->email,
-                'contacto' => $request->contacto,
-                'telefono_contacto' => $request->telefono_contacto,
-                'estado' => $request->input('estado', true),
-            ]);
-
+            $this->proveedorService->crearJuridico($request->all());
             return response()->json(['success' => 'Proveedor jurídico creado exitosamente.']);
         }
     }
@@ -197,92 +147,8 @@ class ProveedorController extends Controller
                 'direccion' => 'required|string|max:255',
             ]);
 
-            DB::beginTransaction();
-            try {
-                if ($proveedor->persona_id && $proveedor->persona) {
-                    // Actualizar persona existente
-                    $proveedor->persona->update([
-                        'nombre' => $request->nombre,
-                        'apellido' => $request->apellido,
-                        'tipo_documento' => $request->tipo_documento,
-                        'documento_identidad' => $request->documento_identidad,
-                        'email' => $request->email,
-                    ]);
-
-                    // Actualizar teléfono principal
-                    $telefonoPrincipal = $proveedor->persona->telefonos()->where('es_principal', true)->first();
-                    if ($telefonoPrincipal) {
-                        $telefonoPrincipal->update(['numero' => $request->telefono]);
-                    } else {
-                        Telefono::create([
-                            'persona_id' => $proveedor->persona_id,
-                            'numero' => $request->telefono,
-                            'tipo' => 'movil',
-                            'es_principal' => true,
-                        ]);
-                    }
-
-                    // Actualizar dirección principal
-                    $direccionPrincipal = $proveedor->persona->direcciones()->where('es_principal', true)->first();
-                    if ($request->filled('direccion')) {
-                        if ($direccionPrincipal) {
-                            $direccionPrincipal->update([
-                                'direccion' => $request->direccion,
-                                'ciudad' => $request->ciudad,
-                                'estado' => $request->estado_territorial,
-                            ]);
-                        } else {
-                            Direccion::create([
-                                'persona_id' => $proveedor->persona_id,
-                                'direccion' => $request->direccion,
-                                'ciudad' => $request->ciudad,
-                                'estado' => $request->estado_territorial,
-                                'tipo' => 'trabajo',
-                                'es_principal' => true,
-                            ]);
-                        }
-                    }
-                } else {
-                    // Convertir de jurídico a natural: crear persona
-                    $persona = Persona::create([
-                        'nombre' => $request->nombre,
-                        'apellido' => $request->apellido,
-                        'tipo_documento' => $request->tipo_documento,
-                        'documento_identidad' => $request->documento_identidad,
-                        'email' => $request->email,
-                    ]);
-
-                    Telefono::create([
-                        'persona_id' => $persona->id,
-                        'numero' => $request->telefono,
-                        'tipo' => 'movil',
-                        'es_principal' => true,
-                    ]);
-
-                    if ($request->filled('direccion')) {
-                        Direccion::create([
-                            'persona_id' => $persona->id,
-                            'direccion' => $request->direccion,
-                            'ciudad' => $request->ciudad,
-                            'estado' => $request->estado_territorial,
-                            'tipo' => 'trabajo',
-                            'es_principal' => true,
-                        ]);
-                    }
-
-                    $proveedor->persona_id = $persona->id;
-                }
-
-                $proveedor->tipo_proveedor = 'natural';
-                $proveedor->estado = $request->input('estado', true);
-                $proveedor->save();
-
-                DB::commit();
-                return response()->json(['success' => 'Proveedor actualizado exitosamente.']);
-            } catch (\Exception $e) {
-                DB::rollBack();
-                return response()->json(['error' => 'Error al actualizar: ' . $e->getMessage()], 500);
-            }
+            $this->proveedorService->actualizarNatural($proveedor, $request->all());
+            return response()->json(['success' => 'Proveedor actualizado exitosamente.']);
         } else {
             $request->validate([
                 'razon_social' => 'required|string|max:100',
@@ -295,18 +161,7 @@ class ProveedorController extends Controller
                 'estado' => 'nullable|boolean',
             ]);
 
-            $proveedor->update([
-                'tipo_proveedor' => 'juridico',
-                'razon_social' => $request->razon_social,
-                'rif' => $request->rif,
-                'direccion' => $request->direccion,
-                'telefono' => $request->telefono,
-                'email' => $request->email,
-                'contacto' => $request->contacto,
-                'telefono_contacto' => $request->telefono_contacto,
-                'estado' => $request->input('estado', true),
-            ]);
-
+            $this->proveedorService->actualizarJuridico($proveedor, $request->all());
             return response()->json(['success' => 'Proveedor actualizado exitosamente.']);
         }
     }

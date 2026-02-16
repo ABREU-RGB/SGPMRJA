@@ -9,6 +9,10 @@ use App\Models\Insumo;
 use App\Models\MovimientoInsumo;
 use App\Models\Banco;
 use App\Models\Cotizacion;
+use App\Http\Requests\StorePedidoRequest;
+use App\Http\Requests\UpdatePedidoRequest;
+use Illuminate\Support\Facades\Log;
+use App\Services\PedidoService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +23,11 @@ use PDF;
 
 class PedidoController extends Controller
 {
+    public function __construct(
+        private PedidoService $pedidoService
+    ) {
+    }
+
     public function index()
     {
         $productos = Producto::with('tipoProducto')->where('estado', true)->get();
@@ -96,87 +105,9 @@ class PedidoController extends Controller
         return response()->json($cotizaciones);
     }
 
-    public function store(Request $request)
+    public function store(StorePedidoRequest $request)
     {
-        $request->validate([
-            'cotizacion_id' => 'nullable|exists:cotizacion,id',
-            'cliente_id' => 'required|exists:cliente,id',
-            'fecha_pedido' => 'required|date',
-            'fecha_entrega_estimada' => 'nullable|date|after_or_equal:fecha_pedido',
-            'abono' => 'required|numeric|min:0',
-            'efectivo_pagado' => 'boolean',
-            'transferencia_pagado' => 'boolean',
-            'pago_movil_pagado' => 'boolean',
-            'referencia_transferencia' => 'nullable|string|max:255|required_if:transferencia_pagado,true',
-            'referencia_pago_movil' => 'nullable|string|max:255|required_if:pago_movil_pagado,true',
-            'banco_transferencia_id' => 'nullable|exists:banco,id|required_if:transferencia_pagado,true',
-            'banco_pago_movil_id' => 'nullable|exists:banco,id|required_if:pago_movil_pagado,true',
-            'prioridad' => 'required|in:Normal,Alta,Urgente',
-            'productos' => 'required|array|min:1',
-            'productos.*.producto_id' => 'required|exists:producto,id',
-            'productos.*.cantidad' => 'required|integer|min:1',
-            'productos.*.descripcion' => 'nullable|string|max:500',
-            'productos.*.lleva_bordado' => 'nullable|boolean',
-            'productos.*.nombre_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
-            'productos.*.color' => 'nullable|string|max:50',
-            'productos.*.talla' => 'nullable|in:Talla Unica,XS,S,M,L,XL,XXL,2,4,6,8,10,12,14,16',
-        ]);
-
-
-        DB::transaction(function () use ($request) {
-            $total_pedido = 0;
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $total_pedido += $producto->precio_base * $item['cantidad'];
-            }
-
-            $pedido = Pedido::create([
-                'cotizacion_id' => $request->cotizacion_id, // Vincula con cotización si existe
-                'cliente_id' => $request->cliente_id,
-                'fecha_pedido' => $request->fecha_pedido,
-                'fecha_entrega_estimada' => $request->fecha_entrega_estimada,
-                'estado' => 'Pendiente',
-                'total' => $total_pedido,
-                'user_id' => Auth::id(),
-                'abono' => $request->abono,
-                'efectivo_pagado' => $request->boolean('efectivo_pagado'),
-                'transferencia_pagado' => $request->boolean('transferencia_pagado'),
-                'pago_movil_pagado' => $request->boolean('pago_movil_pagado'),
-                'referencia_transferencia' => $request->referencia_transferencia,
-                'referencia_pago_movil' => $request->referencia_pago_movil,
-                'banco_id' => $request->banco_id,
-                'banco_transferencia_id' => $request->banco_transferencia_id,
-                'banco_pago_movil_id' => $request->banco_pago_movil_id,
-                'prioridad' => $request->prioridad,
-            ]);
-
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $detallePedido = DetallePedido::create([
-                    'pedido_id' => $pedido->id,
-                    'producto_id' => $item['producto_id'],
-                    'cantidad' => $item['cantidad'],
-                    'descripcion' => $item['descripcion'] ?? null,
-                    'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                    'nombre_logo' => $item['nombre_logo'] ?? null,
-                    'ubicacion_logo' => $item['ubicacion_logo'] ?? null,
-                    'cantidad_logo' => $item['cantidad_logo'] ?? null,
-                    'color' => $item['color'] ?? null,
-                    'talla' => $item['talla'] ?? null,
-                    'precio_unitario' => $producto->precio_base,
-                ]);
-
-
-            }
-
-            // Si el pedido viene desde una cotización, marcarla como Convertida
-            if ($request->cotizacion_id) {
-                $cotizacion = Cotizacion::find($request->cotizacion_id);
-                if ($cotizacion && $cotizacion->estado === 'Aprobada') {
-                    $cotizacion->update(['estado' => 'Convertida']);
-                }
-            }
-        });
+        $this->pedidoService->crear($request->validated());
 
         return response()->json(['success' => 'Pedido creado exitosamente.']);
     }
@@ -203,7 +134,7 @@ class PedidoController extends Controller
         return response()->json($data);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdatePedidoRequest $request, $id)
     {
         $pedido = Pedido::findOrFail($id);
 
@@ -211,80 +142,7 @@ class PedidoController extends Controller
             return response()->json(['error' => 'No se puede editar un pedido completado o cancelado.'], 403);
         }
 
-        $request->validate([
-            'cliente_id' => 'required|exists:cliente,id',
-            'fecha_pedido' => 'required|date',
-            'fecha_entrega_estimada' => 'nullable|date|after_or_equal:fecha_pedido',
-            'estado' => 'required|in:Pendiente,Procesando,Completado,Cancelado',
-            'abono' => 'required|numeric|min:0',
-            'efectivo_pagado' => 'boolean',
-            'transferencia_pagado' => 'boolean',
-            'pago_movil_pagado' => 'boolean',
-            'referencia_transferencia' => 'nullable|string|max:255|required_if:transferencia_pagado,true',
-            'referencia_pago_movil' => 'nullable|string|max:255|required_if:pago_movil_pagado,true',
-            'banco_id' => 'nullable|exists:banco,id|required_if:transferencia_pagado,true|required_if:pago_movil_pagado,true',
-            'prioridad' => 'required|in:Normal,Alta,Urgente',
-            'productos' => 'required|array|min:1',
-            'productos.*.producto_id' => 'required|exists:producto,id',
-            'productos.*.cantidad' => 'required|integer|min:1',
-            'productos.*.descripcion' => 'nullable|string|max:500',
-            'productos.*.lleva_bordado' => 'nullable|boolean',
-            'productos.*.nombre_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
-            'productos.*.color' => 'nullable|string|max:50',
-            'productos.*.talla' => 'nullable|in:Talla Unica,XS,S,M,L,XL,XXL,2,4,6,8,10,12,14,16',
-        ]);
-
-
-        DB::transaction(function () use ($request, $pedido) {
-            // $pedido ya fue recuperado arriba
-
-
-
-            // Eliminar los detalles de pedido existentes (y sus relaciones con insumos si usas attach/detach en la sincronización)
-            $pedido->productos()->delete();
-
-            $total_pedido = 0;
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $total_pedido += $producto->precio_base * $item['cantidad'];
-            }
-
-            $pedido->update([
-                'cliente_id' => $request->cliente_id,
-                'fecha_pedido' => $request->fecha_pedido,
-                'fecha_entrega_estimada' => $request->fecha_entrega_estimada,
-                'estado' => $request->estado,
-                'total' => $total_pedido,
-                'abono' => $request->abono,
-                'efectivo_pagado' => $request->boolean('efectivo_pagado'),
-                'transferencia_pagado' => $request->boolean('transferencia_pagado'),
-                'pago_movil_pagado' => $request->boolean('pago_movil_pagado'),
-                'referencia_transferencia' => $request->referencia_transferencia,
-                'referencia_pago_movil' => $request->referencia_pago_movil,
-                'banco_id' => $request->banco_id,
-                'prioridad' => $request->prioridad,
-            ]);
-
-            // Sincronizar productos del pedido y deducir stock de insumos
-            foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $detallePedido = DetallePedido::create([
-                    'pedido_id' => $pedido->id,
-                    'producto_id' => $item['producto_id'],
-                    'cantidad' => $item['cantidad'],
-                    'descripcion' => $item['descripcion'] ?? null,
-                    'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                    'nombre_logo' => $item['nombre_logo'] ?? null,
-                    'ubicacion_logo' => $item['ubicacion_logo'] ?? null,
-                    'cantidad_logo' => $item['cantidad_logo'] ?? null,
-                    'color' => $item['color'] ?? null,
-                    'talla' => $item['talla'] ?? null,
-                    'precio_unitario' => $producto->precio_base,
-                ]);
-
-
-            }
-        });
+        $this->pedidoService->actualizar($pedido, $request->validated());
 
         return response()->json(['success' => 'Pedido actualizado exitosamente.']);
     }
@@ -298,6 +156,14 @@ class PedidoController extends Controller
         }
 
         $pedido->delete();
+
+        Log::warning('Pedido eliminado', [
+            'pedido_id' => $id,
+            'cliente_id' => $pedido->cliente_id,
+            'total' => $pedido->total,
+            'user_id' => auth()->id(),
+        ]);
+
         return response()->json(['success' => 'Pedido eliminado exitosamente.']);
     }
 

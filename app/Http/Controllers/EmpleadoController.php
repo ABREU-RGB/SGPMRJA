@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empleado;
 use App\Models\Persona;
-use App\Models\Telefono;
-use App\Models\Direccion;
+use App\Services\EmpleadoService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +12,10 @@ use PDF;
 
 class EmpleadoController extends Controller
 {
+    public function __construct(
+        private EmpleadoService $empleadoService
+    ) {
+    }
     public function index()
     {
         // Departamentos dinámicos para el select del modal
@@ -116,67 +119,9 @@ class EmpleadoController extends Controller
             'estado.required' => 'Debe seleccionar el estado del empleado',
         ]);
 
-        try {
-            DB::beginTransaction();
+        $this->empleadoService->crear($request->all());
 
-            // Crear persona (sin telefono/direccion en la tabla persona)
-            $persona = Persona::create([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'documento_identidad' => $request->documento_identidad,
-                'tipo_documento' => $request->tipo_documento,
-                'email' => $request->email,
-                'estado_persona' => $request->estado_persona,
-                'fecha_nacimiento' => $request->fecha_nacimiento,
-                'genero' => $request->genero,
-            ]);
-
-            // Crear teléfono en tabla normalizada
-            if (!empty($request->telefono)) {
-                Telefono::create([
-                    'persona_id' => $persona->id,
-                    'numero' => $request->telefono,
-                    'tipo' => 'movil',
-                    'es_principal' => true,
-                ]);
-            }
-
-            // Crear dirección en tabla normalizada
-            if (!empty($request->direccion) || !empty($request->ciudad)) {
-                Direccion::create([
-                    'persona_id' => $persona->id,
-                    'direccion' => $request->direccion ?? '',
-                    'ciudad' => $request->ciudad,
-                    'tipo' => 'casa',
-                    'es_principal' => true,
-                ]);
-            }
-
-            // Generar código de empleado si no se proporciona
-            $codigoEmpleado = $request->codigo_empleado;
-            if (!$codigoEmpleado) {
-                $ultimoCodigo = Empleado::max('codigo_empleado');
-                $numero = $ultimoCodigo ? ((int) substr($ultimoCodigo, 4) + 1) : 1;
-                $codigoEmpleado = 'EMP-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
-            }
-
-            // Crear empleado
-            Empleado::create([
-                'persona_id' => $persona->id,
-                'codigo_empleado' => $codigoEmpleado,
-                'fecha_ingreso' => $request->fecha_ingreso,
-                'cargo' => $request->cargo,
-                'departamento' => $request->departamento,
-                'estado' => $request->estado,
-            ]);
-
-            DB::commit();
-
-            return response()->json(['message' => 'Empleado creado exitosamente.']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Error al crear empleado: ' . $e->getMessage()], 500);
-        }
+        return response()->json(['message' => 'Empleado creado exitosamente.']);
     }
 
     public function show($id)
@@ -261,71 +206,9 @@ class EmpleadoController extends Controller
             'estado.required' => 'Debe seleccionar el estado del empleado',
         ]);
 
-        try {
-            DB::beginTransaction();
+        $this->empleadoService->actualizar($empleado, $request->all());
 
-            // Actualizar persona (sin telefono/direccion)
-            $persona->update([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'documento_identidad' => $request->documento_identidad,
-                'tipo_documento' => $request->tipo_documento,
-                'email' => $request->email,
-                'estado_persona' => $request->estado_persona,
-                'fecha_nacimiento' => $request->fecha_nacimiento,
-                'genero' => $request->genero,
-            ]);
-
-            // Actualizar o crear teléfono principal
-            if (!empty($request->telefono)) {
-                $telefonoPrincipal = $persona->telefonos()->where('es_principal', true)->first();
-                if ($telefonoPrincipal) {
-                    $telefonoPrincipal->update(['numero' => $request->telefono]);
-                } else {
-                    Telefono::create([
-                        'persona_id' => $persona->id,
-                        'numero' => $request->telefono,
-                        'tipo' => 'movil',
-                        'es_principal' => true,
-                    ]);
-                }
-            }
-
-            // Actualizar o crear dirección principal
-            if (!empty($request->direccion) || !empty($request->ciudad)) {
-                $direccionPrincipal = $persona->direcciones()->where('es_principal', true)->first();
-                if ($direccionPrincipal) {
-                    $direccionPrincipal->update([
-                        'direccion' => $request->direccion ?? '',
-                        'ciudad' => $request->ciudad,
-                    ]);
-                } else {
-                    Direccion::create([
-                        'persona_id' => $persona->id,
-                        'direccion' => $request->direccion ?? '',
-                        'ciudad' => $request->ciudad,
-                        'tipo' => 'casa',
-                        'es_principal' => true,
-                    ]);
-                }
-            }
-
-            // Actualizar empleado
-            $empleado->update([
-                'codigo_empleado' => $request->codigo_empleado,
-                'fecha_ingreso' => $request->fecha_ingreso,
-                'cargo' => $request->cargo,
-                'departamento' => $request->departamento,
-                'estado' => $request->estado,
-            ]);
-
-            DB::commit();
-
-            return response()->json(['message' => 'Empleado actualizado exitosamente.']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Error al actualizar empleado: ' . $e->getMessage()], 500);
-        }
+        return response()->json(['message' => 'Empleado actualizado exitosamente.']);
     }
 
     public function destroy($id)

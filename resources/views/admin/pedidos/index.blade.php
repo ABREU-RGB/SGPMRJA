@@ -128,6 +128,11 @@
             font-size: 13px;
         }
 
+        /* Ocultar buscador por defecto de DataTables */
+        .dataTables_filter {
+            display: none;
+        }
+
         #pedidos-table th,
         #pedidos-table td {
             padding: 0.6rem 0.8rem;
@@ -167,841 +172,849 @@
         }
 
         /* Alinear encabezados con su contenido (Centrado) */
-            #pedidos-table th:nth-child(1), /* ID */
-            #pedidos-table th:nth-child(6), /* Estado */
-            #pedidos-table th:last-child {  /* Acciones */
-                text-align: center;
-            }
+        #pedidos-table th:nth-child(1),
+        /* ID */
+        #pedidos-table th:nth-child(6),
+        /* Estado */
+        #pedidos-table th:last-child {
+            /* Acciones */
+            text-align: center;
+        }
 
-            /* Soluci�n para el z-index de Select2 en modales */
-            .select2-container--open {
-                z-index: 99999;
-            }
+        /* Soluci�n para el z-index de Select2 en modales */
+        .select2-container--open {
+            z-index: 99999;
+        }
 
-            /* Soluci�n para el recorte de Select2 en tarjetas de producto */
-            #productos-container .card {
-                overflow: visible !important;
-            }
+        /* Soluci�n para el recorte de Select2 en tarjetas de producto */
+        #productos-container .card {
+            overflow: visible !important;
+        }
 
-            .insumo-btn-height {
-                height: 39px !important;
-                /* Altura fijada a 39px */
-                line-height: 1.5;
-                padding: 0.375rem 0.75rem;
-                /* Ajustar padding si es necesario */
-                display: flex;
-                /* Usar flexbox para centrar contenido */
-                align-items: center;
-                /* Centrar verticalmente */
-                justify-content: center;
-                /* Centrar horizontalmente */
-            }
+        .insumo-btn-height {
+            height: 39px !important;
+            /* Altura fijada a 39px */
+            line-height: 1.5;
+            padding: 0.375rem 0.75rem;
+            /* Ajustar padding si es necesario */
+            display: flex;
+            /* Usar flexbox para centrar contenido */
+            align-items: center;
+            /* Centrar verticalmente */
+            justify-content: center;
+            /* Centrar horizontalmente */
+        }
 
-            /* Estilos para modal de selecci�n de productos */
-            .producto-selector-btn {
-                cursor: pointer;
-                background: #fff;
-                border: 1px solid #ced4da;
-                border-radius: 0.25rem;
-                padding: 0.375rem 0.75rem;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                min-height: 38px;
-                transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            }
+        /* Estilos para modal de selecci�n de productos */
+        .producto-selector-btn {
+            cursor: pointer;
+            background: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 38px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
 
-            .producto-selector-btn:hover {
-                border-color: #86b7fe;
-                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            }
+        .producto-selector-btn:hover {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
 
-            .producto-selector-btn .producto-text {
-                flex-grow: 1;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
+        .producto-selector-btn .producto-text {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-            .producto-selector-btn .placeholder-text {
-                color: #6c757d;
-            }
+        .producto-selector-btn .placeholder-text {
+            color: #6c757d;
+        }
 
-            #productosModalTable tbody tr {
-                cursor: pointer;
-                transition: background-color 0.15s;
-            }
+        #productosModalTable tbody tr {
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
 
-            #productosModalTable tbody tr:hover {
-                background-color: #e3f2fd !important;
-            }
+        #productosModalTable tbody tr:hover {
+            background-color: #e3f2fd !important;
+        }
 
-            #productosModalTable tbody tr.selected {
-                background-color: #bbdefb !important;
-            }
+        #productosModalTable tbody tr.selected {
+            background-color: #bbdefb !important;
+        }
 
-            .producto-img-thumb {
-                width: 40px;
-                height: 40px;
-                object-fit: cover;
-                border-radius: 4px;
-            }
+        .producto-img-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
 
-            /* Z-index para que el modal de productos aparezca sobre el modal principal */
-            #productosModal {
-                z-index: 1060 !important;
-            }
+        /* Z-index para que el modal de productos aparezca sobre el modal principal */
+        #productosModal {
+            z-index: 1060 !important;
+        }
 
-            #productosModal .modal-backdrop {
-                z-index: 1055 !important;
-            }
-        </style>
+        #productosModal .modal-backdrop {
+            z-index: 1055 !important;
+        }
+    </style>
 
-        <!-- Modal para seleccionar producto -->
-        <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true"
-            data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header bg-light p-3">
-                        <h5 class="modal-title" id="productosModalLabel">Buscar y Seleccionar Producto</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <!-- Card de Filtros -->
-                        <div class="card border-0 shadow-sm mb-3">
-                            <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                <h6 class="mb-0" style="color: #00d9a5;">
-                                    <i class="ri-filter-3-line me-2"></i>Filtros de BÃºsqueda
-                                </h6>
+    <!-- Modal para seleccionar producto -->
+    <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title" id="productosModalLabel">Buscar y Seleccionar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Card de Filtros -->
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
+                            <h6 class="mb-0" style="color: #00d9a5;">
+                                <i class="ri-filter-3-line me-2"></i>Filtros de BÃºsqueda
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <span class="input-group-text"
+                                            style="background: rgba(30, 60, 114, 0.1); border-color: #1e3c72;">
+                                            <i class="ri-search-line" style="color: #1e3c72;"></i>
+                                        </span>
+                                        <input type="text" id="buscarProductoModal" class="form-control"
+                                            placeholder="Buscar por c�digo, tipo o modelo..."
+                                            style="border-color: #1e3c72;">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <select id="filtroTipoProducto" class="form-select" style="border-color: #00d9a5;">
+                                        <option value="">?? Todos los tipos</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-7">
-                                        <div class="input-group">
-                                            <span class="input-group-text"
-                                                style="background: rgba(30, 60, 114, 0.1); border-color: #1e3c72;">
-                                                <i class="ri-search-line" style="color: #1e3c72;"></i>
-                                            </span>
-                                            <input type="text" id="buscarProductoModal" class="form-control"
-                                                placeholder="Buscar por c�digo, tipo o modelo..."
-                                                style="border-color: #1e3c72;">
+                        </div>
+                    </div>
+
+                    <!-- Card de Tabla de Productos -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                            <h6 class="mb-0" style="color: #1e3c72;">
+                                <i class="ri-store-2-line me-2"></i>Cat�logo de Productos
+                            </h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height: 350px;">
+                                <table class="table table-hover mb-0" id="productosModalTable">
+                                    <thead
+                                        style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); position: sticky; top: 0;">
+                                        <tr>
+                                            <th class="text-white" width="60"><i class="ri-image-line"></i></th>
+                                            <th class="text-white"><i class="ri-barcode-line me-1"></i>C�digo</th>
+                                            <th class="text-white"><i class="ri-folder-line me-1"></i>Tipo</th>
+                                            <th class="text-white"><i class="ri-t-shirt-line me-1"></i>Modelo</th>
+                                            <th class="text-white"><i class="ri-money-dollar-circle-line me-1"></i>Precio
+                                            </th>
+                                            <th class="text-white text-center" width="80"><i class="ri-check-line"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productosModalBody">
+                                        <!-- Se llena con JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title mb-0 flex-grow-1">Listado de Pedidos</h5>
+                        <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Buscador Personalizado -->
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar pedido...">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="d-flex gap-2">
+                                @if(Auth::user()->isAdmin())
+                                    <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
+                                        data-bs-target="#seleccionarCotizacionModal">
+                                        <i class="ri-add-line align-bottom me-1"></i> Agregar Pedido
+                                    </button>
+                                @endif
+                                <a href="{{ route('pedidos.reporte.pdf') }}" target="_blank" class="btn btn-danger">
+                                    <i class="ri-file-pdf-line align-bottom me-1"></i> Exportar PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Nro. de pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Teléfono</th>
+                                    <th>Fecha Pedido</th>
+                                    <th>Fecha Entrega Estimada</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @include('admin.pedidos.modals.seleccionar_cotizacion')
+    <!-- Modal para ver detalles del Pedido -->
+    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Detalles del Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <!-- Columna Izquierda -->
+                        <div class="col-lg-6">
+                            <!-- Card Datos del Cliente -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
+                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                        <i class="ri-user-star-line me-2"></i>Información del Cliente
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-user-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Cliente</small>
+                                                    <span class="fw-semibold" id="view-cliente-nombre">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-bank-card-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Documento</small>
+                                                    <span class="fw-semibold" id="view-ci-rif">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-mail-line" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Email</small>
+                                                    <span class="fw-semibold" id="view-cliente-email">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-phone-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Teléfono</small>
+                                                    <span class="fw-semibold" id="view-cliente-telefono">-</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <select id="filtroTipoProducto" class="form-select" style="border-color: #00d9a5;">
-                                            <option value="">?? Todos los tipos</option>
-                                        </select>
+                                </div>
+                            </div>
+
+                            <!-- Card Datos del Pedido -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header border-0" style="background: rgba(46, 204, 113, 0.1);">
+                                    <h6 class="mb-0" style="color: #2ecc71;">
+                                        <i class="ri-calendar-todo-line me-2"></i>Datos del Pedido
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-calendar-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Fecha Pedido</small>
+                                                    <span class="fw-semibold" id="view-fecha-pedido">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-calendar-check-line" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Entrega Estimada</small>
+                                                    <span class="fw-semibold" id="view-fecha-entrega-estimada">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-flag-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Prioridad</small>
+                                                    <span class="fw-semibold" id="view-prioridad">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Estado</small>
+                                                    <span class="fw-semibold" id="view-estado">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-user-settings-line" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Creado por</small>
+                                                    <span class="fw-semibold" id="view-usuario-creador">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Datos del Pago -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
+                                        <i class="ri-wallet-line me-2"></i>Datos del Pago
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-hand-coin-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Abono</small>
+                                                    <span class="fw-semibold" id="view-abono">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-money-dollar-circle-line" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Total</small>
+                                                    <span class="fw-semibold" id="view-total">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-wallet-2-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Restante</small>
+                                                    <span class="fw-semibold" id="view-restante">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-bank-card-2-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Método Pago</small>
+                                                    <span class="fw-semibold" id="view-metodo-pago">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4" id="view-referencia-transferencia-container">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-hashtag" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Referencia</small>
+                                                    <span class="fw-semibold" id="view-referencia-transferencia">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4" id="view-referencia-pago-movil-container" style="display:none;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-hashtag" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Ref. Pago Móvil</small>
+                                                    <span class="fw-semibold" id="view-referencia-pago-movil">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4" id="view-banco-container">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-bank-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Banco</small>
+                                                    <span class="fw-semibold" id="view-banco">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Card de Tabla de Productos -->
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                <h6 class="mb-0" style="color: #1e3c72;">
-                                    <i class="ri-store-2-line me-2"></i>Cat�logo de Productos
-                                </h6>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive" style="max-height: 350px;">
-                                    <table class="table table-hover mb-0" id="productosModalTable">
-                                        <thead
-                                            style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); position: sticky; top: 0;">
-                                            <tr>
-                                                <th class="text-white" width="60"><i class="ri-image-line"></i></th>
-                                                <th class="text-white"><i class="ri-barcode-line me-1"></i>C�digo</th>
-                                                <th class="text-white"><i class="ri-folder-line me-1"></i>Tipo</th>
-                                                <th class="text-white"><i class="ri-t-shirt-line me-1"></i>Modelo</th>
-                                                <th class="text-white"><i class="ri-money-dollar-circle-line me-1"></i>Precio
-                                                </th>
-                                                <th class="text-white text-center" width="80"><i class="ri-check-line"></i></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="productosModalBody">
-                                            <!-- Se llena con JavaScript -->
-                                        </tbody>
-                                    </table>
+                        <!-- Columna Derecha: Productos -->
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
+                                        <i class="ri-shopping-bag-3-line me-2"></i>Productos del Pedido
+                                    </h6>
+                                </div>
+                                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                                    <div id="view-productos-container">
+                                        <!-- Productos se cargan dinámicamente -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light border-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="ri-close-line me-1"></i>Cancelar
-                        </button>
-                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cerrar
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 
-
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="d-flex align-items-center">
-                            <h5 class="card-title mb-0 flex-grow-1">Listado de Pedidos</h5>
-                            <div class="flex-shrink-0 d-flex align-items-center gap-3">
-                                <!-- Botones de Acción -->
-                                <div class="d-flex gap-2">
-                                    @if(Auth::user()->isAdmin())
-                                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
-                                            data-bs-target="#seleccionarCotizacionModal">
-                                            <i class="ri-add-line align-bottom me-1"></i> Agregar Pedido
-                                        </button>
-                                    @endif
-                                    <a href="{{ route('pedidos.reporte.pdf') }}" target="_blank" class="btn btn-danger">
-                                        <i class="ri-file-pdf-line align-bottom me-1"></i> Exportar PDF
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>Nro. de pedido</th>
-                                        <th>Cliente</th>
-                                        <th>Teléfono</th>
-                                        <th>Fecha Pedido</th>
-                                        <th>Fecha Entrega Estimada</th>
-                                        <th>Estado</th>
-                                        <th>Total</th>
-
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+    <!-- Modal para agregar/editar -->
+    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title" id="modalTitle">Agregar Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
-        </div>
-
-        @include('admin.pedidos.modals.seleccionar_cotizacion')
-        <!-- Modal para ver detalles del Pedido -->
-        <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-            data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header bg-light p-3">
-                        <h5 class="modal-title">Detalles del Pedido</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <div class="row g-4">
-                            <!-- Columna Izquierda -->
+                <form id="pedidoForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" id="id-field" />
+                        <input type="hidden" id="cliente-id-field" name="cliente_id" />
+                        <div class="row">
+                            <!-- Columna Izquierda: Datos del Cliente -->
                             <div class="col-lg-6">
-                                <!-- Card Datos del Cliente -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                        <h6 class="mb-0" style="color: #00d9a5;">
-                                            <i class="ri-user-star-line me-2"></i>Información del Cliente
-                                        </h6>
+                                <div class="card shadow-lg border-dark mb-3">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Datos del Pedido</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row g-3">
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                        <i class="ri-user-line" style="color: #1e3c72;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Cliente</small>
-                                                        <span class="fw-semibold" id="view-cliente-nombre">-</span>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3 position-relative">
+                                                    <label for="cliente-nombre-field" class="form-label">Nombre
+                                                        Cliente</label>
+                                                    <input type="text" id="cliente-nombre-field" name="cliente_nombre"
+                                                        class="form-control"
+                                                        placeholder="Buscar o escribir nombre del cliente"
+                                                        autocomplete="off" required />
                                                 </div>
+                                                <div id="cliente-autocomplete-list"
+                                                    class="list-group position-absolute w-100" style="z-index: 1050;"></div>
                                             </div>
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                        <i class="ri-bank-card-line" style="color: #2ecc71;"></i>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="ci-rif-field" class="form-label">Documento de
+                                                        identidad</label>
+                                                    <div class="input-group">
+                                                        <select class="form-select" id="ci-rif-prefix-field"
+                                                            name="ci_rif_prefix" style="max-width: 80px;">
+                                                            <option value="V-">V-</option>
+                                                            <option value="J-">J-</option>
+                                                            <option value="E-">E-</option>
+                                                            <option value="G-">G-</option>
+                                                        </select>
+                                                        <input type="text" id="ci-rif-number-field" name="ci_rif_number"
+                                                            class="form-control" placeholder="Numero de documento"
+                                                            required />
                                                     </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Documento</small>
-                                                        <span class="fw-semibold" id="view-ci-rif">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                        <i class="ri-mail-line" style="color: #00d9a5;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Email</small>
-                                                        <span class="fw-semibold" id="view-cliente-email">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                        <i class="ri-phone-line" style="color: #1e3c72;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Teléfono</small>
-                                                        <span class="fw-semibold" id="view-cliente-telefono">-</span>
-                                                    </div>
+                                                    <!-- Este campo oculto se actualizará con el valor completo de CI/RIF -->
+                                                    <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Card Datos del Pedido -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header border-0" style="background: rgba(46, 204, 113, 0.1);">
-                                        <h6 class="mb-0" style="color: #2ecc71;">
-                                            <i class="ri-calendar-todo-line me-2"></i>Datos del Pedido
-                                        </h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-3">
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                        <i class="ri-calendar-line" style="color: #1e3c72;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Fecha Pedido</small>
-                                                        <span class="fw-semibold" id="view-fecha-pedido">-</span>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="cliente-email-field" class="form-label">Email
+                                                        Cliente</label>
+                                                    <input type="email" id="cliente-email-field" name="cliente_email"
+                                                        class="form-control" placeholder="Email del cliente" />
                                                 </div>
                                             </div>
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                        <i class="ri-calendar-check-line" style="color: #00d9a5;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Entrega Estimada</small>
-                                                        <span class="fw-semibold" id="view-fecha-entrega-estimada">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                        <i class="ri-flag-line" style="color: #2ecc71;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Prioridad</small>
-                                                        <span class="fw-semibold" id="view-prioridad">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                        <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Estado</small>
-                                                        <span class="fw-semibold" id="view-estado">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                        <i class="ri-user-settings-line" style="color: #00d9a5;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Creado por</small>
-                                                        <span class="fw-semibold" id="view-usuario-creador">-</span>
-                                                    </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="cliente-telefono-field" class="form-label">Teléfono
+                                                        Cliente</label>
+                                                    <input type="text" id="cliente-telefono-field" name="cliente_telefono"
+                                                        class="form-control" placeholder="Teléfono del cliente" />
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Card Datos del Pago -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                        <h6 class="mb-0" style="color: #1e3c72;">
-                                            <i class="ri-wallet-line me-2"></i>Datos del Pago
-                                        </h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-3">
-                                            <div class="col-4">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                        <i class="ri-hand-coin-line" style="color: #2ecc71;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Abono</small>
-                                                        <span class="fw-semibold" id="view-abono">-</span>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="fecha-pedido-field" class="form-label">Fecha del
+                                                        Pedido</label>
+                                                    <input type="date" id="fecha-pedido-field" name="fecha_pedido"
+                                                        class="form-control" required />
                                                 </div>
                                             </div>
-                                            <div class="col-4">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                        <i class="ri-money-dollar-circle-line" style="color: #00d9a5;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Total</small>
-                                                        <span class="fw-semibold" id="view-total">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                        <i class="ri-wallet-2-line" style="color: #1e3c72;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Restante</small>
-                                                        <span class="fw-semibold" id="view-restante">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                        <i class="ri-bank-card-2-line" style="color: #2ecc71;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Método Pago</small>
-                                                        <span class="fw-semibold" id="view-metodo-pago">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-4" id="view-referencia-transferencia-container">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                        <i class="ri-hashtag" style="color: #00d9a5;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Referencia</small>
-                                                        <span class="fw-semibold" id="view-referencia-transferencia">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-4" id="view-referencia-pago-movil-container" style="display:none;">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                        <i class="ri-hashtag" style="color: #00d9a5;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Ref. Pago Móvil</small>
-                                                        <span class="fw-semibold" id="view-referencia-pago-movil">-</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-4" id="view-banco-container">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                        <i class="ri-bank-line" style="color: #1e3c72;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted d-block">Banco</small>
-                                                        <span class="fw-semibold" id="view-banco">-</span>
-                                                    </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="fecha-entrega-estimada-field" class="form-label">Fecha de
+                                                        Entrega Estimada</label>
+                                                    <input type="date" id="fecha-entrega-estimada-field"
+                                                        name="fecha_entrega_estimada" class="form-control" required />
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Columna Derecha: Productos -->
-                            <div class="col-lg-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                        <h6 class="mb-0" style="color: #1e3c72;">
-                                            <i class="ri-shopping-bag-3-line me-2"></i>Productos del Pedido
-                                        </h6>
-                                    </div>
-                                    <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                                        <div id="view-productos-container">
-                                            <!-- Productos se cargan dinámicamente -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light border-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="ri-close-line me-1"></i>Cerrar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal para agregar/editar -->
-        <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-            data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header bg-light p-3">
-                        <h5 class="modal-title" id="modalTitle">Agregar Pedido</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form id="pedidoForm" enctype="multipart/form-data">
-                        @csrf
-                        <div class="modal-body">
-                            <input type="hidden" id="id-field" />
-                            <input type="hidden" id="cliente-id-field" name="cliente_id" />
-                            <div class="row">
-                                <!-- Columna Izquierda: Datos del Cliente -->
-                                <div class="col-lg-6">
-                                    <div class="card shadow-lg border-dark mb-3">
-                                        <div class="card-header">
-                                            <h5 class="card-title mb-0">Datos del Pedido</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3 position-relative">
-                                                        <label for="cliente-nombre-field" class="form-label">Nombre
-                                                            Cliente</label>
-                                                        <input type="text" id="cliente-nombre-field" name="cliente_nombre"
-                                                            class="form-control"
-                                                            placeholder="Buscar o escribir nombre del cliente"
-                                                            autocomplete="off" required />
-                                                    </div>
-                                                    <div id="cliente-autocomplete-list"
-                                                        class="list-group position-absolute w-100" style="z-index: 1050;"></div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="ci-rif-field" class="form-label">Documento de
-                                                            identidad</label>
-                                                        <div class="input-group">
-                                                            <select class="form-select" id="ci-rif-prefix-field"
-                                                                name="ci_rif_prefix" style="max-width: 80px;">
-                                                                <option value="V-">V-</option>
-                                                                <option value="J-">J-</option>
-                                                                <option value="E-">E-</option>
-                                                                <option value="G-">G-</option>
-                                                            </select>
-                                                            <input type="text" id="ci-rif-number-field" name="ci_rif_number"
-                                                                class="form-control" placeholder="Numero de documento"
-                                                                required />
-                                                        </div>
-                                                        <!-- Este campo oculto se actualizará con el valor completo de CI/RIF -->
-                                                        <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="cliente-email-field" class="form-label">Email
-                                                            Cliente</label>
-                                                        <input type="email" id="cliente-email-field" name="cliente_email"
-                                                            class="form-control" placeholder="Email del cliente" />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="cliente-telefono-field" class="form-label">Teléfono
-                                                            Cliente</label>
-                                                        <input type="text" id="cliente-telefono-field" name="cliente_telefono"
-                                                            class="form-control" placeholder="Teléfono del cliente" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="fecha-pedido-field" class="form-label">Fecha del
-                                                            Pedido</label>
-                                                        <input type="date" id="fecha-pedido-field" name="fecha_pedido"
-                                                            class="form-control" required />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="fecha-entrega-estimada-field" class="form-label">Fecha de
-                                                            Entrega Estimada</label>
-                                                        <input type="date" id="fecha-entrega-estimada-field"
-                                                            name="fecha_entrega_estimada" class="form-control" required />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="prioridad-field" class="form-label">Prioridad</label>
-                                                <select id="prioridad-field" name="prioridad" class="form-control" required>
-                                                    <option value="Normal">Normal</option>
-                                                    <option value="Alta">Alta</option>
-                                                    <option value="Urgente">Urgente</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card shadow-lg border-dark mb-3" id="estado-field-wrapper"
-                                        style="display: none;">
-                                        <div class="card-header">
-                                            <h5 class="card-title mb-0">Estado del Pedido</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <label for="estado-field" class="form-label">Estado</label>
-                                            <select id="estado-field" name="estado" class="form-control">
-                                                <option value="Pendiente">Pendiente</option>
-                                                <option value="Procesando">Procesando</option>
-                                                <option value="Completado">Completado</option>
-                                                <option value="Cancelado">Cancelado</option>
+                                        <div class="mb-3">
+                                            <label for="prioridad-field" class="form-label">Prioridad</label>
+                                            <select id="prioridad-field" name="prioridad" class="form-control" required>
+                                                <option value="Normal">Normal</option>
+                                                <option value="Alta">Alta</option>
+                                                <option value="Urgente">Urgente</option>
                                             </select>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <!-- Sección de Pago (Movida y Agrupada) -->
-                                    <div class="card shadow-lg border-dark mb-2">
-                                        <div class="card-header">
-                                            <h5 class="card-title mb-0"><i class="ri-wallet-line align-bottom me-1"></i> Datos
-                                                del Pago</h5>
+                                <div class="card shadow-lg border-dark mb-3" id="estado-field-wrapper"
+                                    style="display: none;">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Estado del Pedido</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <label for="estado-field" class="form-label">Estado</label>
+                                        <select id="estado-field" name="estado" class="form-control">
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="Procesando">Procesando</option>
+                                            <option value="Completado">Completado</option>
+                                            <option value="Cancelado">Cancelado</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Sección de Pago (Movida y Agrupada) -->
+                                <div class="card shadow-lg border-dark mb-2">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0"><i class="ri-wallet-line align-bottom me-1"></i> Datos
+                                            del Pago</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-2">
+                                                    <label for="total-display-field" class="form-label"><i
+                                                            class="ri-currency-line align-bottom me-1"></i> Total del Pedido
+                                                        ($)</label>
+                                                    <input type="text" id="total-display-field" class="form-control"
+                                                        readonly />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-2">
+                                                    <label for="abono-field" class="form-label"><i
+                                                            class="ri-wallet-line align-bottom me-1"></i> Abono ($)</label>
+                                                    <input type="number" id="abono-field" name="abono" class="form-control"
+                                                        step="0.01" min="0" value="0" required />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-2">
+                                                    <label for="restante-display-field" class="form-label"><i
+                                                            class="ri-wallet-2-line align-bottom me-1"></i> Restante
+                                                        ($)</label>
+                                                    <input type="text" id="restante-display-field" class="form-control"
+                                                        readonly />
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="card-body">
+                                        <div class="mb-2">
+                                            <label class="form-label"><i class="ri-bank-card-line align-bottom me-1"></i>
+                                                Método de Pago</label>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="efectivo-pagado-field"
+                                                    name="efectivo_pagado" value="1">
+                                                <label class="form-check-label" for="efectivo-pagado-field">Efectivo</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="transferencia-pagado-field" name="transferencia_pagado" value="1">
+                                                <label class="form-check-label"
+                                                    for="transferencia-pagado-field">Transferencia</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="pago-movil-pagado-field"
+                                                    name="pago_movil_pagado" value="1">
+                                                <label class="form-check-label" for="pago-movil-pagado-field">Pago
+                                                    Móvil</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2" id="referencia-transferencia-container">
                                             <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="mb-2">
-                                                        <label for="total-display-field" class="form-label"><i
-                                                                class="ri-currency-line align-bottom me-1"></i> Total del Pedido
-                                                            ($)</label>
-                                                        <input type="text" id="total-display-field" class="form-control"
-                                                            readonly />
-                                                    </div>
+                                                <div class="col-md-6">
+                                                    <label for="referencia-transferencia-field" class="form-label"><i
+                                                            class="ri-numbers-line align-bottom me-1"></i> Referencia
+                                                        Transferencia</label>
+                                                    <input type="text" id="referencia-transferencia-field"
+                                                        name="referencia_transferencia" class="form-control"
+                                                        placeholder="Número de referencia" />
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <div class="mb-2">
-                                                        <label for="abono-field" class="form-label"><i
-                                                                class="ri-wallet-line align-bottom me-1"></i> Abono ($)</label>
-                                                        <input type="number" id="abono-field" name="abono" class="form-control"
-                                                            step="0.01" min="0" value="0" required />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="mb-2">
-                                                        <label for="restante-display-field" class="form-label"><i
-                                                                class="ri-wallet-2-line align-bottom me-1"></i> Restante
-                                                            ($)</label>
-                                                        <input type="text" id="restante-display-field" class="form-control"
-                                                            readonly />
-                                                    </div>
+                                                <div class="col-md-6">
+                                                    <label for="banco-transferencia-id-field" class="form-label"><i
+                                                            class="ri-bank-line align-bottom me-1"></i> Banco
+                                                        Destino</label>
+                                                    <select id="banco-transferencia-id-field" name="banco_transferencia_id"
+                                                        class="form-control">
+                                                        <option value="">Seleccione un banco</option>
+                                                        @foreach($bancos as $banco)
+                                                            <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
-                                            <div class="mb-2">
-                                                <label class="form-label"><i class="ri-bank-card-line align-bottom me-1"></i>
-                                                    Método de Pago</label>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox" id="efectivo-pagado-field"
-                                                        name="efectivo_pagado" value="1">
-                                                    <label class="form-check-label" for="efectivo-pagado-field">Efectivo</label>
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="transferencia-pagado-field" name="transferencia_pagado" value="1">
-                                                    <label class="form-check-label"
-                                                        for="transferencia-pagado-field">Transferencia</label>
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox" id="pago-movil-pagado-field"
-                                                        name="pago_movil_pagado" value="1">
-                                                    <label class="form-check-label" for="pago-movil-pagado-field">Pago
+                                        </div>
+                                        <div class="mb-2" id="referencia-pago-movil-container">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="referencia-pago-movil-field" class="form-label"><i
+                                                            class="ri-smartphone-line align-bottom me-1"></i> Referencia
+                                                        Pago
                                                         Móvil</label>
+                                                    <input type="text" id="referencia-pago-movil-field"
+                                                        name="referencia_pago_movil" class="form-control"
+                                                        placeholder="Número de referencia" />
                                                 </div>
-                                            </div>
-                                            <div class="mb-2" id="referencia-transferencia-container">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <label for="referencia-transferencia-field" class="form-label"><i
-                                                                class="ri-numbers-line align-bottom me-1"></i> Referencia
-                                                            Transferencia</label>
-                                                        <input type="text" id="referencia-transferencia-field"
-                                                            name="referencia_transferencia" class="form-control"
-                                                            placeholder="Número de referencia" />
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="banco-transferencia-id-field" class="form-label"><i
-                                                                class="ri-bank-line align-bottom me-1"></i> Banco
-                                                            Destino</label>
-                                                        <select id="banco-transferencia-id-field" name="banco_transferencia_id"
-                                                            class="form-control">
-                                                            <option value="">Seleccione un banco</option>
-                                                            @foreach($bancos as $banco)
-                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mb-2" id="referencia-pago-movil-container">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <label for="referencia-pago-movil-field" class="form-label"><i
-                                                                class="ri-smartphone-line align-bottom me-1"></i> Referencia
-                                                            Pago
-                                                            Móvil</label>
-                                                        <input type="text" id="referencia-pago-movil-field"
-                                                            name="referencia_pago_movil" class="form-control"
-                                                            placeholder="Número de referencia" />
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="banco-pago-movil-id-field" class="form-label"><i
-                                                                class="ri-bank-line align-bottom me-1"></i> Banco
-                                                            Destino</label>
-                                                        <select id="banco-pago-movil-id-field" name="banco_pago_movil_id"
-                                                            class="form-control">
-                                                            <option value="">Seleccione un banco</option>
-                                                            @foreach($bancos as $banco)
-                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
+                                                <div class="col-md-6">
+                                                    <label for="banco-pago-movil-id-field" class="form-label"><i
+                                                            class="ri-bank-line align-bottom me-1"></i> Banco
+                                                        Destino</label>
+                                                    <select id="banco-pago-movil-id-field" name="banco_pago_movil_id"
+                                                        class="form-control">
+                                                        <option value="">Seleccione un banco</option>
+                                                        @foreach($bancos as $banco)
+                                                            <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Columna Derecha: Productos del Pedido y Estado -->
-                                <div class="col-lg-6">
-                                    <div class="card shadow-lg border-dark mb-3">
-                                        <div class="card-header">
-                                            <h5 class="card-title mb-0">Productos del Pedido</h5>
+                            <!-- Columna Derecha: Productos del Pedido y Estado -->
+                            <div class="col-lg-6">
+                                <div class="card shadow-lg border-dark mb-3">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Productos del Pedido</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="productos-container">
+                                            <!-- Aquí se agregarán dinámicamente los campos de producto -->
                                         </div>
-                                        <div class="card-body">
-                                            <div id="productos-container">
-                                                <!-- Aquí se agregarán dinámicamente los campos de producto -->
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-info mt-2"
-                                                id="add-producto-item">Agregar Producto</button>
-                                        </div>
+                                        <button type="button" class="btn btn-sm btn-info mt-2"
+                                            id="add-producto-item">Agregar Producto</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer bg-light border-0">
-                            <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                    <i class="ri-close-line me-1"></i>Cerrar
-                                </button>
-                                <button type="submit" class="btn btn-success" id="add-btn">
-                                    <i class="ri-add-line me-1"></i>Agregar
-                                </button>
-                                <button type="submit" class="btn btn-success" id="edit-btn"
-                                    style="display: none;">
-                                    <i class="ri-save-line me-1"></i>Actualizar
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Agregar/Editar Cliente (reutilizado) -->
-        <div class="modal fade" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-            data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header bg-light p-3">
-                        <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="clienteFormPedido">
-                        <div class="modal-body">
-                            <input type="hidden" id="id-field-cliente" />
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="nombre-field-cliente" class="form-label">Nombre</label>
-                                        <input type="text" id="nombre-field-cliente" name="nombre" class="form-control"
-                                            placeholder="Nombre" required />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="tipo_cliente-field-cliente" class="form-label">Tipo de Cliente</label>
-                                        <select id="tipo_cliente-field-cliente" name="tipo_cliente" class="form-control"
-                                            required>
-                                            <option value="">Seleccione tipo</option>
-                                            <option value="natural">Natural</option>
-                                            <option value="juridico">Jurídico</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email-field-cliente" class="form-label">Email</label>
-                                        <input type="email" id="email-field-cliente" name="email" class="form-control"
-                                            placeholder="Email" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="telefono-field-cliente" class="form-label">Teléfono</label>
-                                        <input type="text" id="telefono-field-cliente" name="telefono" class="form-control"
-                                            placeholder="Teléfono" required />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="documento-field-cliente" class="form-label">Documento (Cédula o RIF)</label>
-                                        <input type="text" id="documento-field-cliente" name="documento" class="form-control"
-                                            placeholder="Cédula o RIF" required />
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="direccion-field-cliente" class="form-label">Dirección</label>
-                                        <input type="text" id="direccion-field-cliente" name="direccion" class="form-control"
-                                            placeholder="Dirección" required />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="ciudad-field-cliente" class="form-label">Ciudad</label>
-                                        <input type="text" id="ciudad-field-cliente" name="ciudad" class="form-control"
-                                            placeholder="Ciudad" required />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="estado-field-cliente" class="form-label">Estado</label>
-                                        <select name="estado" id="estado-field-cliente" class="form-control form-select">
-                                            <option value="1">Activo</option>
-                                            <option value="0">Inactivo</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="modal-footer bg-light border-0">
+                        <div class="hstack gap-2 justify-content-end">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <button type="submit" class="btn btn-success" id="add-btn">
+                                <i class="ri-add-line me-1"></i>Agregar
+                            </button>
+                            <button type="submit" class="btn btn-success" id="edit-btn" style="display: none;">
+                                <i class="ri-save-line me-1"></i>Actualizar
+                            </button>
                         </div>
-                        <div class="modal-footer bg-light border-0">
-                            <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                    <i class="ri-close-line me-1"></i>Cerrar
-                                </button>
-                                <button type="button" class="btn btn-success" id="add-btn-cliente">
-                                    <i class="ri-add-line me-1"></i>Agregar
-                                </button>
-                                <button type="button" class="btn btn-success" id="edit-btn-cliente"
-                                    style="display: none;">
-                                    <i class="ri-save-line me-1"></i>Actualizar
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
+
+    <!-- Modal Agregar/Editar Cliente (reutilizado) -->
+    <div class="modal fade" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="clienteFormPedido">
+                    <div class="modal-body">
+                        <input type="hidden" id="id-field-cliente" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nombre-field-cliente" class="form-label">Nombre</label>
+                                    <input type="text" id="nombre-field-cliente" name="nombre" class="form-control"
+                                        placeholder="Nombre" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tipo_cliente-field-cliente" class="form-label">Tipo de Cliente</label>
+                                    <select id="tipo_cliente-field-cliente" name="tipo_cliente" class="form-control"
+                                        required>
+                                        <option value="">Seleccione tipo</option>
+                                        <option value="natural">Natural</option>
+                                        <option value="juridico">Jurídico</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email-field-cliente" class="form-label">Email</label>
+                                    <input type="email" id="email-field-cliente" name="email" class="form-control"
+                                        placeholder="Email" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefono-field-cliente" class="form-label">Teléfono</label>
+                                    <input type="text" id="telefono-field-cliente" name="telefono" class="form-control"
+                                        placeholder="Teléfono" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="documento-field-cliente" class="form-label">Documento (Cédula o RIF)</label>
+                                    <input type="text" id="documento-field-cliente" name="documento" class="form-control"
+                                        placeholder="Cédula o RIF" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="direccion-field-cliente" class="form-label">Dirección</label>
+                                    <input type="text" id="direccion-field-cliente" name="direccion" class="form-control"
+                                        placeholder="Dirección" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ciudad-field-cliente" class="form-label">Ciudad</label>
+                                    <input type="text" id="ciudad-field-cliente" name="ciudad" class="form-control"
+                                        placeholder="Ciudad" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="estado-field-cliente" class="form-label">Estado</label>
+                                    <select name="estado" id="estado-field-cliente" class="form-control form-select">
+                                        <option value="1">Activo</option>
+                                        <option value="0">Inactivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0">
+                        <div class="hstack gap-2 justify-content-end">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <button type="button" class="btn btn-success" id="add-btn-cliente">
+                                <i class="ri-add-line me-1"></i>Agregar
+                            </button>
+                            <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
+                                <i class="ri-save-line me-1"></i>Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -1113,20 +1126,20 @@
             const suggestion = suggestions[0]; // Tomar la mejor sugerencia
 
             const suggestionHtml = `
-                                                                                                                                                                                                                                                    <div class="autocorrect-suggestion" data-field-id="${field.id}">
-                                                                                                                                                                                                                                                        <div class="suggestion-text">
-                                                                                                                                                                                                                                                            ¿Quisiste decir "<strong>${suggestion.word}</strong>"?
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                        <div class="suggestion-buttons">
-                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion.word}">
-                                                                                                                                                                                                                                                                Sí
-                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
-                                                                                                                                                                                                                                                                No
-                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                               </d                                                                                                                                                                                                iv>
-                                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                                <div class="autocorrect-suggestion" data-field-id="${field.id}">
+                                                                                                                                                                                                                                                                                    <div class="suggestion-text">
+                                                                                                                                                                                                                                                                                        ¿Quisiste decir "<strong>${suggestion.word}</strong>"?
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                    <div class="suggestion-buttons">
+                                                                                                                                                                                                                                                                                        <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion.word}">
+                                                                                                                                                                                                                                                                                            Sí
+                                                                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                                                                        <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
+                                                                                                                                                                                                                                                                                            No
+                                                                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                           </d                                                                                                                                                                                                iv>
+                                                                                                                                                                                                                                                                        `;
 
             $('body').append(suggestionHtml);
 
@@ -1274,20 +1287,20 @@
                 const fieldOffset = $field.offset();
 
                 const suggestionHtml = `
-                                                                                                                                                                                                                                                        <div class="autocorrect-suggestion" data-field-id="${field.id}">
-                                                                                                                                                                                                                                                            <div class="suggestion-text">
-                                                                                                                                                                                                                                                                ¿Quisiste decir "<strong>${suggestion}</strong>"?
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div class="suggestion-buttons">
-                                                                                                                                                                                                                                                                <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion}">
-                                                                                                                                                                                                                                                                    Sí
-                                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                                <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
-                                                                                                                                                                                                                                                                    No
-                                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    `;
+                                                                                                                                                                                                                                                                                    <div class="autocorrect-suggestion" data-field-id="${field.id}">
+                                                                                                                                                                                                                                                                                        <div class="suggestion-text">
+                                                                                                                                                                                                                                                                                            ¿Quisiste decir "<strong>${suggestion}</strong>"?
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                        <div class="suggestion-buttons">
+                                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion}">
+                                                                                                                                                                                                                                                                                                Sí
+                                                                                                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
+                                                                                                                                                                                                                                                                                                No
+                                                                                                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                `;
 
                 $('body').append(suggestionHtml);
 
@@ -1382,24 +1395,24 @@
                             var editDelete = '';
                             if (isAdmin && row.estado !== 'Completado' && row.estado !== 'Cancelado') {
                                 editDelete = `
-                                                                                                                                        <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
-                                                                                                                                            <i class="ri-pencil-fill"></i>
-                                                                                                                                        </button>
-                                                                                                                                        <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
-                                                                                                                                            <i class="ri-delete-bin-fill"></i>
-                                                                                                                                        </button>`;
+                                                                                                                                                                    <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
+                                                                                                                                                                        <i class="ri-pencil-fill"></i>
+                                                                                                                                                                    </button>
+                                                                                                                                                                    <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
+                                                                                                                                                                        <i class="ri-delete-bin-fill"></i>
+                                                                                                                                                                    </button>`;
                             }
                             return `
-                                                                                                                                        <div class="d-flex gap-1 justify-content-center align-items-center">
-                                                                                                                                            <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
-                                                                                                                                                <i class="ri-eye-fill"></i>
-                                                                                                                                            </button>
-                                                                                                                                            ${editDelete}
-                                                                                                                                            <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
-                                                                                                                                                <i class="ri-file-pdf-line"></i>
-                                                                                                                                            </a>
-                                                                                                                                        </div>
-                                                                                                                                    `;
+                                                                                                                                                                    <div class="d-flex gap-1 justify-content-center align-items-center">
+                                                                                                                                                                        <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
+                                                                                                                                                                            <i class="ri-eye-fill"></i>
+                                                                                                                                                                        </button>
+                                                                                                                                                                        ${editDelete}
+                                                                                                                                                                        <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
+                                                                                                                                                                            <i class="ri-file-pdf-line"></i>
+                                                                                                                                                                        </a>
+                                                                                                                                                                    </div>
+                                                                                                                                                                `;
                         }
                     }
                 ],
@@ -1457,6 +1470,11 @@
                 }
             });
 
+            // Vincular buscador personalizado al DataTable
+            $('#custom-search-input').on('keyup', function () {
+                table.search(this.value).draw();
+            });
+
             window.products = @json($productos);
             window.productItemIndex = 0;
             var productItemIndex = window.productItemIndex;
@@ -1474,69 +1492,69 @@
 
 
                 var itemHtml = `
-                                                                                                                                                                                                                                                        <div class="card mb-3 shadow-lg border-dark" data-product-index="${productItemIndex}">
-                                                                                                                                                                                                                                                            <div class="card-body">
-                                                                                                                                                                                                                                                                <h5 class="card-title">Nuevo Producto</h5>
-                                                                                                                                                                                                                                                                <div class="row product-item align-items-center">
-                                                                                                                                                                                                                                                                    <div class="col-md-9 d-flex align-items-center">
-                                                                                                                                                                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required>
-                                                                                                                                                                                                                                                                        <div class="producto-selector-btn flex-grow-1" data-product-index="${productItemIndex}">
-                                                                                                                                                                                                                                                                            <span class="producto-text ${!productoId ? 'placeholder-text' : ''}">${productoText}</span>
-                                                                                                                                                                                                                                                                            <i class="ri-arrow-down-s-line"></i>
-                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                        <span class="ms-1 fw-bold text-success precio-producto-span">${precioUnitario ? '$ ' + parseFloat(precioUnitario).toFixed(2) : ''}</span>
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <div class="col-md-3">
-                                                                                                                                                                                                                                                                        <input type="number" name="productos[${productItemIndex}][cantidad]" class="form-control cantidad-input" placeholder="Cant." min="1" value="${cantidad}" required />
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <div class="col-md-6 mt-2">
-                                                                                                                                                                                                                                                                        <input type="text" name="productos[${productItemIndex}][color]" class="form-control" placeholder="Seleccione un color" value="${color}" required />
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <div class="col-md-6 mt-2">
-                                                                                                                                                                                                                                                                        <select name="productos[${productItemIndex}][talla]" class="form-control" required>
-                                                                                                                                                                                                                                                                            <option value="">Seleccione una talla</option>
-                                                                                                                                                                                                                                                                            <option value="Talla Unica" ${talla == 'Talla Unica' ? 'selected' : ''}>Talla Unica</option>
-                                                                                                                                                                                                                                                                            <option value="2" ${talla == '2' ? 'selected' : ''}>2</option>
-                                                                                                                                                                                                                                                                            <option value="4" ${talla == '4' ? 'selected' : ''}>4</option>
-                                                                                                                                                                                                                                                                            <option value="6" ${talla == '6' ? 'selected' : ''}>6</option>
-                                                                                                                                                                                                                                                                            <option value="8" ${talla == '8' ? 'selected' : ''}>8</option>
-                                                                                                                                                                                                                                                                            <option value="10" ${talla == '10' ? 'selected' : ''}>10</option>
-                                                                                                                                                                                                                                                                            <option value="12" ${talla == '12' ? 'selected' : ''}>12</option>
-                                                                                                                                                                                                                                                                            <option value="14" ${talla == '14' ? 'selected' : ''}>14</option>
-                                                                                                                                                                                                                                                                            <option value="16" ${talla == '16' ? 'selected' : ''}>16</option>
-                                                                                                                                                                                                                                                                            <option value="XS" ${talla == 'XS' ? 'selected' : ''}>XS</option>
-                                                                                                                                                                                                                                                                            <option value="S" ${talla == 'S' ? 'selected' : ''}>S</option>
-                                                                                                                                                                                                                                                                            <option value="M" ${talla == 'M' ? 'selected' : ''}>M</option>
-                                                                                                                                                                                                                                                                            <option value="L" ${talla == 'L' ? 'selected' : ''}>L</option>
-                                                                                                                                                                                                                                                                            <option value="XL" ${talla == 'XL' ? 'selected' : ''}>XL</option>
-                                                                                                                                                                                                                                                                            <option value="XXL" ${talla == 'XXL' ? 'selected' : ''}>XXL</option>
-                                                                                                                                                                                                                                                                        </select>
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2">
-                                                                                                                                                                                                                                                                        <textarea name="productos[${productItemIndex}][descripcion]" class="form-control" placeholder="DescripciÃ³n del producto (opcional)" rows="2">${descripcion}</textarea>
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2">
-                                                                                                                                                                                                                                                                        <div class="form-check form-switch">
-                                                                                                                                                                                                                                                                            <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="0">
-                                                                                                                                                                                                                                                                            <input class="form-check-input lleva-bordado-checkbox" type="checkbox" id="lleva-bordado-${productItemIndex}" name="productos[${productItemIndex}][lleva_bordado]" value="1" ${llevaBordado ? 'checked' : ''}>
-                                                                                                                                                                                                                                                                            <label class="form-check-label" for="lleva-bordado-${productItemIndex}">Lleva Bordado/Logo</label>
-                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2 nombre-logo-container" style="display: ${llevaBordado ? 'block' : 'none'}">
-                                                                                                                                                                                                                                                                        <input type="text" name="productos[${productItemIndex}][nombre_logo]" class="form-control nombre-logo-input" placeholder="Nombre del logo a bordar" value="${nombreLogo}" />
-                                                                                                                                                                                                                                                                        <input type="text" name="productos[${productItemIndex}][ubicacion_logo]" class="form-control mt-2 ubicacion-logo-input" placeholder="UbicaciÃ³n del bordado/logo (ej: Pecho izquierdo)" value="${ubicacionLogo || ''}" />
-                                                                                                                                                                                                                                                                        <input type="number" name="productos[${productItemIndex}][cantidad_logo]" class="form-control mt-2 cantidad-logo-input" placeholder="Cantidad de logos/bordados" min="1" value="${cantidadLogo || 1}" />
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2">
-                                                                                                                                                                                                                                                                        <div class="text-end">
-                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-danger btn-sm remove-producto-item">Eliminar Producto</button>
-                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                    <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioUnitario}" />
-                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    `;
+                                                                                                                                                                                                                                                                                    <div class="card mb-3 shadow-lg border-dark" data-product-index="${productItemIndex}">
+                                                                                                                                                                                                                                                                                        <div class="card-body">
+                                                                                                                                                                                                                                                                                            <h5 class="card-title">Nuevo Producto</h5>
+                                                                                                                                                                                                                                                                                            <div class="row product-item align-items-center">
+                                                                                                                                                                                                                                                                                                <div class="col-md-9 d-flex align-items-center">
+                                                                                                                                                                                                                                                                                                    <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required>
+                                                                                                                                                                                                                                                                                                    <div class="producto-selector-btn flex-grow-1" data-product-index="${productItemIndex}">
+                                                                                                                                                                                                                                                                                                        <span class="producto-text ${!productoId ? 'placeholder-text' : ''}">${productoText}</span>
+                                                                                                                                                                                                                                                                                                        <i class="ri-arrow-down-s-line"></i>
+                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                    <span class="ms-1 fw-bold text-success precio-producto-span">${precioUnitario ? '$ ' + parseFloat(precioUnitario).toFixed(2) : ''}</span>
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <div class="col-md-3">
+                                                                                                                                                                                                                                                                                                    <input type="number" name="productos[${productItemIndex}][cantidad]" class="form-control cantidad-input" placeholder="Cant." min="1" value="${cantidad}" required />
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <div class="col-md-6 mt-2">
+                                                                                                                                                                                                                                                                                                    <input type="text" name="productos[${productItemIndex}][color]" class="form-control" placeholder="Seleccione un color" value="${color}" required />
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <div class="col-md-6 mt-2">
+                                                                                                                                                                                                                                                                                                    <select name="productos[${productItemIndex}][talla]" class="form-control" required>
+                                                                                                                                                                                                                                                                                                        <option value="">Seleccione una talla</option>
+                                                                                                                                                                                                                                                                                                        <option value="Talla Unica" ${talla == 'Talla Unica' ? 'selected' : ''}>Talla Unica</option>
+                                                                                                                                                                                                                                                                                                        <option value="2" ${talla == '2' ? 'selected' : ''}>2</option>
+                                                                                                                                                                                                                                                                                                        <option value="4" ${talla == '4' ? 'selected' : ''}>4</option>
+                                                                                                                                                                                                                                                                                                        <option value="6" ${talla == '6' ? 'selected' : ''}>6</option>
+                                                                                                                                                                                                                                                                                                        <option value="8" ${talla == '8' ? 'selected' : ''}>8</option>
+                                                                                                                                                                                                                                                                                                        <option value="10" ${talla == '10' ? 'selected' : ''}>10</option>
+                                                                                                                                                                                                                                                                                                        <option value="12" ${talla == '12' ? 'selected' : ''}>12</option>
+                                                                                                                                                                                                                                                                                                        <option value="14" ${talla == '14' ? 'selected' : ''}>14</option>
+                                                                                                                                                                                                                                                                                                        <option value="16" ${talla == '16' ? 'selected' : ''}>16</option>
+                                                                                                                                                                                                                                                                                                        <option value="XS" ${talla == 'XS' ? 'selected' : ''}>XS</option>
+                                                                                                                                                                                                                                                                                                        <option value="S" ${talla == 'S' ? 'selected' : ''}>S</option>
+                                                                                                                                                                                                                                                                                                        <option value="M" ${talla == 'M' ? 'selected' : ''}>M</option>
+                                                                                                                                                                                                                                                                                                        <option value="L" ${talla == 'L' ? 'selected' : ''}>L</option>
+                                                                                                                                                                                                                                                                                                        <option value="XL" ${talla == 'XL' ? 'selected' : ''}>XL</option>
+                                                                                                                                                                                                                                                                                                        <option value="XXL" ${talla == 'XXL' ? 'selected' : ''}>XXL</option>
+                                                                                                                                                                                                                                                                                                    </select>
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <div class="col-md-12 mt-2">
+                                                                                                                                                                                                                                                                                                    <textarea name="productos[${productItemIndex}][descripcion]" class="form-control" placeholder="DescripciÃ³n del producto (opcional)" rows="2">${descripcion}</textarea>
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <div class="col-md-12 mt-2">
+                                                                                                                                                                                                                                                                                                    <div class="form-check form-switch">
+                                                                                                                                                                                                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="0">
+                                                                                                                                                                                                                                                                                                        <input class="form-check-input lleva-bordado-checkbox" type="checkbox" id="lleva-bordado-${productItemIndex}" name="productos[${productItemIndex}][lleva_bordado]" value="1" ${llevaBordado ? 'checked' : ''}>
+                                                                                                                                                                                                                                                                                                        <label class="form-check-label" for="lleva-bordado-${productItemIndex}">Lleva Bordado/Logo</label>
+                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <div class="col-md-12 mt-2 nombre-logo-container" style="display: ${llevaBordado ? 'block' : 'none'}">
+                                                                                                                                                                                                                                                                                                    <input type="text" name="productos[${productItemIndex}][nombre_logo]" class="form-control nombre-logo-input" placeholder="Nombre del logo a bordar" value="${nombreLogo}" />
+                                                                                                                                                                                                                                                                                                    <input type="text" name="productos[${productItemIndex}][ubicacion_logo]" class="form-control mt-2 ubicacion-logo-input" placeholder="UbicaciÃ³n del bordado/logo (ej: Pecho izquierdo)" value="${ubicacionLogo || ''}" />
+                                                                                                                                                                                                                                                                                                    <input type="number" name="productos[${productItemIndex}][cantidad_logo]" class="form-control mt-2 cantidad-logo-input" placeholder="Cantidad de logos/bordados" min="1" value="${cantidadLogo || 1}" />
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <div class="col-md-12 mt-2">
+                                                                                                                                                                                                                                                                                                    <div class="text-end">
+                                                                                                                                                                                                                                                                                                        <button type="button" class="btn btn-danger btn-sm remove-producto-item">Eliminar Producto</button>
+                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioUnitario}" />
+                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                `;
                 $('#productos-container').append(itemHtml);
 
                 // Inicializar Select2 con BÃºsqueda para el select de productos
@@ -1965,134 +1983,134 @@
                             data.productos.forEach(function (item, index) {
                                 var subtotal = item.cantidad * item.precio_unitario;
                                 productosBody.append(`
-                                                                                                                                                                                                                                        <div class="card border-0 shadow-sm mb-3" style="border-left: 4px solid #00d9a5 !important;">
-                                                                                                                                                                                                                                            <div class="card-body p-3">
-                                                                                                                                                                                                                                                <!-- Header del Producto -->
-                                                                                                                                                                                                                                                <div class="d-flex align-items-center mb-3">
-                                                                                                                                                                                                                                                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                        style="width: 45px; height: 45px; background: #1e3c72;">
-                                                                                                                                                                                                                                                        <i class="ri-shopping-bag-line text-white fs-5"></i>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    <div>
-                                                                                                                                                                                                                                                        <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'} ${item.producto.modelo}</h6>
-                                                                                                                                                                                                                                                        <small class="text-muted">Producto #${index + 1}</small>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    <div class="ms-auto">
-                                                                                                                                                                                                                                                        <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
-                                                                                                                                                                                                                                                            $${subtotal.toFixed(2)}
-                                                                                                                                                                                                                                                        </span>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                    <div class="card border-0 shadow-sm mb-3" style="border-left: 4px solid #00d9a5 !important;">
+                                                                                                                                                                                                                                                                        <div class="card-body p-3">
+                                                                                                                                                                                                                                                                            <!-- Header del Producto -->
+                                                                                                                                                                                                                                                                            <div class="d-flex align-items-center mb-3">
+                                                                                                                                                                                                                                                                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                                                                                                                                                                                                                                                                    style="width: 45px; height: 45px; background: #1e3c72;">
+                                                                                                                                                                                                                                                                                    <i class="ri-shopping-bag-line text-white fs-5"></i>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div>
+                                                                                                                                                                                                                                                                                    <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'} ${item.producto.modelo}</h6>
+                                                                                                                                                                                                                                                                                    <small class="text-muted">Producto #${index + 1}</small>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="ms-auto">
+                                                                                                                                                                                                                                                                                    <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
+                                                                                                                                                                                                                                                                                        $${subtotal.toFixed(2)}
+                                                                                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                            </div>
 
-                                                                                                                                                                                                                                                <!-- Detalles del Producto -->
-                                                                                                                                                                                                                                                <div class="row g-2 mb-3">
-                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                                                                                                                                                                <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
-                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${item.cantidad}</span>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(0, 217, 165, 0.15);">
-                                                                                                                                                                                                                                                                <i class="ri-palette-line" style="color: #00d9a5; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
-                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${item.color || 'N/A'}</span>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
-                                                                                                                                                                                                                                                                <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${item.talla || 'N/A'}</span>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                                                                                                                                                                <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
-                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(item.precio_unitario).toFixed(2)}</span>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                            <!-- Detalles del Producto -->
+                                                                                                                                                                                                                                                                            <div class="row g-2 mb-3">
+                                                                                                                                                                                                                                                                                <div class="col-6 col-md-3">
+                                                                                                                                                                                                                                                                                    <div class="d-flex align-items-center">
+                                                                                                                                                                                                                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                                                                                                                                                                            style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                                                                                                                                                                                                                            <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
+                                                                                                                                                                                                                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">${item.cantidad}</span>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="col-6 col-md-3">
+                                                                                                                                                                                                                                                                                    <div class="d-flex align-items-center">
+                                                                                                                                                                                                                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                                                                                                                                                                            style="width: 28px; height: 28px; background: rgba(0, 217, 165, 0.15);">
+                                                                                                                                                                                                                                                                                            <i class="ri-palette-line" style="color: #00d9a5; font-size: 0.85rem;"></i>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
+                                                                                                                                                                                                                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">${item.color || 'N/A'}</span>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="col-6 col-md-3">
+                                                                                                                                                                                                                                                                                    <div class="d-flex align-items-center">
+                                                                                                                                                                                                                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                                                                                                                                                                            style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                                                                                                                                                                                            <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
+                                                                                                                                                                                                                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">${item.talla || 'N/A'}</span>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="col-6 col-md-3">
+                                                                                                                                                                                                                                                                                    <div class="d-flex align-items-center">
+                                                                                                                                                                                                                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                                                                                                                                                                            style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                                                                                                                                                                                                                            <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
+                                                                                                                                                                                                                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(item.precio_unitario).toFixed(2)}</span>
+                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                            </div>
 
-                                                                                                                                                                                                                                                <!-- Bordado/Logo si aplica -->
-                                                                                                                                                                                                                                                ${item.lleva_bordado ? `
-                                                                                                                                                                                                                                                <div class="rounded p-2 mb-3" style="background: rgba(0, 217, 165, 0.08);">
-                                                                                                                                                                                                                                                    <div class="d-flex align-items-center mb-2">
-                                                                                                                                                                                                                                                        <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
-                                                                                                                                                                                                                                                        <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    <div class="row g-2">
-                                                                                                                                                                                                                                                        <div class="col-6">
-                                                                                                                                                                                                                                                            <small class="text-muted">Logo:</small>
-                                                                                                                                                                                                                                                            <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.nombre_logo || 'N/A'}</span>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                        <div class="col-6">
-                                                                                                                                                                                                                                                            <small class="text-muted">Ubicaci�n:</small>
-                                                                                                                                                                                                                                                            <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.ubicacion_logo || 'N/A'}</span>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                        <div class="col-12">
-                                                                                                                                                                                                                                                            <small class="text-muted">Cantidad:</small>
-                                                                                                                                                                                                                                                            <span class="badge bg-primary ms-1">${item.cantidad_logo || '0'}</span>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                ` : ''}
+                                                                                                                                                                                                                                                                            <!-- Bordado/Logo si aplica -->
+                                                                                                                                                                                                                                                                            ${item.lleva_bordado ? `
+                                                                                                                                                                                                                                                                            <div class="rounded p-2 mb-3" style="background: rgba(0, 217, 165, 0.08);">
+                                                                                                                                                                                                                                                                                <div class="d-flex align-items-center mb-2">
+                                                                                                                                                                                                                                                                                    <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
+                                                                                                                                                                                                                                                                                    <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="row g-2">
+                                                                                                                                                                                                                                                                                    <div class="col-6">
+                                                                                                                                                                                                                                                                                        <small class="text-muted">Logo:</small>
+                                                                                                                                                                                                                                                                                        <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.nombre_logo || 'N/A'}</span>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                    <div class="col-6">
+                                                                                                                                                                                                                                                                                        <small class="text-muted">Ubicaci�n:</small>
+                                                                                                                                                                                                                                                                                        <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.ubicacion_logo || 'N/A'}</span>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                    <div class="col-12">
+                                                                                                                                                                                                                                                                                        <small class="text-muted">Cantidad:</small>
+                                                                                                                                                                                                                                                                                        <span class="badge bg-primary ms-1">${item.cantidad_logo || '0'}</span>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            ` : ''}
 
-                                                                                                                                                                                                                                                <!-- Descripci�n -->
-                                                                                                                                                                                                                                                ${item.descripcion ? `
-                                                                                                                                                                                                                                                <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.05);">
-                                                                                                                                                                                                                                                    <div class="d-flex align-items-start">
-                                                                                                                                                                                                                                                        <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
-                                                                                                                                                                                                                                                        <div>
-                                                                                                                                                                                                                                                            <small class="text-muted d-block">Descripci�n</small>
-                                                                                                                                                                                                                                                            <span style="font-size: 0.85rem;">${item.descripcion}</span>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                ` : ''}
+                                                                                                                                                                                                                                                                            <!-- Descripci�n -->
+                                                                                                                                                                                                                                                                            ${item.descripcion ? `
+                                                                                                                                                                                                                                                                            <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.05);">
+                                                                                                                                                                                                                                                                                <div class="d-flex align-items-start">
+                                                                                                                                                                                                                                                                                    <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
+                                                                                                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                                                                                                        <small class="text-muted d-block">Descripci�n</small>
+                                                                                                                                                                                                                                                                                        <span style="font-size: 0.85rem;">${item.descripcion}</span>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            ` : ''}
 
-                                                                                                                                                                                                                                                <!-- Insumos -->
-                                                                                                                                                                                                                                                ${item.insumos && item.insumos.length > 0 ? `
-                                                                                                                                                                                                                                                <div class="rounded p-2" style="background: rgba(46, 204, 113, 0.08);">
-                                                                                                                                                                                                                                                    <div class="d-flex align-items-center mb-2">
-                                                                                                                                                                                                                                                        <i class="ri-tools-line me-2" style="color: #2ecc71;"></i>
-                                                                                                                                                                                                                                                        <span class="fw-semibold" style="color: #2ecc71; font-size: 0.85rem;">Insumos Requeridos</span>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                    <div class="d-flex flex-wrap gap-2">
-                                                                                                                                                                                                                                                        ${item.insumos.map(insumo => `
-                                                                                                                                                                                                                                                            <span class="badge" style="background: rgba(46, 204, 113, 0.2); color: #1e3c72;">
-                                                                                                                                                                                                                                                                ${insumo.nombre}
-                                                                                                                                                                                                                                                                <span class="badge bg-primary ms-1">${parseFloat(insumo.pivot.cantidad_estimada).toFixed(2)} ${insumo.unidad_medida}</span>
-                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                        `).join('')}
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                ` : ''}
-                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                    `);
+                                                                                                                                                                                                                                                                            <!-- Insumos -->
+                                                                                                                                                                                                                                                                            ${item.insumos && item.insumos.length > 0 ? `
+                                                                                                                                                                                                                                                                            <div class="rounded p-2" style="background: rgba(46, 204, 113, 0.08);">
+                                                                                                                                                                                                                                                                                <div class="d-flex align-items-center mb-2">
+                                                                                                                                                                                                                                                                                    <i class="ri-tools-line me-2" style="color: #2ecc71;"></i>
+                                                                                                                                                                                                                                                                                    <span class="fw-semibold" style="color: #2ecc71; font-size: 0.85rem;">Insumos Requeridos</span>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="d-flex flex-wrap gap-2">
+                                                                                                                                                                                                                                                                                    ${item.insumos.map(insumo => `
+                                                                                                                                                                                                                                                                                        <span class="badge" style="background: rgba(46, 204, 113, 0.2); color: #1e3c72;">
+                                                                                                                                                                                                                                                                                            ${insumo.nombre}
+                                                                                                                                                                                                                                                                                            <span class="badge bg-primary ms-1">${parseFloat(insumo.pivot.cantidad_estimada).toFixed(2)} ${insumo.unidad_medida}</span>
+                                                                                                                                                                                                                                                                                        </span>
+                                                                                                                                                                                                                                                                                    `).join('')}
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            ` : ''}
+                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                `);
                             });
                         } else {
                             productosBody.append('<p class="text-muted text-center py-4"><i class="ri-shopping-bag-line fs-1 d-block mb-2"></i>No hay productos en este pedido.</p>');

@@ -72,18 +72,20 @@ class Persona extends Model
 
     /**
      * Obtener teléfono principal (de la tabla normalizada)
+     * Usa la colección cargada para evitar N+1 queries.
      */
     public function getTelefonoPrincipalAttribute()
     {
-        $telefonoPrincipal = $this->telefonos()->where('es_principal', true)->first();
+        $telefonoPrincipal = $this->telefonos->firstWhere('es_principal', true);
         return $telefonoPrincipal ? $telefonoPrincipal->numero : null;
     }
 
     /**
      * Obtener dirección principal (de la tabla normalizada)
+     * Usa la colección cargada para evitar N+1 queries.
      */
     public function getDireccionPrincipalAttribute()
     {
-        return $this->direcciones()->where('es_principal', true)->first();
+        return $this->direcciones->firstWhere('es_principal', true);
     }
 }

@@ -36,7 +36,7 @@ Route::get('/portfolio', [PagesController::class, 'portfolio'])->name('portfolio
 // ============================================
 // RUTAS PROTEGIDAS (Requieren autenticación)
 // ============================================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'throttle:60,1'])->group(function () {
 
     // Dashboard - Acceso para todos los usuarios autenticados
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ============================================
-    // SOLO ADMINISTRADOR
+    // SOLO ADMINISTRADOR (CRUD de escritura)
     // ============================================
     Route::middleware('role:Administrador')->group(function () {
         // Usuarios
@@ -71,89 +71,63 @@ Route::middleware('auth')->group(function () {
         Route::get('empleados-check-codigo', [EmpleadoController::class, 'checkCodigo'])->name('empleados.check-codigo');
         Route::get('/empleados/reporte/pdf', [EmpleadoController::class, 'reportePdf'])->name('empleados.reporte.pdf');
         Route::post('empleados-store-departamento', [EmpleadoController::class, 'storeDepartamento'])->name('empleados.store-departamento');
-    });
 
-    // ============================================
-    // SOLO ADMINISTRADOR - CRUD Pedidos
-    // ============================================
-    Route::middleware('role:Administrador')->group(function () {
+        // Pedidos (escritura)
         Route::post('pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
         Route::get('pedidos/create', [PedidoController::class, 'create'])->name('pedidos.create');
         Route::put('pedidos/{pedido}', [PedidoController::class, 'update'])->name('pedidos.update');
         Route::delete('pedidos/{pedido}', [PedidoController::class, 'destroy'])->name('pedidos.destroy');
         Route::get('pedidos/{pedido}/edit', [PedidoController::class, 'edit'])->name('pedidos.edit');
-    });
 
-    // ============================================
-    // SOLO ADMINISTRADOR - CRUD Cotizaciones
-    // ============================================
-    Route::middleware('role:Administrador')->group(function () {
+        // Cotizaciones (escritura)
         Route::post('cotizaciones', [CotizacionController::class, 'store'])->name('cotizaciones.store');
         Route::get('cotizaciones/create', [CotizacionController::class, 'create'])->name('cotizaciones.create');
         Route::put('cotizaciones/{cotizacion}', [CotizacionController::class, 'update'])->name('cotizaciones.update');
         Route::delete('cotizaciones/{cotizacion}', [CotizacionController::class, 'destroy'])->name('cotizaciones.destroy');
         Route::get('cotizaciones/{cotizacion}/edit', [CotizacionController::class, 'edit'])->name('cotizaciones.edit');
-    });
 
-    // ============================================
-    // SOLO ADMINISTRADOR - CRUD Proveedores
-    // ============================================
-    Route::middleware('role:Administrador')->group(function () {
+        // Proveedores (escritura)
         Route::post('proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
         Route::get('proveedores/create', [ProveedorController::class, 'create'])->name('proveedores.create');
-        Route::put('proveedores/{proveedore}', [ProveedorController::class, 'update'])->name('proveedores.update');
-        Route::delete('proveedores/{proveedore}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
-        Route::get('proveedores/{proveedore}/edit', [ProveedorController::class, 'edit'])->name('proveedores.edit');
+        Route::put('proveedores/{proveedor}', [ProveedorController::class, 'update'])->name('proveedores.update');
+        Route::delete('proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+        Route::get('proveedores/{proveedor}/edit', [ProveedorController::class, 'edit'])->name('proveedores.edit');
     });
 
     // ============================================
-    // ADMIN Y SUPERVISOR - Lectura de Pedidos
+    // ADMIN Y SUPERVISOR (Lectura + CRUD compartido)
     // ============================================
     Route::middleware('role:Administrador,Supervisor')->group(function () {
+        // Pedidos (lectura)
         Route::get('pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
         Route::get('pedidos-data', [PedidoController::class, 'getPedidos'])->name('pedidos.data');
         Route::get('pedidos/cotizaciones-disponibles', [PedidoController::class, 'getCotizacionesDisponibles'])->name('pedidos.cotizacionesDisponibles');
-        Route::get('pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
         Route::get('pedidos/reporte/pdf', [PedidoController::class, 'reportePdf'])->name('pedidos.reporte.pdf');
         Route::get('pedidos/reporte', [PedidoController::class, 'reporteGeneral'])->name('pedidos.reporteGeneral');
+        Route::get('pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
         Route::get('pedidos/{pedido}/pdf', [PedidoController::class, 'pedidoPdf'])->name('pedidos.pdf');
-    });
 
-    // ============================================
-    // ADMIN Y SUPERVISOR - Lectura de Cotizaciones
-    // ============================================
-    Route::middleware('role:Administrador,Supervisor')->group(function () {
+        // Cotizaciones (lectura + conversión)
         Route::get('cotizaciones', [CotizacionController::class, 'index'])->name('cotizaciones.index');
         Route::get('cotizaciones-data', [CotizacionController::class, 'getCotizaciones'])->name('cotizaciones.data');
-        Route::get('cotizaciones/{cotizacion}', [CotizacionController::class, 'show'])->name('cotizaciones.show');
         Route::get('cotizaciones/reporte/pdf', [CotizacionController::class, 'reportePdf'])->name('cotizaciones.reporte.pdf');
         Route::get('cotizaciones/reporte', [CotizacionController::class, 'reporteGeneral'])->name('cotizaciones.reporteGeneral');
+        Route::get('cotizaciones/{cotizacion}', [CotizacionController::class, 'show'])->name('cotizaciones.show');
         Route::get('cotizaciones/{cotizacion}/pdf', [CotizacionController::class, 'cotizacionPdf'])->name('cotizaciones.pdf');
-
-        // Rutas para conversión de cotización a pedido
         Route::put('cotizaciones/{cotizacion}/estado', [CotizacionController::class, 'updateEstado'])->name('cotizaciones.updateEstado');
         Route::get('cotizaciones/{cotizacion}/datos-para-pedido', [CotizacionController::class, 'getDatosParaPedido'])->name('cotizaciones.datosParaPedido');
         Route::post('cotizaciones/{cotizacion}/marcar-convertida', [CotizacionController::class, 'marcarComoConvertida'])->name('cotizaciones.marcarConvertida');
         Route::post('cotizaciones/{cotizacion}/convertir-a-pedido', [CotizacionController::class, 'convertirAPedido'])->name('cotizaciones.convertirAPedido');
-    });
 
-    // ============================================
-    // ADMIN Y SUPERVISOR - Lectura de Proveedores
-    // ============================================
-    Route::middleware('role:Administrador,Supervisor')->group(function () {
+        // Proveedores (lectura)
         Route::get('proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
         Route::get('proveedores-data', [ProveedorController::class, 'getProveedores'])->name('proveedores.data');
-        Route::get('proveedores/{proveedore}', [ProveedorController::class, 'show'])->name('proveedores.show');
         Route::get('proveedores-check-rif', [ProveedorController::class, 'checkRif'])->name('proveedores.check-rif');
         Route::get('proveedores-check-documento', [ProveedorController::class, 'checkDocumento'])->name('proveedores.check-documento');
         Route::get('proveedores-check-email', [ProveedorController::class, 'checkEmail'])->name('proveedores.check-email');
         Route::get('proveedores/reporte/pdf', [ProveedorController::class, 'reportePdf'])->name('proveedores.reporte.pdf');
-    });
+        Route::get('proveedores/{proveedor}', [ProveedorController::class, 'show'])->name('proveedores.show');
 
-    // ============================================
-    // ADMIN Y SUPERVISOR - CRUD Completo
-    // ============================================
-    Route::middleware('role:Administrador,Supervisor')->group(function () {
         // Productos
         Route::resource('productos', ProductoController::class);
         Route::get('productos-data', [ProductoController::class, 'getProductos'])->name('productos.data');

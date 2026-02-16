@@ -6,6 +6,9 @@ use App\Models\Cliente;
 use App\Models\Persona;
 use App\Models\Telefono;
 use App\Models\Direccion;
+use App\Http\Requests\StoreClienteRequest;
+use App\Http\Requests\UpdateClienteRequest;
+use App\Services\ClienteService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -14,6 +17,11 @@ use Illuminate\Support\Facades\DB;
 
 class ClienteController extends Controller
 {
+    public function __construct(
+        private ClienteService $clienteService
+    ) {
+    }
+
     public function index()
     {
         return view('admin.clientes.index');
@@ -21,147 +29,27 @@ class ClienteController extends Controller
 
     public function getClientes()
     {
-        // Cargar persona con telefonos y direcciones normalizadas
-        $clientes = Cliente::with(['persona.telefonos', 'persona.direcciones'])->get();
+        // Paginación server-side: pasar query builder, no colección
+        $clientes = Cliente::with(['persona.telefonos', 'persona.direcciones']);
 
-        // Formatear para el DataTable usando los accessors del modelo Cliente
-        $clientesFormateados = $clientes->map(function ($cliente) {
-            return [
-                'id' => $cliente->id,
-                'nombre' => $cliente->nombre ?? 'N/A',
-                'apellido' => $cliente->apellido ?? '',
-                'tipo_cliente' => $cliente->tipo_cliente,
-                'email' => $cliente->email,
-                'telefono' => $cliente->telefono,
-                'documento' => $cliente->documento,
-                'direccion' => $cliente->direccion,
-                'estado_territorial' => $cliente->estado_territorial, // Estado/territorio geográfico
-                'ciudad' => $cliente->ciudad,
-                'estatus' => $cliente->estatus, // Activo/Inactivo
-                'created_at' => $cliente->created_at ? $cliente->created_at->format('d/m/Y H:i') : null,
-            ];
-        });
-
-        return DataTables::of($clientesFormateados)->make(true);
+        return DataTables::of($clientes)
+            ->addColumn('nombre', fn($c) => $c->nombre ?? 'N/A')
+            ->addColumn('apellido', fn($c) => $c->apellido ?? '')
+            ->addColumn('tipo_cliente', fn($c) => $c->tipo_cliente)
+            ->addColumn('email', fn($c) => $c->email)
+            ->addColumn('telefono', fn($c) => $c->telefono)
+            ->addColumn('documento', fn($c) => $c->documento)
+            ->addColumn('direccion', fn($c) => $c->direccion)
+            ->addColumn('estado_territorial', fn($c) => $c->estado_territorial)
+            ->addColumn('ciudad', fn($c) => $c->ciudad)
+            ->addColumn('estatus', fn($c) => $c->estatus)
+            ->addColumn('created_at', fn($c) => $c->created_at ? $c->created_at->format('d/m/Y H:i') : null)
+            ->make(true);
     }
 
-    public function store(Request $request)
+    public function store(StoreClienteRequest $request)
     {
-        // Extraer prefijo y número del documento para validar unicidad
-        $documento = $request->documento;
-        $tipoDocumento = 'V-';
-        $numeroDocumento = $documento;
-
-        if (preg_match('/^(V-|J-|E-|G-)(.+)$/', $documento, $matches)) {
-            $tipoDocumento = $matches[1];
-            $numeroDocumento = $matches[2];
-        }
-
-        $request->validate([
-            'nombre' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'apellido' => 'nullable|string|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/',
-            'tipo_cliente' => 'required|in:natural,juridico',
-            'email' => 'nullable|string|email:rfc,dns|max:255|unique:persona,email',
-            'telefono' => 'required|string|regex:/^[0-9]{4}-[0-9]{7}$/',
-            'documento' => [
-                'required',
-                'string',
-                'max:50',
-                function ($attribute, $value, $fail) use ($numeroDocumento) {
-                    // Validar que el número de documento solo contenga números
-                    if (!preg_match('/^[0-9]+$/', $numeroDocumento)) {
-                        $fail('El número de documento solo puede contener números.');
-                    }
-                    // Validar longitud mínima
-                    if (strlen($numeroDocumento) < 6) {
-                        $fail('El documento debe tener al menos 6 dígitos.');
-                    }
-                    // Verificar unicidad en la tabla persona
-                    $exists = \App\Models\Persona::where('documento_identidad', $numeroDocumento)->exists();
-                    if ($exists) {
-                        $fail('Este documento ya está registrado en el sistema.');
-                    }
-                },
-            ],
-            'direccion' => 'nullable|string|max:500',
-            'estado_territorial' => 'nullable|string|max:50',
-            'ciudad' => 'nullable|string|max:100',
-            'estatus' => 'required|in:0,1',
-        ], [
-            // Mensajes personalizados
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.min' => 'El nombre debe tener al menos 2 caracteres.',
-            'nombre.max' => 'El nombre no puede exceder los 100 caracteres.',
-            'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
-            'apellido.max' => 'El apellido no puede exceder los 100 caracteres.',
-            'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
-            'tipo_cliente.required' => 'Debe seleccionar el tipo de cliente.',
-            'tipo_cliente.in' => 'El tipo de cliente debe ser Natural o Jurídico.',
-            'email.email' => 'El email debe ser una dirección de correo válida.',
-            'email.unique' => 'Este email ya está registrado en el sistema.',
-            'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.regex' => 'El teléfono debe tener el formato 0424-1234567.',
-            'documento.required' => 'El documento de identidad es obligatorio.',
-            'direccion.max' => 'La dirección no puede exceder los 500 caracteres.',
-            'estado_territorial.max' => 'El estado territorial no puede exceder los 50 caracteres.',
-            'ciudad.max' => 'La ciudad no puede exceder los 100 caracteres.',
-            'estatus.required' => 'Debe seleccionar el estatus del cliente.',
-            'estatus.in' => 'El estatus debe ser Activo o Inactivo.',
-        ]);
-
-        $clienteId = null;
-
-        DB::transaction(function () use ($request, &$clienteId) {
-            // Extraer prefijo y número del documento
-            $documento = $request->documento;
-            $tipoDocumento = 'V-';
-            $numeroDocumento = $documento;
-
-            if (preg_match('/^(V-|J-|E-|G-)(.+)$/', $documento, $matches)) {
-                $tipoDocumento = $matches[1];
-                $numeroDocumento = $matches[2];
-            }
-
-            // Crear la persona (sin telefono/direccion en la tabla persona)
-            $persona = Persona::create([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido ?? '',
-                'documento_identidad' => $numeroDocumento,
-                'tipo_documento' => $tipoDocumento,
-                'email' => $request->email,
-            ]);
-
-            // Crear teléfono en tabla normalizada
-            if (!empty($request->telefono)) {
-                Telefono::create([
-                    'persona_id' => $persona->id,
-                    'numero' => $request->telefono,
-                    'tipo' => 'movil',
-                    'es_principal' => true,
-                ]);
-            }
-
-            // Crear dirección en tabla normalizada
-            if (!empty($request->direccion) || !empty($request->ciudad) || !empty($request->estado_territorial)) {
-                Direccion::create([
-                    'persona_id' => $persona->id,
-                    'direccion' => $request->direccion ?? '',
-                    'estado' => $request->estado_territorial,
-                    'ciudad' => $request->ciudad,
-                    'tipo' => 'casa',
-                    'es_principal' => true,
-                ]);
-            }
-
-            // Crear el cliente asociado a la persona
-            $cliente = Cliente::create([
-                'persona_id' => $persona->id,
-                'tipo_cliente' => $request->tipo_cliente,
-                'estatus' => $request->estatus,
-            ]);
-
-            $clienteId = $cliente->id;
-        });
+        $clienteId = $this->clienteService->crear($request->validated());
 
         return response()->json([
             'message' => 'Cliente creado exitosamente.',
@@ -197,99 +85,11 @@ class ClienteController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateClienteRequest $request, $id)
     {
         $cliente = Cliente::with(['persona.telefonos', 'persona.direcciones'])->findOrFail($id);
 
-        // Ya no actualizamos documento, así que no es necesario extraerlo ni validarlo para update
-
-        $request->validate([
-            'nombre' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'apellido' => 'nullable|string|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/',
-            'tipo_cliente' => 'required|in:natural,juridico',
-            'email' => 'nullable|string|email:rfc,dns|max:255|unique:persona,email,' . ($cliente->persona_id ?? 'NULL'),
-            'telefono' => 'required|string|regex:/^[0-9]{4}-[0-9]{7}$/',
-            // Eliminada validación de documento para update
-            'direccion' => 'nullable|string|max:500',
-            'estado_territorial' => 'nullable|string|max:50',
-            'ciudad' => 'nullable|string|max:100',
-            'estatus' => 'required|in:0,1',
-        ], [
-            // Mensajes personalizados
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.min' => 'El nombre debe tener al menos 2 caracteres.',
-            'nombre.max' => 'El nombre no puede exceder los 100 caracteres.',
-            'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
-            'apellido.max' => 'El apellido no puede exceder los 100 caracteres.',
-            'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
-            'tipo_cliente.required' => 'Debe seleccionar el tipo de cliente.',
-            'tipo_cliente.in' => 'El tipo de cliente debe ser Natural o Jurídico.',
-            'email.email' => 'El email debe ser una dirección de correo válida.',
-            'email.unique' => 'Este email ya está registrado en el sistema.',
-            'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.regex' => 'El teléfono debe tener el formato 0424-1234567.',
-            // Eliminados mensajes de documento
-            'direccion.max' => 'La dirección no puede exceder los 500 caracteres.',
-            'estado_territorial.max' => 'El estado territorial no puede exceder los 50 caracteres.',
-            'ciudad.max' => 'La ciudad no puede exceder los 100 caracteres.',
-            'estatus.required' => 'Debe seleccionar el estatus del cliente.',
-            'estatus.in' => 'El estatus debe ser Activo o Inactivo.',
-        ]);
-
-        DB::transaction(function () use ($request, $cliente) {
-            // Actualizar la persona asociada (sin telefono/direccion y SIN DOCUMENTO)
-            if ($cliente->persona) {
-                $cliente->persona->update([
-                    'nombre' => $request->nombre,
-                    'apellido' => $request->apellido ?? '',
-                    // 'documento_identidad' => ... SE MANTIENE INTACTO
-                    // 'tipo_documento' => ... SE MANTIENE INTACTO
-                    'email' => $request->email,
-                ]);
-
-                // Actualizar o crear teléfono principal
-                if (!empty($request->telefono)) {
-                    $telefonoPrincipal = $cliente->persona->telefonos()->where('es_principal', true)->first();
-                    if ($telefonoPrincipal) {
-                        $telefonoPrincipal->update(['numero' => $request->telefono]);
-                    } else {
-                        Telefono::create([
-                            'persona_id' => $cliente->persona->id,
-                            'numero' => $request->telefono,
-                            'tipo' => 'movil',
-                            'es_principal' => true,
-                        ]);
-                    }
-                }
-
-                // Actualizar o crear dirección principal
-                if (!empty($request->direccion) || !empty($request->ciudad) || !empty($request->estado_territorial)) {
-                    $direccionPrincipal = $cliente->persona->direcciones()->where('es_principal', true)->first();
-                    if ($direccionPrincipal) {
-                        $direccionPrincipal->update([
-                            'direccion' => $request->direccion ?? '',
-                            'estado' => $request->estado_territorial,
-                            'ciudad' => $request->ciudad,
-                        ]);
-                    } else {
-                        Direccion::create([
-                            'persona_id' => $cliente->persona->id,
-                            'direccion' => $request->direccion ?? '',
-                            'estado' => $request->estado_territorial,
-                            'ciudad' => $request->ciudad,
-                            'tipo' => 'casa',
-                            'es_principal' => true,
-                        ]);
-                    }
-                }
-            }
-
-            // Actualizar el cliente
-            $cliente->update([
-                'tipo_cliente' => $request->tipo_cliente,
-                'estatus' => $request->estatus,
-            ]);
-        });
+        $this->clienteService->actualizar($cliente, $request->validated());
 
         return response()->json(['message' => 'Cliente actualizado exitosamente.']);
     }
@@ -306,6 +106,12 @@ class ClienteController extends Controller
         $cotizacionesCount = $cliente->cotizaciones()->count();
 
         $cliente->delete();
+
+        \Log::warning('Cliente eliminado', [
+            'cliente_id' => $id,
+            'cotizaciones_count' => $cotizacionesCount,
+            'user_id' => auth()->id(),
+        ]);
 
         if ($cotizacionesCount > 0) {
             return response()->json([
@@ -343,10 +149,11 @@ class ClienteController extends Controller
     public function searchAjax(Request $request)
     {
         $query = $request->input('q');
+        $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $query);
         $clientes = Cliente::with(['persona.telefonos', 'persona.direcciones'])
-            ->whereHas('persona', function ($q) use ($query) {
+            ->whereHas('persona', function ($q) use ($escaped) {
                 // Buscar por documento_identidad (solo el número, sin prefijo)
-                $q->where('documento_identidad', 'LIKE', "%{$query}%");
+                $q->where('documento_identidad', 'LIKE', "%{$escaped}%");
             })
             ->where('estatus', 1)
             ->limit(10)
