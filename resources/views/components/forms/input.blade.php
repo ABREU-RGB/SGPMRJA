@@ -25,16 +25,19 @@
     'value'       => null,
     'prepend'     => null,     {{-- Texto o HTML para el prefijo del input-group --}}
     'append'      => null,     {{-- Texto o HTML para el sufijo del input-group --}}
+    'prependRaw'  => false,    {{-- Si true, no envuelve el prepend en .input-group-text --}}
+    'appendRaw'   => false,    {{-- Si true, no envuelve el append en .input-group-text --}}
     'hint'        => null,     {{-- Texto de ayuda debajo del campo --}}
     'maxlength'   => null,
     'min'         => null,
     'max'         => null,
     'step'        => null,
+    'id'          => null,     {{-- ID personalizado (si se omite, se genera como field-{name}) --}}
 ])
 
 @php
-    // Determinar el ID del campo a partir del name (reemplazar puntos y corchetes)
-    $id = 'field-' . str_replace(['.', '[', ']'], ['-', '-', ''], $name);
+    // Determinar el ID del campo: usar prop explícito o generar a partir del name
+    $id = $id ?: 'field-' . str_replace(['.', '[', ']'], ['-', '-', ''], $name);
     
     // Valor: prioridad old() > valor explícito > vacío
     $fieldValue = old($name, $value);
@@ -55,7 +58,11 @@
     @if($prepend || $append)
         <div class="input-group">
             @if($prepend)
-                <span class="input-group-text">{!! $prepend !!}</span>
+                @if($prependRaw)
+                    {!! $prepend !!}
+                @else
+                    <span class="input-group-text">{!! $prepend !!}</span>
+                @endif
             @endif
     @endif
 
@@ -80,7 +87,11 @@
 
     @if($prepend || $append)
             @if($append)
-                <span class="input-group-text">{!! $append !!}</span>
+                @if($appendRaw)
+                    {!! $append !!}
+                @else
+                    <span class="input-group-text">{!! $append !!}</span>
+                @endif
             @endif
         </div>
     @endif

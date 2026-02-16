@@ -60,10 +60,10 @@ class EmpleadoController extends Controller
             })
             ->addColumn('actions', function ($empleado) {
                 return '
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-info view-btn" data-id="' . $empleado->id . '"><i class="ri-eye-fill"></i></button>
-                        <button class="btn btn-sm btn-success edit-btn" data-id="' . $empleado->id . '"><i class="ri-pencil-fill"></i></button>
-                        <button class="btn btn-sm btn-danger remove-btn" data-id="' . $empleado->id . '"><i class="ri-delete-bin-fill"></i></button>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-sm btn-soft-info view-btn" data-id="' . $empleado->id . '" title="Ver"><i class="ri-eye-fill"></i></button>
+                        <button class="btn btn-sm btn-soft-success edit-btn" data-id="' . $empleado->id . '" title="Editar"><i class="ri-pencil-fill"></i></button>
+                        <button class="btn btn-sm btn-soft-danger remove-btn" data-id="' . $empleado->id . '" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
                     </div>
                 ';
             })

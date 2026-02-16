@@ -159,8 +159,10 @@
                     </table>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cerrar
+                </button>
             </div>
         </div>
     </div>

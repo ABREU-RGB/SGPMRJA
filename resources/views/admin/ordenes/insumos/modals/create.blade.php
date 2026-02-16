@@ -33,10 +33,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer bg-light border-0">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-success" id="add-btn">Agregar</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-success" id="add-btn">
+                            <i class="ri-add-line me-1"></i>Agregar
+                        </button>
                     </div>
                 </div>
             </form>

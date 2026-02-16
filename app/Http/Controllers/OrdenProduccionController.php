@@ -41,12 +41,12 @@ class OrdenProduccionController extends Controller
                 return $orden->creadoPor ? $orden->creadoPor->name : 'N/A';
             })
             ->addColumn('actions', function ($orden) {
-                $actions = '<div class="d-flex gap-2">';
-                $actions .= '<button type="button" class="btn btn-sm btn-info view-btn" data-id="' . $orden->id . '" title="Ver detalles"><i class="ri-eye-fill"></i></button>';
-                $actions .= '<button type="button" class="btn btn-sm btn-success edit-btn" data-id="' . $orden->id . '" title="Editar orden"><i class="ri-pencil-fill"></i></button>';
+                $actions = '<div class="d-flex gap-2 justify-content-center">';
+                $actions .= '<button type="button" class="btn btn-sm btn-soft-info view-btn" data-id="' . $orden->id . '" title="Ver detalles"><i class="ri-eye-fill"></i></button>';
+                $actions .= '<button type="button" class="btn btn-sm btn-soft-success edit-btn" data-id="' . $orden->id . '" title="Editar orden"><i class="ri-pencil-fill"></i></button>';
 
                 if ($orden->estado === 'Pendiente') {
-                    $actions .= '<button type="button" class="btn btn-sm btn-danger remove-btn" data-id="' . $orden->id . '" title="Eliminar orden"><i class="ri-delete-bin-fill"></i></button>';
+                    $actions .= '<button type="button" class="btn btn-sm btn-soft-danger remove-btn" data-id="' . $orden->id . '" title="Eliminar orden"><i class="ri-delete-bin-fill"></i></button>';
                 }
 
                 $actions .= '</div>';

@@ -80,48 +80,191 @@
     <!-- Modal para ver detalles -->
     <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title">Detalles del Proveedor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <strong>Tipo de Proveedor:</strong>
-                        <p id="view-tipo" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Nombre/Razón Social:</strong>
-                        <p id="view-nombre" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Documento/RIF:</strong>
-                        <p id="view-documento" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Dirección:</strong>
-                        <p id="view-direccion" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Teléfono:</strong>
-                        <p id="view-telefono" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Email:</strong>
-                        <p id="view-email" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3" id="view-contacto-section">
-                        <strong>Persona de Contacto:</strong>
-                        <p id="view-contacto" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3" id="view-telefono-contacto-section">
-                        <strong>Teléfono de Contacto:</strong>
-                        <p id="view-telefono-contacto" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Fecha de Registro:</strong>
-                        <p id="view-created" class="text-muted mb-0"></p>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <!-- Columna Izquierda: Datos del Proveedor -->
+                        <div class="col-lg-6">
+                            <!-- Card Datos del Proveedor -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
+                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                        <i class="ri-store-2-line me-2"></i>Datos del Proveedor
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-user-settings-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Tipo</small>
+                                                    <span class="fw-semibold" id="view-tipo">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-building-line" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Nombre/Razón Social</small>
+                                                    <span class="fw-semibold" id="view-nombre">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-bank-card-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Documento/RIF</small>
+                                                    <span class="fw-semibold" id="view-documento">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Estatus</small>
+                                                    <span class="fw-semibold" id="view-estatus">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Ubicación -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
+                                        <i class="ri-map-pin-line me-2"></i>Ubicación
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-home-4-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Dirección</small>
+                                                    <span class="fw-semibold" id="view-direccion">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha: Contacto y Estado -->
+                        <div class="col-lg-6">
+                            <!-- Card Contacto -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header border-0" style="background: rgba(46, 204, 113, 0.1);">
+                                    <h6 class="mb-0" style="color: #2ecc71;">
+                                        <i class="ri-contacts-line me-2"></i>Información de Contacto
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-mail-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Email</small>
+                                                    <span class="fw-semibold" id="view-email">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
+                                                    <i class="ri-phone-line" style="color: #00d9a5;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Teléfono</small>
+                                                    <span class="fw-semibold" id="view-telefono">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" id="view-contacto-section">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-user-follow-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Persona de Contacto</small>
+                                                    <span class="fw-semibold" id="view-contacto">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" id="view-telefono-contacto-section">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-smartphone-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Teléfono de Contacto</small>
+                                                    <span class="fw-semibold" id="view-telefono-contacto">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Estado -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
+                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                        <i class="ri-information-line me-2"></i>Registro
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
+                                                    <i class="ri-calendar-line" style="color: #2ecc71;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Fecha de Registro</small>
+                                                    <span class="fw-semibold" id="view-created">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
@@ -150,11 +293,9 @@
                         <!-- Fila 1: Tipo de Proveedor + Estatus -->
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="tipo-proveedor-field" class="form-label required">Tipo de Proveedor</label>
-                                <select id="tipo-proveedor-field" name="tipo_proveedor" class="form-select" required>
-                                    <option value="juridico">Jurídico (Empresa)</option>
-                                    <option value="natural">Natural (Persona)</option>
-                                </select>
+                                <x-forms.select name="tipo_proveedor" label="Tipo de Proveedor" required id="tipo-proveedor-field"
+                                    :options="['juridico' => 'Jurídico (Empresa)', 'natural' => 'Natural (Persona)']"
+                                    placeholder="" />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label d-block">Estatus</label>
@@ -171,77 +312,66 @@
                         <div id="campos-juridico">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="rif-field" class="form-label required">RIF</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
-                                            <option value="J-">J-</option>
-                                            <option value="V-">V-</option>
-                                            <option value="G-">G-</option>
-                                            <option value="E-">E-</option>
-                                        </select>
-                                        <input type="text" id="rif-number-field" class="form-control"
-                                            placeholder="Ej: 123456789" maxlength="10" />
-                                    </div>
+                                    <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="10" required prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
+                                                <option value="J-">J-</option>
+                                                <option value="V-">V-</option>
+                                                <option value="G-">G-</option>
+                                                <option value="E-">E-</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
                                     <input type="hidden" id="rif-field" name="rif" />
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="razon-social-field" class="form-label required">Razón Social</label>
-                                    <input type="text" id="razon-social-field" name="razon_social" class="form-control"
-                                        maxlength="200" placeholder="Nombre de la empresa" />
+                                    <x-forms.input name="razon_social" label="Razón Social" maxlength="200" placeholder="Nombre de la empresa" id="razon-social-field" />
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="direccion-jur-field" class="form-label required">Dirección</label>
-                                <input type="text" id="direccion-jur-field" name="direccion" class="form-control"
-                                    maxlength="500" placeholder="Dirección de la empresa" />
+                                <x-forms.input name="direccion" label="Dirección" maxlength="500" placeholder="Dirección de la empresa" id="direccion-jur-field" />
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="telefono-jur-field" class="form-label required">Teléfono</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="telefono-jur-prefix-field"
-                                            style="max-width: 100px; min-width: 100px;">
-                                            <option value="0212">0212</option>
-                                            <option value="0251">0251</option>
-                                            <option value="0241">0241</option>
-                                            <option value="0255">0255</option>
-                                            <option value="0412">0412</option>
-                                            <option value="0414">0414</option>
-                                            <option value="0424" selected>0424</option>
-                                            <option value="0416">0416</option>
-                                            <option value="0426">0426</option>
-                                        </select>
-                                        <input type="text" id="telefono-jur-number-field" class="form-control"
-                                            placeholder="1234567" maxlength="7" />
-                                    </div>
+                                    <x-forms.input name="telefono_jur_number" label="Teléfono" id="telefono-jur-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="telefono-jur-prefix-field"
+                                                style="max-width: 100px; min-width: 100px;">
+                                                <option value="0212">0212</option>
+                                                <option value="0251">0251</option>
+                                                <option value="0241">0241</option>
+                                                <option value="0255">0255</option>
+                                                <option value="0412">0412</option>
+                                                <option value="0414">0414</option>
+                                                <option value="0424" selected>0424</option>
+                                                <option value="0416">0416</option>
+                                                <option value="0426">0426</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
                                     <input type="hidden" id="telefono-jur-field" name="telefono" />
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="email-jur-field" class="form-label required">Email</label>
-                                    <input type="email" id="email-jur-field" name="email" class="form-control"
-                                        placeholder="correo@empresa.com" />
+                                    <x-forms.input name="email" label="Email" type="email" placeholder="correo@empresa.com" id="email-jur-field" />
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="contacto-field" class="form-label">Persona de Contacto</label>
-                                    <input type="text" id="contacto-field" name="contacto" class="form-control"
-                                        maxlength="100" placeholder="Nombre del contacto" />
+                                    <x-forms.input name="contacto" label="Persona de Contacto" maxlength="100" placeholder="Nombre del contacto" id="contacto-field" />
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="telefono-contacto-field" class="form-label">Teléfono de Contacto</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="telefono-contacto-prefix-field"
-                                            style="max-width: 100px; min-width: 100px;">
-                                            <option value="0412">0412</option>
-                                            <option value="0414">0414</option>
-                                            <option value="0424" selected>0424</option>
-                                            <option value="0416">0416</option>
-                                            <option value="0426">0426</option>
-                                        </select>
-                                        <input type="text" id="telefono-contacto-number-field" class="form-control"
-                                            placeholder="1234567" maxlength="7" />
-                                    </div>
+                                    <x-forms.input name="telefono_contacto_number" label="Teléfono de Contacto" id="telefono-contacto-number-field" maxlength="7" placeholder="1234567" prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="telefono-contacto-prefix-field"
+                                                style="max-width: 100px; min-width: 100px;">
+                                                <option value="0412">0412</option>
+                                                <option value="0414">0414</option>
+                                                <option value="0424" selected>0424</option>
+                                                <option value="0416">0416</option>
+                                                <option value="0426">0426</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
                                     <input type="hidden" id="telefono-contacto-field" name="telefono_contacto" />
                                 </div>
                             </div>
@@ -251,58 +381,48 @@
                         <div id="campos-natural" style="display: none;">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="nombre-field" class="form-label required">Nombre</label>
-                                    <input type="text" id="nombre-field" name="nombre" class="form-control" maxlength="100"
-                                        placeholder="Nombre" />
+                                    <x-forms.input name="nombre" label="Nombre" maxlength="100" placeholder="Nombre" id="nombre-field" />
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="apellido-field" class="form-label required">Apellido</label>
-                                    <input type="text" id="apellido-field" name="apellido" class="form-control"
-                                        maxlength="100" placeholder="Apellido" />
+                                    <x-forms.input name="apellido" label="Apellido" maxlength="100" placeholder="Apellido" id="apellido-field" />
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="documento-field" class="form-label required">Documento de Identidad</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="tipo-documento-field" name="tipo_documento"
-                                            style="max-width: 80px;">
-                                            <option value="V-">V-</option>
-                                            <option value="E-">E-</option>
-                                            <option value="J-">J-</option>
-                                            <option value="G-">G-</option>
-                                        </select>
-                                        <input type="text" id="documento-identidad-field" name="documento_identidad"
-                                            class="form-control" placeholder="Ej: 12345678" maxlength="15" />
-                                    </div>
+                                    <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="15" placeholder="Ej: 12345678" required prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="tipo-documento-field" name="tipo_documento"
+                                                style="max-width: 80px;">
+                                                <option value="V-">V-</option>
+                                                <option value="E-">E-</option>
+                                                <option value="J-">J-</option>
+                                                <option value="G-">G-</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="telefono-nat-field" class="form-label required">Teléfono</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="telefono-nat-prefix-field"
-                                            style="max-width: 100px; min-width: 100px;">
-                                            <option value="0412">0412</option>
-                                            <option value="0422">0422</option>
-                                            <option value="0414">0414</option>
-                                            <option value="0424" selected>0424</option>
-                                            <option value="0416">0416</option>
-                                            <option value="0426">0426</option>
-                                        </select>
-                                        <input type="text" id="telefono-nat-number-field" class="form-control"
-                                            placeholder="1234567" maxlength="7" />
-                                    </div>
+                                    <x-forms.input name="telefono_nat_number" label="Teléfono" id="telefono-nat-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="telefono-nat-prefix-field"
+                                                style="max-width: 100px; min-width: 100px;">
+                                                <option value="0412">0412</option>
+                                                <option value="0422">0422</option>
+                                                <option value="0414">0414</option>
+                                                <option value="0424" selected>0424</option>
+                                                <option value="0416">0416</option>
+                                                <option value="0426">0426</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
                                     <input type="hidden" id="telefono-nat-field" name="telefono" />
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="email-nat-field" class="form-label required">Email</label>
-                                <input type="email" id="email-nat-field" name="email" class="form-control"
-                                    placeholder="correo@email.com" />
+                                <x-forms.input name="email" label="Email" type="email" placeholder="correo@email.com" id="email-nat-field" />
                             </div>
                             <div class="mb-3">
-                                <label for="direccion-nat-field" class="form-label required">Dirección</label>
-                                <input type="text" id="direccion-nat-field" name="direccion" class="form-control"
-                                    maxlength="255" placeholder="Dirección completa" />
+                                <x-forms.input name="direccion" label="Dirección" maxlength="255" placeholder="Dirección completa" id="direccion-nat-field" />
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -345,12 +465,13 @@
                         </div>
 
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-success" id="add-btn">Agregar</button>
-                            <button type="submit" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>

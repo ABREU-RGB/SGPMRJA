@@ -8,8 +8,9 @@
             </div>
             <form id="createForm">
                 <div class="modal-body">
+                    {{-- Insumo — mantiene HTML custom por los data-attributes en <option> --}}
                     <div class="mb-3">
-                        <label for="insumo_id" class="form-label required">Insumo</label>
+                        <label for="insumo_id" class="form-label">Insumo <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <select class="form-select" id="insumo_id" name="insumo_id" required>
                                 <option value="">Seleccione un insumo</option>
@@ -26,33 +27,24 @@
                                 <i class="ri-add-line"></i>
                             </button>
                         </div>
-                        <div class="invalid-feedback">Por favor seleccione un insumo.</div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="tipo_movimiento" class="form-label required">Tipo de Movimiento</label><select
-                            class="form-select" id="tipo_movimiento" name="tipo_movimiento" required>
-                            <option value="">Seleccione el tipo</option>
-                            <option value="Entrada">Entrada</option>
-                            <option value="Salida">Salida</option>
-                        </select>
-                        <div class="invalid-feedback">Por favor seleccione el tipo de movimiento.</div>
-                    </div>
+                    <x-forms.select name="tipo_movimiento" label="Tipo de Movimiento" required
+                        :options="['Entrada' => 'Entrada', 'Salida' => 'Salida']"
+                        placeholder="Seleccione el tipo" />
 
                     <div class="mb-3">
-                        <label for="cantidad" class="form-label">Cantidad <span id="unidad-medida"></span></label>
-                        <input type="number" class="form-control" id="cantidad" name="cantidad" step="0.01" min="0.01"
+                        <label for="field-cantidad" class="form-label">Cantidad <span id="unidad-medida"></span></label>
+                        <input type="number" class="form-control" id="field-cantidad" name="cantidad" step="0.01" min="0.01"
                             required>
-                        <div class="invalid-feedback">Por favor ingrese una cantidad válida.</div>
                         <div id="stock-warning" class="text-danger mt-1 d-none">
                             ¡Atención! La cantidad excede el stock disponible.
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="motivo" class="form-label">Motivo</label>
-                        <textarea class="form-control" id="motivo" name="motivo" rows="3" required></textarea>
-                        <div class="invalid-feedback">Por favor ingrese el motivo del movimiento.</div>
+                        <label for="field-motivo" class="form-label">Motivo</label>
+                        <textarea class="form-control" id="field-motivo" name="motivo" rows="3" required></textarea>
                     </div>
 
                     <div class="alert alert-info">
@@ -66,9 +58,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ri-save-line me-1"></i>Guardar
+                    </button>
                 </div>
             </form>
         </div>

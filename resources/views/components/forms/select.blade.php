@@ -31,10 +31,11 @@
     'value'           => null,
     'addButtonTarget' => null,  {{-- Selector CSS del modal para agregar "on the fly" --}}
     'hint'            => null,
+    'id'              => null,  {{-- ID personalizado (si se omite, se genera como field-{name}) --}}
 ])
 
 @php
-    $id = 'field-' . str_replace(['.', '[', ']'], ['-', '-', ''], $name);
+    $id = $id ?: 'field-' . str_replace(['.', '[', ']'], ['-', '-', ''], $name);
     $selectedValue = old($name, $value);
 @endphp
 

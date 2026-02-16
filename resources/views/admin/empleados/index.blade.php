@@ -426,12 +426,18 @@
                         </div>
 
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-success" id="add-btn">Agregar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <button type="button" class="btn btn-success" id="add-btn">
+                                <i class="ri-add-line me-1"></i>Agregar
+                            </button>
                             <button type="button" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                                style="display: none;">
+                                <i class="ri-save-line me-1"></i>Actualizar
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -454,8 +460,10 @@
                         <div id="depto-error" class="invalid-feedback"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
                     <button type="button" class="btn btn-success" id="guardar-departamento-btn">
                         <i class="ri-check-line me-1"></i>Guardar
                     </button>

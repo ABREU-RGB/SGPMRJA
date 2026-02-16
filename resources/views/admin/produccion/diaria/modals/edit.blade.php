@@ -20,16 +20,10 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit_cantidad_producida" class="form-label required">Cantidad Producida</label><input type="number" class="form-control" id="edit_cantidad_producida"
-                                    name="cantidad_producida" min="1" required>
-                            </div>
+                            <x-forms.input name="cantidad_producida" label="Cantidad Producida" type="number" min="1" required id="edit_cantidad_producida" />
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit_cantidad_defectuosa" class="form-label required">Cantidad Defectuosa</label><input type="number" class="form-control" id="edit_cantidad_defectuosa"
-                                    name="cantidad_defectuosa" min="0" required>
-                            </div>
+                            <x-forms.input name="cantidad_defectuosa" label="Cantidad Defectuosa" type="number" min="0" required id="edit_cantidad_defectuosa" />
                         </div>
                     </div>
 
@@ -39,10 +33,14 @@
                             maxlength="500" placeholder="Ingrese observaciones sobre el proceso..."></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer bg-light border-0">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-success" id="update-btn">Actualizar</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-success" id="update-btn">
+                            <i class="ri-save-line me-1"></i>Actualizar
+                        </button>
                     </div>
                 </div>
             </form>

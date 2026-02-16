@@ -49,16 +49,16 @@ class ProduccionDiariaController extends Controller
                 return $registro->created_at->format('d/m/Y');
             })
             ->addColumn('actions', function ($registro) {
-                $actions = '<div class="text-center">';
+                $actions = '<div class="d-flex gap-2 justify-content-center">';
                 if (Auth::user()->isAdmin() || Auth::user()->isSupervisor()) {
-                    $actions .= '<button type="button" class="btn btn-primary btn-sm view-btn me-2" data-id="' . $registro->id . '">';
-                    $actions .= '<i class="ri-eye-line"></i></button>';
+                    $actions .= '<button type="button" class="btn btn-sm btn-soft-info view-btn" data-id="' . $registro->id . '" title="Ver">';
+                    $actions .= '<i class="ri-eye-fill"></i></button>';
 
-                    $actions .= '<button type="button" class="btn btn-warning btn-sm edit-btn me-2" data-id="' . $registro->id . '">';
-                    $actions .= '<i class="ri-pencil-line"></i></button>';
+                    $actions .= '<button type="button" class="btn btn-sm btn-soft-success edit-btn" data-id="' . $registro->id . '" title="Editar">';
+                    $actions .= '<i class="ri-pencil-fill"></i></button>';
 
-                    $actions .= '<button type="button" class="btn btn-danger btn-sm remove-btn" data-id="' . $registro->id . '">';
-                    $actions .= '<i class="ri-delete-bin-line"></i></button>';
+                    $actions .= '<button type="button" class="btn btn-sm btn-soft-danger remove-btn" data-id="' . $registro->id . '" title="Eliminar">';
+                    $actions .= '<i class="ri-delete-bin-fill"></i></button>';
                 }
                 $actions .= '</div>';
                 return $actions;

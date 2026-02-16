@@ -131,8 +131,10 @@
                         <p id="view-created" class="text-muted mb-0"></p>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cerrar
+                    </button>
                 </div>
             </div>
         </div>
@@ -151,72 +153,31 @@
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
-                        <div class="mb-3">
-                            <label for="nombre-field" class="form-label required">Nombre</label><input type="text"
-                                id="nombre-field" name="nombre" class="form-control" required />
-                            <div id="nombre-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tipo-field" class="form-label required">Tipo</label><select id="tipo-field"
-                                name="tipo" class="form-control" required>
-                                <option value="">Seleccione...</option>
-                                <option value="Tela">Tela</option>
-                                <option value="Hilo">Hilo</option>
-                                <option value="Botón">Botón</option>
-                                <option value="Cierre">Cierre</option>
-                                <option value="Etiqueta">Etiqueta</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                            <div id="tipo-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="unidad-medida-field" class="form-label required">Unidad de Medida</label><input
-                                type="text" id="unidad-medida-field" name="unidad_medida" class="form-control" required />
-                            <div id="unidad-medida-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stock-actual-field" class="form-label required">Stock Actual</label>
-                            <input type="number" id="stock-actual-field" name="stock_actual" class="form-control"
-                                step="0.01" min="0" value="0" required />
-                            <div id="stock-actual-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stock-minimo-field" class="form-label required">Stock Mínimo</label><input
-                                type="number" id="stock-minimo-field" name="stock_minimo" class="form-control" step="0.01"
-                                min="0" required />
-                            <div id="stock-minimo-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="costo-unitario-field" class="form-label required">Costo Unitario</label><input
-                                type="number" id="costo-unitario-field" name="costo_unitario" class="form-control"
-                                step="0.01" min="0" required />
-                            <div id="costo-unitario-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="proveedor-id-field" class="form-label required">Proveedor</label>
-                            <select id="proveedor-id-field" name="proveedor_id" class="form-control" required>
-                                <option value="">Seleccione...</option>
-                                @foreach($proveedores as $proveedor)
-                                    <option value="{{ $proveedor->id }}">{{ $proveedor->razon_social }}</option>
-                                @endforeach
-                            </select>
-                            <div id="proveedor-id-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="estado-field" class="form-label required">Estado</label>
-                            <select id="estado-field" name="estado" class="form-control" required>
-                                <option value="1">Activo</option>
-                                <option value="0">Inactivo</option>
-                            </select>
-                            <div id="estado-error" class="invalid-feedback"></div>
-                        </div>
+                        <x-forms.input name="nombre" label="Nombre" required />
+                        <x-forms.select name="tipo" label="Tipo" required
+                            :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta', 'Otro' => 'Otro']" />
+                        <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
+                        <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0" required />
+                        <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0" required />
+                        <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0" required />
+                        <x-forms.select name="proveedor_id" label="Proveedor" required
+                            :options="$proveedores->pluck('razon_social', 'id')->toArray()" />
+                        <x-forms.select name="estado" label="Estado" required
+                            :options="['1' => 'Activo', '0' => 'Inactivo']"
+                            placeholder="" value="1" />
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-success" id="add-btn">Agregar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <button type="submit" class="btn btn-success" id="add-btn">
+                                <i class="ri-add-line me-1"></i>Agregar
+                            </button>
                             <button type="submit" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                                style="display: none;">
+                                <i class="ri-save-line me-1"></i>Actualizar
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -354,14 +315,14 @@
                 $.get("{{ route('insumos.show', ':id') }}".replace(':id', id), function (data) {
                     $("#modalTitle").text("Editar Insumo");
                     $("#id-field").val(data.id);
-                    $("#nombre-field").val(data.nombre);
-                    $("#tipo-field").val(data.tipo);
-                    $("#unidad-medida-field").val(data.unidad_medida);
-                    $("#stock-actual-field").val(data.stock_actual);
-                    $("#stock-minimo-field").val(data.stock_minimo);
-                    $("#costo-unitario-field").val(data.costo_unitario);
-                    $("#proveedor-id-field").val(data.proveedor_id);
-                    $("#estado-field").val(data.estado ? '1' : '0');
+                    $("#field-nombre").val(data.nombre);
+                    $("#field-tipo").val(data.tipo);
+                    $("#field-unidad_medida").val(data.unidad_medida);
+                    $("#field-stock_actual").val(data.stock_actual);
+                    $("#field-stock_minimo").val(data.stock_minimo);
+                    $("#field-costo_unitario").val(data.costo_unitario);
+                    $("#field-proveedor_id").val(data.proveedor_id);
+                    $("#field-estado").val(data.estado ? '1' : '0');
 
                     $("#add-btn").hide();
                     $("#edit-btn").show();

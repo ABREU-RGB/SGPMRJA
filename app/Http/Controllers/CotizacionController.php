@@ -87,11 +87,11 @@ class CotizacionController extends Controller
                 return $cotizacion->fecha_validez ? $cotizacion->fecha_validez->format('d/m/Y') : 'N/A';
             })
             ->addColumn('actions', function ($cotizacion) {
-                $actions = '<div class="d-flex gap-2">';
-                $actions .= '<button type="button" class="btn btn-sm btn-info view-btn" data-id="' . $cotizacion->id . '" title="Ver detalles"><i class="ri-eye-fill"></i></button>';
-                $actions .= '<button type="button" class="btn btn-sm btn-success edit-btn" data-id="' . $cotizacion->id . '" title="Editar cotización"><i class="ri-pencil-fill"></i></button>';
-                $actions .= '<button type="button" class="btn btn-sm btn-danger remove-btn" data-id="' . $cotizacion->id . '" title="Eliminar cotización"><i class="ri-delete-bin-fill"></i></button>';
-                $actions .= '<a href="' . route('cotizaciones.pdf', $cotizacion->id) . '" class="btn btn-sm btn-warning" title="Descargar PDF"><i class="ri-file-pdf-fill"></i></a>';
+                $actions = '<div class="d-flex gap-2 justify-content-center">';
+                $actions .= '<button type="button" class="btn btn-sm btn-soft-info view-btn" data-id="' . $cotizacion->id . '" title="Ver detalles"><i class="ri-eye-fill"></i></button>';
+                $actions .= '<button type="button" class="btn btn-sm btn-soft-success edit-btn" data-id="' . $cotizacion->id . '" title="Editar cotización"><i class="ri-pencil-fill"></i></button>';
+                $actions .= '<button type="button" class="btn btn-sm btn-soft-danger remove-btn" data-id="' . $cotizacion->id . '" title="Eliminar cotización"><i class="ri-delete-bin-fill"></i></button>';
+                $actions .= '<a href="' . route('cotizaciones.pdf', $cotizacion->id) . '" class="btn btn-sm btn-soft-warning" title="Descargar PDF"><i class="ri-file-pdf-fill"></i></a>';
                 $actions .= '</div>';
                 return $actions;
             })
