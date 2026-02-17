@@ -163,7 +163,7 @@
 
                 <!-- Fecha y Hora -->
                 <div class="ms-1 header-item d-none d-sm-flex">
-                    <div class="d-flex align-items-center px-3 py-1 rounded-pill" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div class="d-flex align-items-center px-3 py-1 rounded-pill topbar-info-pill">
                         <i class="ri-calendar-line text-white me-2 fs-18"></i>
                         <div class="text-white text-center">
                             <small id="header-date" class="d-block fw-bold" style="font-size: 0.7rem; line-height: 1.2;">
@@ -179,7 +179,7 @@
                 <!-- Tasa BCV del Dólar -->
                 @if(isset($tasaBcv) && $tasaBcv)
                     <div class="ms-1 header-item d-none d-sm-flex">
-                        <div class="d-flex align-items-center px-3 py-1 rounded-pill" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <div class="d-flex align-items-center px-3 py-1 rounded-pill topbar-info-pill">
                             <i class="ri-money-dollar-circle-line text-white me-2 fs-18"></i>
                             <div class="text-white text-center">
                                 <small class="d-block" style="font-size: 0.6rem; line-height: 1; opacity: 0.8;">BCV
@@ -513,24 +513,31 @@
 
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     @auth
-                        <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; padding: 6px 16px 6px 6px;">
+                        <button type="button" class="btn bg-white bg-opacity-10 border border-light border-opacity-25 rounded-pill px-3 py-1 text-white"
+                            id="page-header-user-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                            aria-haspopup="true" aria-expanded="false">
                             <span class="d-flex align-items-center">
-                                <img class="rounded-circle header-profile-user" style="border: 2px solid rgba(255, 255, 255, 0.3);"
+                                <img class="rounded-circle header-profile-user border border-2 border-light border-opacity-25"
                                     src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('assets/images/users/avatar-1.jpg') }}"
                                     alt="Header Avatar">
                                 <span class="text-start ms-xl-2">
                                     <span class="d-none d-xl-inline-block ms-1 fw-semibold text-white">{{ Auth::user()->name }}</span>
-                                    <span class="d-none d-xl-block ms-1 fs-13" style="color: rgba(255,255,255,0.8);">{{ Auth::user()->role }}</span>
+                                    <span class="d-none d-xl-block ms-1 fs-13 text-white-50">{{ Auth::user()->role }}</span>
                                 </span>
+                                <i class="mdi mdi-chevron-down text-white-50 ms-2 d-none d-xl-inline-block"></i>
                             </span>
                         </button>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <!-- item-->
-                            <h6 class="dropdown-header">Bienvenid@ {{ Auth::user()->name }}!</h6>
-                            <a class="dropdown-item" href="{{ route('profile.edit') }}"><i
-                                    class="mdi mdi-account-circle fs-16 align-middle me-1" style="color: #0d6efd;"></i> <span
-                                    class="align-middle">Perfil</span></a>
+                        <div class="dropdown-menu dropdown-menu-end p-0 overflow-hidden border-0 shadow-lg profile-dropdown-menu"
+                            id="profile-dropdown-menu" aria-labelledby="page-header-user-dropdown" style="min-width: 240px;">
+                            <div class="profile-dropdown-header px-3 pt-1 pb-0 border-bottom bg-light-subtle">
+                                <h6 class="profile-dropdown-title mb-0">{{ Auth::user()->name }}</h6>
+                                <small class="profile-dropdown-subtitle text-muted">{{ Auth::user()->role }}</small>
+                            </div>
+                            <div class="py-1">
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
+                                    <i class="mdi mdi-account-circle fs-16 align-middle me-2 text-primary"></i>
+                                    <span class="align-middle">Perfil</span>
+                                </a>
                             {{-- <a class="dropdown-item" href="apps-chat.html"><i
                                     class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
                                     class="align-middle">Messages</span></a>
@@ -552,17 +559,20 @@
                                     class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span
                                     class="align-middle">Lock screen</span></a>--}}
                             @if (Auth::user()->isAdmin())
-                                <a class="dropdown-item" href="{{ url('users') }}">
-                                    <i class="mdi mdi-account-group-outline fs-16 align-middle me-1" style="color: #0d6efd;"></i>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ url('users') }}">
+                                    <i class="mdi mdi-account-group-outline fs-16 align-middle me-2 text-primary"></i>
                                     <span class="align-middle">Usuarios</span>
                                 </a>
                             @endif
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="mdi mdi-logout fs-16 align-middle me-1" style="color: #0d6efd;"></i> <span class="align-middle"
-                                    data-key="t-logout">Cerrar sesión</span>
-                            </a>
+                            </div>
+                            <div class="dropdown-divider my-0"></div>
+                            <div class="py-1">
+                                <a class="dropdown-item d-flex align-items-center text-danger" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="mdi mdi-logout fs-16 align-middle me-2"></i>
+                                    <span class="align-middle" data-key="t-logout">Cerrar sesión</span>
+                                </a>
+                            </div>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
@@ -605,6 +615,76 @@
 </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<style>
+    .topbar-info-pill {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px);
+        transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .topbar-info-pill:hover {
+        background-color: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.35);
+        box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.12);
+    }
+
+    #page-header-user-dropdown {
+        backdrop-filter: blur(8px);
+        transition: background-color .2s ease, border-color .2s ease;
+    }
+
+    #page-header-user-dropdown:hover,
+    #page-header-user-dropdown:focus,
+    #page-header-user-dropdown:active,
+    #page-header-user-dropdown.active,
+    #page-header-user-dropdown.show {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.35) !important;
+        box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.12) !important;
+    }
+    
+    #page-header-user-dropdown:hover .header-profile-user,
+    #page-header-user-dropdown:focus .header-profile-user,
+    #page-header-user-dropdown:active .header-profile-user,
+    #page-header-user-dropdown.active .header-profile-user,
+    #page-header-user-dropdown.show .header-profile-user {
+        border-color: rgba(255, 255, 255, 0.45) !important;
+    }
+
+    .profile-dropdown-menu .dropdown-item {
+        padding: .5rem 1rem;
+    }
+
+    .profile-dropdown-header {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .profile-dropdown-title {
+        font-size: 1.02rem;
+        font-weight: 600;
+        line-height: 1.15;
+        color: var(--vz-body-color);
+    }
+
+    .profile-dropdown-subtitle {
+        display: block;
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: .76rem;
+        line-height: 1;
+        opacity: .75;
+    }
+
+    .profile-dropdown-menu .dropdown-divider {
+        margin: .2rem 0;
+    }
+</style>
+
 <!-- Real-time Clock Script -->
 <script>
     function updateHeaderDateTime() {
@@ -641,5 +721,104 @@
         updateHeaderDateTime();
         // Update every second
         setInterval(updateHeaderDateTime, 1000);
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key !== 'Escape') {
+                return;
+            }
+
+            const profileDropdownTrigger = document.getElementById('page-header-user-dropdown');
+            if (!profileDropdownTrigger || profileDropdownTrigger.getAttribute('aria-expanded') !== 'true') {
+                return;
+            }
+
+            const dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(profileDropdownTrigger);
+            dropdownInstance.hide();
+            profileDropdownTrigger.blur();
+        });
+
+        const profileDropdownTrigger = document.getElementById('page-header-user-dropdown');
+        if (profileDropdownTrigger) {
+            bootstrap.Dropdown.getOrCreateInstance(profileDropdownTrigger, {
+                autoClose: 'outside'
+            });
+
+            const profileDropdownMenu = document.getElementById('profile-dropdown-menu');
+
+            const getProfileDropdownItems = () => {
+                if (!profileDropdownMenu) {
+                    return [];
+                }
+
+                return Array.from(
+                    profileDropdownMenu.querySelectorAll('.dropdown-item:not(.disabled):not([disabled])')
+                );
+            };
+
+            const focusProfileItemAt = (index) => {
+                const items = getProfileDropdownItems();
+                if (!items.length) {
+                    return;
+                }
+
+                const safeIndex = (index + items.length) % items.length;
+                items[safeIndex].focus();
+            };
+
+            profileDropdownTrigger.addEventListener('keydown', function(event) {
+                const dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(profileDropdownTrigger, {
+                    autoClose: 'outside'
+                });
+                const isExpanded = profileDropdownTrigger.getAttribute('aria-expanded') === 'true';
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    if (!isExpanded) {
+                        dropdownInstance.show();
+                    }
+                    focusProfileItemAt(0);
+                }
+
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    if (!isExpanded) {
+                        dropdownInstance.show();
+                    }
+                    const items = getProfileDropdownItems();
+                    focusProfileItemAt(items.length - 1);
+                }
+            });
+
+            if (profileDropdownMenu) {
+                profileDropdownMenu.addEventListener('keydown', function(event) {
+                    const items = getProfileDropdownItems();
+                    if (!items.length) {
+                        return;
+                    }
+
+                    const currentIndex = items.indexOf(document.activeElement);
+
+                    if (event.key === 'ArrowDown') {
+                        event.preventDefault();
+                        focusProfileItemAt(currentIndex + 1);
+                    }
+
+                    if (event.key === 'ArrowUp') {
+                        event.preventDefault();
+                        focusProfileItemAt(currentIndex - 1);
+                    }
+
+                    if (event.key === 'Home') {
+                        event.preventDefault();
+                        focusProfileItemAt(0);
+                    }
+
+                    if (event.key === 'End') {
+                        event.preventDefault();
+                        focusProfileItemAt(items.length - 1);
+                    }
+                });
+            }
+        }
     });
 </script>
