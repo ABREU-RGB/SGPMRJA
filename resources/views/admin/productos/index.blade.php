@@ -10,6 +10,22 @@
 @endpush
 
 @section('content')
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Gestión de Productos</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Gestión General</a></li>
+                        <li class="breadcrumb-item active">Productos</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <style>
         .card-body {
             /* overflow-x: auto; */
@@ -227,7 +243,8 @@
                             <div class="col-md-6">
                                 {{-- Tipo de Producto — mantiene HTML custom por data-prefijo + botón "+" --}}
                                 <div class="mb-3">
-                                    <label for="tipo-producto-field" class="form-label">Tipo de Producto <span class="text-danger">*</span></label>
+                                    <label for="tipo-producto-field" class="form-label">Tipo de Producto <span
+                                            class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <select id="tipo-producto-field" name="tipo_producto_id" class="form-select"
                                             required>
@@ -244,20 +261,26 @@
                                         </button>
                                     </div>
                                 </div>
-                                <x-forms.input name="modelo" label="Modelo" placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required id="modelo-field" />
-                                <x-forms.input name="codigo" label="Código" readonly class="bg-light" placeholder="Se genera automáticamente" hint="El código se genera al seleccionar el tipo de producto" id="codigo-field" />
+                                <x-forms.input name="modelo" label="Modelo"
+                                    placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required id="modelo-field" />
+                                <x-forms.input name="codigo" label="Código" readonly class="bg-light"
+                                    placeholder="Se genera automáticamente"
+                                    hint="El código se genera al seleccionar el tipo de producto" id="codigo-field" />
                                 {{-- Descripción — textarea --}}
                                 <div class="mb-3">
-                                    <label for="descripcion-field" class="form-label">Descripción <span class="text-danger">*</span></label>
+                                    <label for="descripcion-field" class="form-label">Descripción <span
+                                            class="text-danger">*</span></label>
                                     <textarea id="descripcion-field" name="descripcion" class="form-control" rows="3"
                                         placeholder="Descripción adicional del producto" required></textarea>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01" min="0" placeholder="0.00" required id="precio-base-field" />
+                                <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01" min="0"
+                                    placeholder="0.00" required id="precio-base-field" />
                                 {{-- Imagen — mantiene HTML nativo por preview --}}
                                 <div class="mb-3">
-                                    <label for="imagen-field" class="form-label">Imagen <span class="text-danger">*</span></label>
+                                    <label for="imagen-field" class="form-label">Imagen <span
+                                            class="text-danger">*</span></label>
                                     <input type="file" id="imagen-field" name="imagen" class="form-control" accept="image/*"
                                         required />
                                     <div id="imagen-preview" class="mt-2 text-center" style="display: none;">
@@ -266,8 +289,8 @@
                                     </div>
                                 </div>
                                 <x-forms.select name="estado" label="Estado" required
-                                    :options="['1' => 'Activo', '0' => 'Inactivo']"
-                                    placeholder="" value="1" id="estado-field" />
+                                    :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1"
+                                    id="estado-field" />
                             </div>
                         </div>
                     </div>
@@ -277,7 +300,8 @@
                                 <i class="ri-close-line me-1"></i>Cerrar
                             </button>
                             <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
-                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line"
+                                loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -449,18 +473,18 @@
                         searchable: false,
                         render: function (data) {
                             return `
-                                    <div class="d-flex gap-2 justify-content-center">
-                                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
-                                            <i class="ri-eye-fill"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
-                                            <i class="ri-pencil-fill"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
-                                            <i class="ri-delete-bin-fill"></i>
-                                        </button>
-                                    </div>
-                                `;
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
+                                                <i class="ri-eye-fill"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
+                                                <i class="ri-pencil-fill"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
+                                                <i class="ri-delete-bin-fill"></i>
+                                            </button>
+                                        </div>
+                                    `;
                         }
                     }
                 ],
@@ -759,24 +783,24 @@
 
                     tipos.forEach(function (tipo) {
                         tbody.append(`
-                                    <tr>
-                                        <td>${tipo.nombre}</td>
-                                        <td><span class="badge bg-secondary">${tipo.codigo_prefijo}</span></td>
-                                        <td><span class="badge bg-info">${tipo.contador}</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
-                                                data-id="${tipo.id}" 
-                                                data-nombre="${tipo.nombre}" 
-                                                data-prefijo="${tipo.codigo_prefijo}"
-                                                data-descripcion="${tipo.descripcion || ''}">
-                                                <i class="ri-pencil-line"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger delete-tipo-btn" data-id="${tipo.id}">
-                                                <i class="ri-delete-bin-line"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `);
+                                        <tr>
+                                            <td>${tipo.nombre}</td>
+                                            <td><span class="badge bg-secondary">${tipo.codigo_prefijo}</span></td>
+                                            <td><span class="badge bg-info">${tipo.contador}</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
+                                                    data-id="${tipo.id}" 
+                                                    data-nombre="${tipo.nombre}" 
+                                                    data-prefijo="${tipo.codigo_prefijo}"
+                                                    data-descripcion="${tipo.descripcion || ''}">
+                                                    <i class="ri-pencil-line"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger delete-tipo-btn" data-id="${tipo.id}">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `);
                     });
                 });
             }

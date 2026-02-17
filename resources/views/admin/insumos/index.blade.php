@@ -24,6 +24,7 @@
         .search-box {
             position: relative;
         }
+
         .search-box .search-icon {
             position: absolute;
             top: 50%;
@@ -31,6 +32,7 @@
             transform: translateY(-50%);
             color: #878a99;
         }
+
         .search-box input {
             padding-left: 30px;
         }
@@ -45,22 +47,27 @@
             font-size: 12px;
             font-weight: 600;
         }
+
         .badge-tipo-tela {
             background-color: rgba(111, 66, 193, 0.15);
             color: #6f42c1;
         }
+
         .badge-tipo-hilo {
             background-color: rgba(41, 156, 219, 0.15);
             color: #299cdb;
         }
+
         .badge-tipo-boton {
             background-color: rgba(247, 184, 75, 0.18);
             color: #e0a800;
         }
+
         .badge-tipo-cierre {
             background-color: rgba(0, 217, 165, 0.15);
             color: #00d9a5;
         }
+
         .badge-tipo-etiqueta {
             background-color: rgba(233, 30, 99, 0.15);
             color: #e91e63;
@@ -70,6 +77,21 @@
 
 @section('content')
     <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Gestión de Insumos</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Gestión General</a></li>
+                        <li class="breadcrumb-item active">Insumos</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
@@ -78,7 +100,8 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Buscador Personalizado -->
                             <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input" placeholder="Buscar insumo...">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar insumo...">
                                 <i class="ri-search-line search-icon"></i>
                             </div>
                             <div class="d-flex gap-2">
@@ -184,14 +207,16 @@
                         <x-forms.select name="tipo" label="Tipo" required
                             :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
                         <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
-                        <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0" required />
-                        <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0" required />
-                        <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0" required />
+                        <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0"
+                            required />
+                        <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0"
+                            required />
+                        <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0"
+                            required />
                         <x-forms.select name="proveedor_id" label="Proveedor" required
                             :options="$proveedores->pluck('razon_social', 'id')->toArray()" />
                         <x-forms.select name="estado" label="Estado" required
-                            :options="['1' => 'Activo', '0' => 'Inactivo']"
-                            placeholder="" value="1" />
+                            :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1" />
                     </div>
                     <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
@@ -199,7 +224,8 @@
                                 <i class="ri-close-line me-1"></i>Cerrar
                             </button>
                             <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
-                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line"
+                                loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -294,18 +320,18 @@
                         searchable: false,
                         render: function (data) {
                             return `
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
-                                        <i class="ri-eye-fill"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
-                                        <i class="ri-pencil-fill"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
-                                        <i class="ri-delete-bin-fill"></i>
-                                    </button>
-                                </div>
-                            `;
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
+                                            <i class="ri-eye-fill"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
+                                            <i class="ri-pencil-fill"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
+                                            <i class="ri-delete-bin-fill"></i>
+                                        </button>
+                                    </div>
+                                `;
                         }
                     }
                 ],
