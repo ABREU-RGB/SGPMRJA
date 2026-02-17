@@ -1,11 +1,3 @@
-# ⚠️ Documento legado (migrado)
-
-Este archivo se conserva por historial. La versión canónica vigente está en:
-
-- `docs/CASOS_DE_USO.md`
-
----
-
 # 📋 Casos de Uso del Sistema de Gestión para Pedidos
 ## Manufacturas R.J. Atlántico C.A
 

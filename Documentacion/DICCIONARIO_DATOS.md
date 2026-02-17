@@ -1,3 +1,13 @@
+# ⚠️ Documento legado (migrado)
+
+Este archivo se conserva por historial. La versión canónica vigente está en:
+
+- `docs/DICCIONARIO_DATOS.md`
+
+Nota: el diccionario debe mantenerse alineado con `database/schema/mysql-schema.sql`.
+
+---
+
 # DICCIONARIO DE DATOS
 
 **Sistema de Gestión para Pedidos - Manufacturas R.J. Atlántico C.A**  

@@ -1,11 +1,3 @@
-# ⚠️ Documento legado (migrado)
-
-Este archivo se conserva por historial. La versión canónica vigente está en:
-
-- `docs/AUDITORIA_SGPMRJA.md`
-
----
-
 # 🔍 Auditoría Total del Sistema SGPMRJA
 
 **Fecha:** 16 de Febrero, 2026  

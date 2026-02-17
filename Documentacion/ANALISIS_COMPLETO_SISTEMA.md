@@ -1,3 +1,11 @@
+# ⚠️ Documento legado (migrado)
+
+Este archivo se conserva por historial. La versión canónica vigente está en:
+
+- `docs/ARQUITECTURA_SISTEMA.md`
+
+---
+
 # 🧵 Análisis Completo del Sistema de Gestión para Pedidos en Manufacturas R.J. Atlántico C.A
 
 ## 📋 Resumen Ejecutivo

@@ -1,11 +1,3 @@
-# ⚠️ Documento legado (migrado)
-
-Este archivo se conserva por historial. La versión canónica vigente está en:
-
-- `docs/REQUERIMIENTOS_FUNCIONALES.md`
-
----
-
 # 📋 Requerimientos Funcionales del Sistema de Gestión para Pedidos
 ## Manufacturas R.J. Atlántico C.A
 

@@ -1,11 +1,3 @@
-# ⚠️ Documento legado (migrado)
-
-Este archivo se conserva por historial. La versión canónica vigente está en:
-
-- `docs/CHANGELOG_COTIZACIONES.md`
-
----
-
 # Registro de Cambios Funcionales - Módulo de Cotizaciones
 
 **Fecha:** 19 de Enero, 2026
