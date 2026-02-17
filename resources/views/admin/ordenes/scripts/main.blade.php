@@ -229,22 +229,26 @@
                 { 
                     data: 'id', 
                     name: 'id',
-                    className: 'align-middle'
+                    className: 'align-middle text-center',
+                    width: '8%'
                 },
                 { 
                     data: 'pedido_info', 
                     name: 'pedido.id',
                     className: 'align-middle text-center',
-                    orderable: false
+                    orderable: false,
+                    width: '10%'
                 },
                 { 
                     data: 'cantidad_solicitada', 
                     name: 'cantidad_solicitada',
-                    className: 'align-middle text-center'
+                    className: 'align-middle text-center',
+                    width: '12%'
                 },
                 { 
                     data: null,
                     className: 'align-middle',
+                    width: '18%',
                     render: function(data) {
                         let porcentaje = (data.cantidad_producida / data.cantidad_solicitada * 100).toFixed(2);
                         return `<div class="progress" style="height: 15px;">
@@ -256,32 +260,21 @@
                     }
                 },
                 { 
-                    data: 'fecha_inicio', 
-                    name: 'fecha_inicio',
-                    className: 'align-middle',
-                    render: function(data) {
-                        let fecha = new Date(data);
-                        return `<div class="text-nowrap">
-                            <div class="fw-medium">${fecha.toLocaleDateString('es-ES')}</div>
-                            <small class="text-muted">${fecha.toLocaleTimeString('es-ES')}</small>
-                        </div>`;
-                    }
-                },
-                { 
                     data: 'fecha_fin_estimada', 
                     name: 'fecha_fin_estimada',
                     className: 'align-middle',
+                    width: '14%',
                     render: function(data) {
                         let fecha = new Date(data);
                         return `<div class="text-nowrap">
                             <div class="fw-medium">${fecha.toLocaleDateString('es-ES')}</div>
-                            <small class="text-muted">${fecha.toLocaleTimeString('es-ES')}</small>
                         </div>`;
                     }
                 },
                 { 
                     data: 'estado',
                     className: 'align-middle text-center',
+                    width: '12%',
                     render: function(data) {
                         let clases = {
                             'Pendiente': 'status-pendiente badge-soft-warning',
@@ -293,70 +286,53 @@
                         return `<span class="badge badge-status ${badgeClass} rounded-pill">${data}</span>`;
                     }
                 },
-                { 
-                    data: 'costo_estimado',
-                    className: 'align-middle text-end',
-                    render: function(data) {
-                        return '$/ ' + Number(data).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    }
-                },
                 {
-                    data: 'logo',
-                    name: 'logo',
+                    data: 'id',
+                    name: 'actions',
+                    orderable: false,
+                    searchable: false,
+                    className: 'align-middle text-center',
+                    width: '16%',
                     render: function(data) {
-                        return data || 'N/A';
+                        return `
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
+                                    <i class="ri-eye-fill"></i>
+                                </button>
+                                <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
+                                    <i class="ri-pencil-fill"></i>
+                                </button>
+                                <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
+                                    <i class="ri-delete-bin-fill"></i>
+                                </button>
+                            </div>
+                        `;
                     }
-                },
-                { 
-                    data: 'creado_por', 
-                    name: 'creado_por',
-                    className: 'align-middle'
-                },
-                {
-                data: 'id',
-                name: 'actions',
-                orderable: false,
-                searchable: false,
-                className: 'align-middle text-center',
-                render: function(data) {
-                    return `
-                        <div class="d-flex gap-2 justify-content-center">
-                            <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
-                                <i class="ri-eye-fill"></i>
-                            </button>
-                            <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
-                                <i class="ri-pencil-fill"></i>
-                            </button>
-                            <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
-                                <i class="ri-delete-bin-fill"></i>
-                            </button>
-                        </div>
-                    `;
-                }
                 }
             ],
             order: [[0, 'desc']],
+            autoWidth: false,
             responsive: false,
             buttons: [
                 {
                     extend: 'copy',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 9] }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                 },
                 {
                     extend: 'csv',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 9] }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                 },
                 {
                     extend: 'excel',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 9] }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                 },
                 {
                     extend: 'pdf',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 9] }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                 },
                 {
                     extend: 'print',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 9] }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                 }
             ],
             language: lenguajeData
@@ -442,8 +418,9 @@
             $.get("{{ route('ordenes.edit', ':id') }}".replace(':id', id), function(data) {
                 $('#modalTitle').text('Editar Orden de Producción');
                 $('#id-field').val(data.id);
-                $('#producto-id-field').val(data.producto_id).trigger('change');
-                $('#cantidad-solicitada-field').val(data.cantidad_solicitada);
+                $('#producto-id-field').val(data.producto_id).trigger('change').prop('disabled', true).addClass('campo-protegido');
+                $('#cantidad-solicitada-field').val(data.cantidad_solicitada).prop('readonly', true).addClass('campo-protegido');
+                $('#pedido-id-field').prop('disabled', true).addClass('campo-protegido');
                 
                 const formatDateForInput = (dateString) => {
                     if (!dateString) return '';
@@ -583,6 +560,10 @@
             $('#ordenForm')[0].reset();
             $('#id-field').val('');
             $('#pedido-id-hidden-field').val('');
+            // Resetear y habilitar campos protegidos
+             $('#pedido-id-field').val('').prop('disabled', false).removeClass('campo-protegido');
+            $('#producto-id-field').val('').prop('disabled', false).removeClass('campo-protegido');
+            $('#cantidad-solicitada-field').prop('readonly', false).removeClass('campo-protegido');
             $('#modalTitle').text('Nueva Orden de Producción');
             $('#estado-container').hide();
             $('#add-btn').show();

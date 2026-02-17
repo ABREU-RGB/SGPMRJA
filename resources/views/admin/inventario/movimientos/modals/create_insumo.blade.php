@@ -16,7 +16,7 @@
                         </div>
                         <div class="col-md-6">
                             <x-forms.select name="tipo" label="Tipo" required id="tipo-field-insumo"
-                                :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta', 'Otro' => 'Otro']"
+                                :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']"
                                 placeholder="Seleccione tipo..." />
                         </div>
                     </div>

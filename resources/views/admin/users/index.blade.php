@@ -56,6 +56,25 @@
         .search-box input {
             padding-left: 30px;
         }
+
+        /* Badges de rol */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-rol-admin {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-rol-supervisor {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -87,7 +106,6 @@
                                 <th>Email</th>
                                 <th>Rol</th>
                                 <th>Estado</th>
-                                <th>Creado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -301,7 +319,15 @@
                         data: 'email'
                     },
                     {
-                        data: 'role'
+                        data: 'role',
+                        render: function (data) {
+                            if (data === 'Administrador') {
+                                return '<span class="badge-tipo badge-rol-admin"><i class="ri-shield-star-line"></i> Administrador</span>';
+                            } else if (data === 'Supervisor') {
+                                return '<span class="badge-tipo badge-rol-supervisor"><i class="ri-shield-user-line"></i> Supervisor</span>';
+                            }
+                            return data || 'Sin rol';
+                        }
                     },
                     {
                         data: 'estado',
@@ -314,21 +340,6 @@
                         }
                     },
                     {
-                        data: 'created_at',
-                        render: function (data) {
-                            if (!data) return '';
-                            const date = new Date(data);
-                            return date.toLocaleString('es-VE', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true
-                            });
-                        }
-                    },
-                    {
                         data: null,
                         render: function (data, type, row) {
                             return generateButtons(row.id);
@@ -336,7 +347,7 @@
                     }
                 ],
                 order: [
-                    [4, 'desc']
+                    [0, 'asc']
                 ],
                 dom: 'rtip',
                 responsive: true,

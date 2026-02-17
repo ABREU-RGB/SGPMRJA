@@ -5,12 +5,13 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('inventario.movimientos.data') }}",
+            autoWidth: false,
             columns: [
-                { data: 'insumo_nombre', name: 'insumo_nombre' },
-                { data: 'insumo_tipo', name: 'insumo_tipo' },
+                { data: 'insumo_nombre', name: 'insumo_nombre', width: '25%' },
                 {
                     data: 'tipo_movimiento',
                     name: 'tipo_movimiento',
+                    width: '15%',
                     render: function (data) {
                         if (data === 'Entrada') {
                             return '<span class="badge badge-status status-aprobada"><i class="ri-arrow-right-down-line me-1"></i>Entrada</span>';
@@ -22,13 +23,7 @@
                 {
                     data: 'cantidad',
                     name: 'cantidad',
-                    render: function (data, type, row) {
-                        return parseFloat(data).toFixed(2);
-                    }
-                },
-                {
-                    data: 'stock_anterior',
-                    name: 'stock_anterior',
+                    width: '12%',
                     render: function (data, type, row) {
                         return parseFloat(data).toFixed(2);
                     }
@@ -36,15 +31,23 @@
                 {
                     data: 'stock_nuevo',
                     name: 'stock_nuevo',
+                    width: '12%',
                     render: function (data, type, row) {
                         return parseFloat(data).toFixed(2);
                     }
                 },
-                { data: 'usuario', name: 'usuario' },
-                { data: 'fecha', name: 'fecha' },
-                { data: 'actions', name: 'actions', orderable: false, searchable: false },
+                {
+                    data: 'fecha',
+                    name: 'fecha',
+                    width: '16%',
+                    render: function(data) {
+                        if (!data) return 'N/A';
+                        return data.split(' ')[0];
+                    }
+                },
+                { data: 'actions', name: 'actions', orderable: false, searchable: false, width: '20%' },
             ],
-            order: [[7, 'desc']],
+            order: [[4, 'desc']],
             language: lenguajeData,
             responsive: true
         });

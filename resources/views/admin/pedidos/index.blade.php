@@ -92,39 +92,9 @@
             overflow-x: auto;
         }
 
-        /* === RESPONSIVIDAD: Ocultar columnas en pantallas peque�as === */
-        /* Pantallas menores a 1400px: ocultar Email */
-        @media (max-width: 1399px) {
-
-            #pedidos-table th:nth-child(3),
-            #pedidos-table td:nth-child(3) {
-                display: none;
-            }
-        }
-
-        /* Pantallas menores a 1200px: ocultar tambi�n Tel�fono y Usuario Creador */
-        @media (max-width: 1199px) {
-
-            #pedidos-table th:nth-child(4),
-            #pedidos-table td:nth-child(4) {
-                display: none;
-            }
-        }
-
-        /* Pantallas menores a 992px: ocultar tambi�n Documento y Fecha Entrega */
-        @media (max-width: 991px) {
-
-            #pedidos-table th:nth-child(5),
-            #pedidos-table td:nth-child(5),
-            #pedidos-table th:nth-child(7),
-            #pedidos-table td:nth-child(7) {
-                display: none;
-            }
-        }
-
         #pedidos-table {
             width: 100% !important;
-            /* Ocupar todo el ancho disponible */
+            table-layout: fixed;
             font-size: 13px;
         }
 
@@ -137,47 +107,17 @@
         #pedidos-table td {
             padding: 0.6rem 0.8rem;
             vertical-align: middle;
+            white-space: nowrap;
         }
 
-        /* Columnas Auxiliares: Ancho mínimo (1%) para que no crezcan innecesariamente */
+        /* Alinear encabezados centrados: Pedido, Estado, Acciones */
         #pedidos-table th:nth-child(1),
-        #pedidos-table td:nth-child(1),
-        /* ID */
-        #pedidos-table th:nth-child(3),
-        #pedidos-table td:nth-child(3),
-        /* Teléfono */
-        #pedidos-table th:nth-child(4),
-        #pedidos-table td:nth-child(4),
-        /* Fecha Pedido */
         #pedidos-table th:nth-child(5),
-        #pedidos-table td:nth-child(5),
-        /* Fecha Entrega */
-        #pedidos-table th:nth-child(6),
-        #pedidos-table td:nth-child(6),
-        /* Estado */
-        #pedidos-table th:nth-child(7),
-        #pedidos-table td:nth-child(7) {
-            /* Total */
-            width: 1%;
-            white-space: nowrap;
-        }
-
-        #pedidos-table th:last-child,
-        #pedidos-table td:last-child {
-            width: 1%;
-            /* Mínimo ancho posible */
-            white-space: nowrap;
-            /* Forzar una sola línea */
+        #pedidos-table th:last-child {
             text-align: center;
         }
 
-        /* Alinear encabezados con su contenido (Centrado) */
-        #pedidos-table th:nth-child(1),
-        /* ID */
-        #pedidos-table th:nth-child(6),
-        /* Estado */
-        #pedidos-table th:last-child {
-            /* Acciones */
+        #pedidos-table td:last-child {
             text-align: center;
         }
 
@@ -378,14 +318,11 @@
                         <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle">
                             <thead>
                                 <tr>
-                                    <th>Nro. de pedido</th>
+                                    <th>Pedido</th>
                                     <th>Cliente</th>
-                                    <th>Teléfono</th>
-                                    <th>Fecha Pedido</th>
-                                    <th>Fecha Entrega Estimada</th>
-                                    <th>Estado</th>
+                                    <th>Fecha Entrega</th>
                                     <th>Total</th>
-
+                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -1349,27 +1286,31 @@
             });
 
             var table = $('#pedidos-table').DataTable({
-                scrollX: true,
+                autoWidth: false,
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('pedidos.data') }}",
                 columns: [
-                    { data: 'id', name: 'id', title: 'Nro. de pedido', className: 'text-center' },
-                    { data: 'cliente_nombre_display', name: 'cliente_nombre_display', defaultContent: 'N/A' },
-                    { data: 'cliente_telefono_display', name: 'cliente_telefono_display', defaultContent: 'N/A' },
-                    { data: 'fecha_pedido', name: 'fecha_pedido' },
-                    { data: 'fecha_entrega_estimada', name: 'fecha_entrega_estimada' },
+                    { data: 'id', name: 'id', title: 'Pedido', className: 'text-center', width: '8%' },
+                    { data: 'cliente_nombre_display', name: 'cliente_nombre_display', defaultContent: 'N/A', width: '30%' },
+                    { data: 'fecha_entrega_estimada', name: 'fecha_entrega_estimada', width: '14%' },
+                    {
+                        data: 'total',
+                        name: 'total',
+                        width: '12%',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '$')
+                    },
                     {
                         data: 'estado',
                         name: 'estado',
                         className: 'text-center',
+                        width: '14%',
                         render: function (data, type, row) {
-                            // Estilos de estado con paleta Atlántico
-                            var estadoStyles = {
-                                'Pendiente': 'background-color: rgba(30, 60, 114, 0.15); border: 1px solid #1e3c72; color: #1e3c72;',
-                                'Procesando': 'background-color: rgba(0, 217, 165, 0.15); border: 1px solid #00d9a5; color: #006b52;',
-                                'Completado': 'background-color: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #1e8449;',
-                                'Cancelado': 'background-color: rgba(139, 58, 58, 0.15); border: 1px solid #8b3a3a; color: #8b3a3a;'
+                            var estadoClasses = {
+                                'Pendiente': 'status-pendiente',
+                                'Procesando': 'status-procesando',
+                                'Completado': 'status-completado',
+                                'Cancelado': 'status-cancelado'
                             };
                             var estadoIcons = {
                                 'Pendiente': 'ri-time-line',
@@ -1377,42 +1318,40 @@
                                 'Completado': 'ri-check-double-line',
                                 'Cancelado': 'ri-close-circle-line'
                             };
-                            var style = estadoStyles[data] || 'background-color: #f8f9fa; color: #495057;';
+                            var badgeClass = estadoClasses[data] || '';
                             var icon = estadoIcons[data] || 'ri-question-line';
-                            return '<span class="badge" style="' + style + ' padding: 5px 10px; border-radius: 4px; font-weight: 500;"><i class="' + icon + ' me-1"></i>' + data + '</span>';
+                            return '<span class="badge badge-status ' + badgeClass + ' rounded-pill"><i class="' + icon + ' me-1"></i>' + data + '</span>';
                         }
                     },
-                    { data: 'total', name: 'total' },
-
                     {
                         data: 'id',
                         name: 'actions',
                         orderable: false,
                         searchable: false,
+                        width: '22%',
                         render: function (data, type, row) {
                             var isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
-                            // Botones Editar y Eliminar (solo si NO está Completado ni Cancelado)
                             var editDelete = '';
                             if (isAdmin && row.estado !== 'Completado' && row.estado !== 'Cancelado') {
                                 editDelete = `
-                                                                                                                                                                    <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
-                                                                                                                                                                        <i class="ri-pencil-fill"></i>
-                                                                                                                                                                    </button>
-                                                                                                                                                                    <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
-                                                                                                                                                                        <i class="ri-delete-bin-fill"></i>
-                                                                                                                                                                    </button>`;
+                                    <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
+                                        <i class="ri-pencil-fill"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
+                                        <i class="ri-delete-bin-fill"></i>
+                                    </button>`;
                             }
                             return `
-                                                                                                                                                                    <div class="d-flex gap-1 justify-content-center align-items-center">
-                                                                                                                                                                        <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
-                                                                                                                                                                            <i class="ri-eye-fill"></i>
-                                                                                                                                                                        </button>
-                                                                                                                                                                        ${editDelete}
-                                                                                                                                                                        <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
-                                                                                                                                                                            <i class="ri-file-pdf-line"></i>
-                                                                                                                                                                        </a>
-                                                                                                                                                                    </div>
-                                                                                                                                                                `;
+                                <div class="d-flex gap-1 justify-content-center align-items-center">
+                                    <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
+                                        <i class="ri-eye-fill"></i>
+                                    </button>
+                                    ${editDelete}
+                                    <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
+                                        <i class="ri-file-pdf-line"></i>
+                                    </a>
+                                </div>
+                            `;
                         }
                     }
                 ],
@@ -1422,7 +1361,7 @@
                     {
                         extend: 'copy',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                            columns: [0, 1, 2, 3, 4]
                         }
                     },
                     {
@@ -1667,7 +1606,8 @@
                 $('#modalTitle').text('Agregar Pedido');
                 $('#pedidoForm')[0].reset();
                 $('#id-field').val('');
-                $('#cliente-id-field').val(''); // Limpiar cliente_id para nuevo pedido
+                $('#cliente-id-field').val('').prop('disabled', false).removeClass('campo-protegido'); // Limpiar cliente_id para nuevo pedido y habilitar
+                $('#fecha-pedido-field').prop('readonly', false).removeClass('campo-protegido'); // Habilitar fecha pedido
                 $('#add-btn').show();
                 $('#edit-btn').hide();
                 $('#estado-field-wrapper').hide(); // Ocultar estado en agregar
@@ -1788,7 +1728,7 @@
                     method: 'GET',
                     success: function (data) {
                         // Cargar cliente y bloquear campos visualmente
-                        $('#cliente-id-field').val(data.cliente_id || '');
+                        $('#cliente-id-field').val(data.cliente_id || '').prop('disabled', true).addClass('campo-protegido');
 
                         $('#cliente-nombre-field').val(data.cliente_nombre_completo || data.cliente_nombre || '')
                             .prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
@@ -1810,7 +1750,7 @@
                             .prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
 
                         $('#ci-rif-full-field').val(ciRif);
-                        $('#fecha-pedido-field').val(data.fecha_pedido || '');
+                        $('#fecha-pedido-field').val(data.fecha_pedido || '').prop('readonly', true).addClass('campo-protegido');
                         $('#fecha-entrega-estimada-field').val(data.fecha_entrega_estimada || '');
                         $('#estado-field').val(data.estado);
 

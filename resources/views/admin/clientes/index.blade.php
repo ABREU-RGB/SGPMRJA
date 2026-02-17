@@ -66,7 +66,49 @@
             color: #fff;
         }
 
-        /* Revertido: sin reglas personalizadas para SweetAlert2 */
+        /* Badges de tipo de cliente */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-tipo-natural {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+        .badge-tipo-juridico {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-tipo-gubernamental {
+            background-color: rgba(247, 184, 75, 0.18);
+            color: #e0a800;
+        }
+
+        /* Campo protegido (readonly en edición) */
+        .campo-protegido {
+            background-color: #f0f0f0 !important;
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .campo-protegido-wrapper {
+            position: relative;
+        }
+        .campo-protegido-wrapper::after {
+            content: '\F1A4';
+            font-family: 'remixicon';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #878a99;
+            font-size: 14px;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -92,8 +134,8 @@
                                 <th>Documento</th>
                                 <th>Cliente</th>
                                 <th>Tipo</th>
-                                <th>Email</th>
                                 <th>Teléfono</th>
+                                <th>Email</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -783,13 +825,13 @@
                         }
                     },
                     { data: 'tipo_cliente', render: function (data) {
-                        if (data === 'natural') return 'Natural';
-                        if (data === 'juridico') return 'Jurídico';
-                        if (data === 'gubernamental') return 'Gubernamental';
+                        if (data === 'natural') return '<span class="badge-tipo badge-tipo-natural"><i class="ri-user-line"></i> Natural</span>';
+                        if (data === 'juridico') return '<span class="badge-tipo badge-tipo-juridico"><i class="ri-building-line"></i> Jurídico</span>';
+                        if (data === 'gubernamental') return '<span class="badge-tipo badge-tipo-gubernamental"><i class="ri-government-line"></i> Gubernamental</span>';
                         return data;
                     } },
-                    { data: 'email' },
                     { data: 'telefono' },
+                    { data: 'email' },
                     { data: null, render: function (data, type, row) { return generateButtons(row.id); } }
                 ],
                 order: [[0, 'asc']], // Ordenar por documento (primera columna)
@@ -858,9 +900,9 @@
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 $("#documento-prefix-field").val("V-");
-                $("#documento-prefix-field").prop('disabled', false);
+                $("#documento-prefix-field").prop('disabled', false).removeClass('campo-protegido');
                 $("#documento-number-field").val("");
-                $("#documento-number-field").prop('disabled', false);
+                $("#documento-number-field").prop('disabled', false).removeClass('campo-protegido');
                 // Reset teléfono
                 $("#telefono-prefix-field").val("0424");
                 $("#telefono-number-field").val("");
@@ -874,8 +916,8 @@
                 $("#add-btn").hide();
                 $("#edit-btn").show();
                 // Bloquear edición de documento
-                $("#documento-prefix-field").prop('disabled', true);
-                $("#documento-number-field").prop('disabled', true);
+                $("#documento-prefix-field").prop('disabled', true).addClass('campo-protegido');
+                $("#documento-number-field").prop('disabled', true).addClass('campo-protegido');
             }
             $("#create-btn").click(function () { resetForm(); });
             $("#showModal").on('hidden.bs.modal', function () { resetForm(); });
@@ -958,7 +1000,8 @@
                     $("#viewModal").modal("show");
                     $("#view-nombre").text(data.nombre || 'N/A');
                     $("#view-apellido").text(data.apellido || 'N/A');
-                    $("#view-tipo_cliente").text(data.tipo_cliente === 'natural' ? 'Natural' : 'Jurídico');
+                    var tipoTexto = data.tipo_cliente === 'natural' ? 'Natural' : (data.tipo_cliente === 'juridico' ? 'Jurídico' : 'Gubernamental');
+                    $("#view-tipo_cliente").text(tipoTexto);
                     $("#view-email").text(data.email || 'N/A');
                     $("#view-telefono").text(data.telefono || 'N/A');
                     $("#view-documento").text(data.documento || 'N/A');

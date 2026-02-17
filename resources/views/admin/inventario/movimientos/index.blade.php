@@ -60,12 +60,9 @@
                                 <thead>
                                     <tr>
                                         <th>Insumo</th>
-                                        <th>Tipo</th>
                                         <th>Tipo Movimiento</th>
                                         <th>Cantidad</th>
-                                        <th>Stock Anterior</th>
                                         <th>Stock Nuevo</th>
-                                        <th>Usuario</th>
                                         <th>Fecha</th>
                                         <th>Acciones</th>
                                     </tr>

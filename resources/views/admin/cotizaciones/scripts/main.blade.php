@@ -109,16 +109,13 @@
             serverSide: true,
             ajax: "{{ route('cotizaciones.data') }}",
             columns: [
-                { data: 'id', name: 'id', title: 'Nro.', width: '5%' },
-                { data: 'ci_rif', name: 'ci_rif', title: 'Documento', width: '10%' },
-                { data: 'cliente_nombre', name: 'cliente_nombre', width: '10%' },
-                { data: 'cliente_telefono', name: 'cliente_telefono', width: '10%' },
-                { data: 'fecha_cotizacion', name: 'fecha_cotizacion', width: '10%' },
-                { data: 'fecha_validez', name: 'fecha_validez', width: '10%' },
+                { data: 'id', name: 'id', title: 'Nro.', width: '6%' },
+                { data: 'cliente_nombre', name: 'cliente_nombre', width: '25%' },
+                { data: 'fecha_cotizacion', name: 'fecha_cotizacion', width: '14%' },
                 {
                     data: 'total',
                     name: 'total',
-                    width: '10%',
+                    width: '14%',
                     render: $.fn.dataTable.render.number(',', '.', 2, '$')
                 },
                 {
@@ -127,13 +124,12 @@
                     width: '12%',
                     className: 'text-center',
                     render: function (data, type, row) {
-                        // Estilos de estado con paleta Atlántico
-                        var estadoStyles = {
-                            'Pendiente': 'background-color: rgba(30, 60, 114, 0.15); border: 1px solid #1e3c72; color: #1e3c72;',
-                            'Aprobada': 'background-color: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #1e8449;',
-                            'Convertida': 'background-color: rgba(0, 217, 165, 0.15); border: 1px solid #00d9a5; color: #006b52;',
-                            'Cancelado': 'background-color: rgba(139, 58, 58, 0.15); border: 1px solid #8b3a3a; color: #8b3a3a;',
-                            'Vencida': 'background-color: rgba(139, 58, 58, 0.15); border: 1px solid #8b3a3a; color: #8b3a3a;'
+                        var estadoClasses = {
+                            'Pendiente': 'status-pendiente',
+                            'Aprobada': 'status-aprobada',
+                            'Convertida': 'badge-soft-info',
+                            'Cancelado': 'status-cancelado',
+                            'Vencida': 'status-cancelado'
                         };
                         var estadoIcons = {
                             'Pendiente': 'ri-time-line',
@@ -142,10 +138,10 @@
                             'Cancelado': 'ri-close-circle-line',
                             'Vencida': 'ri-alarm-warning-line'
                         };
-                        var style = estadoStyles[data] || 'background-color: #f8f9fa; color: #495057;';
+                        var badgeClass = estadoClasses[data] || '';
                         var icon = estadoIcons[data] || 'ri-question-line';
 
-                        var badge = '<span class="badge" style="' + style + ' padding: 5px 10px; border-radius: 4px; font-weight: 500;"><i class="' + icon + ' me-1"></i>' + data + '</span>';
+                        var badge = '<span class="badge badge-status ' + badgeClass + ' rounded-pill"><i class="' + icon + ' me-1"></i>' + data + '</span>';
 
                         var isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
 
@@ -633,7 +629,8 @@
             $('#modalTitle').text('Agregar Cotización');
             $('#cotizacionForm')[0].reset();
             $('#id-field').val('');
-            $('#cliente-id-field').val('');
+            $('#cliente-id-field').val('').prop('disabled', false).removeClass('campo-protegido');
+            $('#fecha-cotizacion-field').val('').prop('readonly', false).removeClass('campo-protegido');
             $('#add-btn').show();
             $('#edit-btn').hide();
             $('#estado-field-wrapper').hide();
@@ -717,7 +714,7 @@
                 url: '/cotizaciones/' + id,
                 method: 'GET',
                 success: function (data) {
-                    $('#cliente-id-field').val(data.cliente_id || '');
+                    $('#cliente-id-field').val(data.cliente_id || '').prop('disabled', true).addClass('campo-protegido');
                     // Obtener datos del cliente desde la relación
                     if (data.cliente) {
                         $('#cliente-nombre-field').val(data.cliente.nombre);
@@ -737,7 +734,7 @@
                     var fechaCotizacion = data.fecha_cotizacion ? data.fecha_cotizacion.split('T')[0] : '';
                     var fechaValidez = data.fecha_validez ? data.fecha_validez.split('T')[0] : '';
 
-                    $('#fecha-cotizacion-field').val(fechaCotizacion);
+                    $('#fecha-cotizacion-field').val(fechaCotizacion).prop('readonly', true).addClass('campo-protegido');
                     $('#fecha-validez-field').val(fechaValidez);
                     $('#estado-field').val(data.estado);
                     // Cargar productos existentes
@@ -859,13 +856,13 @@
                     }
                     $('#view-fecha-cotizacion').text(formatDate(data.fecha_cotizacion));
                     $('#view-fecha-validez').text(formatDate(data.fecha_validez));
-                    // Mostrar estado con diseño unificado (Igual que en la tabla)
-                    var estadoStyles = {
-                        'Pendiente': 'background-color: rgba(30, 60, 114, 0.15); border: 1px solid #1e3c72; color: #1e3c72;',
-                        'Aprobada': 'background-color: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #1e8449;',
-                        'Convertida': 'background-color: rgba(0, 217, 165, 0.15); border: 1px solid #00d9a5; color: #006b52;',
-                        'Cancelado': 'background-color: rgba(139, 58, 58, 0.15); border: 1px solid #8b3a3a; color: #8b3a3a;',
-                        'Vencida': 'background-color: rgba(139, 58, 58, 0.15); border: 1px solid #8b3a3a; color: #8b3a3a;'
+                    // Mostrar estado con diseño unificado (usando clases CSS globales)
+                    var estadoClasses = {
+                        'Pendiente': 'status-pendiente',
+                        'Aprobada': 'status-aprobada',
+                        'Convertida': 'badge-soft-info',
+                        'Cancelado': 'status-cancelado',
+                        'Vencida': 'status-cancelado'
                     };
                     var estadoIcons = {
                         'Pendiente': 'ri-time-line',
@@ -874,9 +871,9 @@
                         'Cancelado': 'ri-close-circle-line',
                         'Vencida': 'ri-alarm-warning-line'
                     };
-                    var style = estadoStyles[data.estado] || 'background-color: #f8f9fa; color: #495057;';
+                    var badgeClass = estadoClasses[data.estado] || '';
                     var icon = estadoIcons[data.estado] || 'ri-question-line';
-                    $('#view-estado').html('<span class="badge" style="' + style + ' padding: 5px 10px; border-radius: 4px; font-weight: 500;"><i class="' + icon + ' me-1"></i>' + data.estado + '</span>');
+                    $('#view-estado').html('<span class="badge badge-status ' + badgeClass + ' rounded-pill"><i class="' + icon + ' me-1"></i>' + data.estado + '</span>');
                     $('#view-usuario-creador').text(data.user ? data.user.name : '');
                     // Mostrar productos de la cotización con el mismo diseño que pedidos
                     var productosBody = $('#view-productos-container');

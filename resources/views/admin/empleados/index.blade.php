@@ -18,7 +18,6 @@
         #empleados-table {
             width: 100% !important;
             font-size: 13px;
-            min-width: 1200px;
         }
 
         #empleados-table th,
@@ -46,6 +45,37 @@
             border-color: #5e35b1;
             color: #fff;
         }
+
+        /* Badges de departamento */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-depto-administracion {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-depto-produccion {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+        .badge-depto-otro {
+            background-color: rgba(0, 217, 165, 0.15);
+            color: #00d9a5;
+        }
+
+        /* Campo protegido (readonly en edición) */
+        .campo-protegido {
+            background-color: #f0f0f0 !important;
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -68,14 +98,11 @@
                     <table id="empleados-table" class="table table-bordered table-striped table-sm align-middle">
                         <thead>
                             <tr>
-                                <th>Código</th>
-                                <th>Nombre Completo</th>
                                 <th>Documento</th>
-                                <th>Email</th>
+                                <th>Nombre Completo</th>
                                 <th>Teléfono</th>
                                 <th>Cargo</th>
                                 <th>Departamento</th>
-                                <th>Fecha Ingreso</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -377,7 +404,7 @@
                             </div>
                             <div class="col-md-6">
                                 <x-forms.select name="genero" label="Género"
-                                    :options="['M' => 'Masculino', 'F' => 'Femenino', 'Otro' => 'Otro']" />
+                                    :options="['M' => 'Masculino', 'F' => 'Femenino']" />
                             </div>
                         </div>
 
@@ -606,56 +633,42 @@
 
             function generateButtons(empleadoId) {
                 return `
-                                                            <div class="dropdown d-inline-block">
-                                                                <button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    <i class="ri-more-fill align-middle"></i>
-                                                                </button>
-                                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                                    <li>
-                                                                        <button class="dropdown-item view-item-btn" data-id="${empleadoId}">
-                                                                            <i class="ri-eye-fill align-bottom me-2 text-muted"></i> Ver
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button class="dropdown-item edit-item-btn" data-id="${empleadoId}">
-                                                                            <i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Editar
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button class="dropdown-item remove-item-btn" data-id="${empleadoId}">
-                                                                            <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Eliminar
-                                                                        </button>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                            `;
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${empleadoId}" title="Ver">
+                            <i class="ri-eye-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${empleadoId}" title="Editar">
+                            <i class="ri-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${empleadoId}" title="Eliminar">
+                            <i class="ri-delete-bin-fill"></i>
+                        </button>
+                    </div>
+                `;
             }
 
             var table = $('#empleados-table').DataTable({
                 ajax: { url: "{{ route('empleados.data') }}", dataSrc: 'data' },
                 columns: [
-                    { data: 'codigo_empleado' },
-                    { data: 'nombre_completo' },
                     {
                         data: 'documento', render: function (data, type, row) {
                             return row.persona ? row.persona.tipo_documento + row.persona.documento_identidad : 'N/A';
                         }
                     },
-                    {
-                        data: 'email', render: function (data, type, row) {
-                            return row.persona && row.persona.email ? row.persona.email : 'N/A';
-                        }
-                    },
+                    { data: 'nombre_completo' },
                     { data: 'telefono', defaultContent: 'N/A' },
                     { data: 'cargo' },
-                    { data: 'departamento' },
                     {
-                        data: 'fecha_ingreso', render: function (data) {
+                        data: 'departamento',
+                        render: function (data) {
                             if (!data) return 'N/A';
-                            // Asumiendo formato ISO YYYY-MM-DD...
-                            const datePart = data.split('T')[0];
-                            const [year, month, day] = datePart.split('-');
-                            return `${day}/${month}/${year}`;
+                            var lower = data.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                            if (lower.includes('administra')) {
+                                return '<span class="badge-tipo badge-depto-administracion"><i class="ri-building-2-line"></i> ' + data + '</span>';
+                            } else if (lower.includes('producc')) {
+                                return '<span class="badge-tipo badge-depto-produccion"><i class="ri-tools-line"></i> ' + data + '</span>';
+                            }
+                            return '<span class="badge-tipo badge-depto-otro"><i class="ri-briefcase-line"></i> ' + data + '</span>';
                         }
                     },
                     {
@@ -697,7 +710,8 @@
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 $("#field-codigo_empleado").val("");
-                $("#tipo-documento-field").val("V-");
+                $("#tipo-documento-field").val("V-").prop('disabled', false).removeClass('campo-protegido');
+                $("#field-documento_identidad").prop('disabled', false).removeClass('campo-protegido');
                 $("#field-estado").val("1");
                 // Limpiar validaciones
                 $("#empleadoForm .is-invalid").removeClass("is-invalid");
@@ -708,6 +722,9 @@
                 $("#modalTitle").text("Actualizar Empleado");
                 $("#add-btn").hide();
                 $("#edit-btn").show();
+                // Bloquear edición de documento
+                $("#tipo-documento-field").prop('disabled', true).addClass('campo-protegido');
+                $("#field-documento_identidad").prop('disabled', true).addClass('campo-protegido');
             }
 
             $("#create-btn").click(function () { resetForm(); });

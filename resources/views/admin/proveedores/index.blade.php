@@ -27,13 +27,39 @@
         .search-box input {
             padding-left: 30px;
         }
+
+        /* Badges de tipo de proveedor */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-tipo-natural {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+        .badge-tipo-juridico {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+
+        /* Campo protegido (readonly en edición) */
+        .campo-protegido {
+            background-color: #f0f0f0 !important;
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
-                        <h5 class="card-title mb-0 flex-grow-1">Listado de Proveedores</h5>
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Proveedores</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Buscador Personalizado -->
@@ -60,12 +86,11 @@
                     <table id="proveedores-table" class="table table-bordered table-striped align-middle">
                         <thead>
                             <tr>
-                                <th>Tipo</th>
                                 <th>Documento</th>
                                 <th>Nombre/Razón Social</th>
+                                <th>Tipo</th>
                                 <th>Teléfono</th>
                                 <th>Email</th>
-                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -539,27 +564,20 @@
             var table = $('#proveedores-table').DataTable({
                 ajax: { url: "{{ route('proveedores.data') }}", dataSrc: 'data' },
                 columns: [
+                    { data: 'documento_display', name: 'rif' },
+                    { data: 'nombre_display', name: 'razon_social' },
                     {
                         data: 'tipo_display',
                         name: 'tipo_proveedor',
                         render: function (data, type, row) {
                             if (row.tipo_proveedor === 'natural') {
-                                return '<span class="badge bg-info">Natural</span>';
+                                return '<span class="badge-tipo badge-tipo-natural"><i class="ri-user-line"></i> Natural</span>';
                             }
-                            return '<span class="badge bg-primary">Jurídico</span>';
+                            return '<span class="badge-tipo badge-tipo-juridico"><i class="ri-building-line"></i> Jurídico</span>';
                         }
                     },
-                    { data: 'documento_display', name: 'rif' },
-                    { data: 'nombre_display', name: 'razon_social' },
                     { data: 'telefono_display', name: 'telefono' },
                     { data: 'email_display', name: 'email' },
-                    {
-                        data: 'estado',
-                        name: 'estado',
-                        render: function (data) {
-                            return data ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
-                        }
-                    },
                     {
                         data: 'id',
                         name: 'actions',
@@ -586,7 +604,7 @@
                         }
                     }
                 ],
-                order: [[2, 'asc']],
+                order: [[0, 'asc']],
                 dom: 'rtip',
                 language: {
                     "sProcessing": "Procesando...",
@@ -723,6 +741,17 @@
 
                     $("#add-btn").hide();
                     $("#edit-btn").show();
+
+                    // Bloquear edición de documento y tipo de proveedor
+                    $("#tipo-proveedor-field").prop('disabled', true).addClass('campo-protegido');
+                    if (data.tipo_proveedor === 'natural') {
+                        $("#tipo-documento-field").prop('disabled', true).addClass('campo-protegido');
+                        $("#documento-identidad-field").prop('disabled', true).addClass('campo-protegido');
+                    } else {
+                        $("#rif-prefix-field").prop('disabled', true).addClass('campo-protegido');
+                        $("#rif-number-field").prop('disabled', true).addClass('campo-protegido');
+                    }
+
                     $("#showModal").modal('show');
                 });
             });
@@ -859,6 +888,12 @@
                 toggleCampos();
                 $("#add-btn").show();
                 $("#edit-btn").hide();
+                // Desbloquear campos de documento
+                $("#tipo-proveedor-field").prop('disabled', false).removeClass('campo-protegido');
+                $("#rif-prefix-field").prop('disabled', false).removeClass('campo-protegido');
+                $("#rif-number-field").prop('disabled', false).removeClass('campo-protegido');
+                $("#tipo-documento-field").prop('disabled', false).removeClass('campo-protegido');
+                $("#documento-identidad-field").prop('disabled', false).removeClass('campo-protegido');
                 $('.is-invalid').removeClass('is-invalid');
                 $('.is-valid').removeClass('is-valid');
                 $('.invalid-feedback').hide();

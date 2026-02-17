@@ -34,6 +34,37 @@
         .search-box input {
             padding-left: 30px;
         }
+
+        /* Badges de tipo de insumo */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-tipo-tela {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-tipo-hilo {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+        .badge-tipo-boton {
+            background-color: rgba(247, 184, 75, 0.18);
+            color: #e0a800;
+        }
+        .badge-tipo-cierre {
+            background-color: rgba(0, 217, 165, 0.15);
+            color: #00d9a5;
+        }
+        .badge-tipo-etiqueta {
+            background-color: rgba(233, 30, 99, 0.15);
+            color: #e91e63;
+        }
     </style>
 @endpush
 
@@ -67,15 +98,11 @@
                         <table id="insumos-table" class="table table-bordered table-striped align-middle">
                             <thead>
                                 <tr>
-                                    <th>Nro. Insumo</th>
                                     <th>Nombre</th>
                                     <th>Tipo</th>
-                                    <th>Unidad</th>
                                     <th>Stock Actual</th>
-                                    <th>Stock Mínimo</th>
                                     <th>Costo Unit.</th>
                                     <th>Proveedor</th>
-                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -155,7 +182,7 @@
                         <input type="hidden" id="id-field" />
                         <x-forms.input name="nombre" label="Nombre" required />
                         <x-forms.select name="tipo" label="Tipo" required
-                            :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta', 'Otro' => 'Otro']" />
+                            :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
                         <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
                         <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0" required />
                         <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0" required />
@@ -209,30 +236,41 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'csv',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'excel',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'pdf',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'print',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     }
                 ],
                 columns: [
-                    { data: 'id', name: 'id' },
                     { data: 'nombre', name: 'nombre' },
-                    { data: 'tipo', name: 'tipo' },
-                    { data: 'unidad_medida', name: 'unidad_medida' },
+                    {
+                        data: 'tipo',
+                        name: 'tipo',
+                        render: function (data) {
+                            var tipos = {
+                                'Tela': '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
+                                'Hilo': '<span class="badge-tipo badge-tipo-hilo"><i class="ri-links-line"></i> Hilo</span>',
+                                'Botón': '<span class="badge-tipo badge-tipo-boton"><i class="ri-radio-button-line"></i> Botón</span>',
+                                'Cierre': '<span class="badge-tipo badge-tipo-cierre"><i class="ri-lock-line"></i> Cierre</span>',
+                                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>'
+                            };
+                            return tipos[data] || '<span class="badge-tipo"><i class="ri-more-line"></i> ' + data + '</span>';
+                        }
+                    },
                     {
                         data: 'stock_actual',
                         name: 'stock_actual',
@@ -241,7 +279,6 @@
                             return `<span class="${stockClass}">${data}</span>`;
                         }
                     },
-                    { data: 'stock_minimo', name: 'stock_minimo' },
                     {
                         data: 'costo_unitario',
                         name: 'costo_unitario',
@@ -250,13 +287,6 @@
                         }
                     },
                     { data: 'proveedor_nombre', name: 'proveedor.razon_social' },
-                    {
-                        data: 'estado',
-                        name: 'estado',
-                        render: function (data) {
-                            return data ? '<span class="badge badge-status status-activo"><i class="ri-checkbox-circle-line me-1"></i>Activo</span>' : '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line me-1"></i>Inactivo</span>';
-                        }
-                    },
                     {
                         data: 'id',
                         name: 'actions',
