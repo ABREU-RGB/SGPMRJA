@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empleado;
 use App\Models\Persona;
-use App\Models\Telefono;
-use App\Models\Direccion;
+use App\Services\EmpleadoService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -13,9 +12,35 @@ use PDF;
 
 class EmpleadoController extends Controller
 {
+    public function __construct(
+        private EmpleadoService $empleadoService
+    ) {
+    }
     public function index()
     {
-        return view('admin.empleados.index');
+        // Departamentos dinámicos para el select del modal
+        $departamentos = Empleado::whereNotNull('departamento')
+            ->pluck('departamento')
+            ->unique()
+            ->mapWithKeys(fn($d) => [$d => $d])
+            ->toArray();
+
+        return view('admin.empleados.index', compact('departamentos'));
+    }
+
+    /**
+     * Mostrar formulario de creación de empleado
+     */
+    public function create()
+    {
+        // Obtener departamentos existentes para el dropdown
+        $departamentos = Empleado::whereNotNull('departamento')
+            ->pluck('departamento')
+            ->unique()
+            ->mapWithKeys(fn($d) => [$d => $d])
+            ->toArray();
+
+        return view('admin.empleados.create', compact('departamentos'));
     }
 
     public function getEmpleados()
@@ -38,10 +63,10 @@ class EmpleadoController extends Controller
             })
             ->addColumn('actions', function ($empleado) {
                 return '
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-info view-btn" data-id="' . $empleado->id . '"><i class="ri-eye-fill"></i></button>
-                        <button class="btn btn-sm btn-success edit-btn" data-id="' . $empleado->id . '"><i class="ri-pencil-fill"></i></button>
-                        <button class="btn btn-sm btn-danger remove-btn" data-id="' . $empleado->id . '"><i class="ri-delete-bin-fill"></i></button>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-sm btn-soft-info view-btn" data-id="' . $empleado->id . '" title="Ver"><i class="ri-eye-fill"></i></button>
+                        <button class="btn btn-sm btn-soft-success edit-btn" data-id="' . $empleado->id . '" title="Editar"><i class="ri-pencil-fill"></i></button>
+                        <button class="btn btn-sm btn-soft-danger remove-btn" data-id="' . $empleado->id . '" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
                     </div>
                 ';
             })
@@ -62,7 +87,7 @@ class EmpleadoController extends Controller
             'ciudad' => 'nullable|string|max:100',
             'estado_persona' => 'nullable|string|max:100',
             'fecha_nacimiento' => 'nullable|date|before:-18 years',
-            'genero' => 'nullable|in:M,F,Otro',
+            'genero' => 'nullable|in:M,F',
             'codigo_empleado' => 'nullable|string|max:50|unique:empleado,codigo_empleado',
             'fecha_ingreso' => 'required|date|before_or_equal:today',
             'cargo' => 'required|string|min:3|max:100',
@@ -94,67 +119,9 @@ class EmpleadoController extends Controller
             'estado.required' => 'Debe seleccionar el estado del empleado',
         ]);
 
-        try {
-            DB::beginTransaction();
+        $this->empleadoService->crear($request->all());
 
-            // Crear persona (sin telefono/direccion en la tabla persona)
-            $persona = Persona::create([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'documento_identidad' => $request->documento_identidad,
-                'tipo_documento' => $request->tipo_documento,
-                'email' => $request->email,
-                'estado_persona' => $request->estado_persona,
-                'fecha_nacimiento' => $request->fecha_nacimiento,
-                'genero' => $request->genero,
-            ]);
-
-            // Crear teléfono en tabla normalizada
-            if (!empty($request->telefono)) {
-                Telefono::create([
-                    'persona_id' => $persona->id,
-                    'numero' => $request->telefono,
-                    'tipo' => 'movil',
-                    'es_principal' => true,
-                ]);
-            }
-
-            // Crear dirección en tabla normalizada
-            if (!empty($request->direccion) || !empty($request->ciudad)) {
-                Direccion::create([
-                    'persona_id' => $persona->id,
-                    'direccion' => $request->direccion ?? '',
-                    'ciudad' => $request->ciudad,
-                    'tipo' => 'casa',
-                    'es_principal' => true,
-                ]);
-            }
-
-            // Generar código de empleado si no se proporciona
-            $codigoEmpleado = $request->codigo_empleado;
-            if (!$codigoEmpleado) {
-                $ultimoCodigo = Empleado::max('codigo_empleado');
-                $numero = $ultimoCodigo ? ((int) substr($ultimoCodigo, 4) + 1) : 1;
-                $codigoEmpleado = 'EMP-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
-            }
-
-            // Crear empleado
-            Empleado::create([
-                'persona_id' => $persona->id,
-                'codigo_empleado' => $codigoEmpleado,
-                'fecha_ingreso' => $request->fecha_ingreso,
-                'cargo' => $request->cargo,
-                'departamento' => $request->departamento,
-                'estado' => $request->estado,
-            ]);
-
-            DB::commit();
-
-            return response()->json(['message' => 'Empleado creado exitosamente.']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Error al crear empleado: ' . $e->getMessage()], 500);
-        }
+        return response()->json(['message' => 'Empleado creado exitosamente.']);
     }
 
     public function show($id)
@@ -207,7 +174,7 @@ class EmpleadoController extends Controller
             'ciudad' => 'nullable|string|max:100',
             'estado_persona' => 'nullable|string|max:100',
             'fecha_nacimiento' => 'nullable|date|before:-18 years',
-            'genero' => 'nullable|in:M,F,Otro',
+            'genero' => 'nullable|in:M,F',
             'codigo_empleado' => 'required|string|max:50|unique:empleado,codigo_empleado,' . $id,
             'fecha_ingreso' => 'required|date|before_or_equal:today',
             'cargo' => 'required|string|min:3|max:100',
@@ -239,71 +206,9 @@ class EmpleadoController extends Controller
             'estado.required' => 'Debe seleccionar el estado del empleado',
         ]);
 
-        try {
-            DB::beginTransaction();
+        $this->empleadoService->actualizar($empleado, $request->all());
 
-            // Actualizar persona (sin telefono/direccion)
-            $persona->update([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'documento_identidad' => $request->documento_identidad,
-                'tipo_documento' => $request->tipo_documento,
-                'email' => $request->email,
-                'estado_persona' => $request->estado_persona,
-                'fecha_nacimiento' => $request->fecha_nacimiento,
-                'genero' => $request->genero,
-            ]);
-
-            // Actualizar o crear teléfono principal
-            if (!empty($request->telefono)) {
-                $telefonoPrincipal = $persona->telefonos()->where('es_principal', true)->first();
-                if ($telefonoPrincipal) {
-                    $telefonoPrincipal->update(['numero' => $request->telefono]);
-                } else {
-                    Telefono::create([
-                        'persona_id' => $persona->id,
-                        'numero' => $request->telefono,
-                        'tipo' => 'movil',
-                        'es_principal' => true,
-                    ]);
-                }
-            }
-
-            // Actualizar o crear dirección principal
-            if (!empty($request->direccion) || !empty($request->ciudad)) {
-                $direccionPrincipal = $persona->direcciones()->where('es_principal', true)->first();
-                if ($direccionPrincipal) {
-                    $direccionPrincipal->update([
-                        'direccion' => $request->direccion ?? '',
-                        'ciudad' => $request->ciudad,
-                    ]);
-                } else {
-                    Direccion::create([
-                        'persona_id' => $persona->id,
-                        'direccion' => $request->direccion ?? '',
-                        'ciudad' => $request->ciudad,
-                        'tipo' => 'casa',
-                        'es_principal' => true,
-                    ]);
-                }
-            }
-
-            // Actualizar empleado
-            $empleado->update([
-                'codigo_empleado' => $request->codigo_empleado,
-                'fecha_ingreso' => $request->fecha_ingreso,
-                'cargo' => $request->cargo,
-                'departamento' => $request->departamento,
-                'estado' => $request->estado,
-            ]);
-
-            DB::commit();
-
-            return response()->json(['message' => 'Empleado actualizado exitosamente.']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Error al actualizar empleado: ' . $e->getMessage()], 500);
-        }
+        return response()->json(['message' => 'Empleado actualizado exitosamente.']);
     }
 
     public function destroy($id)
@@ -358,5 +263,25 @@ class EmpleadoController extends Controller
             return response()->json(['exists' => false]);
         $exists = Empleado::where('codigo_empleado', $codigo)->exists();
         return response()->json(['exists' => $exists]);
+    }
+
+    /**
+     * Guardar un nuevo departamento on-the-fly (AJAX)
+     */
+    public function storeDepartamento(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|min:3|max:100',
+        ]);
+
+        $nombre = trim($request->nombre);
+
+        // Verificar si ya existe
+        $existe = Empleado::whereRaw('LOWER(departamento) = ?', [strtolower($nombre)])->exists();
+        if ($existe) {
+            return response()->json(['message' => 'Este departamento ya existe.'], 422);
+        }
+
+        return response()->json(['departamento' => $nombre]);
     }
 }

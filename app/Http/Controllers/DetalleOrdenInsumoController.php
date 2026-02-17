@@ -31,11 +31,11 @@ class DetalleOrdenInsumoController extends Controller
                 return round($porcentaje, 2);
             })
             ->addColumn('actions', function ($detalle) {
-                return '<div class="d-flex gap-2">' .
-                    '<button class="btn btn-sm btn-info update-btn" data-id="'.$detalle->id.'" title="Actualizar Uso">' .
-                    '<i class="ri-edit-line"></i></button>' .
-                    '<button class="btn btn-sm btn-danger remove-btn" data-id="'.$detalle->id.'" title="Eliminar">' .
-                    '<i class="ri-delete-bin-line"></i></button>' .
+                return '<div class="d-flex gap-2 justify-content-center">' .
+                    '<button class="btn btn-sm btn-soft-info update-btn" data-id="'.$detalle->id.'" title="Actualizar Uso">' .
+                    '<i class="ri-edit-fill"></i></button>' .
+                    '<button class="btn btn-sm btn-soft-danger remove-btn" data-id="'.$detalle->id.'" title="Eliminar">' .
+                    '<i class="ri-delete-bin-fill"></i></button>' .
                     '</div>';
             })
             ->rawColumns(['actions'])

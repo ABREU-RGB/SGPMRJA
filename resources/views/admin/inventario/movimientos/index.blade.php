@@ -26,7 +26,7 @@
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Inventario</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Gestión Operativa</a></li>
                             <li class="breadcrumb-item active">Movimientos</li>
                         </ol>
                     </div>
@@ -60,12 +60,9 @@
                                 <thead>
                                     <tr>
                                         <th>Insumo</th>
-                                        <th>Tipo</th>
                                         <th>Tipo Movimiento</th>
                                         <th>Cantidad</th>
-                                        <th>Stock Anterior</th>
                                         <th>Stock Nuevo</th>
-                                        <th>Usuario</th>
                                         <th>Fecha</th>
                                         <th>Acciones</th>
                                     </tr>

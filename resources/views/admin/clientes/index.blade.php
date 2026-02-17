@@ -66,7 +66,49 @@
             color: #fff;
         }
 
-        /* Revertido: sin reglas personalizadas para SweetAlert2 */
+        /* Badges de tipo de cliente */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-tipo-natural {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+        .badge-tipo-juridico {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-tipo-gubernamental {
+            background-color: rgba(247, 184, 75, 0.18);
+            color: #e0a800;
+        }
+
+        /* Campo protegido (readonly en edición) */
+        .campo-protegido {
+            background-color: #f0f0f0 !important;
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .campo-protegido-wrapper {
+            position: relative;
+        }
+        .campo-protegido-wrapper::after {
+            content: '\F1A4';
+            font-family: 'remixicon';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #878a99;
+            font-size: 14px;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -92,8 +134,8 @@
                                 <th>Documento</th>
                                 <th>Cliente</th>
                                 <th>Tipo</th>
-                                <th>Email</th>
                                 <th>Teléfono</th>
+                                <th>Email</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -108,15 +150,10 @@
     <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                <!-- Header con gradiente marca Atlantico -->
-                <div class="modal-header py-3"
-                    style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                    <h5 class="modal-title text-white d-flex align-items-center">
-                        <i class="ri-user-star-line me-2 fs-4"></i>Detalles del Cliente
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Detalles del Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="row g-4">
@@ -323,41 +360,35 @@
     <!-- Modal para agregar/editar -->
     <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <form id="clienteForm" class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Cliente</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="clienteForm">
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
 
                         <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
                         <div class="row mb-3">
                             <div class="col-md-5">
-                                <label for="documento-field" class="form-label required">Documento (Cédula o RIF)</label>
-                                <div class="input-group">
-                                    <select class="form-select" id="documento-prefix-field" style="max-width: 70px;">
-                                        <option value="V-">V-</option>
-                                        <option value="J-">J-</option>
-                                        <option value="E-">E-</option>
-                                        <option value="G-">G-</option>
-                                    </select>
-                                    <input type="text" id="documento-number-field" class="form-control"
-                                        placeholder="Nro. documento" maxlength="10" required />
-                                </div>
+                                <x-forms.input name="documento_number" label="Documento (Cédula o RIF)" id="documento-number-field" required maxlength="10" placeholder="Nro. documento" prependRaw="true">
+                                    <x-slot:prepend>
+                                        <select class="form-select" id="documento-prefix-field" style="max-width: 70px;">
+                                            <option value="V-">V-</option>
+                                            <option value="J-">J-</option>
+                                            <option value="E-">E-</option>
+                                            <option value="G-">G-</option>
+                                        </select>
+                                    </x-slot:prepend>
+                                </x-forms.input>
                                 <input type="hidden" id="documento-field" name="documento" />
-                                <small class="text-muted">Máximo 10 dígitos</small>
-                                <div id="documento-error" class="invalid-feedback"></div>
+                                <small class="text-muted" style="margin-top: -10px; display: block; margin-bottom: 10px;">Máximo 10 dígitos</small>
+                                <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
                             </div>
                             <div class="col-md-4">
-                                <label for="tipo_cliente-field" class="form-label required">Tipo de Cliente</label>
-                                <select id="tipo_cliente-field" name="tipo_cliente" class="form-select" required>
-                                    <option value="">Seleccione</option>
-                                    <option value="natural">Natural</option>
-                                    <option value="juridico">Jurídico</option>
-                                </select>
+                                <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
+                                    :options="['natural' => 'Natural', 'juridico' => 'Jurídico', 'gubernamental' => 'Gubernamental']" />
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label d-block">Estatus</label>
@@ -370,56 +401,52 @@
                             </div>
                         </div>
 
-                        <!-- Fila 2: Nombre + Apellido -->
-                        <div class="row mb-3">
+                        <!-- Fila 2: Nombre + Apellido (solo para Natural) -->
+                        <div id="campos-persona-natural" class="row mb-3">
                             <div class="col-md-6">
-                                <label for="nombre-field" class="form-label required">Nombre</label>
-                                <input type="text" id="nombre-field" name="nombre" class="form-control" placeholder="Nombre"
-                                    maxlength="100" required />
-                                <div id="nombre-error" class="invalid-feedback"></div>
+                                <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" maxlength="100" required id="nombre-field" />
                             </div>
                             <div class="col-md-6">
-                                <label for="apellido-field" class="form-label required">Apellido</label>
-                                <input type="text" id="apellido-field" name="apellido" class="form-control"
-                                    placeholder="Apellido" maxlength="100" required />
-                                <div id="apellido-error" class="invalid-feedback"></div>
+                                <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" maxlength="100" required id="apellido-field" />
+                            </div>
+                        </div>
+
+                        <!-- Fila 2B: Razón Social (solo para Jurídico/Gubernamental) -->
+                        <div id="campos-razon-social" class="row mb-3 d-none">
+                            <div class="col-12">
+                                <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa" maxlength="200" id="razon-social-field"
+                                    hint="Se almacenará como nombre del cliente" />
                             </div>
                         </div>
 
                         <!-- Fila 3: Email + Teléfono -->
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="email-field" class="form-label">Email</label>
-                                <input type="email" id="email-field" name="email" class="form-control"
-                                    placeholder="correo@ejemplo.com" />
-                                <div id="email-error" class="invalid-feedback"></div>
+                                <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com" id="email-field" />
                             </div>
                             <div class="col-md-6">
-                                <label for="telefono-field" class="form-label required">Teléfono</label>
-                                <div class="input-group">
-                                    <select class="form-select" id="telefono-prefix-field"
-                                        style="max-width: 100px; min-width: 100px;">
-                                        <option value="0412">0412</option>
-                                        <option value="0422">0422</option>
-                                        <option value="0414">0414</option>
-                                        <option value="0424" selected>0424</option>
-                                        <option value="0416">0416</option>
-                                        <option value="0426">0426</option>
-                                    </select>
-                                    <input type="text" id="telefono-number-field" class="form-control" placeholder="1234567"
-                                        maxlength="7" required />
-                                </div>
+                                <x-forms.input name="telefono_number" label="Teléfono" id="telefono-number-field" required maxlength="7" placeholder="1234567" prependRaw="true">
+                                    <x-slot:prepend>
+                                        <select class="form-select" id="telefono-prefix-field"
+                                            style="max-width: 100px; min-width: 100px;">
+                                            <option value="0412">0412</option>
+                                            <option value="0422">0422</option>
+                                            <option value="0414">0414</option>
+                                            <option value="0424" selected>0424</option>
+                                            <option value="0416">0416</option>
+                                            <option value="0426">0426</option>
+                                        </select>
+                                    </x-slot:prepend>
+                                </x-forms.input>
                                 <input type="hidden" id="telefono-field" name="telefono" />
-                                <div id="telefono-error" class="invalid-feedback"></div>
+                                <div id="telefono-error" class="invalid-feedback" style="display: none;"></div>
                             </div>
                         </div>
 
                         <!-- Fila 4: Dirección -->
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="direccion-field" class="form-label required">Dirección</label>
-                                <input type="text" id="direccion-field" name="direccion" class="form-control"
-                                    placeholder="Dirección completa" maxlength="500" required />
+                                <x-forms.textarea name="direccion" label="Dirección" placeholder="Dirección completa" maxlength="500" required id="direccion-field" rows="3" />
                             </div>
                         </div>
 
@@ -466,16 +493,16 @@
 
 
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-success" id="add-btn">Agregar</button>
-                            <button type="button" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
-            </div>
         </div>
     </div>
 @endsection
@@ -521,9 +548,10 @@
             this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
         });
 
-        // Validación en tiempo real para documento (solo números)
+        // Validación en tiempo real para documento (solo números, maxlength dinámico)
         $(document).on('input', '#documento-number-field', function () {
-            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+            var maxLen = getDocMaxLength();
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, maxLen);
         });
 
         // Validación onblur para nombre
@@ -560,7 +588,8 @@
 
             if (value.length < 6) {
                 $input.addClass('is-invalid');
-                $error.text('El documento debe tener al menos 6 dígitos.').show();
+                var maxLen = getDocMaxLength();
+                $error.text('El documento debe tener entre 6 y ' + maxLen + ' dígitos.').show();
             } else {
                 // Si la longitud es válida y NO estamos en edición, verificamos duplicados
                 if (!isEditMode) {
@@ -658,6 +687,98 @@
             $('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
             $('.invalid-feedback').hide();
         });
+
+        // === Lógica dinámica: Natural vs Jurídico/Gubernamental ===
+        function toggleClienteFields() {
+            var tipo = $('#tipo_cliente-field').val();
+            var esNatural = (tipo === 'natural' || tipo === '');
+            var $prefixSelect = $('#documento-prefix-field');
+            var $docInput = $('#documento-number-field');
+
+            if (esNatural) {
+                // Mostrar Nombre + Apellido, ocultar Razón Social
+                $('#campos-persona-natural').removeClass('d-none');
+                $('#nombre-field').prop('required', true).prop('disabled', false);
+                $('#apellido-field').prop('required', true).prop('disabled', false);
+
+                $('#campos-razon-social').addClass('d-none');
+                $('#razon-social-field').prop('required', false).prop('disabled', true).val('');
+
+                // Prefijos: V- y E- para Natural
+                $prefixSelect.html('<option value="V-">V-</option><option value="E-">E-</option>');
+                $prefixSelect.prop('disabled', false);
+                // Maxlength: 8 dígitos para cédula
+                $docInput.attr('maxlength', '8');
+                // Truncar si el valor actual excede el nuevo máximo
+                if ($docInput.val().length > 8) {
+                    $docInput.val($docInput.val().slice(0, 8));
+                }
+
+            } else if (tipo === 'juridico') {
+                // Ocultar Nombre + Apellido, mostrar Razón Social
+                $('#campos-persona-natural').addClass('d-none');
+                $('#nombre-field').prop('required', false).prop('disabled', true).val('');
+                $('#apellido-field').prop('required', false).prop('disabled', true).val('');
+
+                $('#campos-razon-social').removeClass('d-none');
+                $('#razon-social-field').prop('required', true).prop('disabled', false);
+
+                // Prefijo: solo J- (bloqueado)
+                $prefixSelect.html('<option value="J-">J-</option>');
+                $prefixSelect.prop('disabled', true);
+                // Maxlength: 9 dígitos para RIF
+                $docInput.attr('maxlength', '9');
+                if ($docInput.val().length > 9) {
+                    $docInput.val($docInput.val().slice(0, 9));
+                }
+
+            } else if (tipo === 'gubernamental') {
+                // Ocultar Nombre + Apellido, mostrar Razón Social
+                $('#campos-persona-natural').addClass('d-none');
+                $('#nombre-field').prop('required', false).prop('disabled', true).val('');
+                $('#apellido-field').prop('required', false).prop('disabled', true).val('');
+
+                $('#campos-razon-social').removeClass('d-none');
+                $('#razon-social-field').prop('required', true).prop('disabled', false);
+
+                // Prefijo: solo G- (bloqueado)
+                $prefixSelect.html('<option value="G-">G-</option>');
+                $prefixSelect.prop('disabled', true);
+                // Maxlength: 9 dígitos para RIF gubernamental
+                $docInput.attr('maxlength', '9');
+                if ($docInput.val().length > 9) {
+                    $docInput.val($docInput.val().slice(0, 9));
+                }
+            }
+        }
+
+        // Obtener maxlength dinámico según prefijo actual
+        function getDocMaxLength() {
+            var prefix = $('#documento-prefix-field').val();
+            return (prefix === 'J-' || prefix === 'G-') ? 9 : 8;
+        }
+
+        // Disparar al cambiar el tipo de cliente
+        $(document).on('change', '#tipo_cliente-field', function () {
+            toggleClienteFields();
+        });
+
+        // Estado inicial al cargar la página
+        toggleClienteFields();
+
+        // Validación onblur para Razón Social (cuando visible)
+        $(document).on('blur', '#razon-social-field', function () {
+            let value = $(this).val().trim();
+            let $input = $(this);
+            let $error = $('#razon-social-error');
+            if (value.length > 0 && value.length < 3) {
+                $input.addClass('is-invalid');
+                $error.text('La razón social debe tener al menos 3 caracteres.').show();
+            } else {
+                $input.removeClass('is-invalid').addClass('is-valid');
+                $error.hide();
+            }
+        });
     </script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
@@ -696,12 +817,21 @@
                     {
                         data: null,
                         render: function (data, type, row) {
-                            return row.nombre + ' ' + row.apellido;
+                            // Para Jurídico/Gubernamental solo mostrar nombre (Razón Social)
+                            if (row.tipo_cliente === 'juridico' || row.tipo_cliente === 'gubernamental') {
+                                return row.nombre || 'N/A';
+                            }
+                            return (row.nombre || '') + ' ' + (row.apellido || '');
                         }
                     },
-                    { data: 'tipo_cliente', render: function (data) { return data === 'natural' ? 'Natural' : 'Jurídico'; } },
-                    { data: 'email' },
+                    { data: 'tipo_cliente', render: function (data) {
+                        if (data === 'natural') return '<span class="badge-tipo badge-tipo-natural"><i class="ri-user-line"></i> Natural</span>';
+                        if (data === 'juridico') return '<span class="badge-tipo badge-tipo-juridico"><i class="ri-building-line"></i> Jurídico</span>';
+                        if (data === 'gubernamental') return '<span class="badge-tipo badge-tipo-gubernamental"><i class="ri-government-line"></i> Gubernamental</span>';
+                        return data;
+                    } },
                     { data: 'telefono' },
+                    { data: 'email' },
                     { data: null, render: function (data, type, row) { return generateButtons(row.id); } }
                 ],
                 order: [[0, 'asc']], // Ordenar por documento (primera columna)
@@ -770,20 +900,24 @@
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 $("#documento-prefix-field").val("V-");
-                $("#documento-prefix-field").prop('disabled', false); // Habilitar
+                $("#documento-prefix-field").prop('disabled', false).removeClass('campo-protegido');
                 $("#documento-number-field").val("");
-                $("#documento-number-field").prop('disabled', false); // Habilitar
+                $("#documento-number-field").prop('disabled', false).removeClass('campo-protegido');
                 // Reset teléfono
                 $("#telefono-prefix-field").val("0424");
                 $("#telefono-number-field").val("");
+                // Resetear tipo cliente a Natural y actualizar campos
+                $("#tipo_cliente-field").val("");
+                $("#razon-social-field").val("");
+                toggleClienteFields();
             }
             function setEditMode() {
                 $("#modalTitle").text("Actualizar Cliente");
                 $("#add-btn").hide();
                 $("#edit-btn").show();
                 // Bloquear edición de documento
-                $("#documento-prefix-field").prop('disabled', true);
-                $("#documento-number-field").prop('disabled', true);
+                $("#documento-prefix-field").prop('disabled', true).addClass('campo-protegido');
+                $("#documento-number-field").prop('disabled', true).addClass('campo-protegido');
             }
             $("#create-btn").click(function () { resetForm(); });
             $("#showModal").on('hidden.bs.modal', function () { resetForm(); });
@@ -866,7 +1000,8 @@
                     $("#viewModal").modal("show");
                     $("#view-nombre").text(data.nombre || 'N/A');
                     $("#view-apellido").text(data.apellido || 'N/A');
-                    $("#view-tipo_cliente").text(data.tipo_cliente === 'natural' ? 'Natural' : 'Jurídico');
+                    var tipoTexto = data.tipo_cliente === 'natural' ? 'Natural' : (data.tipo_cliente === 'juridico' ? 'Jurídico' : 'Gubernamental');
+                    $("#view-tipo_cliente").text(tipoTexto);
                     $("#view-email").text(data.email || 'N/A');
                     $("#view-telefono").text(data.telefono || 'N/A');
                     $("#view-documento").text(data.documento || 'N/A');
@@ -885,6 +1020,12 @@
                     $("#nombre-field").val(data.nombre || '');
                     $("#apellido-field").val(data.apellido || '');
                     $("#tipo_cliente-field").val(data.tipo_cliente);
+                    // Actualizar visibilidad de campos según tipo
+                    toggleClienteFields();
+                    // Si es Jurídico/Gubernamental, llenar Razón Social con nombre
+                    if (data.tipo_cliente === 'juridico' || data.tipo_cliente === 'gubernamental') {
+                        $("#razon-social-field").val(data.nombre || '');
+                    }
                     $("#email-field").val(data.email || '');
                     // Separar teléfono en prefijo y número
                     if (data.telefono && data.telefono.includes('-')) {

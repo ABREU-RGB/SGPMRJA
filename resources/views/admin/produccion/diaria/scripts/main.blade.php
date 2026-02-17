@@ -1,7 +1,7 @@
 <script>
     $(document).ready(function () {
         // Inicializar Select2 con dropdownParent para que funcione correctamente en modales
-        $('#orden_id, #operario_id').select2({
+        $('#field-orden_id, #field-operario_id').select2({
             theme: 'bootstrap-5',
             width: '100%',
             dropdownParent: $('#showModal')
@@ -263,7 +263,7 @@
         // Reset form on modal close
         $('#showModal').on('hidden.bs.modal', function () {
             $('#produccionForm')[0].reset();
-            $('#orden_id, #operario_id').val('').trigger('change');
+            $('#field-orden_id, #field-operario_id').val('').trigger('change');
         });
     });
 </script>

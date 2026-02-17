@@ -38,7 +38,7 @@ class InsumoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'tipo' => 'required|in:Tela,Hilo,Botón,Cierre,Etiqueta,Otro',
+            'tipo' => 'required|in:Tela,Hilo,Botón,Cierre,Etiqueta',
             'unidad_medida' => 'required|string|max:20',
             'costo_unitario' => 'required|numeric|min:0',
             'stock_actual' => 'required|numeric|min:0',
@@ -71,7 +71,7 @@ class InsumoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'tipo' => 'required|in:Tela,Hilo,Botón,Cierre,Etiqueta,Otro',
+            'tipo' => 'required|in:Tela,Hilo,Botón,Cierre,Etiqueta',
             'unidad_medida' => 'required|string|max:20',
             'costo_unitario' => 'required|numeric|min:0',
             'stock_actual' => 'required|numeric|min:0',

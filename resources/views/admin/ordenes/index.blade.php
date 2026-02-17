@@ -63,12 +63,8 @@
                                 <th>Nro. Pedido</th>
                                 <th>Cant. Solicitada</th>
                                 <th>Progreso</th>
-                                <th>Fecha Inicio</th>
-                                <th>Fecha Fin Est.</th>
+                                <th>Fecha Fin Estimada</th>
                                 <th>Estado</th>
-                                <th>Costo Est.</th>
-                                <th>Logo</th>
-                                <th>Creado por</th>
                                 <th>Acciones</th>
                                 </tr>
                             </thead>

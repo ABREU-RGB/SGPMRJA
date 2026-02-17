@@ -120,11 +120,17 @@
                         <textarea id="notas-field" name="notas" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer bg-light border-0">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-success" id="add-btn">Crear Orden</button>
-                        <button type="submit" class="btn btn-success" id="edit-btn" style="display: none;">Actualizar</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-success" id="add-btn">
+                            <i class="ri-add-line me-1"></i>Crear Orden
+                        </button>
+                        <button type="submit" class="btn btn-success" id="edit-btn" style="display: none;">
+                            <i class="ri-save-line me-1"></i>Actualizar
+                        </button>
                     </div>
                 </div>
             </form>

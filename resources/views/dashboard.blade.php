@@ -18,70 +18,74 @@
         </div>
     </div>
 
-    <!-- Widgets de resumen -->
+    <!-- Widgets de Maestros -->
     <div class="row">
+        <!-- Total Clientes -->
         <div class="col-xl-3 col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">Total Insumos</p>
-                            <h4 class="fs-22 fw-semibold mb-0">{{ $totalInsumos }}</h4>
+                            <p class="text-uppercase fw-medium text-muted mb-0">Total Clientes</p>
+                            <h4 class="fs-22 fw-semibold mb-0">{{ $totalClientes }}</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-soft-primary rounded fs-3">
-                                <i class="ri-stack-line text-primary"></i>
+                                <i class="ri-user-star-line text-primary"></i>
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Total Productos -->
         <div class="col-xl-3 col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">Órdenes en Proceso</p>
-                            <h4 class="fs-22 fw-semibold mb-0">{{ $ordenesEnProceso }}</h4>
+                            <p class="text-uppercase fw-medium text-muted mb-0">Total Productos</p>
+                            <h4 class="fs-22 fw-semibold mb-0">{{ $totalProductos }}</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-soft-success rounded fs-3">
-                                <i class="ri-shopping-bag-line text-success"></i>
+                                <i class="ri-t-shirt-line text-success"></i>
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Total Empleados -->
         <div class="col-xl-3 col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">Producción Total</p>
-                            <h4 class="fs-22 fw-semibold mb-0">{{ $produccionTotal }}</h4>
+                            <p class="text-uppercase fw-medium text-muted mb-0">Total Empleados</p>
+                            <h4 class="fs-22 fw-semibold mb-0">{{ $totalEmpleados }}</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-soft-info rounded fs-3">
-                                <i class="ri-calendar-check-line text-info"></i>
+                                <i class="ri-user-settings-line text-info"></i>
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Total Proveedores -->
         <div class="col-xl-3 col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">Alertas Stock</p>
-                            <h4 class="fs-22 fw-semibold mb-0">{{ $alertasStock }}</h4>
+                            <p class="text-uppercase fw-medium text-muted mb-0">Total Proveedores</p>
+                            <h4 class="fs-22 fw-semibold mb-0">{{ $totalProveedores }}</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-soft-warning rounded fs-3">
-                                <i class="ri-alert-line text-warning"></i>
+                                <i class="ri-truck-line text-warning"></i>
                             </span>
                         </div>
                     </div>
@@ -90,68 +94,27 @@
         </div>
     </div>
 
-    <!-- Gráficos -->
+    <!-- Gráficos ApexCharts -->
     <div class="row">
+        <!-- Estado de Pedidos -->
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Inventario de Insumos</h4>
+                    <h4 class="card-title mb-0">Estado de Pedidos</h4>
                 </div>
                 <div class="card-body">
-                    <canvas id="inventarioChart" class="chartjs-chart" height="300"></canvas>
+                    <div id="estadoPedidosChart"></div>
                 </div>
             </div>
         </div>
+        <!-- Personal por Departamento -->
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Estado de Órdenes de Producción</h4>
+                    <h4 class="card-title mb-0">Personal por Departamento</h4>
                 </div>
                 <div class="card-body">
-                    <canvas id="ordenesChart" class="chartjs-chart" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tabla de últimos movimientos -->
-    <div class="row">
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">Últimos Movimientos de Inventario</h4>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Insumo</th>
-                                    <th>Tipo</th>
-                                    <th>Cantidad</th>
-                                    <th>Stock Nuevo</th>
-                                    <th>Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($ultimosMovimientos as $movimiento)
-                                <tr>
-                                    <td>{{ $movimiento->insumo ? $movimiento->insumo->nombre : 'N/A' }}</td>
-                                    <td>
-                                        @if($movimiento->tipo_movimiento == 'Entrada')
-                                            <span class="badge bg-success">Entrada</span>
-                                        @else
-                                            <span class="badge bg-danger">Salida</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ number_format($movimiento->cantidad, 2) }}</td>
-                                    <td>{{ number_format($movimiento->stock_nuevo, 2) }}</td>
-                                    <td>{{ $movimiento->created_at->format('d/m/Y H:i') }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <div id="personalDeptoChart"></div>
                 </div>
             </div>
         </div>
@@ -160,78 +123,150 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Datos para el gráfico de inventario
-            const inventarioCtx = document.getElementById('inventarioChart').getContext('2d');
-            const inventarioChart = new Chart(inventarioCtx, {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($insumos->pluck('nombre')->toArray()) !!},
-                    datasets: [{
-                        label: 'Stock Actual',
-                        data: {!! json_encode($insumos->pluck('stock_actual')->toArray()) !!},
-                        backgroundColor: 'rgba(30, 60, 114, 0.6)',
-                        borderColor: 'rgba(30, 60, 114, 0.8)',
-                        borderWidth: 2
-                    }, {
-                        label: 'Stock Mínimo',
-                        data: {!! json_encode($insumos->pluck('stock_minimo')->toArray()) !!},
-                        backgroundColor: 'rgba(220, 53, 69, 0.6)',
-                        borderColor: 'rgba(220, 53, 69, 0.8)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
+            // ==========================================
+            // DATOS DEL BACKEND
+            // ==========================================
+            const pedidosLabels = @json($pedidosLabels);
+            const pedidosValues = @json($pedidosValues);
+            const totalPedidos = {{ $totalPedidos }};
 
-            // Datos para el gráfico de órdenes
-            const ordenesCtx = document.getElementById('ordenesChart').getContext('2d');
+            const empleadosLabels = @json($empleadosLabels);
+            const empleadosValues = @json($empleadosValues);
+            const totalEmpleados = {{ $totalEmpleadosChart }};
+
+            // ==========================================
+            // GRÁFICO 1: ESTADO DE PEDIDOS (DONUT)
+            // ==========================================
+            const pedidosContainer = document.querySelector("#estadoPedidosChart");
             
-            // Contar órdenes por estado
-            const pendientes = {{ $ordenesPendientes }};
-            const enProceso = {{ $ordenesEnProceso }};
-            const finalizadas = {{ $ordenesFinalizadas }};
-            const canceladas = {{ $ordenesCanceladas }};
-            
-            const ordenesChart = new Chart(ordenesCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Pendiente', 'En Proceso', 'Finalizado', 'Cancelado'],
-                    datasets: [{
-                        data: [pendientes, enProceso, finalizadas, canceladas],
-                        backgroundColor: [
-                            'rgba(30, 60, 114, 0.6)',   // Pendiente - azul suave
-                            'rgba(0, 217, 165, 0.6)',   // En Proceso - cyan suave
-                            'rgba(46, 204, 113, 0.6)',  // Finalizado - verde suave
-                            'rgba(220, 53, 69, 0.6)'    // Cancelado - rojo puro
-                        ],
-                        borderColor: [
-                            'rgba(30, 60, 114, 0.8)',
-                            'rgba(0, 217, 165, 0.8)',
-                            'rgba(46, 204, 113, 0.8)',
-                            'rgba(220, 53, 69, 0.8)'
-                        ],
-                        borderWidth: 1
+            if (totalPedidos > 0 && pedidosContainer) {
+                var pedidosOptions = {
+                    series: pedidosValues,
+                    chart: {
+                        type: 'donut',
+                        height: 350
+                    },
+                    labels: pedidosLabels,
+                    colors: ['#3577f1', '#f7b84b', '#0ab39c', '#f06548'],
+                    legend: {
+                        position: 'bottom'
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: true,
+                                        label: 'Total Pedidos',
+                                        fontSize: '14px',
+                                        fontWeight: 600,
+                                        color: '#878a99'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function(val, opts) {
+                            return opts.w.config.series[opts.seriesIndex];
+                        }
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: { height: 280 },
+                            legend: { position: 'bottom' }
+                        }
                     }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
+                };
+                new ApexCharts(pedidosContainer, pedidosOptions).render();
+            } else if (pedidosContainer) {
+                // Mensaje Elegante: No hay datos
+                pedidosContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <div class="avatar-md mx-auto mb-3">
+                            <div class="avatar-title bg-soft-light rounded-circle text-muted fs-1">
+                                <i class="ri-folder-info-line"></i>
+                            </div>
+                        </div>
+                        <h5 class="text-muted">No hay datos suficientes</h5>
+                        <p class="text-muted mb-0">Registre nuevos pedidos para ver estadísticas.</p>
+                    </div>
+                `;
+            }
+
+            // ==========================================
+            // GRÁFICO 2: PERSONAL POR DEPARTAMENTO (BAR)
+            // ==========================================
+            const personalContainer = document.querySelector("#personalDeptoChart");
+
+            if (totalEmpleados > 0 && personalContainer) {
+                var deptoOptions = {
+                    series: [{
+                        name: 'Empleados',
+                        data: empleadosValues
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        toolbar: { show: false }
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            horizontal: true,
+                            barHeight: '50%',
+                            distributed: true
+                        }
+                    },
+                    colors: ['#3577f1', '#0ab39c', '#f7b84b', '#f06548', '#299cdb', '#405189', '#66d1d1'],
+                    dataLabels: {
+                        enabled: true,
+                        style: {
+                            fontSize: '13px',
+                            fontWeight: 600
+                        }
+                    },
+                    xaxis: {
+                        categories: empleadosLabels,
+                        labels: {
+                            style: { fontSize: '12px' }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: { fontSize: '13px' }
+                        }
+                    },
+                    legend: { show: false },
+                    tooltip: {
+                        y: {
+                            formatter: function(val) {
+                                return val + ' empleado(s)';
+                            }
                         }
                     }
-                }
-            });
+                };
+                new ApexCharts(personalContainer, deptoOptions).render();
+            } else if (personalContainer) {
+                // Mensaje Elegante: No hay datos
+                personalContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <div class="avatar-md mx-auto mb-3">
+                            <div class="avatar-title bg-soft-light rounded-circle text-muted fs-1">
+                                <i class="ri-user-unfollow-line"></i>
+                            </div>
+                        </div>
+                        <h5 class="text-muted">No hay datos suficientes</h5>
+                        <p class="text-muted mb-0">Asigne departamentos a los empleados para ver estadísticas.</p>
+                    </div>
+                `;
+            }
         });
     </script>
 @endpush

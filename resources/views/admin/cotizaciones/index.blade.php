@@ -115,12 +115,9 @@
                     <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle">
                         <thead>
                             <tr>
-                                <th>Nro. de cotización</th>
-                                <th>Documento de identidad</th>
+                                <th>Nro.</th>
                                 <th>Cliente</th>
-                                <th>Teléfono</th>
-                                <th>Fecha Cotización</th>
-                                <th>Fecha de Validez</th>
+                                <th>Fecha</th>
                                 <th>Total</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>

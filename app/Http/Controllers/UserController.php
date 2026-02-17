@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
@@ -22,27 +24,18 @@ class UserController extends Controller
     private function handleFileUpload($file, $oldPath, $directory)
     {
         // Delete old file if exists
-        if ($oldPath && file_exists(public_path($oldPath))) {
-            unlink(public_path($oldPath));
+        if ($oldPath && \Storage::disk('public')->exists($oldPath)) {
+            \Storage::disk('public')->delete($oldPath);
         }
 
-        // Upload new file
+        // Upload new file via Storage (stored in storage/app/public/)
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path($directory), $filename);
-        return $directory . '/' . $filename;
+        $path = $file->storeAs($directory, $filename, 'public');
+        return $path;
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:user',
-            'password' => 'required|string|min:8|confirmed',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'role' => 'required|in:Administrador,Supervisor',
-            'estado' => 'nullable|boolean',
-        ]);
-
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
@@ -72,16 +65,8 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:user,email,' . $id,
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'role' => 'required|in:Administrador,Supervisor',
-            'estado' => 'nullable|boolean',
-        ]);
-
         $user = User::findOrFail($id);
         $user->name = $request->name;
         $user->email = $request->email;
@@ -107,8 +92,8 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        if ($user->avatar && file_exists(public_path($user->avatar))) {
-            unlink(public_path($user->avatar));
+        if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+            \Storage::disk('public')->delete($user->avatar);
         }
         $user->delete();
         return response()->json(['success' => 'User deleted successfully.']);

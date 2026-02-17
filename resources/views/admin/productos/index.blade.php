@@ -114,15 +114,10 @@
     <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                <!-- Header con gradiente marca Atlantico -->
-                <div class="modal-header py-3"
-                    style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                    <h5 class="modal-title text-white d-flex align-items-center">
-                        <i class="ri-t-shirt-2-line me-2 fs-4"></i>Detalles del Producto
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Detalles del Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <!-- Imagen del Producto centrada -->
@@ -230,9 +225,9 @@
                         <input type="hidden" id="id-field" />
                         <div class="row">
                             <div class="col-md-6">
-                                <!-- Tipo de Producto -->
+                                {{-- Tipo de Producto — mantiene HTML custom por data-prefijo + botón "+" --}}
                                 <div class="mb-3">
-                                    <label for="tipo-producto-field" class="form-label required">Tipo de Producto</label>
+                                    <label for="tipo-producto-field" class="form-label">Tipo de Producto <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <select id="tipo-producto-field" name="tipo_producto_id" class="form-select"
                                             required>
@@ -248,67 +243,41 @@
                                             <i class="ri-add-line"></i>
                                         </button>
                                     </div>
-                                    <div id="tipo-producto-error" class="invalid-feedback"></div>
                                 </div>
-                                <!-- Modelo -->
+                                <x-forms.input name="modelo" label="Modelo" placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required id="modelo-field" />
+                                <x-forms.input name="codigo" label="Código" readonly class="bg-light" placeholder="Se genera automáticamente" hint="El código se genera al seleccionar el tipo de producto" id="codigo-field" />
+                                {{-- Descripción — textarea --}}
                                 <div class="mb-3">
-                                    <label for="modelo-field" class="form-label required">Modelo</label>
-                                    <input type="text" id="modelo-field" name="modelo" class="form-control"
-                                        placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required />
-                                    <div id="modelo-error" class="invalid-feedback"></div>
-                                </div>
-                                <!-- Código (auto-generado) -->
-                                <div class="mb-3">
-                                    <label for="codigo-field" class="form-label">Código</label>
-                                    <input type="text" id="codigo-field" name="codigo" class="form-control bg-light"
-                                        readonly placeholder="Se genera automáticamente" />
-                                    <small class="text-muted">El código se genera al seleccionar el tipo de producto</small>
-                                </div>
-                                <!-- Descripción -->
-                                <div class="mb-3">
-                                    <label for="descripcion-field" class="form-label required">Descripción</label>
+                                    <label for="descripcion-field" class="form-label">Descripción <span class="text-danger">*</span></label>
                                     <textarea id="descripcion-field" name="descripcion" class="form-control" rows="3"
                                         placeholder="Descripción adicional del producto" required></textarea>
-                                    <div id="descripcion-error" class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <!-- Precio Base -->
+                                <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01" min="0" placeholder="0.00" required id="precio-base-field" />
+                                {{-- Imagen — mantiene HTML nativo por preview --}}
                                 <div class="mb-3">
-                                    <label for="precio-base-field" class="form-label required">Precio Base ($)</label>
-                                    <input type="number" id="precio-base-field" name="precio_base" class="form-control"
-                                        step="0.01" min="0" required placeholder="0.00" />
-                                    <div id="precio-base-error" class="invalid-feedback"></div>
-                                </div>
-                                <!-- Imagen -->
-                                <div class="mb-3">
-                                    <label for="imagen-field" class="form-label required">Imagen</label>
+                                    <label for="imagen-field" class="form-label">Imagen <span class="text-danger">*</span></label>
                                     <input type="file" id="imagen-field" name="imagen" class="form-control" accept="image/*"
                                         required />
-                                    <div id="imagen-error" class="invalid-feedback"></div>
                                     <div id="imagen-preview" class="mt-2 text-center" style="display: none;">
                                         <img src="" alt="Vista previa de la imagen" class="img-fluid"
                                             style="max-width: 200px;">
                                     </div>
                                 </div>
-                                <!-- Estado -->
-                                <div class="mb-3">
-                                    <label for="estado-field" class="form-label required">Estado</label>
-                                    <select id="estado-field" name="estado" class="form-control" required>
-                                        <option value="1">Activo</option>
-                                        <option value="0">Inactivo</option>
-                                    </select>
-                                    <div id="estado-error" class="invalid-feedback"></div>
-                                </div>
+                                <x-forms.select name="estado" label="Estado" required
+                                    :options="['1' => 'Activo', '0' => 'Inactivo']"
+                                    placeholder="" value="1" id="estado-field" />
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-success" id="add-btn">Agregar</button>
-                            <button type="submit" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -320,9 +289,9 @@
     <div class="modal fade" id="tiposModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="ri-settings-3-line me-2"></i>Gestionar Tipos de Producto</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Gestionar Tipos de Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="table-responsive">
@@ -341,11 +310,13 @@
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer bg-light border-0">
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTipoModal">
                         <i class="ri-add-line me-1"></i>Agregar Tipo
                     </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cerrar
+                    </button>
                 </div>
             </div>
         </div>
@@ -355,10 +326,10 @@
     <div class="modal fade" id="addTipoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="tipoModalTitle"><i class="ri-add-line me-2"></i>Agregar Tipo de Producto
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title" id="tipoModalTitle">Agregar Tipo de Producto
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="tipoForm">
                     <div class="modal-body">
@@ -384,9 +355,13 @@
                             <div id="tipo-descripcion-error" class="invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success" id="save-tipo-btn">Guardar</button>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-success" id="save-tipo-btn">
+                            <i class="ri-save-line me-1"></i>Guardar
+                        </button>
                     </div>
                 </form>
             </div>

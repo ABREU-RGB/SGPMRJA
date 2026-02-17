@@ -56,6 +56,25 @@
         .search-box input {
             padding-left: 30px;
         }
+
+        /* Badges de rol */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-rol-admin {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-rol-supervisor {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -87,7 +106,6 @@
                                 <th>Email</th>
                                 <th>Rol</th>
                                 <th>Estado</th>
-                                <th>Creado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -103,15 +121,10 @@
     <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content border-0 shadow-lg">
-                <!-- Header con gradiente marca Atlantico -->
-                <div class="modal-header py-3"
-                    style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                    <h5 class="modal-title text-white d-flex align-items-center">
-                        <i class="ri-user-3-line me-2 fs-4"></i>Detalles del Usuario
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Detalles del Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <!-- Avatar centrado -->
@@ -207,40 +220,20 @@
                         <input type="hidden" id="id-field" />
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="name-field" class="form-label required">Nombre</label><input type="text"
-                                        id="name-field" name="name" class="form-control" placeholder="Nombre" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email-field" class="form-label required">Email</label><input type="email"
-                                        id="email-field" name="email" class="form-control" placeholder="Email" required />
-                                </div>
+                                <x-forms.input name="name" label="Nombre" placeholder="Nombre" required />
+                                <x-forms.input name="email" label="Email" type="email" placeholder="Email" required />
                                 <div class="mb-3" id="password-group">
-                                    <label for="password-field" class="form-label">Contraseña</label>
-                                    <input type="password" id="password-field" name="password" class="form-control"
-                                        placeholder="Contraseña" />
-                                    <small class="text-muted">Dejar en blanco para mantener la contraseña actual al
-                                        editar</small>
+                                    <x-forms.input name="password" label="Contraseña" type="password" placeholder="Contraseña" hint="Dejar en blanco para mantener la contraseña actual al editar" />
                                 </div>
-                                <div class="mb-3">
-                                    <label for="password_confirmation-field" class="form-label required">Confirmar
-                                        Contraseña</label><input type="password" id="password_confirmation-field"
-                                        name="password_confirmation" class="form-control" placeholder="Confirmar Contraseña"
-                                        required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="role-field" class="form-label required">Rol</label><select id="role-field"
-                                        name="role" class="form-control" required>
-                                        <option value="">Seleccione un rol</option>
-                                        <option value="Administrador">Administrador</option>
-                                        <option value="Supervisor">Supervisor</option>
-                                    </select>
-                                </div>
+                                <x-forms.input name="password_confirmation" label="Confirmar Contraseña" type="password" placeholder="Confirmar Contraseña" required />
+                                <x-forms.select name="role" label="Rol" required
+                                    :options="['Administrador' => 'Administrador', 'Supervisor' => 'Supervisor']"
+                                    placeholder="Seleccione un rol" />
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-4">
-                                    <label for="avatar-field" class="form-label">Avatar</label>
-                                    <input type="file" id="avatar-field" name="avatar" class="form-control"
+                                    <label for="field-avatar" class="form-label">Avatar</label>
+                                    <input type="file" id="field-avatar" name="avatar" class="form-control"
                                         accept="image/*" />
                                     <div id="avatar-preview" class="mt-2 text-center" style="display: none;">
                                         <img src="" alt="Vista previa del avatar" class="img-fluid rounded-circle"
@@ -248,22 +241,19 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="estado-field" class="form-label">Estado</label>
-                                    <select name="estado" id="estado-field" class="form-control form-select">
-                                        <option value="1">Activo</option>
-                                        <option value="0">Inactivo</option>
-                                    </select>
-                                </div>
+                                <x-forms.select name="estado" label="Estado"
+                                    :options="['1' => 'Activo', '0' => 'Inactivo']"
+                                    placeholder="" value="1" />
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-success" id="add-btn">Agregar</button>
-                            <button type="button" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -329,7 +319,15 @@
                         data: 'email'
                     },
                     {
-                        data: 'role'
+                        data: 'role',
+                        render: function (data) {
+                            if (data === 'Administrador') {
+                                return '<span class="badge-tipo badge-rol-admin"><i class="ri-shield-star-line"></i> Administrador</span>';
+                            } else if (data === 'Supervisor') {
+                                return '<span class="badge-tipo badge-rol-supervisor"><i class="ri-shield-user-line"></i> Supervisor</span>';
+                            }
+                            return data || 'Sin rol';
+                        }
                     },
                     {
                         data: 'estado',
@@ -342,21 +340,6 @@
                         }
                     },
                     {
-                        data: 'created_at',
-                        render: function (data) {
-                            if (!data) return '';
-                            const date = new Date(data);
-                            return date.toLocaleString('es-VE', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true
-                            });
-                        }
-                    },
-                    {
                         data: null,
                         render: function (data, type, row) {
                             return generateButtons(row.id);
@@ -364,7 +347,7 @@
                     }
                 ],
                 order: [
-                    [4, 'desc']
+                    [0, 'asc']
                 ],
                 dom: 'rtip',
                 responsive: true,
@@ -415,8 +398,8 @@
                 $('#add-btn').show();
                 $('#edit-btn').hide();
                 $('#password-group').show();
-                $('#password-field').prop('required', true); // Requerir contraseña al crear
-                $('#password_confirmation-field').prop('required', true);
+                $('#field-password').prop('required', true); // Requerir contraseña al crear
+                $('#field-password_confirmation').prop('required', true);
 
                 // Reiniciar validaciones
                 validator.resetValidation();
@@ -427,8 +410,8 @@
                 $("#add-btn").hide();
                 $("#edit-btn").show();
                 $('#password-group').hide(); // Ocultar campo de contraseña al editar
-                $('#password-field').prop('required', false); // No requerir contraseña al editar
-                $('#password_confirmation-field').prop('required', false);
+                $('#field-password').prop('required', false); // No requerir contraseña al editar
+                $('#field-password_confirmation').prop('required', false);
             }
 
             // Función para mostrar vista previa de imágenes
@@ -444,7 +427,7 @@
             }
 
             // Vista previa de imágenes al seleccionarlas
-            $('#avatar-field').change(function () {
+            $('#field-avatar').change(function () {
                 readURL(this, '#avatar-preview');
             });
 
@@ -548,9 +531,9 @@
                 $.get("{{ route('users.edit', ':id') }}".replace(':id', id), function (data) {
                     setEditMode();
                     $("#id-field").val(data.id);
-                    $("#name-field").val(data.name);
-                    $("#email-field").val(data.email);
-                    $("#role-field").val(data.role);
+                    $("#field-name").val(data.name);
+                    $("#field-email").val(data.email);
+                    $("#field-role").val(data.role);
 
                     // Mostrar las imágenes existentes si las hay
                     if (data.avatar) {

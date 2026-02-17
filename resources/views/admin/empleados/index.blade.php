@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -18,7 +18,6 @@
         #empleados-table {
             width: 100% !important;
             font-size: 13px;
-            min-width: 1200px;
         }
 
         #empleados-table th,
@@ -46,6 +45,37 @@
             border-color: #5e35b1;
             color: #fff;
         }
+
+        /* Badges de departamento */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-depto-administracion {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-depto-produccion {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+        .badge-depto-otro {
+            background-color: rgba(0, 217, 165, 0.15);
+            color: #00d9a5;
+        }
+
+        /* Campo protegido (readonly en edición) */
+        .campo-protegido {
+            background-color: #f0f0f0 !important;
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -68,14 +98,11 @@
                     <table id="empleados-table" class="table table-bordered table-striped table-sm align-middle">
                         <thead>
                             <tr>
-                                <th>Código</th>
-                                <th>Nombre Completo</th>
                                 <th>Documento</th>
-                                <th>Email</th>
+                                <th>Nombre Completo</th>
                                 <th>Teléfono</th>
                                 <th>Cargo</th>
                                 <th>Departamento</th>
-                                <th>Fecha Ingreso</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -92,15 +119,10 @@
     <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                <!-- Header con gradiente marca Atlantico -->
-                <div class="modal-header py-3"
-                    style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                    <h5 class="modal-title text-white d-flex align-items-center">
-                        <i class="ri-user-settings-line me-2 fs-4"></i>Detalles del Empleado
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Detalles del Empleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="row g-4">
@@ -328,10 +350,10 @@
         </div>
     </div>
 
-    <!-- Modal para agregar/editar -->
+    <!-- Modal para agregar/editar Empleado (Estándar Clientes) -->
     <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Empleado</h5>
@@ -341,153 +363,138 @@
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
 
-                        <h6 class="mb-3 text-primary">Datos Personales</h6>
-                        <div class="row g-3">
+                        <!-- Fila 1: Documento + Nombre + Apellido -->
+                        <div class="row mb-3">
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="documento-field" class="form-label required">Documento de Identidad</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="tipo-documento-field" name="tipo_documento"
-                                            style="max-width: 80px;">
-                                            <option value="V-">V-</option>
-                                            <option value="E-">E-</option>
-                                            <option value="J-">J-</option>
-                                            <option value="G-">G-</option>
-                                        </select>
-                                        <input type="text" id="documento-identidad-field" name="documento_identidad"
-                                            class="form-control" placeholder="Número" required />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="nombre-field" class="form-label required">Nombre</label>
-                                    <input type="text" id="nombre-field" name="nombre" class="form-control"
-                                        placeholder="Nombre" required />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="apellido-field" class="form-label required">Apellido</label>
-                                    <input type="text" id="apellido-field" name="apellido" class="form-control"
-                                        placeholder="Apellido" required />
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="fecha-nacimiento-field" class="form-label">Fecha de Nacimiento</label>
-                                    <input type="date" id="fecha-nacimiento-field" name="fecha_nacimiento"
-                                        class="form-control" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="genero-field" class="form-label">Género</label>
-                                    <select id="genero-field" name="genero" class="form-control">
-                                        <option value="">Seleccione...</option>
-                                        <option value="M">Masculino</option>
-                                        <option value="F">Femenino</option>
-                                        <option value="Otro">Otro</option>
+                                <label for="field-documento_identidad" class="form-label required">Documento de Identidad</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="tipo-documento-field" name="tipo_documento"
+                                        style="max-width: 80px;">
+                                        <option value="V-">V-</option>
+                                        <option value="E-">E-</option>
+                                        <option value="J-">J-</option>
+                                        <option value="G-">G-</option>
                                     </select>
+                                    <input type="text" id="field-documento_identidad" name="documento_identidad"
+                                        class="form-control" placeholder="Nro. documento" required />
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="email-field" class="form-label">Email</label>
-                                    <input type="email" id="email-field" name="email" class="form-control"
-                                        placeholder="Email" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="telefono-field" class="form-label">Teléfono</label>
-                                    <input type="text" id="telefono-field" name="telefono" class="form-control"
-                                        placeholder="0424-1234567" />
-                                </div>
+                                <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" required />
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="estado-persona-field" class="form-label">Estado/Provincia</label>
-                                    <input type="text" id="estado-persona-field" name="estado_persona" class="form-control"
-                                        placeholder="Estado" />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="ciudad-field" class="form-label">Ciudad</label>
-                                    <input type="text" id="ciudad-field" name="ciudad" class="form-control"
-                                        placeholder="Ciudad" />
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label for="direccion-field" class="form-label">Dirección</label>
-                                    <textarea id="direccion-field" name="direccion" class="form-control"
-                                        placeholder="Dirección completa" rows="2"></textarea>
-                                </div>
+                                <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" required />
                             </div>
                         </div>
 
-                        <hr class="my-4">
-                        <h6 class="mb-3 text-success">Datos Laborales</h6>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="codigo-empleado-field" class="form-label">Código Empleado</label>
-                                    <input type="text" id="codigo-empleado-field" name="codigo_empleado"
-                                        class="form-control" placeholder="Auto-generado" readonly />
-                                    <small class="text-muted">Se generará automáticamente</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="cargo-field" class="form-label required">Cargo</label>
-                                    <input type="text" id="cargo-field" name="cargo" class="form-control"
-                                        placeholder="Ej: Operario" required />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="departamento-field" class="form-label required">Departamento</label>
-                                    <select id="departamento-field" name="departamento" class="form-control form-select"
-                                        required>
-                                        <option value="">Seleccione...</option>
-                                        <option value="Administracion">Administracion</option>
-                                        <option value="Produccion">Produccion</option>
-                                    </select>
-                                </div>
-                            </div>
-
+                        <!-- Fila 2: Email + Teléfono -->
+                        <div class="row mb-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="fecha-ingreso-field" class="form-label required">Fecha de Ingreso</label>
-                                    <input type="date" id="fecha-ingreso-field" name="fecha_ingreso" class="form-control"
-                                        required />
-                                </div>
+                                <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="estado-field" class="form-label required">Estado</label>
-                                    <select name="estado" id="estado-field" class="form-control form-select" required>
-                                        <option value="1">Activo</option>
-                                        <option value="0">Inactivo</option>
-                                    </select>
-                                </div>
+                                <x-forms.input name="telefono" label="Teléfono" placeholder="0424-1234567" />
                             </div>
                         </div>
+
+                        <!-- Fila 3: Fecha Nacimiento + Género -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <x-forms.input name="fecha_nacimiento" label="Fecha de Nacimiento" type="date" />
+                            </div>
+                            <div class="col-md-6">
+                                <x-forms.select name="genero" label="Género"
+                                    :options="['M' => 'Masculino', 'F' => 'Femenino']" />
+                            </div>
+                        </div>
+
+                        <!-- Fila 4: Dirección -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <x-forms.input name="direccion" label="Dirección" placeholder="Dirección completa" />
+                            </div>
+                        </div>
+
+                        <!-- Fila 5: Estado + Ciudad -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <x-forms.input name="estado_persona" label="Estado" placeholder="Estado" />
+                            </div>
+                            <div class="col-md-6">
+                                <x-forms.input name="ciudad" label="Ciudad" placeholder="Ciudad" />
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <!-- Fila 6: Cargo + Departamento + Fecha Ingreso -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <x-forms.input name="cargo" label="Cargo" placeholder="Ej: Operario" required />
+                            </div>
+                            <div class="col-md-4">
+                                <x-forms.select name="departamento" label="Departamento"
+                                    :options="$departamentos ?? ['Administracion' => 'Administración', 'Produccion' => 'Producción']"
+                                    required add-button-target="#addDepartamentoModal" />
+                            </div>
+                            <div class="col-md-4">
+                                <x-forms.input name="fecha_ingreso" label="Fecha de Ingreso" type="date" required />
+                            </div>
+                        </div>
+
+                        <!-- Fila 7: Estado laboral (oculta código autogenerado) -->
+                        <input type="hidden" id="field-codigo_empleado" name="codigo_empleado" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <x-forms.select name="estado" label="Estado Laboral"
+                                    :options="['1' => 'Activo', '0' => 'Inactivo']" required
+                                    placeholder="" value="1" />
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-success" id="add-btn">Agregar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <button type="button" class="btn btn-success" id="add-btn">
+                                <i class="ri-add-line me-1"></i>Agregar
+                            </button>
                             <button type="button" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                                style="display: none;">
+                                <i class="ri-save-line me-1"></i>Actualizar
+                            </button>
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <!-- Mini-Modal para agregar Departamento on the fly -->
+    <div class="modal fade" id="addDepartamentoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-light p-3">
+                    <h5 class="modal-title">Nuevo Departamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-0">
+                        <label for="nuevo-departamento-field" class="form-label required">Nombre del Departamento</label>
+                        <input type="text" id="nuevo-departamento-field" class="form-control"
+                            placeholder="Ej: Logística" maxlength="100" required />
+                        <div id="depto-error" class="invalid-feedback"></div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" id="guardar-departamento-btn">
+                        <i class="ri-check-line me-1"></i>Guardar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -626,56 +633,42 @@
 
             function generateButtons(empleadoId) {
                 return `
-                                                            <div class="dropdown d-inline-block">
-                                                                <button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    <i class="ri-more-fill align-middle"></i>
-                                                                </button>
-                                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                                    <li>
-                                                                        <button class="dropdown-item view-item-btn" data-id="${empleadoId}">
-                                                                            <i class="ri-eye-fill align-bottom me-2 text-muted"></i> Ver
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button class="dropdown-item edit-item-btn" data-id="${empleadoId}">
-                                                                            <i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Editar
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button class="dropdown-item remove-item-btn" data-id="${empleadoId}">
-                                                                            <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Eliminar
-                                                                        </button>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                            `;
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${empleadoId}" title="Ver">
+                            <i class="ri-eye-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${empleadoId}" title="Editar">
+                            <i class="ri-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${empleadoId}" title="Eliminar">
+                            <i class="ri-delete-bin-fill"></i>
+                        </button>
+                    </div>
+                `;
             }
 
             var table = $('#empleados-table').DataTable({
                 ajax: { url: "{{ route('empleados.data') }}", dataSrc: 'data' },
                 columns: [
-                    { data: 'codigo_empleado' },
-                    { data: 'nombre_completo' },
                     {
                         data: 'documento', render: function (data, type, row) {
                             return row.persona ? row.persona.tipo_documento + row.persona.documento_identidad : 'N/A';
                         }
                     },
-                    {
-                        data: 'email', render: function (data, type, row) {
-                            return row.persona && row.persona.email ? row.persona.email : 'N/A';
-                        }
-                    },
+                    { data: 'nombre_completo' },
                     { data: 'telefono', defaultContent: 'N/A' },
                     { data: 'cargo' },
-                    { data: 'departamento' },
                     {
-                        data: 'fecha_ingreso', render: function (data) {
+                        data: 'departamento',
+                        render: function (data) {
                             if (!data) return 'N/A';
-                            // Asumiendo formato ISO YYYY-MM-DD...
-                            const datePart = data.split('T')[0];
-                            const [year, month, day] = datePart.split('-');
-                            return `${day}/${month}/${year}`;
+                            var lower = data.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                            if (lower.includes('administra')) {
+                                return '<span class="badge-tipo badge-depto-administracion"><i class="ri-building-2-line"></i> ' + data + '</span>';
+                            } else if (lower.includes('producc')) {
+                                return '<span class="badge-tipo badge-depto-produccion"><i class="ri-tools-line"></i> ' + data + '</span>';
+                            }
+                            return '<span class="badge-tipo badge-depto-otro"><i class="ri-briefcase-line"></i> ' + data + '</span>';
                         }
                     },
                     {
@@ -709,26 +702,36 @@
                 }
             });
 
+            // === Funciones del modal crear/editar (estándar Clientes) ===
             function resetForm() {
                 $("#empleadoForm").trigger("reset");
                 $("#id-field").val("");
                 $("#modalTitle").text("Agregar Empleado");
                 $("#add-btn").show();
                 $("#edit-btn").hide();
-                $("#codigo-empleado-field").val("");
-                $("#tipo-documento-field").val("V-");
+                $("#field-codigo_empleado").val("");
+                $("#tipo-documento-field").val("V-").prop('disabled', false).removeClass('campo-protegido');
+                $("#field-documento_identidad").prop('disabled', false).removeClass('campo-protegido');
+                $("#field-estado").val("1");
+                // Limpiar validaciones
+                $("#empleadoForm .is-invalid").removeClass("is-invalid");
+                $("#empleadoForm .is-valid").removeClass("is-valid");
             }
 
             function setEditMode() {
                 $("#modalTitle").text("Actualizar Empleado");
                 $("#add-btn").hide();
                 $("#edit-btn").show();
+                // Bloquear edición de documento
+                $("#tipo-documento-field").prop('disabled', true).addClass('campo-protegido');
+                $("#field-documento_identidad").prop('disabled', true).addClass('campo-protegido');
             }
 
             $("#create-btn").click(function () { resetForm(); });
             $("#showModal").on('hidden.bs.modal', function () { resetForm(); });
             $("#add-btn, #edit-btn").click(function (e) { e.preventDefault(); $("#empleadoForm").submit(); });
 
+            // Envío del formulario via AJAX (crear o actualizar)
             $("#empleadoForm").on("submit", function (e) {
                 e.preventDefault();
                 var id = $("#id-field").val();
@@ -753,6 +756,7 @@
                 });
             });
 
+            // Ver detalles del empleado
             $(document).on("click", ".view-item-btn", function () {
                 var id = $(this).data("id");
                 $.get("{{ route('empleados.show', '') }}/" + id, function (data) {
@@ -773,27 +777,28 @@
                 });
             });
 
+            // Editar empleado: cargar datos en el modal
             $(document).on("click", ".edit-item-btn", function () {
                 var id = $(this).data("id");
                 $.get("{{ route('empleados.edit', ':id') }}".replace(':id', id), function (data) {
                     setEditMode();
                     $("#id-field").val(data.id);
-                    $("#nombre-field").val(data.persona.nombre);
-                    $("#apellido-field").val(data.persona.apellido);
+                    $("#field-nombre").val(data.persona.nombre);
+                    $("#field-apellido").val(data.persona.apellido);
                     $("#tipo-documento-field").val(data.persona.tipo_documento);
-                    $("#documento-identidad-field").val(data.persona.documento_identidad);
-                    $("#email-field").val(data.persona.email);
-                    $("#telefono-field").val(data.telefono || '');
-                    $("#direccion-field").val(data.direccion || '');
-                    $("#ciudad-field").val(data.ciudad || '');
-                    $("#estado-persona-field").val(data.persona.estado_persona);
-                    $("#fecha-nacimiento-field").val(data.persona.fecha_nacimiento);
-                    $("#genero-field").val(data.persona.genero);
-                    $("#codigo-empleado-field").val(data.codigo_empleado);
-                    $("#cargo-field").val(data.cargo);
-                    $("#departamento-field").val(data.departamento);
-                    $("#fecha-ingreso-field").val(data.fecha_ingreso);
-                    $("#estado-field").val(data.estado);
+                    $("#field-documento_identidad").val(data.persona.documento_identidad);
+                    $("#field-email").val(data.persona.email);
+                    $("#field-telefono").val(data.telefono || '');
+                    $("#field-direccion").val(data.direccion || '');
+                    $("#field-ciudad").val(data.ciudad || '');
+                    $("#field-estado_persona").val(data.persona.estado_persona);
+                    $("#field-fecha_nacimiento").val(data.persona.fecha_nacimiento);
+                    $("#field-genero").val(data.persona.genero);
+                    $("#field-codigo_empleado").val(data.codigo_empleado);
+                    $("#field-cargo").val(data.cargo);
+                    $("#field-departamento").val(data.departamento);
+                    $("#field-fecha_ingreso").val(data.fecha_ingreso);
+                    $("#field-estado").val(data.estado);
                     $("#showModal").modal("show");
                 });
             });
@@ -836,6 +841,63 @@
                     }
                 });
             });
+        });
+
+        // ===== Departamento On-the-fly =====
+        $('#addDepartamentoModal').on('shown.bs.modal', function () {
+            $('#nuevo-departamento-field').val('').removeClass('is-invalid').focus();
+            $('#depto-error').hide();
+        });
+
+        $('#guardar-departamento-btn').click(function () {
+            var nombre = $('#nuevo-departamento-field').val().trim();
+            if (nombre.length < 3) {
+                $('#nuevo-departamento-field').addClass('is-invalid');
+                $('#depto-error').text('Mínimo 3 caracteres.').show();
+                return;
+            }
+            var $btn = $(this);
+            $btn.prop('disabled', true).html('<i class="ri-loader-4-line ri-spin me-1"></i>Guardando...');
+            $.ajax({
+                url: "{{ route('empleados.store-departamento') }}",
+                method: 'POST',
+                data: { nombre: nombre, _token: '{{ csrf_token() }}' },
+                success: function (response) {
+                    // Agregar nueva opción al select y seleccionarla
+                    var $select = $('#field-departamento');
+                    $select.append('<option value="' + response.departamento + '">' + response.departamento + '</option>');
+                    $select.val(response.departamento);
+                    $('#addDepartamentoModal').modal('hide');
+                    Swal.fire({ icon: 'success', title: '¡Listo!', text: 'Departamento agregado.', showConfirmButton: false, timer: 1500 });
+                },
+                error: function (xhr) {
+                    $('#nuevo-departamento-field').addClass('is-invalid');
+                    $('#depto-error').text(xhr.responseJSON?.message || 'Error al guardar.').show();
+                },
+                complete: function () {
+                    $btn.prop('disabled', false).html('<i class="ri-check-line me-1"></i>Guardar');
+                }
+            });
+        });
+
+        // ===== Lógica de Prefijo Documento (Empleados) =====
+        function getEmpleadoDocMaxLength() {
+            var prefix = $('#tipo-documento-field').val();
+            return (prefix === 'J-' || prefix === 'G-') ? 9 : 8;
+        }
+
+        $(document).on('change', '#tipo-documento-field', function () {
+            var maxLen = getEmpleadoDocMaxLength();
+            var $docInput = $('#field-documento_identidad');
+            $docInput.attr('maxlength', maxLen);
+            if ($docInput.val().length > maxLen) {
+                $docInput.val($docInput.val().slice(0, maxLen));
+            }
+        });
+
+        $(document).on('input', '#field-documento_identidad', function () {
+            var maxLen = getEmpleadoDocMaxLength();
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, maxLen);
         });
     </script>
 @endpush

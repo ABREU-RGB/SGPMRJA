@@ -3,15 +3,10 @@
 <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content border-0 shadow-lg">
-            <!-- Header con gradiente marca Atlantico -->
-            <div class="modal-header py-3"
-                style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                <h5 class="modal-title text-white d-flex align-items-center">
-                    <i class="ri-file-list-3-line me-2 fs-4"></i>Detalles de la Cotización
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
+        <div class="modal-content">
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title">Detalles de la Cotización</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="row g-4">
@@ -363,12 +358,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer bg-light border-0">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-success" id="add-btn">Agregar</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-success" id="add-btn">
+                            <i class="ri-add-line me-1"></i>Agregar
+                        </button>
                         <button type="submit" class="btn btn-success" id="edit-btn"
-                            style="display: none;">Actualizar</button>
+                            style="display: none;">
+                            <i class="ri-save-line me-1"></i>Actualizar
+                        </button>
                     </div>
                 </div>
             </form>
@@ -520,12 +521,18 @@
                     </div>
 
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer bg-light border-0">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-success" id="add-btn-cliente">Agregar</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cerrar
+                        </button>
+                        <button type="button" class="btn btn-success" id="add-btn-cliente">
+                            <i class="ri-add-line me-1"></i>Agregar
+                        </button>
                         <button type="button" class="btn btn-success" id="edit-btn-cliente"
-                            style="display: none;">Actualizar</button>
+                            style="display: none;">
+                            <i class="ri-save-line me-1"></i>Actualizar
+                        </button>
                     </div>
                 </div>
             </form>
@@ -537,15 +544,11 @@
 <div class="modal fade" id="productosModalCotizacion" tabindex="-1" aria-labelledby="productosModalCotizacionLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1060;">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg">
+        <div class="modal-content">
             <!-- Header con gradiente marca Atlantico -->
-            <div class="modal-header py-3"
-                style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
-                <h5 class="modal-title text-white d-flex align-items-center" id="productosModalCotizacionLabel">
-                    <i class="ri-search-line me-2 fs-4"></i>Buscar y Seleccionar Producto
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
+            <div class="modal-header bg-light p-3">
+                <h5 class="modal-title" id="productosModalCotizacionLabel">Buscar y Seleccionar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <!-- Estilos específicos para este modal -->
@@ -622,8 +625,8 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="ri-close-line me-1"></i>Cancelar
                 </button>
             </div>

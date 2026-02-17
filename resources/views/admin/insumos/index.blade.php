@@ -34,6 +34,37 @@
         .search-box input {
             padding-left: 30px;
         }
+
+        /* Badges de tipo de insumo */
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-tipo-tela {
+            background-color: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+        .badge-tipo-hilo {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+        .badge-tipo-boton {
+            background-color: rgba(247, 184, 75, 0.18);
+            color: #e0a800;
+        }
+        .badge-tipo-cierre {
+            background-color: rgba(0, 217, 165, 0.15);
+            color: #00d9a5;
+        }
+        .badge-tipo-etiqueta {
+            background-color: rgba(233, 30, 99, 0.15);
+            color: #e91e63;
+        }
     </style>
 @endpush
 
@@ -67,15 +98,11 @@
                         <table id="insumos-table" class="table table-bordered table-striped align-middle">
                             <thead>
                                 <tr>
-                                    <th>Nro. Insumo</th>
                                     <th>Nombre</th>
                                     <th>Tipo</th>
-                                    <th>Unidad</th>
                                     <th>Stock Actual</th>
-                                    <th>Stock Mínimo</th>
                                     <th>Costo Unit.</th>
                                     <th>Proveedor</th>
-                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -131,8 +158,10 @@
                         <p id="view-created" class="text-muted mb-0"></p>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cerrar
+                    </button>
                 </div>
             </div>
         </div>
@@ -151,72 +180,26 @@
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
-                        <div class="mb-3">
-                            <label for="nombre-field" class="form-label required">Nombre</label><input type="text"
-                                id="nombre-field" name="nombre" class="form-control" required />
-                            <div id="nombre-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tipo-field" class="form-label required">Tipo</label><select id="tipo-field"
-                                name="tipo" class="form-control" required>
-                                <option value="">Seleccione...</option>
-                                <option value="Tela">Tela</option>
-                                <option value="Hilo">Hilo</option>
-                                <option value="Botón">Botón</option>
-                                <option value="Cierre">Cierre</option>
-                                <option value="Etiqueta">Etiqueta</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                            <div id="tipo-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="unidad-medida-field" class="form-label required">Unidad de Medida</label><input
-                                type="text" id="unidad-medida-field" name="unidad_medida" class="form-control" required />
-                            <div id="unidad-medida-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stock-actual-field" class="form-label required">Stock Actual</label>
-                            <input type="number" id="stock-actual-field" name="stock_actual" class="form-control"
-                                step="0.01" min="0" value="0" required />
-                            <div id="stock-actual-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stock-minimo-field" class="form-label required">Stock Mínimo</label><input
-                                type="number" id="stock-minimo-field" name="stock_minimo" class="form-control" step="0.01"
-                                min="0" required />
-                            <div id="stock-minimo-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="costo-unitario-field" class="form-label required">Costo Unitario</label><input
-                                type="number" id="costo-unitario-field" name="costo_unitario" class="form-control"
-                                step="0.01" min="0" required />
-                            <div id="costo-unitario-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="proveedor-id-field" class="form-label required">Proveedor</label>
-                            <select id="proveedor-id-field" name="proveedor_id" class="form-control" required>
-                                <option value="">Seleccione...</option>
-                                @foreach($proveedores as $proveedor)
-                                    <option value="{{ $proveedor->id }}">{{ $proveedor->razon_social }}</option>
-                                @endforeach
-                            </select>
-                            <div id="proveedor-id-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="estado-field" class="form-label required">Estado</label>
-                            <select id="estado-field" name="estado" class="form-control" required>
-                                <option value="1">Activo</option>
-                                <option value="0">Inactivo</option>
-                            </select>
-                            <div id="estado-error" class="invalid-feedback"></div>
-                        </div>
+                        <x-forms.input name="nombre" label="Nombre" required />
+                        <x-forms.select name="tipo" label="Tipo" required
+                            :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
+                        <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
+                        <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0" required />
+                        <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0" required />
+                        <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0" required />
+                        <x-forms.select name="proveedor_id" label="Proveedor" required
+                            :options="$proveedores->pluck('razon_social', 'id')->toArray()" />
+                        <x-forms.select name="estado" label="Estado" required
+                            :options="['1' => 'Activo', '0' => 'Inactivo']"
+                            placeholder="" value="1" />
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-success" id="add-btn">Agregar</button>
-                            <button type="submit" class="btn btn-success" id="edit-btn"
-                                style="display: none;">Actualizar</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="ri-close-line me-1"></i>Cerrar
+                            </button>
+                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -253,30 +236,41 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'csv',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'excel',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'pdf',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'print',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     }
                 ],
                 columns: [
-                    { data: 'id', name: 'id' },
                     { data: 'nombre', name: 'nombre' },
-                    { data: 'tipo', name: 'tipo' },
-                    { data: 'unidad_medida', name: 'unidad_medida' },
+                    {
+                        data: 'tipo',
+                        name: 'tipo',
+                        render: function (data) {
+                            var tipos = {
+                                'Tela': '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
+                                'Hilo': '<span class="badge-tipo badge-tipo-hilo"><i class="ri-links-line"></i> Hilo</span>',
+                                'Botón': '<span class="badge-tipo badge-tipo-boton"><i class="ri-radio-button-line"></i> Botón</span>',
+                                'Cierre': '<span class="badge-tipo badge-tipo-cierre"><i class="ri-lock-line"></i> Cierre</span>',
+                                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>'
+                            };
+                            return tipos[data] || '<span class="badge-tipo"><i class="ri-more-line"></i> ' + data + '</span>';
+                        }
+                    },
                     {
                         data: 'stock_actual',
                         name: 'stock_actual',
@@ -285,7 +279,6 @@
                             return `<span class="${stockClass}">${data}</span>`;
                         }
                     },
-                    { data: 'stock_minimo', name: 'stock_minimo' },
                     {
                         data: 'costo_unitario',
                         name: 'costo_unitario',
@@ -294,13 +287,6 @@
                         }
                     },
                     { data: 'proveedor_nombre', name: 'proveedor.razon_social' },
-                    {
-                        data: 'estado',
-                        name: 'estado',
-                        render: function (data) {
-                            return data ? '<span class="badge badge-status status-activo"><i class="ri-checkbox-circle-line me-1"></i>Activo</span>' : '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line me-1"></i>Inactivo</span>';
-                        }
-                    },
                     {
                         data: 'id',
                         name: 'actions',
@@ -354,14 +340,14 @@
                 $.get("{{ route('insumos.show', ':id') }}".replace(':id', id), function (data) {
                     $("#modalTitle").text("Editar Insumo");
                     $("#id-field").val(data.id);
-                    $("#nombre-field").val(data.nombre);
-                    $("#tipo-field").val(data.tipo);
-                    $("#unidad-medida-field").val(data.unidad_medida);
-                    $("#stock-actual-field").val(data.stock_actual);
-                    $("#stock-minimo-field").val(data.stock_minimo);
-                    $("#costo-unitario-field").val(data.costo_unitario);
-                    $("#proveedor-id-field").val(data.proveedor_id);
-                    $("#estado-field").val(data.estado ? '1' : '0');
+                    $("#field-nombre").val(data.nombre);
+                    $("#field-tipo").val(data.tipo);
+                    $("#field-unidad_medida").val(data.unidad_medida);
+                    $("#field-stock_actual").val(data.stock_actual);
+                    $("#field-stock_minimo").val(data.stock_minimo);
+                    $("#field-costo_unitario").val(data.costo_unitario);
+                    $("#field-proveedor_id").val(data.proveedor_id);
+                    $("#field-estado").val(data.estado ? '1' : '0');
 
                     $("#add-btn").hide();
                     $("#edit-btn").show();

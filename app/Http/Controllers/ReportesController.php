@@ -43,7 +43,9 @@ class ReportesController extends Controller
             ->groupBy('orden_id')
             ->get()
             ->map(function ($item) {
-                $eficiencia = ($item->total_producido - $item->total_defectuoso) / $item->total_producido * 100;
+                $eficiencia = $item->total_producido > 0
+                    ? ($item->total_producido - $item->total_defectuoso) / $item->total_producido * 100
+                    : 0;
                 return [
                     'orden_id' => $item->orden_id,
                     'producto' => $item->orden->producto->nombre ?? 'N/A',

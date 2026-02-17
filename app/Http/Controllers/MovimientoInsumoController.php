@@ -38,9 +38,9 @@ class MovimientoInsumoController extends Controller
                 return $movimiento->created_at ? $movimiento->created_at->format('d/m/Y H:i') : 'N/A';
             })
             ->addColumn('actions', function ($movimiento) {
-                $actions = '<div class="text-center">';
-                $actions .= '<button type="button" class="btn btn-primary btn-sm view-btn me-2" data-id="' . $movimiento->id . '">';
-                $actions .= '<i class="ri-eye-line"></i></button>';
+                $actions = '<div class="d-flex gap-2 justify-content-center">';
+                $actions .= '<button type="button" class="btn btn-sm btn-soft-info view-btn" data-id="' . $movimiento->id . '" title="Ver">';
+                $actions .= '<i class="ri-eye-fill"></i></button>';
                 $actions .= '</div>';
                 return $actions;
             })
