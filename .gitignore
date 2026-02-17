@@ -10,3 +10,6 @@
 /storage/logs/*.log
 *.log
 .DS_Store
+
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
