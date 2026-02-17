@@ -10,6 +10,22 @@
 @endpush
 
 @section('content')
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Gestión de Clientes</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Gestión General</a></li>
+                        <li class="breadcrumb-item active">Clientes</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <style>
         .card-body {
             overflow-x: auto;
@@ -76,14 +92,17 @@
             font-size: 12px;
             font-weight: 600;
         }
+
         .badge-tipo-natural {
             background-color: rgba(41, 156, 219, 0.15);
             color: #299cdb;
         }
+
         .badge-tipo-juridico {
             background-color: rgba(111, 66, 193, 0.15);
             color: #6f42c1;
         }
+
         .badge-tipo-gubernamental {
             background-color: rgba(247, 184, 75, 0.18);
             color: #e0a800;
@@ -96,9 +115,11 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+
         .campo-protegido-wrapper {
             position: relative;
         }
+
         .campo-protegido-wrapper::after {
             content: '\F1A4';
             font-family: 'remixicon';
@@ -366,143 +387,151 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Cliente</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                    <div class="modal-body">
-                        <input type="hidden" id="id-field" />
+                <div class="modal-body">
+                    <input type="hidden" id="id-field" />
 
-                        <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
-                        <div class="row mb-3">
-                            <div class="col-md-5">
-                                <x-forms.input name="documento_number" label="Documento (Cédula o RIF)" id="documento-number-field" required maxlength="10" placeholder="Nro. documento" prependRaw="true">
-                                    <x-slot:prepend>
-                                        <select class="form-select" id="documento-prefix-field" style="max-width: 70px;">
-                                            <option value="V-">V-</option>
-                                            <option value="J-">J-</option>
-                                            <option value="E-">E-</option>
-                                            <option value="G-">G-</option>
-                                        </select>
-                                    </x-slot:prepend>
-                                </x-forms.input>
-                                <input type="hidden" id="documento-field" name="documento" />
-                                <small class="text-muted" style="margin-top: -10px; display: block; margin-bottom: 10px;">Máximo 10 dígitos</small>
-                                <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
-                                    :options="['natural' => 'Natural', 'juridico' => 'Jurídico', 'gubernamental' => 'Gubernamental']" />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label d-block">Estatus</label>
-                                <div class="form-check form-switch form-switch-success mt-2">
-                                    <input type="hidden" name="estatus" value="0" />
-                                    <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
-                                        name="estatus" value="1" checked />
-                                    <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
-                                </div>
-                            </div>
+                    <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
+                    <div class="row mb-3">
+                        <div class="col-md-5">
+                            <x-forms.input name="documento_number" label="Documento (Cédula o RIF)"
+                                id="documento-number-field" required maxlength="10" placeholder="Nro. documento"
+                                prependRaw="true">
+                                <x-slot:prepend>
+                                    <select class="form-select" id="documento-prefix-field" style="max-width: 70px;">
+                                        <option value="V-">V-</option>
+                                        <option value="J-">J-</option>
+                                        <option value="E-">E-</option>
+                                        <option value="G-">G-</option>
+                                    </select>
+                                </x-slot:prepend>
+                            </x-forms.input>
+                            <input type="hidden" id="documento-field" name="documento" />
+                            <small class="text-muted" style="margin-top: -10px; display: block; margin-bottom: 10px;">Máximo
+                                10 dígitos</small>
+                            <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
                         </div>
-
-                        <!-- Fila 2: Nombre + Apellido (solo para Natural) -->
-                        <div id="campos-persona-natural" class="row mb-3">
-                            <div class="col-md-6">
-                                <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" maxlength="100" required id="nombre-field" />
-                            </div>
-                            <div class="col-md-6">
-                                <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" maxlength="100" required id="apellido-field" />
-                            </div>
+                        <div class="col-md-4">
+                            <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
+                                :options="['natural' => 'Natural', 'juridico' => 'Jurídico', 'gubernamental' => 'Gubernamental']" />
                         </div>
-
-                        <!-- Fila 2B: Razón Social (solo para Jurídico/Gubernamental) -->
-                        <div id="campos-razon-social" class="row mb-3 d-none">
-                            <div class="col-12">
-                                <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa" maxlength="200" id="razon-social-field"
-                                    hint="Se almacenará como nombre del cliente" />
+                        <div class="col-md-3">
+                            <label class="form-label d-block">Estatus</label>
+                            <div class="form-check form-switch form-switch-success mt-2">
+                                <input type="hidden" name="estatus" value="0" />
+                                <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
+                                    name="estatus" value="1" checked />
+                                <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
                             </div>
-                        </div>
-
-                        <!-- Fila 3: Email + Teléfono -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com" id="email-field" />
-                            </div>
-                            <div class="col-md-6">
-                                <x-forms.input name="telefono_number" label="Teléfono" id="telefono-number-field" required maxlength="7" placeholder="1234567" prependRaw="true">
-                                    <x-slot:prepend>
-                                        <select class="form-select" id="telefono-prefix-field"
-                                            style="max-width: 100px; min-width: 100px;">
-                                            <option value="0412">0412</option>
-                                            <option value="0422">0422</option>
-                                            <option value="0414">0414</option>
-                                            <option value="0424" selected>0424</option>
-                                            <option value="0416">0416</option>
-                                            <option value="0426">0426</option>
-                                        </select>
-                                    </x-slot:prepend>
-                                </x-forms.input>
-                                <input type="hidden" id="telefono-field" name="telefono" />
-                                <div id="telefono-error" class="invalid-feedback" style="display: none;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Fila 4: Dirección -->
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <x-forms.textarea name="direccion" label="Dirección" placeholder="Dirección completa" maxlength="500" required id="direccion-field" rows="3" />
-                            </div>
-                        </div>
-
-                        <!-- Fila 5: Estado (Territorio) + Ciudad -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="estado_territorial-field" class="form-label required">Estado</label>
-                                <select name="estado_territorial" id="estado_territorial-field" class="form-select"
-                                    required>
-                                    <option value="">Seleccione estado</option>
-                                    <option value="Amazonas">Amazonas</option>
-                                    <option value="Anzoátegui">Anzoátegui</option>
-                                    <option value="Apure">Apure</option>
-                                    <option value="Aragua">Aragua</option>
-                                    <option value="Barinas">Barinas</option>
-                                    <option value="Bolívar">Bolívar</option>
-                                    <option value="Carabobo">Carabobo</option>
-                                    <option value="Cojedes">Cojedes</option>
-                                    <option value="Delta Amacuro">Delta Amacuro</option>
-                                    <option value="Distrito Capital">Distrito Capital</option>
-                                    <option value="Falcón">Falcón</option>
-                                    <option value="Guárico">Guárico</option>
-                                    <option value="La Guaira">La Guaira</option>
-                                    <option value="Lara">Lara</option>
-                                    <option value="Mérida">Mérida</option>
-                                    <option value="Miranda">Miranda</option>
-                                    <option value="Monagas">Monagas</option>
-                                    <option value="Nueva Esparta">Nueva Esparta</option>
-                                    <option value="Portuguesa">Portuguesa</option>
-                                    <option value="Sucre">Sucre</option>
-                                    <option value="Táchira">Táchira</option>
-                                    <option value="Trujillo">Trujillo</option>
-                                    <option value="Yaracuy">Yaracuy</option>
-                                    <option value="Zulia">Zulia</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="ciudad-field" class="form-label required">Municipio</label>
-                                <select name="ciudad" id="ciudad-field" class="form-select" required>
-                                    <option value="">Primero seleccione un estado</option>
-                                </select>
-                            </div>
-                        </div>
-
-
-                    </div>
-                    <div class="modal-footer bg-light border-0">
-                        <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                <i class="ri-close-line me-1"></i>Cerrar
-                            </button>
-                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
-                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
-                </form>
+
+                    <!-- Fila 2: Nombre + Apellido (solo para Natural) -->
+                    <div id="campos-persona-natural" class="row mb-3">
+                        <div class="col-md-6">
+                            <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" maxlength="100" required
+                                id="nombre-field" />
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" maxlength="100" required
+                                id="apellido-field" />
+                        </div>
+                    </div>
+
+                    <!-- Fila 2B: Razón Social (solo para Jurídico/Gubernamental) -->
+                    <div id="campos-razon-social" class="row mb-3 d-none">
+                        <div class="col-12">
+                            <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa"
+                                maxlength="200" id="razon-social-field" hint="Se almacenará como nombre del cliente" />
+                        </div>
+                    </div>
+
+                    <!-- Fila 3: Email + Teléfono -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com"
+                                id="email-field" />
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.input name="telefono_number" label="Teléfono" id="telefono-number-field" required
+                                maxlength="7" placeholder="1234567" prependRaw="true">
+                                <x-slot:prepend>
+                                    <select class="form-select" id="telefono-prefix-field"
+                                        style="max-width: 100px; min-width: 100px;">
+                                        <option value="0412">0412</option>
+                                        <option value="0422">0422</option>
+                                        <option value="0414">0414</option>
+                                        <option value="0424" selected>0424</option>
+                                        <option value="0416">0416</option>
+                                        <option value="0426">0426</option>
+                                    </select>
+                                </x-slot:prepend>
+                            </x-forms.input>
+                            <input type="hidden" id="telefono-field" name="telefono" />
+                            <div id="telefono-error" class="invalid-feedback" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 4: Dirección -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <x-forms.textarea name="direccion" label="Dirección" placeholder="Dirección completa"
+                                maxlength="500" required id="direccion-field" rows="3" />
+                        </div>
+                    </div>
+
+                    <!-- Fila 5: Estado (Territorio) + Ciudad -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="estado_territorial-field" class="form-label required">Estado</label>
+                            <select name="estado_territorial" id="estado_territorial-field" class="form-select" required>
+                                <option value="">Seleccione estado</option>
+                                <option value="Amazonas">Amazonas</option>
+                                <option value="Anzoátegui">Anzoátegui</option>
+                                <option value="Apure">Apure</option>
+                                <option value="Aragua">Aragua</option>
+                                <option value="Barinas">Barinas</option>
+                                <option value="Bolívar">Bolívar</option>
+                                <option value="Carabobo">Carabobo</option>
+                                <option value="Cojedes">Cojedes</option>
+                                <option value="Delta Amacuro">Delta Amacuro</option>
+                                <option value="Distrito Capital">Distrito Capital</option>
+                                <option value="Falcón">Falcón</option>
+                                <option value="Guárico">Guárico</option>
+                                <option value="La Guaira">La Guaira</option>
+                                <option value="Lara">Lara</option>
+                                <option value="Mérida">Mérida</option>
+                                <option value="Miranda">Miranda</option>
+                                <option value="Monagas">Monagas</option>
+                                <option value="Nueva Esparta">Nueva Esparta</option>
+                                <option value="Portuguesa">Portuguesa</option>
+                                <option value="Sucre">Sucre</option>
+                                <option value="Táchira">Táchira</option>
+                                <option value="Trujillo">Trujillo</option>
+                                <option value="Yaracuy">Yaracuy</option>
+                                <option value="Zulia">Zulia</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ciudad-field" class="form-label required">Municipio</label>
+                            <select name="ciudad" id="ciudad-field" class="form-select" required>
+                                <option value="">Primero seleccione un estado</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cerrar
+                        </button>
+                        <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                        <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..."
+                            style="display: none;" />
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
@@ -797,18 +826,18 @@
             });
             function generateButtons(clienteId) {
                 return `
-                                                                                    <div class="d-flex gap-2 justify-content-center">
-                                                                                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
-                                                                                            <i class="ri-eye-fill"></i>
-                                                                                        </button>
-                                                                                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
-                                                                                            <i class="ri-pencil-fill"></i>
-                                                                                        </button>
-                                                                                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
-                                                                                            <i class="ri-delete-bin-fill"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                `;
+                                                                                        <div class="d-flex gap-2 justify-content-center">
+                                                                                            <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
+                                                                                                <i class="ri-eye-fill"></i>
+                                                                                            </button>
+                                                                                            <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
+                                                                                                <i class="ri-pencil-fill"></i>
+                                                                                            </button>
+                                                                                            <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
+                                                                                                <i class="ri-delete-bin-fill"></i>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    `;
             }
             var table = $('#clientes-table').DataTable({
                 ajax: { url: "{{ route('clientes.data') }}", dataSrc: 'data' },
@@ -824,12 +853,14 @@
                             return (row.nombre || '') + ' ' + (row.apellido || '');
                         }
                     },
-                    { data: 'tipo_cliente', render: function (data) {
-                        if (data === 'natural') return '<span class="badge-tipo badge-tipo-natural"><i class="ri-user-line"></i> Natural</span>';
-                        if (data === 'juridico') return '<span class="badge-tipo badge-tipo-juridico"><i class="ri-building-line"></i> Jurídico</span>';
-                        if (data === 'gubernamental') return '<span class="badge-tipo badge-tipo-gubernamental"><i class="ri-government-line"></i> Gubernamental</span>';
-                        return data;
-                    } },
+                    {
+                        data: 'tipo_cliente', render: function (data) {
+                            if (data === 'natural') return '<span class="badge-tipo badge-tipo-natural"><i class="ri-user-line"></i> Natural</span>';
+                            if (data === 'juridico') return '<span class="badge-tipo badge-tipo-juridico"><i class="ri-building-line"></i> Jurídico</span>';
+                            if (data === 'gubernamental') return '<span class="badge-tipo badge-tipo-gubernamental"><i class="ri-government-line"></i> Gubernamental</span>';
+                            return data;
+                        }
+                    },
                     { data: 'telefono' },
                     { data: 'email' },
                     { data: null, render: function (data, type, row) { return generateButtons(row.id); } }

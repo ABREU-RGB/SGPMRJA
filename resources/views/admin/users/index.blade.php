@@ -11,6 +11,22 @@
 @endpush
 
 @section('content')
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Gestión de Usuarios</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Seguridad</a></li>
+                        <li class="breadcrumb-item active">Usuarios</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <style>
         .card-body {
             overflow-x: auto;
@@ -67,10 +83,12 @@
             font-size: 12px;
             font-weight: 600;
         }
+
         .badge-rol-admin {
             background-color: rgba(111, 66, 193, 0.15);
             color: #6f42c1;
         }
+
         .badge-rol-supervisor {
             background-color: rgba(41, 156, 219, 0.15);
             color: #299cdb;
@@ -223,9 +241,12 @@
                                 <x-forms.input name="name" label="Nombre" placeholder="Nombre" required />
                                 <x-forms.input name="email" label="Email" type="email" placeholder="Email" required />
                                 <div class="mb-3" id="password-group">
-                                    <x-forms.input name="password" label="Contraseña" type="password" placeholder="Contraseña" hint="Dejar en blanco para mantener la contraseña actual al editar" />
+                                    <x-forms.input name="password" label="Contraseña" type="password"
+                                        placeholder="Contraseña"
+                                        hint="Dejar en blanco para mantener la contraseña actual al editar" />
                                 </div>
-                                <x-forms.input name="password_confirmation" label="Confirmar Contraseña" type="password" placeholder="Confirmar Contraseña" required />
+                                <x-forms.input name="password_confirmation" label="Confirmar Contraseña" type="password"
+                                    placeholder="Confirmar Contraseña" required />
                                 <x-forms.select name="role" label="Rol" required
                                     :options="['Administrador' => 'Administrador', 'Supervisor' => 'Supervisor']"
                                     placeholder="Seleccione un rol" />
@@ -241,8 +262,7 @@
                                     </div>
                                 </div>
 
-                                <x-forms.select name="estado" label="Estado"
-                                    :options="['1' => 'Activo', '0' => 'Inactivo']"
+                                <x-forms.select name="estado" label="Estado" :options="['1' => 'Activo', '0' => 'Inactivo']"
                                     placeholder="" value="1" />
                             </div>
                         </div>
@@ -253,7 +273,8 @@
                                 <i class="ri-close-line me-1"></i>Cerrar
                             </button>
                             <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
-                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line"
+                                loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -280,18 +301,18 @@
 
             function generateButtons(userId) {
                 return `
-                            <div class="d-flex gap-2 justify-content-center">
-                                <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${userId}" title="Ver">
-                                    <i class="ri-eye-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${userId}" title="Editar">
-                                    <i class="ri-pencil-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${userId}" title="Eliminar">
-                                    <i class="ri-delete-bin-fill"></i>
-                                </button>
-                            </div>
-                        `;
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${userId}" title="Ver">
+                                        <i class="ri-eye-fill"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${userId}" title="Editar">
+                                        <i class="ri-pencil-fill"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${userId}" title="Eliminar">
+                                        <i class="ri-delete-bin-fill"></i>
+                                    </button>
+                                </div>
+                            `;
             }
 
             var table = $('#users-table').DataTable({
@@ -304,15 +325,15 @@
                         data: 'name',
                         render: function (data, type, row) {
                             return `
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="flex-shrink-0 me-2">
-                                                                    <div class="avatar-xs">
-                                                                        <img src="${row.avatar || '/assets/images/users/user-dummy-img.jpg'}" alt="Avatar" class="img-fluid rounded-circle">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="flex-shrink-0 me-2">
+                                                                        <div class="avatar-xs">
+                                                                            <img src="${row.avatar || '/assets/images/users/user-dummy-img.jpg'}" alt="Avatar" class="img-fluid rounded-circle">
+                                                                        </div>
                                                                     </div>
+                                                                    <div class="flex-grow-1">${data}</div>
                                                                 </div>
-                                                                <div class="flex-grow-1">${data}</div>
-                                                            </div>
-                                                        `;
+                                                            `;
                         }
                     },
                     {

@@ -3,23 +3,46 @@
 @push('styles')
     <link href="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet"
+        type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     <style>
-        .progress { height: 20px; }
-        .estado-Pendiente { background-color: #ffc107; }
-        .estado-EnProceso { background-color: #0dcaf0; }
-        .estado-Finalizado { background-color: #198754; }
-        .estado-Cancelado { background-color: #dc3545; }
-        .select2-container { width: 100% !important; }
-        #insumos-container .row { margin-bottom: 10px; }
+        .progress {
+            height: 20px;
+        }
+
+        .estado-Pendiente {
+            background-color: #ffc107;
+        }
+
+        .estado-EnProceso {
+            background-color: #0dcaf0;
+        }
+
+        .estado-Finalizado {
+            background-color: #198754;
+        }
+
+        .estado-Cancelado {
+            background-color: #dc3545;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
+        #insumos-container .row {
+            margin-bottom: 10px;
+        }
 
         /* Estilo para buscador personalizado */
         .search-box {
             position: relative;
         }
+
         .search-box .search-icon {
             position: absolute;
             top: 50%;
@@ -27,6 +50,7 @@
             transform: translateY(-50%);
             color: #878a99;
         }
+
         .search-box input {
             padding-left: 30px;
         }
@@ -34,6 +58,22 @@
 @endpush
 
 @section('content')
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Órdenes de Producción</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Gestión Operativa</a></li>
+                        <li class="breadcrumb-item active">Órdenes</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -43,11 +83,13 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Buscador Personalizado -->
                             <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input" placeholder="Buscar orden...">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar orden...">
                                 <i class="ri-search-line search-icon"></i>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn" data-bs-target="#showModal">
+                                <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
+                                    data-bs-target="#showModal">
                                     <i class="ri-add-line align-bottom me-1"></i> Nueva Orden
                                 </button>
                             </div>
@@ -59,13 +101,13 @@
                         <table id="ordenes-table" class="table table-bordered table-striped align-middle">
                             <thead>
                                 <tr>
-                                <th>Nro. Orden</th>
-                                <th>Nro. Pedido</th>
-                                <th>Cant. Solicitada</th>
-                                <th>Progreso</th>
-                                <th>Fecha Fin Estimada</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
+                                    <th>Nro. Orden</th>
+                                    <th>Nro. Pedido</th>
+                                    <th>Cant. Solicitada</th>
+                                    <th>Progreso</th>
+                                    <th>Fecha Fin Estimada</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -96,6 +138,6 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
+
     @include('admin.ordenes.scripts.main')
 @endpush
