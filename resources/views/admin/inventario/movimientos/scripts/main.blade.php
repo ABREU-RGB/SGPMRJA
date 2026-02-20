@@ -40,7 +40,7 @@
                     data: 'fecha',
                     name: 'fecha',
                     width: '16%',
-                    render: function(data) {
+                    render: function (data) {
                         if (!data) return 'N/A';
                         return data.split(' ')[0];
                     }
@@ -48,8 +48,14 @@
                 { data: 'actions', name: 'actions', orderable: false, searchable: false, width: '20%' },
             ],
             order: [[4, 'desc']],
+            dom: 'rtip',
             language: lenguajeData,
             responsive: true
+        });
+
+        // Buscador personalizado
+        $('#custom-search-input').on('keyup', function () {
+            table.search(this.value).draw();
         });
 
         // Manejar cambio en el select de insumo
@@ -226,14 +232,14 @@
         }
 
         // --- Manejar botón de agregar insumo rápido ---
-        $('#open-add-insumo-modal').on('click', function() {
+        $('#open-add-insumo-modal').on('click', function () {
             // Ocultar temporalmente el modal principal para que no se superponga
             $('#createModal').addClass('modal-hidden-temp');
             $('#modalAddInsumo').modal('show');
         });
 
         // Cuando se cierra el modal de insumo, mostrar nuevamente el principal
-        $('#modalAddInsumo').on('hidden.bs.modal', function() {
+        $('#modalAddInsumo').on('hidden.bs.modal', function () {
             $('#createModal').removeClass('modal-hidden-temp');
         });
 

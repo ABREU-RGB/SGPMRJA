@@ -31,6 +31,23 @@
             overflow-x: auto;
         }
 
+        /* Estilo para buscador personalizado */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #878a99;
+        }
+
+        .search-box input {
+            padding-left: 30px;
+        }
+
         #empleados-table {
             width: 100% !important;
             font-size: 13px;
@@ -99,14 +116,22 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Empleados</h5>
-                        <div class="flex-shrink-0 d-flex gap-2">
-                            <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
-                                data-bs-target="#showModal">
-                                <i class="ri-add-line align-bottom me-1"></i> Agregar Empleado
-                            </button>
-                            <a href="{{ route('empleados.reporte.pdf') }}" class="btn btn-danger" target="_blank">
-                                <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                            </a>
+                        <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Buscador Personalizado -->
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar empleado...">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
+                                    data-bs-target="#showModal">
+                                    <i class="ri-add-line align-bottom me-1"></i> Agregar Empleado
+                                </button>
+                                <a href="{{ route('empleados.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -699,7 +724,7 @@
                     }
                 ],
                 order: [[0, 'desc']],
-                dom: 'frtip',
+                dom: 'rtip',
                 language: {
                     "sProcessing": "Procesando...",
                     "sLengthMenu": "Mostrar _MENU_ registros",
@@ -716,6 +741,11 @@
                         "sPrevious": "Anterior"
                     }
                 }
+            });
+
+            // Buscador personalizado
+            $('#custom-search-input').on('keyup', function () {
+                table.search(this.value).draw();
             });
 
             // === Funciones del modal crear/editar (estándar Clientes) ===

@@ -25,7 +25,13 @@
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h5 class="card-title mb-0 flex-grow-1">Estado Actual del Inventario</h5>
-                            <div class="flex-shrink-0">
+                            <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                                <!-- Buscador Personalizado -->
+                                <div class="search-box">
+                                    <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                        placeholder="Buscar en el reporte...">
+                                    <i class="ri-search-line search-icon"></i>
+                                </div>
                                 <a href="{{ route('inventario.movimientos.index') }}" class="btn btn-secondary">
                                     <i class="ri-arrow-go-back-line align-bottom me-1"></i> Volver
                                 </a>
@@ -119,10 +125,15 @@
                     url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
                 },
                 responsive: true,
-                dom: 'Bfrtip',
+                dom: 'Brtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf'
                 ]
+            });
+
+            // Buscador personalizado
+            $('#custom-search-input').on('keyup', function () {
+                table.search(this.value).draw();
             });
 
             // Manejar clic en botón de imprimir

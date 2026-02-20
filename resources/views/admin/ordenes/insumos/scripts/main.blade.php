@@ -8,7 +8,7 @@
         });
 
         // Actualizar información al cambiar el insumo
-        $('#insumo_id').on('change', function() {
+        $('#insumo_id').on('change', function () {
             let option = $(this).find('option:selected');
             $('#stock-disponible').text(option.data('stock') + ' ' + option.data('unidad'));
             $('#unidad-medida').text(option.data('unidad'));
@@ -20,39 +20,39 @@
             serverSide: true,
             ajax: "{{ route('ordenes.insumos.data', $orden->id) }}",
             columns: [
-                { 
+                {
                     data: 'insumo.nombre',
                     name: 'insumo.nombre',
                     className: 'align-middle'
                 },
-                { 
+                {
                     data: 'insumo.tipo',
                     name: 'insumo.tipo',
                     className: 'align-middle'
                 },
-                { 
+                {
                     data: 'insumo.unidad_medida',
                     name: 'insumo.unidad_medida',
                     className: 'align-middle text-center'
                 },
-                { 
+                {
                     data: 'cantidad_estimada',
                     name: 'cantidad_estimada',
                     className: 'align-middle text-end'
                 },
-                { 
+                {
                     data: 'cantidad_utilizada',
                     name: 'cantidad_utilizada',
                     className: 'align-middle text-end'
                 },
-                { 
+                {
                     data: null,
                     className: 'align-middle',
-                    render: function(data) {
+                    render: function (data) {
                         let porcentaje = (data.cantidad_utilizada / data.cantidad_estimada * 100).toFixed(2);
-                        let colorClass = porcentaje >= 90 ? 'bg-success' : 
-                                       porcentaje >= 60 ? 'bg-info' : 
-                                       porcentaje >= 30 ? 'bg-warning' : 'bg-danger';
+                        let colorClass = porcentaje >= 90 ? 'bg-success' :
+                            porcentaje >= 60 ? 'bg-info' :
+                                porcentaje >= 30 ? 'bg-warning' : 'bg-danger';
                         return `<div class="progress" style="height: 15px;">
                             <div class="progress-bar ${colorClass}" role="progressbar" 
                                 style="width: ${porcentaje}%" 
@@ -64,16 +64,16 @@
                         </div>`;
                     }
                 },
-                { 
+                {
                     data: 'insumo.stock_actual',
                     name: 'insumo.stock_actual',
                     className: 'align-middle text-end',
-                    render: function(data, type, row) {
+                    render: function (data, type, row) {
                         let colorClass = data <= row.insumo.stock_minimo ? 'text-danger' : 'text-success';
                         return `<span class="${colorClass}">${data} ${row.insumo.unidad_medida}</span>`;
                     }
                 },
-                { 
+                {
                     data: 'actions',
                     name: 'actions',
                     orderable: false,
@@ -84,13 +84,18 @@
             order: [[0, 'asc']],
             responsive: true,
             language: lenguajeData,
-            dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>' +
-                 '<"row"<"col-sm-12"tr>>' +
-                 '<"row"<"col-sm-5"i><"col-sm-7"p>>'
+            dom: '<"row"<"col-sm-12"l>>' +
+                '<"row"<"col-sm-12"tr>>' +
+                '<"row"<"col-sm-5"i><"col-sm-7"p>>'
+        });
+
+        // Buscador personalizado
+        $('#custom-search-input').on('keyup', function () {
+            table.search(this.value).draw();
         });
 
         // Agregar insumo
-        $('#insumoForm').on('submit', function(e) {
+        $('#insumoForm').on('submit', function (e) {
             e.preventDefault();
             let formData = new FormData(this);
 
@@ -100,7 +105,7 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(response) {
+                success: function (response) {
                     $('#showModal').modal('hide');
                     table.ajax.reload();
                     Swal.fire({
@@ -109,7 +114,7 @@
                         text: response.success
                     });
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -120,9 +125,9 @@
         });
 
         // Mostrar modal de actualización
-        $(document).on('click', '.update-btn', function() {
+        $(document).on('click', '.update-btn', function () {
             let row = table.row($(this).closest('tr')).data();
-            
+
             $('#update_detalle_id').val(row.id);
             $('#update_insumo_nombre').text(row.insumo.nombre);
             $('#update_cantidad_estimada').text(row.cantidad_estimada + ' ' + row.insumo.unidad_medida);
@@ -140,7 +145,7 @@
         });
 
         // Actualizar uso de insumo
-        $('#updateForm').on('submit', function(e) {
+        $('#updateForm').on('submit', function (e) {
             e.preventDefault();
             let id = $('#update_detalle_id').val();
             let formData = new FormData(this);
@@ -151,7 +156,7 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(response) {
+                success: function (response) {
                     $('#updateModal').modal('hide');
                     table.ajax.reload();
                     Swal.fire({
@@ -160,7 +165,7 @@
                         text: response.success
                     });
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -171,9 +176,9 @@
         });
 
         // Eliminar insumo
-        $(document).on('click', '.remove-btn', function() {
+        $(document).on('click', '.remove-btn', function () {
             let id = $(this).data('id');
-            
+
             Swal.fire({
                 title: '¿Estás seguro?',
                 text: "Esta acción no se puede deshacer",
@@ -189,11 +194,11 @@
                         data: {
                             _token: '{{ csrf_token() }}'
                         },
-                        success: function(response) {
+                        success: function (response) {
                             table.ajax.reload();
                             Swal.fire('Eliminado', response.success, 'success');
                         },
-                        error: function(xhr) {
+                        error: function (xhr) {
                             Swal.fire('Error', xhr.responseJSON.error || 'Ocurrió un error', 'error');
                         }
                     });

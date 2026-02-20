@@ -32,7 +32,13 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Registro de Producción Diaria</h5>
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Buscador Personalizado -->
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar registro...">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
                             <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                 data-bs-target="#showModal">
                                 <i class="ri-add-line align-bottom me-1"></i> Registrar Producción

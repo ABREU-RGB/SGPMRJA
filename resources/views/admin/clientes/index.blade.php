@@ -137,14 +137,22 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Clientes</h5>
-                        <div class="flex-shrink-0 d-flex gap-2">
-                            <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
-                                data-bs-target="#showModal">
-                                <i class="ri-add-line align-bottom me-1"></i> Agregar Cliente
-                            </button>
-                            <a href="{{ route('clientes.reporte.pdf') }}" class="btn btn-danger" target="_blank">
-                                <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                            </a>
+                        <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Buscador Personalizado -->
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar cliente...">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
+                                    data-bs-target="#showModal">
+                                    <i class="ri-add-line align-bottom me-1"></i> Agregar Cliente
+                                </button>
+                                <a href="{{ route('clientes.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -826,18 +834,18 @@
             });
             function generateButtons(clienteId) {
                 return `
-                                                                                        <div class="d-flex gap-2 justify-content-center">
-                                                                                            <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
-                                                                                                <i class="ri-eye-fill"></i>
-                                                                                            </button>
-                                                                                            <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
-                                                                                                <i class="ri-pencil-fill"></i>
-                                                                                            </button>
-                                                                                            <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
-                                                                                                <i class="ri-delete-bin-fill"></i>
-                                                                                            </button>
-                                                                                        </div>
-                                                                                    `;
+                                                                                            <div class="d-flex gap-2 justify-content-center">
+                                                                                                <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
+                                                                                                    <i class="ri-eye-fill"></i>
+                                                                                                </button>
+                                                                                                <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
+                                                                                                    <i class="ri-pencil-fill"></i>
+                                                                                                </button>
+                                                                                                <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
+                                                                                                    <i class="ri-delete-bin-fill"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        `;
             }
             var table = $('#clientes-table').DataTable({
                 ajax: { url: "{{ route('clientes.data') }}", dataSrc: 'data' },
@@ -866,7 +874,7 @@
                     { data: null, render: function (data, type, row) { return generateButtons(row.id); } }
                 ],
                 order: [[0, 'asc']], // Ordenar por documento (primera columna)
-                dom: 'frtip',
+                dom: 'rtip',
                 buttons: [
                     {
                         extend: 'copy',
@@ -913,6 +921,11 @@
                         "colvis": "Visibilidad de Columna"
                     }
                 }
+            });
+
+            // Buscador personalizado
+            $('#custom-search-input').on('keyup', function () {
+                table.search(this.value).draw();
             });
 
 

@@ -40,17 +40,25 @@
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h5 class="card-title mb-0 flex-grow-1">Movimientos de Inventario</h5>
-                            <div class="flex-shrink-0">
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#createModal">
-                                    <i class="ri-add-line align-bottom me-1"></i> Registrar Movimiento
-                                </button>
-                                <a href="{{ route('inventario.alertas') }}" class="btn btn-warning ms-2">
-                                    <i class="ri-alert-line align-bottom me-1"></i> Alertas de Stock
-                                </a>
-                                <a href="{{ route('inventario.reporte') }}" class="btn btn-danger ms-2">
-                                    <i class="ri-file-list-3-line align-bottom me-1"></i> Reporte de Inventario
-                                </a>
+                            <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                                <!-- Buscador Personalizado -->
+                                <div class="search-box">
+                                    <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                        placeholder="Buscar movimiento...">
+                                    <i class="ri-search-line search-icon"></i>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#createModal">
+                                        <i class="ri-add-line align-bottom me-1"></i> Registrar Movimiento
+                                    </button>
+                                    <a href="{{ route('inventario.alertas') }}" class="btn btn-warning">
+                                        <i class="ri-alert-line align-bottom me-1"></i> Alertas de Stock
+                                    </a>
+                                    <a href="{{ route('inventario.reporte') }}" class="btn btn-danger">
+                                        <i class="ri-file-list-3-line align-bottom me-1"></i> Reporte de Inventario
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
