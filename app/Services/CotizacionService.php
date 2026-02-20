@@ -83,60 +83,71 @@ class CotizacionService
      */
     public function convertirAPedido(Cotizacion $cotizacion): Pedido
     {
-        if ($cotizacion->estado !== 'Aprobada') {
-            throw new \InvalidArgumentException('Solo se pueden convertir cotizaciones con estado Aprobada.');
-        }
+        return DB::transaction(function () use ($cotizacion) {
+            // 1. Re-obtener la cotización con bloqueo pesimista (SELECT ... FOR UPDATE)
+            $cotizacion = Cotizacion::lockForUpdate()->findOrFail($cotizacion->id);
 
-        $pedidoExistente = Pedido::where('cotizacion_id', $cotizacion->id)->first();
-        if ($pedidoExistente) {
-            throw new \InvalidArgumentException('Esta cotización ya fue convertida a pedido anteriormente.');
-        }
+            // 2. Validar estado DENTRO del bloqueo (previene race conditions)
+            if ($cotizacion->estado !== 'Aprobada') {
+                throw new \InvalidArgumentException('Solo se pueden convertir cotizaciones con estado Aprobada.');
+            }
 
-        $pedido = null;
+            // 3. Verificar que no exista ya un pedido asociado (doble protección + índice único en BD)
+            if ($cotizacion->yaFueConvertida()) {
+                throw new \InvalidArgumentException('Esta cotización ya fue convertida a pedido anteriormente.');
+            }
 
-        DB::transaction(function () use ($cotizacion, &$pedido) {
+            // 4. Eager-load detalles y validar que no estén vacíos
+            $cotizacion->load('productos');
+            if ($cotizacion->productos->isEmpty()) {
+                throw new \RuntimeException('La cotización no tiene productos. No se puede crear un pedido vacío.');
+            }
+
+            // 5. Crear el Pedido con datos de la cotización
             $pedido = Pedido::create([
                 'cotizacion_id' => $cotizacion->id,
                 'cliente_id' => $cotizacion->cliente_id,
                 'fecha_pedido' => now(),
-                'fecha_entrega_estimada' => now()->addDays(7),
                 'total' => $cotizacion->total,
                 'abono' => 0,
                 'efectivo_pagado' => 0,
                 'transferencia_pagado' => 0,
                 'pago_movil_pagado' => 0,
-                'prioridad' => 'Normal',
+                'prioridad' => $cotizacion->prioridad ?? 'Normal',
                 'estado' => 'Pendiente',
                 'user_id' => Auth::id(),
             ]);
 
-            foreach ($cotizacion->productos as $detalleCotizacion) {
+            // 6. Transferir TODOS los detalles (incluyendo color, talla, precio cotizado)
+            foreach ($cotizacion->productos as $detalle) {
                 DetallePedido::create([
                     'pedido_id' => $pedido->id,
-                    'producto_id' => $detalleCotizacion->producto_id,
-                    'cantidad' => $detalleCotizacion->cantidad,
-                    'precio_unitario' => $detalleCotizacion->precio_unitario,
-                    'descripcion' => $detalleCotizacion->descripcion,
-                    'lleva_bordado' => $detalleCotizacion->lleva_bordado ?? false,
-                    'nombre_logo' => $detalleCotizacion->nombre_logo,
-                    'ubicacion_logo' => $detalleCotizacion->ubicacion_logo,
-                    'cantidad_logo' => $detalleCotizacion->cantidad_logo,
-                    'talla' => $detalleCotizacion->talla,
-                    'color' => null,
+                    'producto_id' => $detalle->producto_id,
+                    'cantidad' => $detalle->cantidad,
+                    'precio_unitario' => $detalle->precio_unitario,
+                    'descripcion' => $detalle->descripcion,
+                    'lleva_bordado' => $detalle->lleva_bordado ?? false,
+                    'nombre_logo' => $detalle->nombre_logo,
+                    'ubicacion_logo' => $detalle->ubicacion_logo,
+                    'cantidad_logo' => $detalle->cantidad_logo,
+                    'color' => $detalle->color,
+                    'talla' => $detalle->talla,
                 ]);
             }
 
+            // 7. Marcar como convertida (dentro de la misma transacción)
             $cotizacion->update(['estado' => 'Convertida']);
+
+            Log::info('Cotización convertida a pedido', [
+                'cotizacion_id' => $cotizacion->id,
+                'pedido_id' => $pedido->id,
+                'total' => $pedido->total,
+                'productos' => $cotizacion->productos->count(),
+                'user_id' => Auth::id(),
+            ]);
+
+            return $pedido;
         });
-
-        Log::info('Cotización convertida a pedido', [
-            'cotizacion_id' => $cotizacion->id,
-            'pedido_id' => $pedido->id,
-            'total' => $pedido->total,
-            'user_id' => Auth::id(),
-        ]);
-
-        return $pedido;
     }
 
     /**

@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\DetallePedido;
-use App\Models\Cotizacion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -43,14 +42,6 @@ class PedidoService
             ]);
 
             $this->crearDetalles($pedido, $data['productos']);
-
-            // Si viene de cotización aprobada, marcarla como convertida
-            if (!empty($data['cotizacion_id'])) {
-                $cotizacion = Cotizacion::find($data['cotizacion_id']);
-                if ($cotizacion && $cotizacion->estado === 'Aprobada') {
-                    $cotizacion->update(['estado' => 'Convertida']);
-                }
-            }
         });
 
         Log::info('Pedido creado', [
@@ -103,25 +94,39 @@ class PedidoService
     }
 
     /**
-     * Calcular el total del pedido basado en precio base × cantidad.
+     * Calcular el total del pedido.
+     * Usa precio_unitario del request si está disponible (ej: viene de una cotización),
+     * de lo contrario usa precio_base del catálogo.
      */
     private function calcularTotal(array $productos): float
     {
         $total = 0;
         foreach ($productos as $item) {
-            $producto = Producto::find($item['producto_id']);
-            $total += $producto->precio_base * $item['cantidad'];
+            if (!empty($item['precio_unitario'])) {
+                $precio = (float) $item['precio_unitario'];
+            } else {
+                $producto = Producto::find($item['producto_id']);
+                $precio = $producto->precio_base;
+            }
+            $total += $precio * $item['cantidad'];
         }
         return $total;
     }
 
     /**
      * Crear los detalles (líneas) de un pedido.
+     * Usa precio_unitario del request si disponible, sinó precio_base del catálogo.
      */
     private function crearDetalles(Pedido $pedido, array $productos): void
     {
         foreach ($productos as $item) {
-            $producto = Producto::find($item['producto_id']);
+            if (!empty($item['precio_unitario'])) {
+                $precioUnitario = (float) $item['precio_unitario'];
+            } else {
+                $producto = Producto::find($item['producto_id']);
+                $precioUnitario = $producto->precio_base;
+            }
+
             DetallePedido::create([
                 'pedido_id' => $pedido->id,
                 'producto_id' => $item['producto_id'],
@@ -133,7 +138,7 @@ class PedidoService
                 'cantidad_logo' => $item['cantidad_logo'] ?? null,
                 'color' => $item['color'] ?? null,
                 'talla' => $item['talla'] ?? null,
-                'precio_unitario' => $producto->precio_base,
+                'precio_unitario' => $precioUnitario,
             ]);
         }
     }

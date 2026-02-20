@@ -20,8 +20,15 @@ class DetalleCotizacion extends Model
         'nombre_logo',
         'ubicacion_logo',
         'cantidad_logo',
+        'color',
         'talla',
         'precio_unitario',
+    ];
+
+    protected $casts = [
+        'lleva_bordado' => 'boolean',
+        'cantidad' => 'integer',
+        'precio_unitario' => 'decimal:2',
     ];
 
     public function cotizacion()

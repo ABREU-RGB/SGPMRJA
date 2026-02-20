@@ -19,6 +19,7 @@ class Cotizacion extends Model
         'estado',
         'total',
         'user_id',
+        'prioridad',
     ];
 
     protected $casts = [
@@ -51,6 +52,22 @@ class Cotizacion extends Model
     }
 
     /**
+     * Verificar si la cotización puede ser convertida a pedido.
+     */
+    public function puedeConvertirse(): bool
+    {
+        return $this->estado === 'Aprobada' && !$this->yaFueConvertida();
+    }
+
+    /**
+     * Verificar si la cotización ya fue convertida a pedido.
+     */
+    public function yaFueConvertida(): bool
+    {
+        return $this->pedido()->exists();
+    }
+
+    /**
      * Actualizar automáticamente cotizaciones vencidas
      * Este método revisa todas las cotizaciones que están en estado Pendiente o Aprobada
      * y las marca como Vencida si su fecha_validez ya pasó
@@ -58,7 +75,7 @@ class Cotizacion extends Model
     public static function actualizarCotizacionesVencidas()
     {
         $hoy = now()->format('Y-m-d');
-        
+
         self::whereIn('estado', ['Pendiente', 'Aprobada'])
             ->where('fecha_validez', '<', $hoy)
             ->update(['estado' => 'Vencida']);

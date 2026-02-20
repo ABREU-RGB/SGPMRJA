@@ -13,6 +13,23 @@
     <!-- Autocorrecci�n y Autocompletado -->
     <link href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
     <style>
+        /* Toast de SweetAlert2 sobre modales de Bootstrap */
+        .swal-toast-above-modal {
+            z-index: 99999 !important;
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            left: auto !important;
+            bottom: auto !important;
+            width: auto !important;
+            max-width: 400px !important;
+            pointer-events: none;
+        }
+
+        .swal-toast-above-modal .swal2-popup {
+            pointer-events: auto;
+        }
+
         /* Estilos para sugerencias de autocorrecci�n */
         .autocorrect-suggestion {
             position: absolute;
@@ -851,18 +868,19 @@
                                 </div>
                             </div>
 
-                            <!-- Columna Derecha: Productos del Pedido y Estado -->
+                            <!-- Columna Derecha: Productos del Pedido (Solo lectura, vienen de la cotización) -->
                             <div class="col-lg-6">
                                 <div class="card shadow-lg border-dark mb-3">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Productos del Pedido</h5>
+                                    <div class="card-header d-flex align-items-center justify-content-between">
+                                        <h5 class="card-title mb-0"><i class="ri-shopping-bag-line me-1"></i>Productos del
+                                            Pedido</h5>
+                                        <span class="badge bg-soft-info text-info"><i class="ri-link me-1"></i>Desde
+                                            Cotización</span>
                                     </div>
                                     <div class="card-body">
                                         <div id="productos-container">
-                                            <!-- Aquí se agregarán dinámicamente los campos de producto -->
+                                            <!-- Los productos se cargan automáticamente desde la cotización -->
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-info mt-2"
-                                            id="add-producto-item">Agregar Producto</button>
                                     </div>
                                 </div>
                             </div>
@@ -1079,22 +1097,22 @@
             const suggestion = suggestions[0]; // Tomar la mejor sugerencia
 
             const suggestionHtml = `
-                                                                                                                                                                                                                                                                                    <div class="autocorrect-suggestion" data-field-id="${field.id}">
-                                                                                                                                                                                                                                                                                        <div class="suggestion-text">
-                                                                                                                                                                                                                                                                                            ¿Quisiste decir "<strong>${suggestion.word}</strong>"?
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                        <div class="suggestion-buttons">
-                                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion.word}">
-                                                                                                                                                                                                                                                                                                Sí
-                                                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
-                                                                                                                                                                                                                                                                                                No
-                                                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                               </d                                                                                                                                                                                                iv>
-                                                                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                                                                                            <div class="autocorrect-suggestion" data-field-id="${field.id}">
+                                                                                                                                                                                                                                                                                                                                                <div class="suggestion-text">
+                                                                                                                                                                                                                                                                                                                                                    ¿Quisiste decir "<strong>${suggestion.word}</strong>"?
+                                                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                                                <div class="suggestion-buttons">
+                                                                                                                                                                                                                                                                                                                                                    <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion.word}">
+                                                                                                                                                                                                                                                                                                                                                        Sí
+                                                                                                                                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                                                                                                                                    <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
+                                                                                                                                                                                                                                                                                                                                                        No
+                                                                                                                                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                                                                                                       </d                                                                                                                                                                                                iv>
+                                                                                                                                                                                                                                                                                                        `;
 
-            $('body').append(suggestionHtml);
+            $('bo            dy').append(suggestionHtml);
 
             const $suggestionBox = $('.autocorrect-suggestion[data-field-id="' + field.id + '"]');
             $suggestionBox.css({
@@ -1240,20 +1258,20 @@
                 const fieldOffset = $field.offset();
 
                 const suggestionHtml = `
-                                                                                                                                                                                                                                                                                        <div class="autocorrect-suggestion" data-field-id="${field.id}">
-                                                                                                                                                                                                                                                                                            <div class="suggestion-text">
-                                                                                                                                                                                                                                                                                                ¿Quisiste decir "<strong>${suggestion}</strong>"?
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                            <div class="suggestion-buttons">
-                                                                                                                                                                                                                                                                                                <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion}">
-                                                                                                                                                                                                                                                                                                    Sí
-                                                                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                                                                <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
-                                                                                                                                                                                                                                                                                                    No
-                                                                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    `;
+                                                                                                                                                                                                                                                                                                                                                <div class="autocorrect-suggestion" data-field-id="${field.id}">
+                                                                                                                                                                                                                                                                                                                                                    <div class="suggestion-text">
+                                                                                                                                                                                                                                                                                                                                                        ¿Quisiste decir "<strong>${suggestion}</strong>"?
+                                                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                                    <div class="suggestion-buttons">
+                                                                                                                                                                                                                                                                                                                                                        <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion}">
+                                                                                                                                                                                                                                                                                                                                                            Sí
+                                                                                                                                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                                                                                                                                        <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
+                                                                                                                                                                                                                                                                                                                                                            No
+                                                                                                                                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                                            `;
 
                 $('body').append(suggestionHtml);
 
@@ -1350,24 +1368,24 @@
                             var editDelete = '';
                             if (isAdmin && row.estado !== 'Completado' && row.estado !== 'Cancelado') {
                                 editDelete = `
-                                        <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
-                                            <i class="ri-pencil-fill"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
-                                            <i class="ri-delete-bin-fill"></i>
-                                        </button>`;
+                                                                                                <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
+                                                                                                    <i class="ri-pencil-fill"></i>
+                                                                                                </button>
+                                                                                                <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
+                                                                                                    <i class="ri-delete-bin-fill"></i>
+                                                                                                </button>`;
                             }
                             return `
-                                    <div class="d-flex gap-1 justify-content-center align-items-center">
-                                        <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
-                                            <i class="ri-eye-fill"></i>
-                                        </button>
-                                        ${editDelete}
-                                        <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
-                                            <i class="ri-file-pdf-line"></i>
-                                        </a>
-                                    </div>
-                                `;
+                                                                                            <div class="d-flex gap-1 justify-content-center align-items-center">
+                                                                                                <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
+                                                                                                    <i class="ri-eye-fill"></i>
+                                                                                                </button>
+                                                                                                ${editDelete}
+                                                                                                <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
+                                                                                                    <i class="ri-file-pdf-line"></i>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        `;
                         }
                     }
                 ],
@@ -1434,9 +1452,9 @@
             window.productItemIndex = 0;
             var productItemIndex = window.productItemIndex;
 
-            window.addProductItem = function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', productInsumos = [], ubicacionLogo = '', cantidadLogo = '') {
-                // Obtener nombre del producto seleccionado (si hay)
-                var productoText = '?? Clic para buscar producto...';
+            window.addProductItem = function addProductDisplayCard(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', productInsumos = [], ubicacionLogo = '', cantidadLogo = '') {
+                // Obtener nombre del producto seleccionado
+                var productoText = 'Producto sin nombre';
                 if (productoId) {
                     var productoEncontrado = products.find(p => p.id == productoId);
                     if (productoEncontrado) {
@@ -1445,125 +1463,134 @@
                     }
                 }
 
+                var subtotal = (parseFloat(cantidad) || 0) * (parseFloat(precioUnitario) || 0);
 
                 var itemHtml = `
-                                                                                                                                                                                                                                                                                        <div class="card mb-3 shadow-lg border-dark" data-product-index="${productItemIndex}">
-                                                                                                                                                                                                                                                                                            <div class="card-body">
-                                                                                                                                                                                                                                                                                                <h5 class="card-title">Nuevo Producto</h5>
-                                                                                                                                                                                                                                                                                                <div class="row product-item align-items-center">
-                                                                                                                                                                                                                                                                                                    <div class="col-md-9 d-flex align-items-center">
-                                                                                                                                                                                                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required>
-                                                                                                                                                                                                                                                                                                        <div class="producto-selector-btn flex-grow-1" data-product-index="${productItemIndex}">
-                                                                                                                                                                                                                                                                                                            <span class="producto-text ${!productoId ? 'placeholder-text' : ''}">${productoText}</span>
-                                                                                                                                                                                                                                                                                                            <i class="ri-arrow-down-s-line"></i>
-                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                        <span class="ms-1 fw-bold text-success precio-producto-span">${precioUnitario ? '$ ' + parseFloat(precioUnitario).toFixed(2) : ''}</span>
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <div class="col-md-3">
-                                                                                                                                                                                                                                                                                                        <input type="number" name="productos[${productItemIndex}][cantidad]" class="form-control cantidad-input" placeholder="Cant." min="1" value="${cantidad}" required />
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <div class="col-md-6 mt-2">
-                                                                                                                                                                                                                                                                                                        <input type="text" name="productos[${productItemIndex}][color]" class="form-control" placeholder="Seleccione un color" value="${color}" required />
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <div class="col-md-6 mt-2">
-                                                                                                                                                                                                                                                                                                        <select name="productos[${productItemIndex}][talla]" class="form-control" required>
-                                                                                                                                                                                                                                                                                                            <option value="">Seleccione una talla</option>
-                                                                                                                                                                                                                                                                                                            <option value="Talla Unica" ${talla == 'Talla Unica' ? 'selected' : ''}>Talla Unica</option>
-                                                                                                                                                                                                                                                                                                            <option value="2" ${talla == '2' ? 'selected' : ''}>2</option>
-                                                                                                                                                                                                                                                                                                            <option value="4" ${talla == '4' ? 'selected' : ''}>4</option>
-                                                                                                                                                                                                                                                                                                            <option value="6" ${talla == '6' ? 'selected' : ''}>6</option>
-                                                                                                                                                                                                                                                                                                            <option value="8" ${talla == '8' ? 'selected' : ''}>8</option>
-                                                                                                                                                                                                                                                                                                            <option value="10" ${talla == '10' ? 'selected' : ''}>10</option>
-                                                                                                                                                                                                                                                                                                            <option value="12" ${talla == '12' ? 'selected' : ''}>12</option>
-                                                                                                                                                                                                                                                                                                            <option value="14" ${talla == '14' ? 'selected' : ''}>14</option>
-                                                                                                                                                                                                                                                                                                            <option value="16" ${talla == '16' ? 'selected' : ''}>16</option>
-                                                                                                                                                                                                                                                                                                            <option value="XS" ${talla == 'XS' ? 'selected' : ''}>XS</option>
-                                                                                                                                                                                                                                                                                                            <option value="S" ${talla == 'S' ? 'selected' : ''}>S</option>
-                                                                                                                                                                                                                                                                                                            <option value="M" ${talla == 'M' ? 'selected' : ''}>M</option>
-                                                                                                                                                                                                                                                                                                            <option value="L" ${talla == 'L' ? 'selected' : ''}>L</option>
-                                                                                                                                                                                                                                                                                                            <option value="XL" ${talla == 'XL' ? 'selected' : ''}>XL</option>
-                                                                                                                                                                                                                                                                                                            <option value="XXL" ${talla == 'XXL' ? 'selected' : ''}>XXL</option>
-                                                                                                                                                                                                                                                                                                        </select>
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2">
-                                                                                                                                                                                                                                                                                                        <textarea name="productos[${productItemIndex}][descripcion]" class="form-control" placeholder="DescripciÃ³n del producto (opcional)" rows="2">${descripcion}</textarea>
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2">
-                                                                                                                                                                                                                                                                                                        <div class="form-check form-switch">
-                                                                                                                                                                                                                                                                                                            <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="0">
-                                                                                                                                                                                                                                                                                                            <input class="form-check-input lleva-bordado-checkbox" type="checkbox" id="lleva-bordado-${productItemIndex}" name="productos[${productItemIndex}][lleva_bordado]" value="1" ${llevaBordado ? 'checked' : ''}>
-                                                                                                                                                                                                                                                                                                            <label class="form-check-label" for="lleva-bordado-${productItemIndex}">Lleva Bordado/Logo</label>
-                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2 nombre-logo-container" style="display: ${llevaBordado ? 'block' : 'none'}">
-                                                                                                                                                                                                                                                                                                        <input type="text" name="productos[${productItemIndex}][nombre_logo]" class="form-control nombre-logo-input" placeholder="Nombre del logo a bordar" value="${nombreLogo}" />
-                                                                                                                                                                                                                                                                                                        <input type="text" name="productos[${productItemIndex}][ubicacion_logo]" class="form-control mt-2 ubicacion-logo-input" placeholder="UbicaciÃ³n del bordado/logo (ej: Pecho izquierdo)" value="${ubicacionLogo || ''}" />
-                                                                                                                                                                                                                                                                                                        <input type="number" name="productos[${productItemIndex}][cantidad_logo]" class="form-control mt-2 cantidad-logo-input" placeholder="Cantidad de logos/bordados" min="1" value="${cantidadLogo || 1}" />
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <div class="col-md-12 mt-2">
-                                                                                                                                                                                                                                                                                                        <div class="text-end">
-                                                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-danger btn-sm remove-producto-item">Eliminar Producto</button>
-                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                    <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioUnitario}" />
-                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    `;
+                                                                    <div class="card border-0 shadow-sm mb-3 product-item" style="border-left: 4px solid #00d9a5 !important;" data-product-index="${productItemIndex}">
+                                                                        <div class="card-body p-3">
+                                                                            <!-- Header del Producto -->
+                                                                            <div class="d-flex align-items-center mb-3">
+                                                                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                                                                    style="width: 45px; height: 45px; background: #1e3c72;">
+                                                                                    <i class="ri-t-shirt-2-line text-white fs-5"></i>
+                                                                                </div>
+                                                                                <div class="flex-grow-1">
+                                                                                    <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${productoText}</h6>
+                                                                                    <small class="text-muted">Producto #${productItemIndex + 1}</small>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
+                                                                                        $${subtotal.toFixed(2)}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <!-- Detalles del Producto -->
+                                                                            <div class="row g-2 mb-2">
+                                                                                <div class="col-6 col-md-3">
+                                                                                    <div class="d-flex align-items-center">
+                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                            style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                            <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
+                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">${cantidad}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-6 col-md-3">
+                                                                                    <div class="d-flex align-items-center">
+                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                            style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                            <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
+                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">${talla || 'N/A'}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-6 col-md-3">
+                                                                                    <div class="d-flex align-items-center">
+                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                            style="width: 28px; height: 28px; background: rgba(108, 92, 231, 0.15);">
+                                                                                            <i class="ri-palette-line" style="color: #6c5ce7; font-size: 0.85rem;"></i>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
+                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">${color || 'N/A'}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-6 col-md-3">
+                                                                                    <div class="d-flex align-items-center">
+                                                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                            style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                            <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
+                                                                                            <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(precioUnitario || 0).toFixed(2)}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            ${llevaBordado ? `
+                                                                            <!-- Bordado/Logo -->
+                                                                            <div class="rounded p-2 mb-2" style="background: rgba(0, 217, 165, 0.08);">
+                                                                                <div class="d-flex align-items-center mb-2">
+                                                                                    <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
+                                                                                    <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
+                                                                                </div>
+                                                                                <div class="row g-2">
+                                                                                    <div class="col-4">
+                                                                                        <small class="text-muted">Logo:</small>
+                                                                                        <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${nombreLogo || 'N/A'}</span>
+                                                                                    </div>
+                                                                                    <div class="col-4">
+                                                                                        <small class="text-muted">Ubicación:</small>
+                                                                                        <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${ubicacionLogo || 'N/A'}</span>
+                                                                                    </div>
+                                                                                    <div class="col-4">
+                                                                                        <small class="text-muted">Cantidad:</small>
+                                                                                        <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${cantidadLogo || 1}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            ` : ''}
+
+                                                                            ${descripcion ? `
+                                                                            <!-- Descripción -->
+                                                                            <div class="rounded p-2" style="background: rgba(30, 60, 114, 0.05);">
+                                                                                <div class="d-flex align-items-start">
+                                                                                    <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
+                                                                                    <div>
+                                                                                        <small class="text-muted d-block">Descripción</small>
+                                                                                        <span style="font-size: 0.85rem;">${descripcion}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            ` : ''}
+
+                                                                            <!-- Hidden inputs para enviar datos al backend -->
+                                                                            <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][cantidad]" class="cantidad-input" value="${cantidad}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioUnitario}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][color]" value="${color}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][talla]" value="${talla}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][descripcion]" value="${descripcion}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="${llevaBordado ? 1 : 0}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" value="${nombreLogo}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][ubicacion_logo]" value="${ubicacionLogo}" />
+                                                                            <input type="hidden" name="productos[${productItemIndex}][cantidad_logo]" value="${cantidadLogo || 1}" />
+                                                                        </div>
+                                                                    </div>
+                                                                    `;
                 $('#productos-container').append(itemHtml);
-
-                // Inicializar Select2 con BÃºsqueda para el select de productos
-                $('#productos-container').find('.product-select').last().select2({
-                    theme: 'bootstrap-5',
-                    placeholder: '?? Buscar producto...',
-                    allowClear: true,
-                    width: '100%',
-                    dropdownParent: $('#showModal').length ? $('#showModal') : $('body'),
-                    language: {
-                        noResults: function () {
-                            return 'No se encontraron productos';
-                        },
-                        searching: function () {
-                            return 'Buscando...';
-                        }
-                    }
-                });
-                // A�adir los insumos preexistentes si los hay al editar el pedido
-
-
-                // Si no hay insumos preexistentes, agregar una fila vacÃ­aa por defecto
-
-
                 window.productItemIndex++;
-
-                // Inicializar el estado del campo nombre_logo y nuevos campos
-                toggleNombreLogo($(`#lleva-bordado-${productItemIndex - 1}`));
             }
-
-            // Nueva funciÃ³n para agregar un insumo individualmente
-
-
-            // funciÃ³n para alternar la visibilidad del campo nombre_logo y los nuevos campos
-            function toggleNombreLogo(checkbox) {
-                var container = $(checkbox).closest('.product-item').find('.nombre-logo-container');
-                if ($(checkbox).is(':checked')) {
-                    container.show();
-                    container.find('.nombre-logo-input').prop('required', true);
-                    container.find('.ubicacion-logo-input').prop('required', true);
-                    container.find('.cantidad-logo-input').prop('required', true);
-                } else {
-                    container.hide();
-                    container.find('.nombre-logo-input').val('').prop('required', false);
-                    container.find('.ubicacion-logo-input').val('').prop('required', false);
-                    container.find('.cantidad-logo-input').val('').prop('required', false);
-                }
-            }
-
-            // Evento para el checkbox lleva_bordado
-            $('#productos-container').on('change', '.lleva-bordado-checkbox', function () {
-                toggleNombreLogo(this);
-            });
-
             // funciÃ³nes para manejar los nuevos campos de pago y prioridad
             let currentPedidoTotal = 0; // Para almacenar el total del pedido, ya sea del backend o calculado
 
@@ -1628,7 +1655,7 @@
                 $('#edit-btn').hide();
                 $('#estado-field-wrapper').hide(); // Ocultar estado en agregar
                 $('#productos-container').empty(); // Limpiar productos existentes
-                addProductItem(); // A�adir un item de producto vac�o
+                // Los productos se cargan automáticamente desde la cotización
 
                 // Resetear y ocultar nuevos campos de pago/prioridad
                 $('#abono-field').val(0);
@@ -1645,10 +1672,7 @@
                 togglePaymentFieldsVisibility(); // Ocultar referencias y banco inicialmente
             });
 
-            // Evento para agregar m�s productos
-            $('#add-producto-item').on('click', function () {
-                addProductItem();
-            });
+
 
             // Evento para remover producto
             $('#productos-container').on('click', '.remove-producto-item', function () {
@@ -1812,7 +1836,8 @@
                             });
                             calculateProductTotals();
                         } else {
-                            addProductItem();
+                            // Si no hay productos, mostrar mensaje
+                            $('#productos-container').html('<div class="text-center text-muted py-3"><i class="ri-inbox-line fs-3 d-block mb-2"></i>Sin productos asociados</div>');
                             calculateProductTotals();
                         }
 
@@ -1939,134 +1964,134 @@
                             data.productos.forEach(function (item, index) {
                                 var subtotal = item.cantidad * item.precio_unitario;
                                 productosBody.append(`
-                                                                                                                                                                                                                                                                        <div class="card border-0 shadow-sm mb-3" style="border-left: 4px solid #00d9a5 !important;">
-                                                                                                                                                                                                                                                                            <div class="card-body p-3">
-                                                                                                                                                                                                                                                                                <!-- Header del Producto -->
-                                                                                                                                                                                                                                                                                <div class="d-flex align-items-center mb-3">
-                                                                                                                                                                                                                                                                                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                                        style="width: 45px; height: 45px; background: #1e3c72;">
-                                                                                                                                                                                                                                                                                        <i class="ri-shopping-bag-line text-white fs-5"></i>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div>
-                                                                                                                                                                                                                                                                                        <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'} ${item.producto.modelo}</h6>
-                                                                                                                                                                                                                                                                                        <small class="text-muted">Producto #${index + 1}</small>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="ms-auto">
-                                                                                                                                                                                                                                                                                        <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
-                                                                                                                                                                                                                                                                                            $${subtotal.toFixed(2)}
-                                                                                                                                                                                                                                                                                        </span>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                </div>
+                                                            <div class="card border-0 shadow-sm mb-3" style="border-left: 4px solid #00d9a5 !important;">
+                                                                <div class="card-body p-3">
+                                                                    <!-- Header del Producto -->
+                                                                    <div class="d-flex align-items-center mb-3">
+                                                                        <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                                                            style="width: 45px; height: 45px; background: #1e3c72;">
+                                                                            <i class="ri-shopping-bag-line text-white fs-5"></i>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'} ${item.producto.modelo}</h6>
+                                                                            <small class="text-muted">Producto #${index + 1}</small>
+                                                                        </div>
+                                                                        <div class="ms-auto">
+                                                                            <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
+                                                                                $${subtotal.toFixed(2)}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
 
-                                                                                                                                                                                                                                                                                <!-- Detalles del Producto -->
-                                                                                                                                                                                                                                                                                <div class="row g-2 mb-3">
-                                                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                                                                                                                                                                                                <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
-                                                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${item.cantidad}</span>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(0, 217, 165, 0.15);">
-                                                                                                                                                                                                                                                                                                <i class="ri-palette-line" style="color: #00d9a5; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
-                                                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${item.color || 'N/A'}</span>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
-                                                                                                                                                                                                                                                                                                <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${item.talla || 'N/A'}</span>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                                                                                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                                                                                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                                                                                                                                                                                style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                                                                                                                                                                                                <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
-                                                                                                                                                                                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(item.precio_unitario).toFixed(2)}</span>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                </div>
+                                                                    <!-- Detalles del Producto -->
+                                                                    <div class="row g-2 mb-3">
+                                                                        <div class="col-6 col-md-3">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                    style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                    <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
+                                                                                    <span class="fw-semibold" style="font-size: 0.85rem;">${item.cantidad}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-6 col-md-3">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                    style="width: 28px; height: 28px; background: rgba(0, 217, 165, 0.15);">
+                                                                                    <i class="ri-palette-line" style="color: #00d9a5; font-size: 0.85rem;"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
+                                                                                    <span class="fw-semibold" style="font-size: 0.85rem;">${item.color || 'N/A'}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-6 col-md-3">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                    style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                    <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
+                                                                                    <span class="fw-semibold" style="font-size: 0.85rem;">${item.talla || 'N/A'}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-6 col-md-3">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                    style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                    <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
+                                                                                    <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(item.precio_unitario).toFixed(2)}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
 
-                                                                                                                                                                                                                                                                                <!-- Bordado/Logo si aplica -->
-                                                                                                                                                                                                                                                                                ${item.lleva_bordado ? `
-                                                                                                                                                                                                                                                                                <div class="rounded p-2 mb-3" style="background: rgba(0, 217, 165, 0.08);">
-                                                                                                                                                                                                                                                                                    <div class="d-flex align-items-center mb-2">
-                                                                                                                                                                                                                                                                                        <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
-                                                                                                                                                                                                                                                                                        <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="row g-2">
-                                                                                                                                                                                                                                                                                        <div class="col-6">
-                                                                                                                                                                                                                                                                                            <small class="text-muted">Logo:</small>
-                                                                                                                                                                                                                                                                                            <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.nombre_logo || 'N/A'}</span>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                        <div class="col-6">
-                                                                                                                                                                                                                                                                                            <small class="text-muted">Ubicaci�n:</small>
-                                                                                                                                                                                                                                                                                            <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.ubicacion_logo || 'N/A'}</span>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                        <div class="col-12">
-                                                                                                                                                                                                                                                                                            <small class="text-muted">Cantidad:</small>
-                                                                                                                                                                                                                                                                                            <span class="badge bg-primary ms-1">${item.cantidad_logo || '0'}</span>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                ` : ''}
+                                                                    <!-- Bordado/Logo si aplica -->
+                                                                    ${item.lleva_bordado ? `
+                                                                        <div class="rounded p-2 mb-3" style="background: rgba(0, 217, 165, 0.08);">
+                                                                            <div class="d-flex align-items-center mb-2">
+                                                                                <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
+                                                                                <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
+                                                                            </div>
+                                                                            <div class="row g-2">
+                                                                                <div class="col-6">
+                                                                                    <small class="text-muted">Logo:</small>
+                                                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.nombre_logo || 'N/A'}</span>
+                                                                                </div>
+                                                                                <div class="col-6">
+                                                                                    <small class="text-muted">Ubicación:</small>
+                                                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.ubicacion_logo || 'N/A'}</span>
+                                                                                </div>
+                                                                                <div class="col-12">
+                                                                                    <small class="text-muted">Cantidad:</small>
+                                                                                    <span class="badge bg-primary ms-1">${item.cantidad_logo || '0'}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        ` : ''}
 
-                                                                                                                                                                                                                                                                                <!-- Descripci�n -->
-                                                                                                                                                                                                                                                                                ${item.descripcion ? `
-                                                                                                                                                                                                                                                                                <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.05);">
-                                                                                                                                                                                                                                                                                    <div class="d-flex align-items-start">
-                                                                                                                                                                                                                                                                                        <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
-                                                                                                                                                                                                                                                                                        <div>
-                                                                                                                                                                                                                                                                                            <small class="text-muted d-block">Descripci�n</small>
-                                                                                                                                                                                                                                                                                            <span style="font-size: 0.85rem;">${item.descripcion}</span>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                ` : ''}
+                                                                    <!-- Descripción -->
+                                                                    ${item.descripcion ? `
+                                                                        <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.05);">
+                                                                            <div class="d-flex align-items-start">
+                                                                                <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
+                                                                                <div>
+                                                                                    <small class="text-muted d-block">Descripción</small>
+                                                                                    <span style="font-size: 0.85rem;">${item.descripcion}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        ` : ''}
 
-                                                                                                                                                                                                                                                                                <!-- Insumos -->
-                                                                                                                                                                                                                                                                                ${item.insumos && item.insumos.length > 0 ? `
-                                                                                                                                                                                                                                                                                <div class="rounded p-2" style="background: rgba(46, 204, 113, 0.08);">
-                                                                                                                                                                                                                                                                                    <div class="d-flex align-items-center mb-2">
-                                                                                                                                                                                                                                                                                        <i class="ri-tools-line me-2" style="color: #2ecc71;"></i>
-                                                                                                                                                                                                                                                                                        <span class="fw-semibold" style="color: #2ecc71; font-size: 0.85rem;">Insumos Requeridos</span>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="d-flex flex-wrap gap-2">
-                                                                                                                                                                                                                                                                                        ${item.insumos.map(insumo => `
-                                                                                                                                                                                                                                                                                            <span class="badge" style="background: rgba(46, 204, 113, 0.2); color: #1e3c72;">
-                                                                                                                                                                                                                                                                                                ${insumo.nombre}
-                                                                                                                                                                                                                                                                                                <span class="badge bg-primary ms-1">${parseFloat(insumo.pivot.cantidad_estimada).toFixed(2)} ${insumo.unidad_medida}</span>
-                                                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                                                        `).join('')}
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                ` : ''}
-                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                    `);
+                                                                    <!-- Insumos -->
+                                                                    ${item.insumos && item.insumos.length > 0 ? `
+                                                                        <div class="rounded p-2" style="background: rgba(46, 204, 113, 0.08);">
+                                                                            <div class="d-flex align-items-center mb-2">
+                                                                                <i class="ri-tools-line me-2" style="color: #2ecc71;"></i>
+                                                                                <span class="fw-semibold" style="color: #2ecc71; font-size: 0.85rem;">Insumos Requeridos</span>
+                                                                            </div>
+                                                                            <div class="d-flex flex-wrap gap-2">
+                                                                                ${item.insumos.map(insumo => `
+                                                                                    <span class="badge" style="background: rgba(46, 204, 113, 0.2); color: #1e3c72;">
+                                                                                        ${insumo.nombre}
+                                                                                        <span class="badge bg-primary ms-1">${parseFloat(insumo.pivot.cantidad_estimada).toFixed(2)} ${insumo.unidad_medida}</span>
+                                                                                    </span>
+                                                                                `).join('')}
+                                                                            </div>
+                                                                        </div>
+                                                                        ` : ''}
+                                                                </div>
+                                                            </div>
+                                                            `);
                             });
                         } else {
                             productosBody.append('<p class="text-muted text-center py-4"><i class="ri-shopping-bag-line fs-1 d-block mb-2"></i>No hay productos en este pedido.</p>');
@@ -2176,7 +2201,7 @@
                 $('#modalTitle').text('Agregar Pedido');
                 $('#estado-field-wrapper').hide(); // Ocultar estado en agregar
                 $('#productos-container').empty(); // Limpiar productos existentes
-                addProductItem(); // A�adir un item de producto vac�o
+                // Los productos se cargan automáticamente desde la cotización
 
                 // Resetear y ocultar nuevos campos de pago/prioridad
                 $('#abono-field').val(0);
@@ -2387,7 +2412,7 @@
                 });
             });
 
-            $(`#insumos-container-${currentProductItemIndex} .insumo-select`).last().on('change', function () {
+            $(`#insumos - container - ${currentProductItemIndex} .insumo - select`).last().on('change', function () {
                 const selected = $(this).find('option:selected');
                 const stock = parseFloat(selected.data('stock'));
                 const stockMin = parseFloat(selected.data('stock-minimo'));
@@ -2398,7 +2423,7 @@
                     text = `<span style="color:${color};font-weight:bold;">Stock actual: ${stock.toFixed(2)} ${unidad}</span>`;
                 }
                 const infoId = $(this).data('insumo-index');
-                $(`#stock-info-${infoId}`).html(text);
+                $(`#stock - info - ${infoId}`).html(text);
             }).trigger('change');
         });
 
@@ -2541,15 +2566,7 @@
                         return;
                     }
 
-                    // Mostrar notificación toast
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Pedido #' + editarPedidoId + ' creado desde cotización',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
+                    // El toast se muestra después de que el modal se abra (ver abajo)
 
                     // Configurar el modal para edición
                     $('#modalTitle').text('Completar Pedido #' + editarPedidoId);
@@ -2638,7 +2655,8 @@
                                     calculateProductTotals();
                                 }
                             } else {
-                                window.addProductItem();
+                                // Sin productos - mostrar placeholder
+                                $('#productos-container').html('<div class="text-center text-muted py-3"><i class="ri-inbox-line fs-3 d-block mb-2"></i>Sin productos asociados</div>');
                                 if (typeof calculateProductTotals === 'function') {
                                     calculateProductTotals();
                                 }
@@ -2654,6 +2672,29 @@
                             // Abrir el modal
                             console.log('Abriendo modal...');
                             $('#showModal').modal('show');
+
+                            // Mostrar Toast DESPUÉS de que el modal esté completamente abierto
+                            $('#showModal').one('shown.bs.modal', function () {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Pedido #' + editarPedidoId + ' creado desde cotización',
+                                    showConfirmButton: false,
+                                    timer: 4000,
+                                    timerProgressBar: true,
+                                    didOpen: function (toast) {
+                                        // Mover el container del Toast directamente al body
+                                        // para escapar los stacking contexts del layout (transform/position)
+                                        var container = toast.parentElement;
+                                        if (container && container.parentElement !== document.body) {
+                                            document.body.appendChild(container);
+                                        }
+                                        // Forzar z-index superior al modal de Bootstrap
+                                        container.style.zIndex = '99999';
+                                    }
+                                });
+                            });
                         },
                         error: function (xhr) {
                             console.error('Error cargando pedido:', xhr);

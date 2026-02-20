@@ -453,7 +453,6 @@
 
                 card.find('.producto-id-input').val(producto.id);
                 card.find('.precio-unitario-input').val(producto.precio_base);
-                card.find('.precio-producto-span').text('$' + parseFloat(producto.precio_base).toFixed(2));
 
                 // Cerrar modal
                 cerrarModalSeguro();
@@ -464,13 +463,13 @@
                 // Cerrar modal antes de agregar
                 cerrarModalSeguro();
                 // Agregar item
-                addProductItem(producto.id, 1, producto.precio_base, '', false, '', '', '', 1);
+                addProductItem(producto.id, 1, producto.precio_base, '', false, '', '', '', '', 1);
                 // Recalcular
                 calculateCotizacionTotals();
             }
         }
 
-        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', talla = '', ubicacionLogo = '', cantidadLogo = 1) {
+        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', ubicacionLogo = '', cantidadLogo = 1) {
             // Buscar detalles del producto para mostrar nombre bonito
             var productoDisplay = 'Clic para buscar producto...';
             var textClass = 'text-muted';
@@ -480,7 +479,7 @@
                 if (p) {
                     var tipoNombre = p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo';
                     productoDisplay = (p.codigo || '') + ' - ' + tipoNombre + ' ' + p.modelo;
-                    precioUnitario = p.precio_base; // Asegurar precio base
+                    precioUnitario = precioUnitario || p.precio_base; // Usar precio negociado o catálogo
                     textClass = 'text-dark fw-bold';
                 }
             }
@@ -499,17 +498,31 @@
                                 <i class="ri-search-line text-primary"></i>
                             </div>
                             <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required />
-                            <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioUnitario}" />
-                            <small class="text-success fw-bold precio-producto-span">${precioUnitario ? '$' + parseFloat(precioUnitario).toFixed(2) : ''}</small>
                         </div>
                         <div class="col-md-3 col-sm-4">
                             <input type="number" name="productos[${productItemIndex}][cantidad]" class="form-control text-center cantidad-input" placeholder="Cant." min="1" value="${cantidad}" required />
                         </div>
                     </div>
 
-                    <!-- Fila 2: Talla (Ocupando todo el ancho al quitar color) -->
+                    <!-- Fila 2: Precio Negociado -->
                     <div class="row mb-2">
                         <div class="col-12">
+                            <label class="form-label mb-1 small text-muted"><i class="ri-money-dollar-circle-line me-1"></i>Precio Unitario Negociado</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: rgba(46, 204, 113, 0.1); border-color: #2ecc71;"><i class="ri-money-dollar-circle-line" style="color: #2ecc71;"></i></span>
+                                <input type="number" name="productos[${productItemIndex}][precio_unitario]" class="form-control precio-unitario-input" placeholder="0.00" step="0.01" min="0" value="${precioUnitario}" required style="border-color: #2ecc71;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 3: Color y Talla -->
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1 small text-muted"><i class="ri-palette-line me-1"></i>Color</label>
+                            <input type="text" name="productos[${productItemIndex}][color]" class="form-control" placeholder="Ej: Azul marino" value="${color}" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label mb-1 small text-muted"><i class="ri-t-shirt-line me-1"></i>Talla</label>
                             <select name="productos[${productItemIndex}][talla]" class="form-select" required>
                                 <option value="">Seleccione una talla</option>
                                 <option value="Talla Unica" ${talla == 'Talla Unica' ? 'selected' : ''}>Talla Unica</option>
@@ -606,8 +619,8 @@
             let restante = total - abono;
             $('#restante-display-field').val(restante.toFixed(2));
         }
-        // Recalcular total cuando cambia la cantidad o el producto
-        $('#productos-container').on('change', '.cantidad-input', calculateCotizacionTotals);
+        // Recalcular total cuando cambia la cantidad o el precio negociado
+        $('#productos-container').on('change keyup', '.cantidad-input, .precio-unitario-input', calculateCotizacionTotals);
         $('#productos-container').on('change', '.product-select', function () {
             var selectedOption = $(this).find('option:selected');
             var precio = selectedOption.data('precio');
@@ -749,6 +762,7 @@
                                 detalle.descripcion,
                                 detalle.lleva_bordado,
                                 detalle.nombre_logo,
+                                detalle.color || '',
                                 detalle.talla,
                                 detalle.ubicacion_logo,
                                 detalle.cantidad_logo
@@ -924,6 +938,18 @@
                                                     <div>
                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
                                                         <span class="fw-semibold" style="font-size: 0.85rem;">${item.talla || 'N/A'}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                        style="width: 28px; height: 28px; background: rgba(108, 92, 231, 0.15);">
+                                                        <i class="ri-palette-line" style="color: #6c5ce7; font-size: 0.85rem;"></i>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
+                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${item.color || 'N/A'}</span>
                                                     </div>
                                                 </div>
                                             </div>

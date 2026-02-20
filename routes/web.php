@@ -116,7 +116,6 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::get('cotizaciones/{cotizacion}/pdf', [CotizacionController::class, 'cotizacionPdf'])->name('cotizaciones.pdf');
         Route::put('cotizaciones/{cotizacion}/estado', [CotizacionController::class, 'updateEstado'])->name('cotizaciones.updateEstado');
         Route::get('cotizaciones/{cotizacion}/datos-para-pedido', [CotizacionController::class, 'getDatosParaPedido'])->name('cotizaciones.datosParaPedido');
-        Route::post('cotizaciones/{cotizacion}/marcar-convertida', [CotizacionController::class, 'marcarComoConvertida'])->name('cotizaciones.marcarConvertida');
         Route::post('cotizaciones/{cotizacion}/convertir-a-pedido', [CotizacionController::class, 'convertirAPedido'])->name('cotizaciones.convertirAPedido');
 
         // Proveedores (lectura)

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use App\Rules\CiRifFormat;
 use PDF;
@@ -383,25 +384,7 @@ class CotizacionController extends Controller
     }
 
     /**
-     * Marcar cotización como convertida después de crear el pedido (automático)
-     */
-    public function marcarComoConvertida($id)
-    {
-        $cotizacion = Cotizacion::findOrFail($id);
-
-        if ($cotizacion->estado !== 'Aprobada') {
-            return response()->json([
-                'error' => 'Solo se pueden convertir cotizaciones aprobadas.'
-            ], 422);
-        }
-
-        $cotizacion->update(['estado' => 'Convertida']);
-
-        return response()->json(['success' => 'Cotización marcada como convertida.']);
-    }
-
-    /**
-     * Convertir cotización a pedido directamente
+     * Convertir cotización a pedido directamente (endpoint atómico).
      */
     public function convertirAPedido($id)
     {
@@ -411,6 +394,14 @@ class CotizacionController extends Controller
             $pedido = $this->cotizacionService->convertirAPedido($cotizacion);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
+        } catch (\RuntimeException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        } catch (\Exception $e) {
+            Log::error('Error al convertir cotización a pedido', [
+                'cotizacion_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json(['error' => 'Error interno al convertir la cotización. Intente de nuevo.'], 500);
         }
 
         return response()->json([
