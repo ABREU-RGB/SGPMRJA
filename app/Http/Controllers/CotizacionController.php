@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cotizacion;
 use App\Models\Producto;
+use App\Models\Logo;
 use App\Models\Pedido;
 use App\Models\Insumo;
 use App\Models\Banco;
@@ -27,9 +28,10 @@ class CotizacionController extends Controller
     public function index()
     {
         $productos = Producto::with('tipoProducto')->where('estado', true)->get();
+        $logos = Logo::orderBy('name')->get(['id', 'name', 'original_filename']);
         $insumos = Insumo::all();
         $bancos = Banco::all();
-        return view('admin.cotizaciones.index', compact('productos', 'insumos', 'bancos'));
+        return view('admin.cotizaciones.index', compact('productos', 'logos', 'insumos', 'bancos'));
     }
 
     public function getCotizaciones()

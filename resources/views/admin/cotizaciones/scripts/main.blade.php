@@ -93,11 +93,11 @@
         if (!$('#ubicacion-bordado-sugeridas').length) {
             $('body').append(
                 '<datalist id="ubicacion-bordado-sugeridas">' +
-                    '<option value="Frontal Izquierdo"></option>' +
-                    '<option value="Frontal Derecho"></option>' +
-                    '<option value="Manga Izquierda"></option>' +
-                    '<option value="Manga Derecha"></option>' +
-                    '<option value="Espaldar"></option>' +
+                '<option value="Frontal Izquierdo"></option>' +
+                '<option value="Frontal Derecho"></option>' +
+                '<option value="Manga Izquierda"></option>' +
+                '<option value="Manga Derecha"></option>' +
+                '<option value="Espaldar"></option>' +
                 '</datalist>'
             );
         }
@@ -377,7 +377,7 @@
                     '<td><span class="badge bg-primary">' + tipoNombre + '</span></td>' +
                     '<td>' + p.modelo + '</td>' +
                     '<td class="text-success fw-bold text-end">$ ' + parseFloat(p.precio_base).toFixed(2) + '</td>' +
-                    '<td class="text-center"><button type="button" class="btn btn-sm btn-success select-producto-btn-cotizacion" data-id="' + p.id + '"><i class="ri-check-line"></i></button></td>' +
+                    '<td class="text-center"><button type="button" class="btn btn-sm btn-atlantico-brand select-producto-btn-cotizacion" data-id="' + p.id + '"><i class="ri-check-line"></i></button></td>' +
                     '</tr>';
                 tbody.append(row);
             });
@@ -408,6 +408,146 @@
                 $('body').css('padding-right', '');
             }
         });
+
+        // ============================================================
+        // === LÓGICA DEL MODAL DE LOGOS (Catálogo de Logos) ===
+        // ============================================================
+
+        // Logos cargados desde servidor (mismo patrón que products)
+        var logos = @json($logos);
+        var logoModal = null;
+        var currentLogoInput = null; // Referencia al nombre-logo-input de la fila activa
+
+        // Inicializar modal de logos
+        try {
+            logoModal = new bootstrap.Modal(document.getElementById('logoSearchModal'));
+        } catch (e) {
+            console.error('Error inicializando modal de logos:', e);
+        }
+
+        // Filtrar y renderizar logos en la tabla del modal
+        function renderizarLogosModal(filtro) {
+            filtro = (filtro || '').toLowerCase().trim();
+            var tbody = $('#logoModalBody');
+            tbody.empty();
+
+            if (typeof logos === 'undefined' || !logos) {
+                tbody.append('<tr><td colspan="3" class="text-center text-danger py-4"><i class="ri-error-warning-line fs-2 d-block mb-2"></i>Error: No se pudieron cargar los logos.</td></tr>');
+                $('#logoModalCount').text('0 logos');
+                return;
+            }
+
+            if (logos.length === 0) {
+                tbody.append('<tr><td colspan="3" class="text-center text-muted py-4"><i class="ri-inbox-line fs-2 d-block mb-2"></i>No hay logos registrados en el sistema.<br><small>Ejecute el LogoSeeder para cargar el catálogo.</small></td></tr>');
+                $('#logoModalCount').text('0 logos');
+                return;
+            }
+
+            var logosFiltrados = logos.filter(function (l) {
+                if (!filtro) return true;
+                return (l.name || '').toLowerCase().includes(filtro) ||
+                    (l.original_filename || '').toLowerCase().includes(filtro);
+            });
+
+            $('#logoModalCount').text(logosFiltrados.length + ' logo' + (logosFiltrados.length !== 1 ? 's' : ''));
+
+            if (logosFiltrados.length === 0) {
+                tbody.append('<tr><td colspan="3" class="text-center text-muted py-4"><i class="ri-search-2-line fs-2 d-block mb-2"></i>No se encontraron coincidencias.</td></tr>');
+                return;
+            }
+
+            logosFiltrados.forEach(function (l) {
+                var safeName = $('<div>').text(l.name).html();
+                var safeFile = $('<div>').text(l.original_filename).html();
+                var row = '<tr data-logo-id="' + l.id + '" data-logo-name="' + safeName + '">' +
+                    '<td style="width:65%">' +
+                    '<i class="ri-threads-line logo-row-icon me-2"></i>' +
+                    '<span class="fw-semibold">' + safeName + '</span>' +
+                    '</td>' +
+                    '<td class="logo-filename-cell" style="width:25%" title="' + safeFile + '">' + safeFile + '</td>' +
+                    '<td class="text-center" style="width:10%">' +
+                    '<button type="button" class="btn btn-sm btn-atlantico-brand select-logo-btn px-2 py-1"' +
+                    ' data-logo-id="' + l.id + '" data-logo-name="' + safeName + '">' +
+                    '<i class="ri-check-line"></i>' +
+                    '</button>' +
+                    '</td>' +
+                    '</tr>';
+                tbody.append(row);
+            });
+        }
+
+        // Renderizar al abrir el modal de logos
+        document.getElementById('logoSearchModal').addEventListener('shown.bs.modal', function () {
+            $('#buscarLogoModal').val('').focus();
+            renderizarLogosModal('');
+        });
+
+        // Limpieza de backdrop al cerrar el modal de logos (mismo patrón que productos)
+        document.getElementById('logoSearchModal').addEventListener('hidden.bs.modal', function () {
+            if ($('#showModal').hasClass('show')) {
+                $('body').addClass('modal-open');
+                var backdrops = $('.modal-backdrop');
+                if (backdrops.length > 1) {
+                    backdrops.not(backdrops.first()).remove();
+                }
+            } else {
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                $('body').css('overflow', 'auto');
+                $('body').css('padding-right', '');
+            }
+        });
+
+        // Filtrado en tiempo real al escribir
+        $('#buscarLogoModal').on('keyup', function () {
+            renderizarLogosModal($(this).val());
+        });
+
+        // Abrir modal de logos desde la fila del producto (delegación de eventos)
+        $('#productos-container').on('click', '.buscar-logo-trigger', function (e) {
+            e.preventDefault();
+            currentLogoInput = $(this).closest('.nombre-logo-container').find('.nombre-logo-input');
+            if (logoModal) logoModal.show();
+        });
+
+        // Seleccionar logo por clic en botón ✓
+        $(document).on('click', '.select-logo-btn', function (e) {
+            e.preventDefault();
+            var logoName = $(this).data('logo-name');
+            seleccionarLogo(logoName);
+        });
+
+        // Seleccionar logo por doble clic en fila
+        $(document).on('dblclick', '#logoSearchModalTable tbody tr', function (e) {
+            e.preventDefault();
+            var logoName = $(this).data('logo-name');
+            if (logoName) seleccionarLogo(logoName);
+        });
+
+        // Función central de selección de logo
+        function seleccionarLogo(logoName) {
+            if (!logoName || !currentLogoInput) return;
+
+            currentLogoInput.val(logoName);
+
+            // Cerrar modal de logos
+            if (logoModal) logoModal.hide();
+
+            // Mantener modal padre abierto (mismo patrón que productos)
+            if ($('#showModal').hasClass('show')) {
+                $('body').addClass('modal-open');
+                var backdrops = $('.modal-backdrop');
+                if (backdrops.length > 1) {
+                    backdrops.not(backdrops.first()).remove();
+                }
+            }
+
+            currentLogoInput = null;
+        }
+
+        // ============================================================
+        // === FIN LÓGICA MODAL DE LOGOS ===
+        // ============================================================
 
         // Abrir modal desde un item existente (EDITAR/CAMBIAR PRODUCTO)
         $('#productos-container').on('click', '.producto-selector-trigger', function () {
@@ -589,17 +729,28 @@
 
                     <!-- Contenedor Logo (condicional) -->
                     <div class="row g-2 mt-1 nombre-logo-container" style="display: ${llevaBordado ? 'flex' : 'none'}">
-                        <div class="col-5">
-                            <input type="text" name="productos[${productItemIndex}][nombre_logo]"
-                                class="form-control form-control-sm nombre-logo-input"
-                                placeholder="Nombre del logo" value="${nombreLogo}" />
+                        <div class="col-4">
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="productos[${productItemIndex}][nombre_logo]"
+                                    class="form-control form-control-sm nombre-logo-input"
+                                    placeholder="Nombre del logo" value="${nombreLogo}"
+                                    readonly style="cursor: default; background-color: #fff;" />
+                                <button type="button"
+                                    class="btn btn-sm btn-atlantico-brand buscar-logo-trigger"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Seleccionar logo del catálogo">
+                                    <i class="ri-search-line me-1" style="color:#fff;"></i>
+                                    <span style="color:#fff; font-size:0.75rem;">Buscar</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="col-3">
                             <input type="number" name="productos[${productItemIndex}][cantidad_logo]"
                                 class="form-control form-control-sm cantidad-logo-input"
                                 placeholder="Cant." min="1" value="${cantidadLogo || 1}" />
                         </div>
-                        <div class="col-4">
+                        <div class="col-5">
                             <input type="text" name="productos[${productItemIndex}][ubicacion_logo]"
                                 class="form-control form-control-sm ubicacion-logo-input"
                                 placeholder="Ej: Frontal Izquierdo..."
@@ -613,6 +764,10 @@
             </div>
             `;
             $('#productos-container').append(itemHtml);
+            // Inicializar tooltips de Bootstrap en la fila recién insertada
+            $('#productos-container .card').last().find('[data-bs-toggle="tooltip"]').each(function () {
+                new bootstrap.Tooltip(this, { trigger: 'hover' });
+            });
             productItemIndex++;
         }
 

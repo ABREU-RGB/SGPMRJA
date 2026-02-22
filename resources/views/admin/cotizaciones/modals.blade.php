@@ -1,5 +1,4 @@
-﻿
-<!-- Modal para ver detalles de Cotización -->
+﻿<!-- Modal para ver detalles de Cotización -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -198,7 +197,8 @@
         <div class="modal-content">
             <div class="modal-header p-3" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
                 <h5 class="modal-title text-white" id="modalTitle">Agregar Cotización</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <form id="cotizacionForm" enctype="multipart/form-data">
                 @csrf
@@ -235,8 +235,8 @@
                                                     </select>
                                                     <input type="text" id="ci-rif-number-field" name="rif_number"
                                                         class="form-control"
-                                                        placeholder="Buscar cliente por documento..."
-                                                        autocomplete="off" required />
+                                                        placeholder="Buscar cliente por documento..." autocomplete="off"
+                                                        required />
                                                     <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
                                                     <button type="button" class="btn btn-outline-success"
                                                         id="open-add-cliente-modal" title="Agregar nuevo cliente">
@@ -244,49 +244,55 @@
                                                     </button>
                                                 </div>
                                                 <div id="cliente-autocomplete-list"
-                                                    class="list-group position-absolute w-100" style="z-index: 1050; top: 100%;"></div>
+                                                    class="list-group position-absolute w-100"
+                                                    style="z-index: 1050; top: 100%;"></div>
                                             </div>
                                         </div>
                                         <!-- Nombre + Apellido -->
                                         <div class="col-6">
-                                            <label for="cliente-nombre-field" class="form-label small fw-semibold mb-1">Nombre</label>
+                                            <label for="cliente-nombre-field"
+                                                class="form-label small fw-semibold mb-1">Nombre</label>
                                             <input type="text" id="cliente-nombre-field" name="cliente_nombre"
-                                                class="form-control form-control-sm bg-light"
-                                                readonly style="cursor: not-allowed;" />
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
                                         </div>
                                         <div class="col-6">
-                                            <label for="cliente-apellido-field" class="form-label small fw-semibold mb-1">Apellido</label>
+                                            <label for="cliente-apellido-field"
+                                                class="form-label small fw-semibold mb-1">Apellido</label>
                                             <input type="text" id="cliente-apellido-field" name="cliente_apellido"
-                                                class="form-control form-control-sm bg-light"
-                                                readonly style="cursor: not-allowed;" />
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
                                         </div>
                                         <!-- Teléfono + Email -->
                                         <div class="col-6">
-                                            <label for="cliente-telefono-field" class="form-label small fw-semibold mb-1">Teléfono</label>
+                                            <label for="cliente-telefono-field"
+                                                class="form-label small fw-semibold mb-1">Teléfono</label>
                                             <input type="text" id="cliente-telefono-field" name="cliente_telefono"
-                                                class="form-control form-control-sm bg-light"
-                                                readonly style="cursor: not-allowed;" />
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
                                         </div>
                                         <div class="col-6">
-                                            <label for="cliente-email-field" class="form-label small fw-semibold mb-1">Email</label>
+                                            <label for="cliente-email-field"
+                                                class="form-label small fw-semibold mb-1">Email</label>
                                             <input type="email" id="cliente-email-field" name="cliente_email"
-                                                class="form-control form-control-sm bg-light"
-                                                readonly style="cursor: not-allowed;" />
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
                                         </div>
                                         <!-- Fechas -->
                                         <div class="col-6">
-                                            <label for="fecha-cotizacion-field" class="form-label small fw-semibold mb-1">
+                                            <label for="fecha-cotizacion-field"
+                                                class="form-label small fw-semibold mb-1">
                                                 Fecha Cotización <span class="text-danger">*</span>
                                             </label>
-                                            <input type="date" id="fecha-cotizacion-field"
-                                                name="fecha_cotizacion" class="form-control form-control-sm" required />
+                                            <input type="date" id="fecha-cotizacion-field" name="fecha_cotizacion"
+                                                class="form-control form-control-sm" required />
                                         </div>
                                         <div class="col-6">
                                             <label for="fecha-validez-field" class="form-label small fw-semibold mb-1">
                                                 Fecha Validez <span class="text-danger">*</span>
                                             </label>
-                                            <input type="date" id="fecha-validez-field"
-                                                name="fecha_validez" class="form-control form-control-sm" required />
+                                            <input type="date" id="fecha-validez-field" name="fecha_validez"
+                                                class="form-control form-control-sm" required />
                                         </div>
                                     </div>
                                 </div>
@@ -306,7 +312,8 @@
                                         <option value="Cancelado">Cancelado</option>
                                     </select>
                                     <small class="text-muted d-block mt-1">
-                                        <i class="ri-information-line me-1"></i>El estado "Vencida" se asigna automáticamente al pasar la fecha de vencimiento
+                                        <i class="ri-information-line me-1"></i>El estado "Vencida" se asigna
+                                        automáticamente al pasar la fecha de vencimiento
                                     </small>
                                 </div>
                             </div>
@@ -330,7 +337,8 @@
                             </div>
 
                             <!-- Resumen Total -->
-                            <div class="card border-0" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                            <div class="card border-0"
+                                style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
                                 <div class="card-body py-3 px-4">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="d-flex align-items-center gap-2">
@@ -339,14 +347,17 @@
                                                 <i class="ri-money-dollar-circle-line text-white fs-5"></i>
                                             </div>
                                             <div>
-                                                <span class="text-white-50 d-block" style="font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;">Total Cotización</span>
+                                                <span class="text-white-50 d-block"
+                                                    style="font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;">Total
+                                                    Cotización</span>
                                                 <small class="text-white-50" style="font-size:0.68rem;">
                                                     <i class="ri-refresh-line me-1"></i>Se actualiza automáticamente
                                                 </small>
                                             </div>
                                         </div>
                                         <div class="text-end">
-                                            <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;" id="total-display-value">$0.00</span>
+                                            <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;"
+                                                id="total-display-value">$0.00</span>
                                             <input type="hidden" id="total-display-field" />
                                         </div>
                                     </div>
@@ -357,7 +368,8 @@
                         <!-- Columna Derecha: Productos -->
                         <div class="col-lg-7">
                             <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header border-0 bg-soft-primary d-flex align-items-center justify-content-between">
+                                <div
+                                    class="card-header border-0 bg-soft-primary d-flex align-items-center justify-content-between">
                                     <h6 class="mb-0 text-atlantico-dark">
                                         <i class="ri-shopping-bag-3-line me-2"></i>Productos de la Cotización
                                     </h6>
@@ -365,7 +377,8 @@
                                         <i class="ri-add-line me-1"></i>Agregar Producto
                                     </button>
                                 </div>
-                                <div class="card-body p-2" style="max-height: 490px; overflow-y: auto; overflow-x: hidden;">
+                                <div class="card-body p-2"
+                                    style="max-height: 490px; overflow-y: auto; overflow-x: hidden;">
                                     <div id="productos-container">
                                         <!-- Productos dinámicos -->
                                     </div>
@@ -383,8 +396,7 @@
                         <button type="submit" class="btn btn-success" id="add-btn">
                             <i class="ri-add-line me-1"></i>Agregar
                         </button>
-                        <button type="submit" class="btn btn-success" id="edit-btn"
-                            style="display: none;">
+                        <button type="submit" class="btn btn-success" id="edit-btn" style="display: none;">
                             <i class="ri-save-line me-1"></i>Actualizar
                         </button>
                     </div>
@@ -406,13 +418,15 @@
             <form id="clienteFormCotizacion">
                 <div class="modal-body">
                     <input type="hidden" id="id-field-cliente" />
-                    
+
                     <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
                     <div class="row mb-3">
                         <div class="col-md-5">
-                            <label for="documento-field-cliente" class="form-label required">Documento (Cédula o RIF)</label>
+                            <label for="documento-field-cliente" class="form-label required">Documento (Cédula o
+                                RIF)</label>
                             <div class="input-group">
-                                <select class="form-select" id="documento-prefix-field-cliente" style="max-width: 70px;">
+                                <select class="form-select" id="documento-prefix-field-cliente"
+                                    style="max-width: 70px;">
                                     <option value="V-">V-</option>
                                     <option value="J-">J-</option>
                                     <option value="E-">E-</option>
@@ -437,9 +451,10 @@
                             <label class="form-label d-block">Estatus</label>
                             <div class="form-check form-switch form-switch-success mt-2">
                                 <input type="hidden" name="estatus" value="0" />
-                                <input class="form-check-input" type="checkbox" role="switch" 
-                                    id="estatus-field-cliente" name="estatus" value="1" checked />
-                                <label class="form-check-label" for="estatus-field-cliente" id="estatus-label-cliente">Activo</label>
+                                <input class="form-check-input" type="checkbox" role="switch" id="estatus-field-cliente"
+                                    name="estatus" value="1" checked />
+                                <label class="form-check-label" for="estatus-field-cliente"
+                                    id="estatus-label-cliente">Activo</label>
                             </div>
                         </div>
                     </div>
@@ -448,13 +463,13 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="nombre-field-cliente" class="form-label required">Nombre</label>
-                            <input type="text" id="nombre-field-cliente" name="nombre" class="form-control" 
+                            <input type="text" id="nombre-field-cliente" name="nombre" class="form-control"
                                 placeholder="Nombre" maxlength="100" required />
                             <div id="nombre-error-cliente" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6">
                             <label for="apellido-field-cliente" class="form-label required">Apellido</label>
-                            <input type="text" id="apellido-field-cliente" name="apellido" class="form-control" 
+                            <input type="text" id="apellido-field-cliente" name="apellido" class="form-control"
                                 placeholder="Apellido" maxlength="100" required />
                             <div id="apellido-error-cliente" class="invalid-feedback"></div>
                         </div>
@@ -471,7 +486,8 @@
                         <div class="col-md-6">
                             <label for="telefono-field-cliente" class="form-label required">Teléfono</label>
                             <div class="input-group">
-                                <select class="form-select" id="telefono-prefix-field-cliente" style="max-width: 100px; min-width: 100px;">
+                                <select class="form-select" id="telefono-prefix-field-cliente"
+                                    style="max-width: 100px; min-width: 100px;">
                                     <option value="0412">0412</option>
                                     <option value="0422">0422</option>
                                     <option value="0414">0414</option>
@@ -501,7 +517,8 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label for="estado_territorial-field-cliente" class="form-label required">Estado</label>
-                            <select name="estado_territorial" id="estado_territorial-field-cliente" class="form-select" required>
+                            <select name="estado_territorial" id="estado_territorial-field-cliente" class="form-select"
+                                required>
                                 <option value="">Seleccione estado</option>
                                 <option value="Amazonas">Amazonas</option>
                                 <option value="Anzoátegui">Anzoátegui</option>
@@ -546,8 +563,7 @@
                         <button type="button" class="btn btn-success" id="add-btn-cliente">
                             <i class="ri-add-line me-1"></i>Agregar
                         </button>
-                        <button type="button" class="btn btn-success" id="edit-btn-cliente"
-                            style="display: none;">
+                        <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
                             <i class="ri-save-line me-1"></i>Actualizar
                         </button>
                     </div>
@@ -558,27 +574,34 @@
 </div>
 
 <!-- Modal para seleccionar producto (Movido al final para z-index) -->
-<div class="modal fade" id="productosModalCotizacion" tabindex="-1" aria-labelledby="productosModalCotizacionLabel" aria-hidden="true"
-    data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1060;">
+<div class="modal fade" id="productosModalCotizacion" tabindex="-1" aria-labelledby="productosModalCotizacionLabel"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1060;">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <!-- Header con gradiente marca Atlantico -->
-            <div class="modal-header bg-light p-3">
-                <h5 class="modal-title" id="productosModalCotizacionLabel">Buscar y Seleccionar Producto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- Header — Nivel 2: Modal utilitario de búsqueda -->
+            <div class="modal-header p-3" id="productosModalCotizacion-header"
+                style="background-color: #132649 !important;">
+                <h5 class="modal-title" style="color: #ffffff !important;" id="productosModalCotizacionLabel">
+                    <i class="ri-search-line me-2" style="opacity: 0.7;"></i>Buscar y Seleccionar Producto
+                </h5>
+                <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <!-- Estilos específicos para este modal -->
                 <style>
                     #productosModalCotizacionTable thead tr th {
-                        background: #1e3c72 !important; /* Fallback */
+                        background: #1e3c72 !important;
+                        /* Fallback */
                         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
                         color: white !important;
                         border: none !important;
                     }
+
                     #productosModalCotizacionTable tbody tr:hover {
                         background-color: #f1faff !important;
                     }
+
                     /* Asegurar que texto en tabla sea visible */
                     #productosModalCotizacionTable tbody td {
                         color: #333 !important;
@@ -600,12 +623,14 @@
                                     <span class="input-group-text bg-soft-primary border-primary text-primary">
                                         <i class="ri-search-line"></i>
                                     </span>
-                                    <input type="text" id="buscarProductoModalCotizacion" class="form-control border-primary"
+                                    <input type="text" id="buscarProductoModalCotizacion"
+                                        class="form-control border-primary"
                                         placeholder="Buscar por código, tipo o modelo...">
                                 </div>
                             </div>
                             <div class="col-md-5">
-                                <select id="filtroTipoProductoCotizacion" class="form-select border-success text-success">
+                                <select id="filtroTipoProductoCotizacion"
+                                    class="form-select border-success text-success">
                                     <option value="">📁 Todos los tipos</option>
                                 </select>
                             </div>
@@ -625,17 +650,24 @@
                             <table class="table table-hover mb-0" id="productosModalCotizacionTable">
                                 <thead style="position: sticky; top: 0; z-index: 10;">
                                     <tr>
-                                        <th width="60" class="text-center"><i class="ri-image-line"></i></th>
-                                        <th><i class="ri-barcode-line me-1"></i>Código</th>
-                                        <th><i class="ri-folder-line me-1"></i>Tipo</th>
-                                        <th><i class="ri-t-shirt-line me-1"></i>Modelo</th>
-                                        <th><i class="ri-money-dollar-circle-line me-1"></i>Precio</th>
-                                        <th width="80" class="text-center"><i class="ri-check-line"></i></th>
+                                        <th style="width:8%;  border:none;" class="text-center"><i
+                                                class="ri-image-line"></i></th>
+                                        <th style="width:20%; border:none;"><i class="ri-barcode-line me-1"></i>Código
+                                        </th>
+                                        <th style="width:20%; border:none;"><i class="ri-folder-line me-1"></i>Tipo</th>
+                                        <th style="width:28%; border:none;"><i class="ri-t-shirt-line me-1"></i>Modelo
+                                        </th>
+                                        <th style="width:16%; border:none;"><i
+                                                class="ri-money-dollar-circle-line me-1"></i>Precio</th>
+                                        <th style="width:8%;  border:none;" class="text-center"><i
+                                                class="ri-check-line"></i></th>
                                     </tr>
                                 </thead>
                                 <tbody id="productosModalCotizacionBody">
                                     <!-- Se llena con JavaScript -->
-                                    <tr><td colspan="6" class="text-center text-muted py-4">Cargando productos...</td></tr>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">Cargando productos...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -643,7 +675,147 @@
                 </div>
             </div>
             <div class="modal-footer bg-light border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para seleccionar Logo (Catálogo de Logos) -->
+<div class="modal fade" id="logoSearchModal" tabindex="-1" aria-labelledby="logoSearchModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1070;">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- Header — Nivel 3: Modal utilitario de catálogo de logos -->
+            <div class="modal-header p-3" id="logoSearchModal-header" style="background-color: #132649 !important;">
+                <h5 class="modal-title" style="color: #ffffff !important;" id="logoSearchModalLabel">
+                    <i class="ri-image-line me-2" style="opacity: 0.7;"></i>Buscar y Seleccionar Logo
+                </h5>
+                <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Estilos específicos para este modal -->
+                <style>
+                    /*
+                     * ROW-LEVEL APPROACH — más robusto que cell-level
+                     *
+                     * Bootstrap 5 usa la regla:
+                     *   .table > :not(caption) > * > *  { background: var(--bs-table-bg); ... }
+                     * que se aplica a cada <th> individualmente y puede sobreponerse
+                     * a un `background !important` en el <th>, causando el "bloque oscuro".
+                     *
+                     * Solución: poner el gradiente en <thead> y <tr> (Bootstrap NO aplica
+                     * sus variables CSS a <thead> ni a <tr>), y forzar cada <th> a
+                     * transparent para que el fondo del row se vea sin interferencia.
+                     */
+
+                    /* 1) Gradiente en el contenedor: thead y el tr */
+                    #logoSearchModalTable thead,
+                    #logoSearchModalTable thead tr {
+                        background: #1e3c72;
+                        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+                    }
+
+                    /* 2) Celdas completamente transparentes — heredan el gradiente del <tr> */
+                    #logoSearchModalTable thead tr th {
+                        background: transparent !important;
+                        background-color: transparent !important;
+
+                        /* Reset de variables CSS de Bootstrap 5 que causan el glitch */
+                        --bs-table-bg: transparent;
+                        --bs-table-accent-bg: transparent;
+                        --bs-table-striped-bg: transparent;
+                        --bs-table-hover-bg: transparent;
+                        --bs-table-active-bg: transparent;
+
+                        color: white !important;
+                        border: none !important;
+                        border-top: none !important;
+                        border-bottom: none !important;
+                        border-left: none !important;
+                        border-right: none !important;
+
+                        font-size: 0.78rem;
+                        letter-spacing: 0.04em;
+                        text-transform: uppercase;
+                        font-weight: 600;
+                    }
+
+                    #logoSearchModalTable tbody td {
+                        color: #333 !important;
+                        vertical-align: middle;
+                    }
+
+                    /* Columna archivo — quieta, secundaria */
+                    #logoSearchModalTable .logo-filename-cell {
+                        font-size: 0.74rem;
+                        color: #9099a8 !important;
+                        font-style: italic;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        max-width: 160px;
+                    }
+                </style>
+
+                <!-- Card de Filtros -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header border-0 bg-soft-success">
+                        <h6 class="mb-0 text-atlantico-cyan">
+                            <i class="ri-filter-3-line me-2"></i>Búsqueda de logo
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <span class="input-group-text bg-soft-primary border-primary text-primary">
+                                <i class="ri-search-line"></i>
+                            </span>
+                            <input type="text" id="buscarLogoModal" class="form-control border-primary"
+                                placeholder="Buscar por nombre del logo...">
+                        </div>
+                        <small class="text-muted mt-1 d-block">
+                            <i class="ri-information-line me-1"></i>Puede hacer doble clic en una fila para seleccionar
+                            el logo
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Card de Tabla de Logos -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header border-0 bg-soft-primary">
+                        <h6 class="mb-0 text-atlantico-dark">
+                            <i class="ri-folder-image-line me-2"></i>Catálogo de Logos
+                            <span class="badge bg-secondary ms-2" id="logoModalCount">0 logos</span>
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 350px;">
+                            <table class="table table-hover mb-0" id="logoSearchModalTable">
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th style="width:65%; border:none;"><i class="ri-image-line me-1"></i>Nombre del
+                                            Logo</th>
+                                        <th style="width:25%; border:none;"><i class="ri-file-line me-1"></i>Archivo
+                                            Original</th>
+                                        <th style="width:10%; border:none;" class="text-center"><i
+                                                class="ri-check-line"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logoModalBody">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">Cargando logos...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
                     <i class="ri-close-line me-1"></i>Cancelar
                 </button>
             </div>

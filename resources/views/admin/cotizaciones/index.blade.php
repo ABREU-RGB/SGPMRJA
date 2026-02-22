@@ -63,6 +63,158 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
+        /* ── Backdrop difuminado para el modal de logos (Nivel 3) ─────────────
+                                       Mismo patrón que #modalAddCliente: selector de hermano CSS.
+                                       Al cerrarse el modal, Bootstrap elimina su backdrop →
+                                       el selector queda sin nodo al que aplicarse → sin efectos secundarios.
+                                    ──────────────────────────────────────────────────────────────────────── */
+        #logoSearchModal~.modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        /* ── FORCED DARK NAVY HEADER — Modales utilitarios de búsqueda ──────────
+                               Usamos el selector ID + .modal-header para superar la especificidad de
+                               Bootstrap (.modal-header, .bg-light, etc.) y forzar el color #0d1f3c.
+                               El color #0d1f3c es PERCEPTIBLEMENTE más oscuro que el gradiente del
+                               #showModal (#1e3c72), garantizando diferenciación visual inmediata.
+                            ───────────────────────────────────────────────────────────────────────── */
+        #productosModalCotizacion .modal-header,
+        #productosModalCotizacion-header {
+            background-color: #132649 !important;
+            /* = var(--vz-header-bg) con data-topbar=dark, app.css:3873 */
+            background-image: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        #logoSearchModal .modal-header,
+        #logoSearchModal-header {
+            background-color: #132649 !important;
+            /* mismo color exacto del navbar */
+            background-image: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* Texto blanco en el título */
+        #productosModalCotizacion .modal-header .modal-title,
+        #logoSearchModal .modal-header .modal-title {
+            color: #ffffff !important;
+        }
+
+        /* ── Botón de cierre blanco puro via filter ──────────────────────────────
+                           .btn-close-white → opacity: 0.5 por defecto → casi invisible en #0d1f3c
+                           filter: brightness(0) invert(1) → convierte el SVG mask a #ffffff puro
+                           a opacity:1, sin depender de variables CSS ni del tema Bootstrap.
+                        ───────────────────────────────────────────────────────────────────────── */
+        .utility-modal-close {
+            filter: brightness(0) invert(1) !important;
+            opacity: 1 !important;
+            transition: transform 0.15s ease, filter 0.15s ease !important;
+        }
+
+        .utility-modal-close:hover {
+            transform: scale(1.15);
+            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 217, 165, 0.8)) !important;
+            opacity: 1 !important;
+        }
+
+        /* ── Botón de selección de marca — "Atlántico Brand" ─────────────────────
+                   Base: #132649 (mismo color del navbar) → consistencia de marca total
+                   Hover: #00d9a5 (cyan de acento) → retroalimentación visual inmediata
+                   Icono: blanco puro en ambos estados
+                ───────────────────────────────────────────────────────────────────────── */
+        .btn-atlantico-brand {
+            background-color: #132649;
+            border-color: #132649;
+            color: #ffffff;
+            transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+        }
+
+        .btn-atlantico-brand:hover,
+        .btn-atlantico-brand:focus {
+            background-color: #00d9a5;
+            border-color: #00c49a;
+            color: #ffffff;
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(0, 217, 165, 0.4);
+        }
+
+        .btn-atlantico-brand i {
+            color: #ffffff !important;
+        }
+
+        /* ── Input "Nombre del logo" — foco estilo Navy/Cyan ─────────────────────
+               Bootstrap usa --bs-primary (morado) como color de foco por defecto.
+               Al sobreescribir box-shadow y border-color con !important sobre las
+               clases .nombre-logo-input y .ubicacion-logo-input (aplicadas a TODOS
+               los rows dinámicos), cada fila nueva hereda el override sin JS extra.
+            ───────────────────────────────────────────────────────────────────────── */
+        .nombre-logo-input:focus,
+        .ubicacion-logo-input:focus,
+        .cantidad-logo-input:focus {
+            border-color: #132649 !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 217, 165, 0.25) !important;
+            outline: none !important;
+        }
+
+        /* El input-group que contiene el buscar-logo-trigger:
+               cuando el input adyacente tiene foco, alinear el borde del botón */
+        .nombre-logo-input:focus+.buscar-logo-trigger {
+            border-color: #00d9a5 !important;
+        }
+
+        /* ── "Deep Floating" effect — triple layer de sombras ──────────────────
+                                   Capa 1 (wide glow):  elevación difusa a 60px — transmite profundidad
+                                   Capa 2 (crisp drop): sombra nítida a 24px — ancla visualmente el modal
+                                   Capa 3 (brand ring): ring de 1px con el azul de marca — enmarca como entidad de nivel superior
+                                ──────────────────────────────────────────────────────────────────────── */
+        #logoSearchModal .modal-content {
+            box-shadow:
+                0 24px 60px rgba(0, 0, 0, 0.55),
+                0 8px 24px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(30, 60, 114, 0.22);
+            border-top: 3px solid #00d9a5;
+            /* acento cyan de marca — diferencia el nivel */
+        }
+
+        /* ── Filas de la tabla de logos ──────────────────────────────────────── */
+        #logoSearchModalTable tbody tr {
+            cursor: pointer;
+            transition: background-color 0.18s ease, transform 0.1s ease;
+        }
+
+        /* Hover con verde de marca — muy sutil, no compite con el texto */
+        #logoSearchModalTable tbody tr:hover {
+            background-color: rgba(0, 217, 165, 0.08) !important;
+        }
+
+        /* Micro elevación del ícono de logo al hacer hover en la fila */
+        #logoSearchModalTable tbody tr:hover .logo-row-icon {
+            color: #00d9a5 !important;
+            transform: scale(1.15);
+            transition: color 0.15s, transform 0.15s;
+        }
+
+        .logo-row-icon {
+            color: #adb5bd;
+            font-size: 1rem;
+            transition: color 0.15s, transform 0.15s;
+            display: inline-block;
+        }
+
+        /* ── Buscador premium — borde activo y shadow al focus ───────────────── */
+        #buscarLogoModal {
+            border-color: #a8c4e8;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #buscarLogoModal:focus {
+            border-color: #1e3c72 !important;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.15), 0 2px 6px rgba(30, 60, 114, 0.1) !important;
+            outline: none;
+        }
+
         /* Estilos para modal de selección de productos */
         .producto-selector-btn {
             cursor: pointer;

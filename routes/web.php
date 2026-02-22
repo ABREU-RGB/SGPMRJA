@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\CotizacionController;
+use App\Http\Controllers\LogoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EmpleadoController;
@@ -126,6 +127,9 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::get('proveedores-check-email', [ProveedorController::class, 'checkEmail'])->name('proveedores.check-email');
         Route::get('proveedores/reporte/pdf', [ProveedorController::class, 'reportePdf'])->name('proveedores.reporte.pdf');
         Route::get('proveedores/{proveedor}', [ProveedorController::class, 'show'])->name('proveedores.show');
+
+        // Logos
+        Route::get('logos-data', [LogoController::class, 'getLogos'])->name('logos.data');
 
         // Productos
         Route::resource('productos', ProductoController::class);
