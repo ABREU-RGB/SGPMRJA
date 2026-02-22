@@ -29,6 +29,7 @@ class CotizacionService
                 'fecha_validez' => $data['fecha_validez'] ?? null,
                 'estado' => 'Pendiente',
                 'total' => $total,
+                'notas' => $data['notas'] ?? null,
                 'user_id' => Auth::id(),
             ]);
 
@@ -62,6 +63,7 @@ class CotizacionService
                 'fecha_validez' => $data['fecha_validez'] ?? null,
                 'estado' => $data['estado'],
                 'total' => $total,
+                'notas' => $data['notas'] ?? null,
                 'user_id' => Auth::id(),
             ]);
 

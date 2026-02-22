@@ -18,6 +18,7 @@ class Cotizacion extends Model
         'fecha_validez',
         'estado',
         'total',
+        'notas',
         'user_id',
         'prioridad',
     ];

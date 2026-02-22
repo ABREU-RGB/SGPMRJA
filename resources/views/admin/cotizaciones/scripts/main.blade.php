@@ -89,6 +89,19 @@
 </style>
 <script>
     $(document).ready(function () {
+        // === Datalist de ubicaciones de bordado (se inyecta una sola vez en el DOM) ===
+        if (!$('#ubicacion-bordado-sugeridas').length) {
+            $('body').append(
+                '<datalist id="ubicacion-bordado-sugeridas">' +
+                    '<option value="Frontal Izquierdo"></option>' +
+                    '<option value="Frontal Derecho"></option>' +
+                    '<option value="Manga Izquierda"></option>' +
+                    '<option value="Manga Derecha"></option>' +
+                    '<option value="Espaldar"></option>' +
+                '</datalist>'
+            );
+        }
+
         // === FUNCIÓN GLOBAL: Capitalizar solo la primera letra ===
         function capitalizeFirstLetter(str) {
             if (!str) return str;
@@ -470,7 +483,6 @@
         }
 
         function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', ubicacionLogo = '', cantidadLogo = 1) {
-            // Buscar detalles del producto para mostrar nombre bonito
             var productoDisplay = 'Clic para buscar producto...';
             var textClass = 'text-muted';
 
@@ -479,53 +491,64 @@
                 if (p) {
                     var tipoNombre = p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo';
                     productoDisplay = (p.codigo || '') + ' - ' + tipoNombre + ' ' + p.modelo;
-                    precioUnitario = precioUnitario || p.precio_base; // Usar precio negociado o catálogo
-                    textClass = 'text-dark fw-bold';
+                    precioUnitario = precioUnitario || p.precio_base;
+                    textClass = 'text-dark fw-semibold';
                 }
             }
 
-            // Layout IDÉNTICO a Pedidos (Screenshot)
             var itemHtml = `
-            <div class="card mb-3 shadow-lg border-dark product-item" data-product-index="${productItemIndex}">
-                <div class="card-body">
-                    <h5 class="card-title">Nuevo Producto</h5>
-                    
-                    <!-- Fila 1: Buscador y Cantidad -->
-                    <div class="row align-items-start mb-2">
-                        <div class="col-md-9 col-sm-8">
-                            <div class="producto-selector-trigger form-control d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
-                                <span class="producto-text ${textClass} text-truncate">${productoDisplay}</span>
-                                <i class="ri-search-line text-primary"></i>
-                            </div>
-                            <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required />
+            <div class="card border-0 shadow-sm mb-3 product-item" data-product-index="${productItemIndex}"
+                style="border-left: 3px solid var(--atlantico-cyan) !important;">
+                <div class="card-body p-3">
+
+                    <!-- Fila 1: Número de ítem + Buscador de producto + botón eliminar -->
+                    <div class="d-flex gap-2 align-items-center mb-2">
+                        <span class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold rounded-circle"
+                            title="Producto #${productItemIndex + 1}"
+                            style="width:26px;height:26px;min-width:26px;background:rgba(30,60,114,0.1);color:#1e3c72;font-size:0.72rem;">
+                            ${productItemIndex + 1}
+                        </span>
+                        <div class="producto-selector-trigger form-control d-flex align-items-center justify-content-between flex-grow-1"
+                            style="cursor: pointer; min-height: 36px;">
+                            <span class="producto-text ${textClass} text-truncate me-2">${productoDisplay}</span>
+                            <i class="ri-search-line text-primary flex-shrink-0"></i>
                         </div>
-                        <div class="col-md-3 col-sm-4">
-                            <input type="number" name="productos[${productItemIndex}][cantidad]" class="form-control text-center cantidad-input" placeholder="Cant." min="1" value="${cantidad}" required />
-                        </div>
+                        <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required />
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-producto-item flex-shrink-0" title="Eliminar producto">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
                     </div>
 
-                    <!-- Fila 2: Precio Negociado -->
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <label class="form-label mb-1 small text-muted"><i class="ri-money-dollar-circle-line me-1"></i>Precio Unitario Negociado</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: rgba(46, 204, 113, 0.1); border-color: #2ecc71;"><i class="ri-money-dollar-circle-line" style="color: #2ecc71;"></i></span>
-                                <input type="number" name="productos[${productItemIndex}][precio_unitario]" class="form-control precio-unitario-input" placeholder="0.00" step="0.01" min="0" value="${precioUnitario}" required style="border-color: #2ecc71;" />
+                    <!-- Fila 2: Cantidad + Precio + Color + Talla en una sola fila -->
+                    <div class="row g-2 mb-2">
+                        <div class="col-6 col-md-2">
+                            <label class="form-label mb-1 small text-muted">Cant.</label>
+                            <input type="number" name="productos[${productItemIndex}][cantidad]"
+                                class="form-control form-control-sm text-center cantidad-input"
+                                placeholder="0" min="1" value="${cantidad}" required />
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <label class="form-label mb-1 small text-muted">Precio Unit. ($)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text text-success"
+                                    style="background: rgba(46,204,113,0.1); border-color: #2ecc71;">$</span>
+                                <input type="number" name="productos[${productItemIndex}][precio_unitario]"
+                                    class="form-control precio-unitario-input"
+                                    placeholder="0.00" step="0.01" min="0" value="${precioUnitario}" required
+                                    style="border-color: #2ecc71;" />
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Fila 3: Color y Talla -->
-                    <div class="row mb-2">
-                        <div class="col-md-6">
+                        <div class="col-6 col-md-3">
                             <label class="form-label mb-1 small text-muted"><i class="ri-palette-line me-1"></i>Color</label>
-                            <input type="text" name="productos[${productItemIndex}][color]" class="form-control" placeholder="Ej: Azul marino" value="${color}" required />
+                            <input type="text" name="productos[${productItemIndex}][color]"
+                                class="form-control form-control-sm" placeholder="Ej: Azul marino"
+                                value="${color}" required />
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6 col-md-3">
                             <label class="form-label mb-1 small text-muted"><i class="ri-t-shirt-line me-1"></i>Talla</label>
-                            <select name="productos[${productItemIndex}][talla]" class="form-select" required>
-                                <option value="">Seleccione una talla</option>
-                                <option value="Talla Unica" ${talla == 'Talla Unica' ? 'selected' : ''}>Talla Unica</option>
+                            <select name="productos[${productItemIndex}][talla]" class="form-select form-select-sm" required>
+                                <option value="">-- Talla --</option>
+                                <option value="Talla Unica" ${talla == 'Talla Unica' ? 'selected' : ''}>Única</option>
                                 <option value="2" ${talla == '2' ? 'selected' : ''}>2</option>
                                 <option value="4" ${talla == '4' ? 'selected' : ''}>4</option>
                                 <option value="6" ${talla == '6' ? 'selected' : ''}>6</option>
@@ -544,40 +567,48 @@
                         </div>
                     </div>
 
-                    <!-- Fila 3: Descripción -->
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <textarea name="productos[${productItemIndex}][descripcion]" class="form-control" placeholder="Descripción del producto (opcional)" rows="2">${descripcion}</textarea>
+                    <!-- Fila 3: Notas + Switch bordado en la misma línea -->
+                    <div class="row g-2">
+                        <div class="col-8">
+                            <textarea name="productos[${productItemIndex}][descripcion]"
+                                class="form-control form-control-sm"
+                                placeholder="Notas u observaciones (opcional)"
+                                rows="1" style="resize: none;">${descripcion}</textarea>
                         </div>
-                    </div>
-
-                    <!-- Fila 4: Switch Bordado -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-check form-switch">
+                        <div class="col-4 d-flex align-items-center">
+                            <div class="form-check form-switch mb-0">
                                 <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="0">
-                                <input class="form-check-input lleva-bordado-checkbox" type="checkbox" id="lleva-bordado-${productItemIndex}" name="productos[${productItemIndex}][lleva_bordado]" value="1" ${llevaBordado ? 'checked' : ''}>
-                                <label class="form-check-label" for="lleva-bordado-${productItemIndex}">Lleva Bordado/Logo</label>
+                                <input class="form-check-input lleva-bordado-checkbox" type="checkbox"
+                                    id="lleva-bordado-${productItemIndex}"
+                                    name="productos[${productItemIndex}][lleva_bordado]" value="1"
+                                    ${llevaBordado ? 'checked' : ''}>
+                                <label class="form-check-label small" for="lleva-bordado-${productItemIndex}">Bordado/Logo</label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Contenedor Logo -->
-                     <div class="row mt-2 nombre-logo-container" style="display: ${llevaBordado ? 'flex' : 'none'}">
-                        <div class="col-6 mb-2">
-                            <input type="text" name="productos[${productItemIndex}][nombre_logo]" class="form-control nombre-logo-input" placeholder="Nombre del logo" value="${nombreLogo}" />
+                    <!-- Contenedor Logo (condicional) -->
+                    <div class="row g-2 mt-1 nombre-logo-container" style="display: ${llevaBordado ? 'flex' : 'none'}">
+                        <div class="col-5">
+                            <input type="text" name="productos[${productItemIndex}][nombre_logo]"
+                                class="form-control form-control-sm nombre-logo-input"
+                                placeholder="Nombre del logo" value="${nombreLogo}" />
                         </div>
-                        <div class="col-6 mb-2">
-                            <input type="number" name="productos[${productItemIndex}][cantidad_logo]" class="form-control cantidad-logo-input" placeholder="Cant. Logos" min="1" value="${cantidadLogo || 1}" />
+                        <div class="col-3">
+                            <input type="number" name="productos[${productItemIndex}][cantidad_logo]"
+                                class="form-control form-control-sm cantidad-logo-input"
+                                placeholder="Cant." min="1" value="${cantidadLogo || 1}" />
                         </div>
-                        <div class="col-12">
-                            <input type="text" name="productos[${productItemIndex}][ubicacion_logo]" class="form-control ubicacion-logo-input" placeholder="Ubicación (ej: Pecho)" value="${ubicacionLogo || ''}" />
+                        <div class="col-4">
+                            <input type="text" name="productos[${productItemIndex}][ubicacion_logo]"
+                                class="form-control form-control-sm ubicacion-logo-input"
+                                placeholder="Ej: Frontal Izquierdo..."
+                                list="ubicacion-bordado-sugeridas"
+                                autocomplete="off"
+                                value="${ubicacionLogo || ''}" />
                         </div>
                     </div>
 
-                    <div class="text-end mt-3">
-                        <button type="button" class="btn btn-danger btn-sm remove-producto-item">Eliminar Producto</button>
-                    </div>
                 </div>
             </div>
             `;
@@ -611,6 +642,7 @@
                 sum += (quantity * price);
             });
             $('#total-display-field').val(sum.toFixed(2));
+            $('#total-display-value').text('$' + sum.toFixed(2));
             updateCotizacionRemaining();
         }
         function updateCotizacionRemaining() {
@@ -750,6 +782,7 @@
                     $('#fecha-cotizacion-field').val(fechaCotizacion).prop('readonly', true).addClass('campo-protegido');
                     $('#fecha-validez-field').val(fechaValidez);
                     $('#estado-field').val(data.estado);
+                    $('#notas-field').val(data.notas || '');
                     // Cargar productos existentes
                     $('#productos-container').empty();
                     if (data.productos && data.productos.length > 0) {

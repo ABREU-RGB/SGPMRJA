@@ -196,28 +196,35 @@
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
-                <h5 class="modal-title" id="modalTitle">Agregar Cotización</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header p-3" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                <h5 class="modal-title text-white" id="modalTitle">Agregar Cotización</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="cotizacionForm" enctype="multipart/form-data">
                 @csrf
-                <div class="modal-body">
+                <div class="modal-body p-3">
                     <input type="hidden" id="id-field" />
                     <input type="hidden" id="cliente-id-field" name="cliente_id" />
-                    <div class="row">
-                        <!-- Columna Izquierda: Datos del Cliente -->
-                        <div class="col-lg-6">
-                            <div class="card shadow-lg border-dark mb-3">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Datos del Cliente</h5>
+                    <div class="row g-3">
+
+                        <!-- Columna Izquierda: Datos del Cliente + Estado -->
+                        <div class="col-lg-5">
+
+                            <!-- Card Cliente -->
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header border-0 bg-soft-primary">
+                                    <h6 class="mb-0 text-atlantico-dark">
+                                        <i class="ri-user-3-line me-2"></i>Datos del Cliente
+                                    </h6>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3 position-relative">
-                                                <label for="ci-rif-number-field" class="form-label">Documento de
-                                                    identidad</label>
+                                    <div class="row g-2">
+                                        <!-- Documento -->
+                                        <div class="col-12">
+                                            <label for="ci-rif-number-field" class="form-label small fw-semibold mb-1">
+                                                Documento de identidad <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="position-relative">
                                                 <div class="input-group">
                                                     <select class="form-select" id="ci-rif-prefix-field"
                                                         name="rif_prefix" style="max-width: 70px;">
@@ -228,7 +235,7 @@
                                                     </select>
                                                     <input type="text" id="ci-rif-number-field" name="rif_number"
                                                         class="form-control"
-                                                        placeholder="Buscar o escribir documento del cliente"
+                                                        placeholder="Buscar cliente por documento..."
                                                         autocomplete="off" required />
                                                     <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
                                                     <button type="button" class="btn btn-outline-success"
@@ -236,126 +243,136 @@
                                                         <i class="ri-user-add-line"></i>
                                                     </button>
                                                 </div>
-                                            </div>
-                                            <div id="cliente-autocomplete-list"
-                                                class="list-group position-absolute w-100" style="z-index: 1050;"></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="cliente-nombre-field" class="form-label">Nombre
-                                                    Cliente</label>
-                                                <input type="text" id="cliente-nombre-field" name="cliente_nombre"
-                                                    class="form-control bg-light" placeholder="" 
-                                                    readonly style="cursor: not-allowed;" />
+                                                <div id="cliente-autocomplete-list"
+                                                    class="list-group position-absolute w-100" style="z-index: 1050; top: 100%;"></div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="cliente-apellido-field" class="form-label">Apellido
-                                                    Cliente</label>
-                                                <input type="text" id="cliente-apellido-field" name="cliente_apellido"
-                                                    class="form-control bg-light" placeholder="" 
-                                                    readonly style="cursor: not-allowed;" />
-                                            </div>
+                                        <!-- Nombre + Apellido -->
+                                        <div class="col-6">
+                                            <label for="cliente-nombre-field" class="form-label small fw-semibold mb-1">Nombre</label>
+                                            <input type="text" id="cliente-nombre-field" name="cliente_nombre"
+                                                class="form-control form-control-sm bg-light"
+                                                readonly style="cursor: not-allowed;" />
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="cliente-telefono-field" class="form-label required">Teléfono
-                                                    Cliente</label>
-                                                <input type="text" id="cliente-telefono-field" name="cliente_telefono"
-                                                    class="form-control bg-light"
-                                                    placeholder="" readonly
-                                                    style="cursor: not-allowed;" />
-                                                <small class="text-muted">
-                                                    <i class="ri-information-line me-1"></i>Se obtiene del cliente
-                                                    seleccionado
-                                                </small>
-                                            </div>
+                                        <div class="col-6">
+                                            <label for="cliente-apellido-field" class="form-label small fw-semibold mb-1">Apellido</label>
+                                            <input type="text" id="cliente-apellido-field" name="cliente_apellido"
+                                                class="form-control form-control-sm bg-light"
+                                                readonly style="cursor: not-allowed;" />
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="mb-3">
-                                                <label for="cliente-email-field" class="form-label">Email
-                                                    Cliente</label>
-                                                <input type="email" id="cliente-email-field" name="cliente_email"
-                                                    class="form-control bg-light" placeholder=""
-                                                    readonly style="cursor: not-allowed;" />
-                                            </div>
+                                        <!-- Teléfono + Email -->
+                                        <div class="col-6">
+                                            <label for="cliente-telefono-field" class="form-label small fw-semibold mb-1">Teléfono</label>
+                                            <input type="text" id="cliente-telefono-field" name="cliente_telefono"
+                                                class="form-control form-control-sm bg-light"
+                                                readonly style="cursor: not-allowed;" />
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="fecha-cotizacion-field" class="form-label required">Fecha de
-                                                    Cotización</label><input type="date" id="fecha-cotizacion-field"
-                                                    name="fecha_cotizacion" class="form-control" required />
-                                            </div>
+                                        <div class="col-6">
+                                            <label for="cliente-email-field" class="form-label small fw-semibold mb-1">Email</label>
+                                            <input type="email" id="cliente-email-field" name="cliente_email"
+                                                class="form-control form-control-sm bg-light"
+                                                readonly style="cursor: not-allowed;" />
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="fecha-validez-field" class="form-label required">Fecha de
-                                                    Validez</label><input type="date" id="fecha-validez-field"
-                                                    name="fecha_validez" class="form-control" required />
-                                            </div>
+                                        <!-- Fechas -->
+                                        <div class="col-6">
+                                            <label for="fecha-cotizacion-field" class="form-label small fw-semibold mb-1">
+                                                Fecha Cotización <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="date" id="fecha-cotizacion-field"
+                                                name="fecha_cotizacion" class="form-control form-control-sm" required />
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="fecha-validez-field" class="form-label small fw-semibold mb-1">
+                                                Fecha Validez <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="date" id="fecha-validez-field"
+                                                name="fecha_validez" class="form-control form-control-sm" required />
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card shadow-lg border-dark mb-3" id="estado-field-wrapper"
-                                style="display: none;">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Estado de la Cotización</h5>
+
+                            <!-- Card Estado (solo visible en edición) -->
+                            <div class="card border-0 shadow-sm mb-3" id="estado-field-wrapper" style="display: none;">
+                                <div class="card-header border-0 bg-soft-secondary">
+                                    <h6 class="mb-0 text-atlantico-green">
+                                        <i class="ri-flag-line me-2"></i>Estado de la Cotización
+                                    </h6>
                                 </div>
-                                <div class="card-body">
-                                    <label for="estado-field" class="form-label">Estado</label>
-                                    <select id="estado-field" name="estado" class="form-control">
+                                <div class="card-body py-2">
+                                    <select id="estado-field" name="estado" class="form-select form-select-sm">
                                         <option value="Pendiente">Pendiente</option>
                                         <option value="Aprobada">Aprobada</option>
                                         <option value="Cancelado">Cancelado</option>
                                     </select>
-                                    <small class="text-muted">
+                                    <small class="text-muted d-block mt-1">
                                         <i class="ri-information-line me-1"></i>El estado "Vencida" se asigna automáticamente al pasar la fecha de vencimiento
                                     </small>
                                 </div>
                             </div>
-                            <!-- Sección de Total de la Cotización -->
-                            <div class="card shadow-lg border-dark mb-2">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0"><i class="ri-currency-line align-bottom me-1"></i> Total
-                                        de la Cotización</h5>
+
+                            <!-- Card Notas / Condiciones -->
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header border-0 bg-soft-primary">
+                                    <h6 class="mb-0 text-atlantico-dark">
+                                        <i class="ri-file-text-line me-2"></i>Notas / Condiciones
+                                    </h6>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="mb-2">
-                                                <label for="total-display-field" class="form-label"><i
-                                                        class="ri-currency-line align-bottom me-1"></i> Total de la
-                                                    Cotización ($)</label>
-                                                <input type="text" id="total-display-field" class="form-control"
-                                                    readonly />
+                                <div class="card-body pb-2">
+                                    <textarea id="notas-field" name="notas" class="form-control form-control-sm"
+                                        rows="4"
+                                        placeholder="Ej: Precios sujetos a cambio sin previo aviso. Validez de la cotización: 15 días. Forma de pago: 50% anticipo..."
+                                        style="resize: vertical; min-height: 80px;"></textarea>
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="ri-information-line me-1"></i>Opcional · máx. 2000 caracteres
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Resumen Total -->
+                            <div class="card border-0" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                                <div class="card-body py-3 px-4">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width:38px;height:38px;background:rgba(255,255,255,0.15);">
+                                                <i class="ri-money-dollar-circle-line text-white fs-5"></i>
                                             </div>
+                                            <div>
+                                                <span class="text-white-50 d-block" style="font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;">Total Cotización</span>
+                                                <small class="text-white-50" style="font-size:0.68rem;">
+                                                    <i class="ri-refresh-line me-1"></i>Se actualiza automáticamente
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;" id="total-display-value">$0.00</span>
+                                            <input type="hidden" id="total-display-field" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Columna Derecha: Productos de la Cotización y Estado -->
-                        <div class="col-lg-6">
-                            <div class="card shadow-lg border-dark mb-3">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Productos de la Cotización</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div id="productos-container">
-                                        <!-- Aquí se agregarán dinámicamente los campos de producto -->
-                                    </div>
-                                    <button type="button" class="btn btn-sm btn-info mt-2" id="add-producto-item">
-                                        <i class="ri-add-line me-1"></i>Agregar Otro Producto
+
+                        <!-- Columna Derecha: Productos -->
+                        <div class="col-lg-7">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header border-0 bg-soft-primary d-flex align-items-center justify-content-between">
+                                    <h6 class="mb-0 text-atlantico-dark">
+                                        <i class="ri-shopping-bag-3-line me-2"></i>Productos de la Cotización
+                                    </h6>
+                                    <button type="button" class="btn btn-sm btn-success" id="add-producto-item">
+                                        <i class="ri-add-line me-1"></i>Agregar Producto
                                     </button>
+                                </div>
+                                <div class="card-body p-2" style="max-height: 490px; overflow-y: auto; overflow-x: hidden;">
+                                    <div id="productos-container">
+                                        <!-- Productos dinámicos -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
