@@ -769,11 +769,61 @@
                 new bootstrap.Tooltip(this, { trigger: 'hover' });
             });
             productItemIndex++;
+            reindexProductItems(); // Re-secuenciar tras agregar
+        }
+
+        // ══════════════════════════════════════════════════════════════════════
+        // Re-indexar filas de productos tras agregar/eliminar
+        // ══════════════════════════════════════════════════════════════════════
+        // Itera TODOS los .product-item en orden DOM y re-calcula:
+        //   1. Badge visual (el círculo con el número)
+        //   2. data-product-index en la card
+        //   3. name="productos[X][campo]" en TODOS los inputs, selects y textareas
+        //   4. id y for del checkbox "lleva-bordado" para mantener la semántica
+        //
+        // ¿Por qué es seguro?
+        //   - Solo se mutan ATRIBUTOS HTML (name, id, for, data-*, title, textContent)
+        //   - NUNCA se reemplaza/recrea un nodo DOM, por lo tanto el .value que el
+        //     usuario ya escribió permanece intacto (jQuery .val() lee .value, no el
+        //     atributo HTML "value").
+        // ══════════════════════════════════════════════════════════════════════
+        function reindexProductItems() {
+            $('#productos-container .product-item').each(function (i) {
+                var $card = $(this);
+
+                // 1. Actualizar data-product-index
+                $card.attr('data-product-index', i);
+
+                // 2. Actualizar badge visual (el span circular con el número)
+                var $badge = $card.find('.rounded-circle.fw-bold').first();
+                $badge.text(i + 1);
+                $badge.attr('title', 'Producto #' + (i + 1));
+
+                // 3. Re-numerar TODOS los name="productos[X][campo]"
+                $card.find('input, select, textarea').each(function () {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        $(this).attr('name', name.replace(/productos\[\d+\]/, 'productos[' + i + ']'));
+                    }
+                });
+
+                // 4. Mantener la semántica del checkbox lleva-bordado
+                var $checkbox = $card.find('.lleva-bordado-checkbox');
+                if ($checkbox.length) {
+                    $checkbox.attr('id', 'lleva-bordado-' + i);
+                    $card.find('label[for^="lleva-bordado-"]').attr('for', 'lleva-bordado-' + i);
+                }
+            });
+
+            // Sincronizar el contador global con la cantidad real de filas
+            productItemIndex = $('#productos-container .product-item').length;
         }
 
         // Evento para remover producto
         $('#productos-container').on('click', '.remove-producto-item', function () {
             $(this).closest('.card').remove();
+            reindexProductItems();        // Re-secuenciar tras eliminar
+            calculateCotizacionTotals();  // Recalcular totales
         });
 
         // Mostrar/ocultar campo nombre_logo

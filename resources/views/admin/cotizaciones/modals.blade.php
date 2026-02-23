@@ -328,7 +328,7 @@
                                 <div class="card-body pb-2">
                                     <textarea id="notas-field" name="notas" class="form-control form-control-sm"
                                         rows="4"
-                                        placeholder="Ej: Precios sujetos a cambio sin previo aviso. Validez de la cotización: 15 días. Forma de pago: 50% anticipo..."
+                                        placeholder="Ej: Validez de la cotización: 15 días. Forma de pago: 50% anticipo..."
                                         style="resize: vertical; min-height: 80px;"></textarea>
                                     <small class="text-muted d-block mt-1">
                                         <i class="ri-information-line me-1"></i>Opcional · máx. 2000 caracteres
