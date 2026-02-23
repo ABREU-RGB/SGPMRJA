@@ -86,6 +86,24 @@
     .search-box input {
         padding-left: 30px;
     }
+
+    .lleva-bordado-checkbox {
+        border-color: #1e3c72 !important;
+    }
+
+    .lleva-bordado-checkbox:checked {
+        background-color: var(--atlantico-cyan) !important;
+        border-color: var(--atlantico-cyan) !important;
+    }
+
+    .bordado-label {
+        color: #6c757d;
+        transition: color 0.15s ease;
+    }
+
+    .bordado-label.active {
+        color: var(--atlantico-dark-blue);
+    }
 </style>
 <script>
     $(document).ready(function () {
@@ -1022,7 +1040,7 @@
                         </div>
                     </div>
 
-                    <!-- Fila 3: Notas + Selector servicio de bordado -->
+                    <!-- Fila 3: Notas + Check moderno de bordado -->
                     <div class="row g-2">
                         <div class="col-8">
                             <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-file-text-line me-1"></i>Notas</label>
@@ -1036,13 +1054,15 @@
                                 <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-scissors-cut-line me-1"></i>Servicio</label>
                                 <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]"
                                     class="lleva-bordado-value" value="${llevaBordadoActivo ? 1 : 0}">
-                                <div class="btn-group btn-group-sm w-100 bordado-toggle" role="group" aria-label="Servicio de bordado">
-                                    <button type="button"
-                                        class="btn bordado-option ${!llevaBordadoActivo ? 'btn-atlantico-brand active' : 'btn-outline-secondary'}"
-                                        data-value="0">Sin bordado</button>
-                                    <button type="button"
-                                        class="btn bordado-option ${llevaBordadoActivo ? 'btn-atlantico-brand active' : 'btn-outline-secondary'}"
-                                        data-value="1">Con bordado</button>
+                                <div class="form-check d-flex align-items-center mb-0 mt-1">
+                                    <input class="form-check-input lleva-bordado-checkbox" type="checkbox"
+                                        id="lleva-bordado-${productItemIndex}"
+                                        ${llevaBordadoActivo ? 'checked' : ''}
+                                        style="width:1.05rem;height:1.05rem;cursor:pointer; margin-top:0;">
+                                    <label class="form-check-label ms-2 small fw-semibold mb-0 bordado-label ${llevaBordadoActivo ? 'active' : ''}" for="lleva-bordado-${productItemIndex}"
+                                        style="cursor:pointer; user-select:none;">
+                                        Servicio de Bordado
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -1137,6 +1157,13 @@
                     }
                 });
 
+                var $checkbox = $card.find('.lleva-bordado-checkbox').first();
+                if ($checkbox.length) {
+                    var newId = 'lleva-bordado-' + i;
+                    $checkbox.attr('id', newId);
+                    $card.find('label[for^="lleva-bordado-"]').first().attr('for', newId);
+                }
+
             });
 
             // Sincronizar el contador global con la cantidad real de filas
@@ -1150,15 +1177,12 @@
             calculateCotizacionTotals();  // Recalcular totales
         });
 
-        // Mostrar/ocultar bloque de logo usando selector segmentado (0/1)
-        $('#productos-container').on('click', '.bordado-option', function () {
-            var $button = $(this);
-            var $card = $button.closest('.product-item');
-            var $toggle = $button.closest('.bordado-toggle');
-            var selectedValue = String($button.data('value')) === '1' ? 1 : 0;
-
-            $toggle.find('.bordado-option').removeClass('btn-atlantico-brand active').addClass('btn-outline-secondary');
-            $button.removeClass('btn-outline-secondary').addClass('btn-atlantico-brand active');
+        // Mostrar/ocultar bloque de logo usando check moderno (0/1)
+        $('#productos-container').on('change', '.lleva-bordado-checkbox', function () {
+            var $checkbox = $(this);
+            var $card = $checkbox.closest('.product-item');
+            var selectedValue = $checkbox.is(':checked') ? 1 : 0;
+            $card.find('.bordado-label').toggleClass('active', selectedValue === 1);
 
             $card.find('.lleva-bordado-value').val(selectedValue).trigger('change');
 
