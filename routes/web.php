@@ -15,6 +15,8 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\LogoController;
+use App\Http\Controllers\ColorController;
+use App\Http\Controllers\TallaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EmpleadoController;
@@ -130,6 +132,12 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
 
         // Logos
         Route::get('logos-data', [LogoController::class, 'getLogos'])->name('logos.data');
+
+        // Colores
+        Route::get('colores-data', [ColorController::class, 'getColores'])->name('colores.data');
+
+        // Tallas
+        Route::get('tallas-data', [TallaController::class, 'getTallas'])->name('tallas.data');
 
         // Productos
         Route::resource('productos', ProductoController::class);

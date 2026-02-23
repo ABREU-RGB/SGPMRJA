@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             ProduccionDiariaSeeder::class,
             MovimientoInsumoSeeder::class,
             LogoSeeder::class,
+            ColorSeeder::class,
+            TallaSeeder::class,
         ]);
     }
 }

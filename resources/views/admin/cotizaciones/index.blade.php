@@ -64,10 +64,10 @@
         }
 
         /* ── Backdrop difuminado para el modal de logos (Nivel 3) ─────────────
-                                       Mismo patrón que #modalAddCliente: selector de hermano CSS.
-                                       Al cerrarse el modal, Bootstrap elimina su backdrop →
-                                       el selector queda sin nodo al que aplicarse → sin efectos secundarios.
-                                    ──────────────────────────────────────────────────────────────────────── */
+                                                       Mismo patrón que #modalAddCliente: selector de hermano CSS.
+                                                       Al cerrarse el modal, Bootstrap elimina su backdrop →
+                                                       el selector queda sin nodo al que aplicarse → sin efectos secundarios.
+                                                    ──────────────────────────────────────────────────────────────────────── */
         #logoSearchModal~.modal-backdrop {
             background-color: rgba(0, 0, 0, 0.75) !important;
             backdrop-filter: blur(5px);
@@ -75,13 +75,14 @@
         }
 
         /* ── FORCED DARK NAVY HEADER — Modales utilitarios de búsqueda ──────────
-                               Usamos el selector ID + .modal-header para superar la especificidad de
-                               Bootstrap (.modal-header, .bg-light, etc.) y forzar el color #0d1f3c.
-                               El color #0d1f3c es PERCEPTIBLEMENTE más oscuro que el gradiente del
-                               #showModal (#1e3c72), garantizando diferenciación visual inmediata.
-                            ───────────────────────────────────────────────────────────────────────── */
+                                               Usamos el selector ID + .modal-header para superar la especificidad de
+                                               Bootstrap (.modal-header, .bg-light, etc.) y forzar el color #132649.
+                                               Aplica a TODOS los modales utilitarios del sistema.
+                                            ───────────────────────────────────────────────────────────────────────── */
         #productosModalCotizacion .modal-header,
-        #productosModalCotizacion-header {
+        #productosModalCotizacion-header,
+        #colorCatalogoModal .modal-header,
+        #tallaCatalogoModal .modal-header {
             background-color: #132649 !important;
             /* = var(--vz-header-bg) con data-topbar=dark, app.css:3873 */
             background-image: none !important;
@@ -98,15 +99,17 @@
 
         /* Texto blanco en el título */
         #productosModalCotizacion .modal-header .modal-title,
-        #logoSearchModal .modal-header .modal-title {
+        #logoSearchModal .modal-header .modal-title,
+        #colorCatalogoModal .modal-header .modal-title,
+        #tallaCatalogoModal .modal-header .modal-title {
             color: #ffffff !important;
         }
 
         /* ── Botón de cierre blanco puro via filter ──────────────────────────────
-                           .btn-close-white → opacity: 0.5 por defecto → casi invisible en #0d1f3c
-                           filter: brightness(0) invert(1) → convierte el SVG mask a #ffffff puro
-                           a opacity:1, sin depender de variables CSS ni del tema Bootstrap.
-                        ───────────────────────────────────────────────────────────────────────── */
+                                           .btn-close-white → opacity: 0.5 por defecto → casi invisible en #0d1f3c
+                                           filter: brightness(0) invert(1) → convierte el SVG mask a #ffffff puro
+                                           a opacity:1, sin depender de variables CSS ni del tema Bootstrap.
+                                        ───────────────────────────────────────────────────────────────────────── */
         .utility-modal-close {
             filter: brightness(0) invert(1) !important;
             opacity: 1 !important;
@@ -120,10 +123,10 @@
         }
 
         /* ── Botón de selección de marca — "Atlántico Brand" ─────────────────────
-                   Base: #132649 (mismo color del navbar) → consistencia de marca total
-                   Hover: #00d9a5 (cyan de acento) → retroalimentación visual inmediata
-                   Icono: blanco puro en ambos estados
-                ───────────────────────────────────────────────────────────────────────── */
+                                   Base: #132649 (mismo color del navbar) → consistencia de marca total
+                                   Hover: #00d9a5 (cyan de acento) → retroalimentación visual inmediata
+                                   Icono: blanco puro en ambos estados
+                                ───────────────────────────────────────────────────────────────────────── */
         .btn-atlantico-brand {
             background-color: #132649;
             border-color: #132649;
@@ -145,11 +148,11 @@
         }
 
         /* ── Input "Nombre del logo" — foco estilo Navy/Cyan ─────────────────────
-               Bootstrap usa --bs-primary (morado) como color de foco por defecto.
-               Al sobreescribir box-shadow y border-color con !important sobre las
-               clases .nombre-logo-input y .ubicacion-logo-input (aplicadas a TODOS
-               los rows dinámicos), cada fila nueva hereda el override sin JS extra.
-            ───────────────────────────────────────────────────────────────────────── */
+                               Bootstrap usa --bs-primary (morado) como color de foco por defecto.
+                               Al sobreescribir box-shadow y border-color con !important sobre las
+                               clases .nombre-logo-input y .ubicacion-logo-input (aplicadas a TODOS
+                               los rows dinámicos), cada fila nueva hereda el override sin JS extra.
+                            ───────────────────────────────────────────────────────────────────────── */
         .nombre-logo-input:focus,
         .ubicacion-logo-input:focus,
         .cantidad-logo-input:focus {
@@ -159,16 +162,105 @@
         }
 
         /* El input-group que contiene el buscar-logo-trigger:
-               cuando el input adyacente tiene foco, alinear el borde del botón */
+                               cuando el input adyacente tiene foco, alinear el borde del botón */
         .nombre-logo-input:focus+.buscar-logo-trigger {
             border-color: #00d9a5 !important;
         }
 
+        /* ── Swatch Grid ─────────────────────────────────────────────────────
+                           Grid de círculos de color con nombre comercial.
+                           Se adapta a cualquier ancho del modal via flex-wrap.
+                        ───────────────────────────────────────────────────────────────────── */
+        .color-grupo-header {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #1e3c72;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 0 4px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid rgba(30, 60, 114, 0.1);
+        }
+
+        .color-swatch-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+            font-size: 0.82rem;
+            user-select: none;
+        }
+
+        .color-swatch-item:hover {
+            background-color: rgba(0, 217, 165, 0.08);
+            transform: translateX(2px);
+        }
+
+        .color-swatch-circle {
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, 0.12);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .color-swatch-item:hover .color-swatch-circle {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 3px rgba(0, 217, 165, 0.3);
+        }
+
+        .talla-chip-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 54px;
+            padding: 7px 12px;
+            margin: 0 8px 8px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(30, 60, 114, 0.25);
+            background: #ffffff;
+            color: #1e3c72;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+        }
+
+        .talla-chip-item:hover {
+            background: rgba(0, 217, 165, 0.12);
+            border-color: #00d9a5;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 217, 165, 0.18);
+        }
+
+        /* Dot indicator inside the readonly input */
+        .color-dot-indicator {
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(0, 0, 0, 0.15);
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        /* Chevron rotation for collapsible cards */
+        [aria-expanded="true"] .notas-chevron {
+            transform: rotate(180deg);
+        }
+
         /* ── "Deep Floating" effect — triple layer de sombras ──────────────────
-                                   Capa 1 (wide glow):  elevación difusa a 60px — transmite profundidad
-                                   Capa 2 (crisp drop): sombra nítida a 24px — ancla visualmente el modal
-                                   Capa 3 (brand ring): ring de 1px con el azul de marca — enmarca como entidad de nivel superior
-                                ──────────────────────────────────────────────────────────────────────── */
+                                                   Capa 1 (wide glow):  elevación difusa a 60px — transmite profundidad
+                                                   Capa 2 (crisp drop): sombra nítida a 24px — ancla visualmente el modal
+                                                   Capa 3 (brand ring): ring de 1px con el azul de marca — enmarca como entidad de nivel superior
+                                                ──────────────────────────────────────────────────────────────────────── */
         #logoSearchModal .modal-content {
             box-shadow:
                 0 24px 60px rgba(0, 0, 0, 0.55),

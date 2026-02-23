@@ -1529,6 +1529,15 @@
             });
 
             window.products = @json($productos);
+            var tallasCatalogo = @json($tallas->mapWithKeys(function ($talla) {
+                return [$talla->nombre => ($talla->etiqueta ?: $talla->nombre)];
+            }));
+
+            function getTallaLabel(talla) {
+                if (!talla) return 'N/A';
+                return tallasCatalogo[talla] || talla;
+            }
+
             window.productItemIndex = 0;
             var productItemIndex = window.productItemIndex;
 
@@ -1587,7 +1596,7 @@
                                                                                                                             </div>
                                                                                                                             <div>
                                                                                                                                 <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${talla || 'N/A'}</span>
+                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${getTallaLabel(talla)}</span>
                                                                                                                             </div>
                                                                                                                         </div>
                                                                                                                     </div>
@@ -2097,7 +2106,7 @@
                                                                                                                     </div>
                                                                                                                     <div>
                                                                                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${item.talla || 'N/A'}</span>
+                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${getTallaLabel(item.talla)}</span>
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>

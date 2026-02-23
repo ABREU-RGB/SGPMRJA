@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePedidoRequest extends FormRequest
 {
@@ -34,7 +35,12 @@ class StorePedidoRequest extends FormRequest
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
             'productos.*.color' => 'nullable|string|max:50',
-            'productos.*.talla' => 'nullable|in:Talla Unica,XS,S,M,L,XL,XXL,2,4,6,8,10,12,14,16',
+            'productos.*.talla' => [
+                'nullable',
+                Rule::exists('tallas', 'nombre')->where(function ($query) {
+                    $query->where('activo', true);
+                }),
+            ],
         ];
     }
 }

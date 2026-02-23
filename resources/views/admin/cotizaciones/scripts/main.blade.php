@@ -549,6 +549,147 @@
         // === FIN LÓGICA MODAL DE LOGOS ===
         // ============================================================
 
+        // ============================================================
+        // === INICIO LÓGICA MODAL DE COLORES ===
+        // ============================================================
+        var coloresArray = [];
+        var colorModal = null;
+        var currentColorInput = null;  // referencia al input que disparó el modal
+
+        // Inicializar modal de colores
+        if (document.getElementById('colorCatalogoModal')) {
+            colorModal = new bootstrap.Modal(document.getElementById('colorCatalogoModal'));
+        }
+
+        // Cargar colores via AJAX al iniciar
+        $.get("{{ route('colores.data') }}", function (data) {
+            coloresArray = data;
+        });
+
+        // Renderizar swatch grid agrupado por categoría
+        function renderizarColoresModal(filtro) {
+            var grid = $('#coloresSwatchGrid');
+            grid.empty();
+            filtro = (filtro || '').toLowerCase().trim();
+
+            // Agrupar colores por grupo
+            var grupos = {};
+            coloresArray.forEach(function (c) {
+                if (filtro && c.nombre.toLowerCase().indexOf(filtro) === -1) return;
+                var g = c.grupo || 'Otros';
+                if (!grupos[g]) grupos[g] = [];
+                grupos[g].push(c);
+            });
+
+            if (Object.keys(grupos).length === 0) {
+                grid.html('<div class="text-center text-muted py-4"><i class="ri-palette-line d-block" style="font-size:2rem;opacity:0.3;"></i><small>No se encontraron colores</small></div>');
+                return;
+            }
+
+            // Renderizar cada grupo
+            Object.keys(grupos).forEach(function (grupoNombre) {
+                grid.append('<div class="color-grupo-header">' + grupoNombre + '</div>');
+                var items = grupos[grupoNombre];
+                items.forEach(function (c) {
+                    // Bordes especiales para blanco/crema (se pierden contra fondo blanco)
+                    var borderStyle = (c.hex_referencial === '#FFFFFF' || c.hex_referencial === '#FFFDD0')
+                        ? 'border: 2px solid #ddd;'
+                        : 'border: 2px solid rgba(0,0,0,0.12);';
+                    grid.append(
+                        '<div class="color-swatch-item select-color-btn" data-color-nombre="' + c.nombre + '" data-color-hex="' + c.hex_referencial + '">' +
+                        '  <span class="color-swatch-circle" style="background-color:' + c.hex_referencial + '; ' + borderStyle + '"></span>' +
+                        '  <span class="fw-medium">' + c.nombre + '</span>' +
+                        '</div>'
+                    );
+                });
+            });
+        }
+
+        // Abrir modal y focus en el buscador
+        document.getElementById('colorCatalogoModal').addEventListener('shown.bs.modal', function () {
+            $('#buscarColorModal').val('').trigger('focus');
+            renderizarColoresModal('');
+        });
+
+        // Limpiar backdrop al cerrar
+        document.getElementById('colorCatalogoModal').addEventListener('hidden.bs.modal', function () {
+            if ($('#showModal').hasClass('show')) {
+                $('body').addClass('modal-open');
+                var backdrops = $('.modal-backdrop');
+                if (backdrops.length > 1) {
+                    backdrops.not(backdrops.first()).remove();
+                }
+            }
+        });
+
+        // Filtrado en tiempo real
+        $('#buscarColorModal').on('keyup', function () {
+            renderizarColoresModal($(this).val());
+        });
+
+        // Abrir modal de colores desde la fila del producto
+        $('#productos-container').on('click', '.buscar-color-trigger', function (e) {
+            e.preventDefault();
+            currentColorInput = $(this).closest('.input-group').find('.color-input');
+            if (colorModal) colorModal.show();
+        });
+
+        // Seleccionar color por clic en swatch
+        $(document).on('click', '.select-color-btn', function (e) {
+            e.preventDefault();
+            var nombre = $(this).data('color-nombre');
+            var hex = $(this).data('color-hex');
+            seleccionarColor(nombre, hex);
+        });
+
+        // Función central de selección de color
+        function seleccionarColor(nombre, hex) {
+            if (!nombre || !currentColorInput) return;
+
+            // Llenar el input con el nombre del color
+            currentColorInput.val(nombre);
+
+            // Actualizar el dot indicador con el hex del color
+            var dotSpan = currentColorInput.closest('.input-group').find('.color-dot-indicator');
+            if (dotSpan.length) {
+                dotSpan.css({
+                    'background-color': hex,
+                    'border': (hex === '#FFFFFF' || hex === '#FFFDD0')
+                        ? '1.5px solid #ddd' : '1.5px solid rgba(0,0,0,0.15)'
+                });
+            }
+
+            // Cerrar modal
+            if (colorModal) colorModal.hide();
+
+            // Mantener modal padre abierto
+            if ($('#showModal').hasClass('show')) {
+                $('body').addClass('modal-open');
+                var backdrops = $('.modal-backdrop');
+                if (backdrops.length > 1) {
+                    backdrops.not(backdrops.first()).remove();
+                }
+            }
+
+            currentColorInput = null;
+        }
+
+        // ============================================================
+        // === FIN LÓGICA MODAL DE COLORES ===
+        // ============================================================
+
+        // ============================================================
+        // === INICIO LÓGICA MODAL DE TALLAS ===
+        // ============================================================
+        var tallaModal = null;
+        var tallaModalEl = document.getElementById('tallaCatalogoModal');
+        var currentTallaInput = null;
+        var currentTallaValueInput = null;
+
+        if (tallaModalEl) {
+            tallaModal = new bootstrap.Modal(tallaModalEl);
+        }
+
         // Abrir modal desde un item existente (EDITAR/CAMBIAR PRODUCTO)
         $('#productos-container').on('click', '.producto-selector-trigger', function () {
             currentProductIndex = $(this).closest('.product-item').data('product-index');
@@ -601,8 +742,8 @@
                 var displayName = (producto.codigo || '') + ' - ' + tipoNombre + ' ' + producto.modelo;
 
                 // Actualizar valores visuales y ocultos
-                card.find('.producto-text').text(displayName);
-                card.find('.producto-text').removeClass('text-muted').addClass('text-dark fw-bold');
+                card.find('.producto-text-display').val(displayName);
+                card.find('.producto-text-display').css('font-weight', '600').css('color', '#212529');
 
                 card.find('.producto-id-input').val(producto.id);
                 card.find('.precio-unitario-input').val(producto.precio_base);
@@ -622,9 +763,149 @@
             }
         }
 
+        var tallasArray = [];
+
+        function cargarTallasCatalogo(callback) {
+            $.get("{{ route('tallas.data') }}", function (data) {
+                tallasArray = Array.isArray(data) ? data : [];
+                if (typeof callback === 'function') callback();
+            });
+        }
+
+        // Cargar tallas via AJAX al iniciar (patrón análogo a colores)
+        cargarTallasCatalogo();
+
+        function getTallaLabel(tallaValue) {
+            if (!tallaValue) return '';
+            var tallaItem = tallasArray.find(function (t) { return t.nombre === tallaValue; });
+            if (tallaItem) return tallaItem.etiqueta || tallaItem.nombre;
+            return tallaValue === 'Talla Unica' ? 'Única' : tallaValue;
+        }
+
+        function getTallaGroup(tallaValue) {
+            if (tallaValue === 'Talla Unica') return 'Única';
+            if (/^\d+$/.test(tallaValue)) return 'Numéricas';
+            return 'Letras';
+        }
+
+        function renderizarTallasModal(filtro) {
+            var grid = $('#tallasCatalogoGrid');
+            grid.empty();
+            filtro = (filtro || '').toLowerCase().trim();
+
+            var grupos = {};
+            tallasArray.forEach(function (item) {
+                var value = item.nombre;
+                var label = item.etiqueta || item.nombre;
+                var labelLc = String(label).toLowerCase();
+                var valueLc = String(value).toLowerCase();
+                if (filtro && labelLc.indexOf(filtro) === -1 && valueLc.indexOf(filtro) === -1) return;
+
+                var groupName = item.grupo || getTallaGroup(value);
+                if (!grupos[groupName]) grupos[groupName] = [];
+                grupos[groupName].push({ value: value, label: label });
+            });
+
+            var groupOrder = ['Única', 'Numéricas', 'Letras'];
+            var rendered = false;
+
+            groupOrder.forEach(function (groupName) {
+                var items = grupos[groupName];
+                if (!items || !items.length) return;
+
+                rendered = true;
+                grid.append('<div class="color-grupo-header">' + groupName + '</div>');
+                var chipsContainer = $('<div class="mb-2"></div>');
+
+                items.forEach(function (t) {
+                    chipsContainer.append(
+                        '<button type="button" class="talla-chip-item select-talla-btn" data-talla-value="' + t.value + '">' + t.label + '</button>'
+                    );
+                });
+
+                grid.append(chipsContainer);
+            });
+
+            if (!rendered) {
+                grid.html('<div class="text-center text-muted py-4"><i class="ri-t-shirt-line d-block" style="font-size:2rem;opacity:0.3;"></i><small>No se encontraron tallas</small></div>');
+            }
+        }
+
+        if (tallaModalEl) {
+            tallaModalEl.addEventListener('shown.bs.modal', function () {
+                $('#buscarTallaModal').val('').trigger('focus');
+
+                if (!tallasArray.length) {
+                    $('#tallasCatalogoGrid').html('<div class="text-center text-muted py-4"><small>Cargando tallas...</small></div>');
+                    cargarTallasCatalogo(function () {
+                        renderizarTallasModal('');
+                    });
+                    return;
+                }
+
+                renderizarTallasModal('');
+            });
+
+            tallaModalEl.addEventListener('hidden.bs.modal', function () {
+                if ($('#showModal').hasClass('show')) {
+                    $('body').addClass('modal-open');
+                    var backdrops = $('.modal-backdrop');
+                    if (backdrops.length > 1) {
+                        backdrops.not(backdrops.first()).remove();
+                    }
+                }
+            });
+        }
+
+        $('#buscarTallaModal').on('keyup', function () {
+            renderizarTallasModal($(this).val());
+        });
+
+        $('#productos-container').on('click', '.buscar-talla-trigger', function (e) {
+            e.preventDefault();
+            var group = $(this).closest('.input-group');
+            currentTallaInput = group.find('.talla-input-display');
+            currentTallaValueInput = group.find('.talla-input-value');
+            if (tallaModal) tallaModal.show();
+        });
+
+        $(document).on('click', '.select-talla-btn', function (e) {
+            e.preventDefault();
+            seleccionarTalla($(this).data('talla-value'));
+        });
+
+        function seleccionarTalla(tallaValue) {
+            if (!tallaValue || !currentTallaInput || !currentTallaValueInput) return;
+
+            currentTallaInput.val(getTallaLabel(tallaValue));
+            currentTallaValueInput.val(tallaValue).trigger('change');
+
+            if (tallaModal) tallaModal.hide();
+
+            if ($('#showModal').hasClass('show')) {
+                $('body').addClass('modal-open');
+                var backdrops = $('.modal-backdrop');
+                if (backdrops.length > 1) {
+                    backdrops.not(backdrops.first()).remove();
+                }
+            }
+
+            currentTallaInput = null;
+            currentTallaValueInput = null;
+        }
+
+        // ============================================================
+        // === FIN LÓGICA MODAL DE TALLAS ===
+        // ============================================================
+
         function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', ubicacionLogo = '', cantidadLogo = 1) {
             var productoDisplay = 'Clic para buscar producto...';
             var textClass = 'text-muted';
+            var cardVariant = productItemIndex % 2;
+            var cardBorderColor = cardVariant === 0 ? 'var(--atlantico-cyan)' : 'var(--atlantico-dark-blue)';
+            var cardHeaderBg = cardVariant === 0 ? '#f0f4f8' : '#edf2f9';
+            var tallaLabel = getTallaLabel(talla);
+            var llevaBordadoActivo = (llevaBordado === true || llevaBordado === 1 || llevaBordado === '1');
 
             if (productoId) {
                 var p = products.find(prod => prod.id == productoId);
@@ -638,37 +919,56 @@
 
             var itemHtml = `
             <div class="card border-0 shadow-sm mb-3 product-item" data-product-index="${productItemIndex}"
-                style="border-left: 3px solid var(--atlantico-cyan) !important;">
-                <div class="card-body p-3">
-
-                    <!-- Fila 1: Número de ítem + Buscador de producto + botón eliminar -->
-                    <div class="d-flex gap-2 align-items-center mb-2">
-                        <span class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold rounded-circle"
+                style="border-left: 3px solid ${cardBorderColor} !important; overflow: hidden;">
+                <!-- Mini Header Bar -->
+                <div class="d-flex align-items-center justify-content-between px-3 py-2"
+                    style="background: ${cardHeaderBg}; border-bottom: 1px solid #e9ecef;">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold product-badge"
                             title="Producto #${productItemIndex + 1}"
-                            style="width:26px;height:26px;min-width:26px;background:rgba(30,60,114,0.1);color:#1e3c72;font-size:0.72rem;">
+                            style="min-width:22px;height:20px;padding:0 6px;background:var(--atlantico-dark-blue);color:#fff;font-size:0.65rem;border-radius:5px;border:1px solid var(--atlantico-cyan);">
                             ${productItemIndex + 1}
                         </span>
-                        <div class="producto-selector-trigger form-control d-flex align-items-center justify-content-between flex-grow-1"
-                            style="cursor: pointer; min-height: 36px;">
-                            <span class="producto-text ${textClass} text-truncate me-2">${productoDisplay}</span>
-                            <i class="ri-search-line text-primary flex-shrink-0"></i>
+                        <span class="product-label" style="font-size:0.75rem;color:#5a6a85;font-weight:500;">Producto</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-producto-item p-0 d-flex align-items-center justify-content-center"
+                        title="Eliminar producto" style="width:24px;height:24px;border-radius:6px;font-size:0.7rem;">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body p-3">
+
+                    <!-- Fila 1: Buscador de producto -->
+                    <div class="d-flex gap-2 align-items-center mb-2">
+                        <div class="input-group input-group-sm flex-grow-1">
+                            <input type="text"
+                                class="form-control form-control-sm producto-text-display"
+                                value="${productoId ? productoDisplay : ''}"
+                                placeholder="Clic para buscar producto..."
+                                readonly autocomplete="off"
+                                style="background-color: #fff;" />
+                            <button type="button"
+                                class="btn btn-sm btn-atlantico-brand producto-selector-trigger"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Buscar y seleccionar producto del catálogo">
+                                <i class="ri-search-line me-1" style="color:#fff;"></i>
+                                <span style="color:#fff; font-size:0.72rem;">Buscar</span>
+                            </button>
                         </div>
                         <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required />
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-producto-item flex-shrink-0" title="Eliminar producto">
-                            <i class="ri-delete-bin-line"></i>
-                        </button>
                     </div>
 
                     <!-- Fila 2: Cantidad + Precio + Color + Talla en una sola fila -->
                     <div class="row g-2 mb-2">
-                        <div class="col-6 col-md-2">
-                            <label class="form-label mb-1 small text-muted">Cant.</label>
+                        <div class="col-6 col-md-auto" style="max-width:80px;">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Cant.</label>
                             <input type="number" name="productos[${productItemIndex}][cantidad]"
                                 class="form-control form-control-sm text-center cantidad-input"
                                 placeholder="0" min="1" value="${cantidad}" required />
                         </div>
-                        <div class="col-6 col-md-4">
-                            <label class="form-label mb-1 small text-muted">Precio Unit. ($)</label>
+                        <div class="col-6 col-md-auto" style="max-width:140px;">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Precio Unit. ($)</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text text-success"
                                     style="background: rgba(46,204,113,0.1); border-color: #2ecc71;">$</span>
@@ -678,58 +978,80 @@
                                     style="border-color: #2ecc71;" />
                             </div>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <label class="form-label mb-1 small text-muted"><i class="ri-palette-line me-1"></i>Color</label>
-                            <input type="text" name="productos[${productItemIndex}][color]"
-                                class="form-control form-control-sm" placeholder="Ej: Azul marino"
-                                value="${color}" required />
+                        <div class="col-6 col-md">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-palette-line me-1"></i>Color</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text color-dot-display"
+                                    style="background: #fff; padding: 0 6px;">
+                                    <span class="color-dot-indicator"
+                                        style="background-color: ${color ? '#ccc' : 'transparent'}; ${!color ? 'border:1.5px dashed #ccc;' : ''}"></span>
+                                </span>
+                                <input type="text" name="productos[${productItemIndex}][color]"
+                                    class="form-control form-control-sm color-input"
+                                    placeholder="Seleccionar color..." value="${color}" required
+                                    readonly autocomplete="off"
+                                    style="background-color: #fff !important;" />
+                                <button type="button"
+                                    class="btn btn-sm btn-atlantico-brand buscar-color-trigger"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Seleccionar del catálogo de colores">
+                                    <i class="ri-palette-line me-1" style="color:#fff;"></i>
+                                    <span style="color:#fff; font-size:0.72rem;">Catálogo</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <label class="form-label mb-1 small text-muted"><i class="ri-t-shirt-line me-1"></i>Talla</label>
-                            <select name="productos[${productItemIndex}][talla]" class="form-select form-select-sm" required>
-                                <option value="">-- Talla --</option>
-                                <option value="Talla Unica" ${talla == 'Talla Unica' ? 'selected' : ''}>Única</option>
-                                <option value="2" ${talla == '2' ? 'selected' : ''}>2</option>
-                                <option value="4" ${talla == '4' ? 'selected' : ''}>4</option>
-                                <option value="6" ${talla == '6' ? 'selected' : ''}>6</option>
-                                <option value="8" ${talla == '8' ? 'selected' : ''}>8</option>
-                                <option value="10" ${talla == '10' ? 'selected' : ''}>10</option>
-                                <option value="12" ${talla == '12' ? 'selected' : ''}>12</option>
-                                <option value="14" ${talla == '14' ? 'selected' : ''}>14</option>
-                                <option value="16" ${talla == '16' ? 'selected' : ''}>16</option>
-                                <option value="XS" ${talla == 'XS' ? 'selected' : ''}>XS</option>
-                                <option value="S" ${talla == 'S' ? 'selected' : ''}>S</option>
-                                <option value="M" ${talla == 'M' ? 'selected' : ''}>M</option>
-                                <option value="L" ${talla == 'L' ? 'selected' : ''}>L</option>
-                                <option value="XL" ${talla == 'XL' ? 'selected' : ''}>XL</option>
-                                <option value="XXL" ${talla == 'XXL' ? 'selected' : ''}>XXL</option>
-                            </select>
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-t-shirt-line me-1"></i>Talla</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text"
+                                    class="form-control form-control-sm talla-input-display"
+                                    value="${tallaLabel}"
+                                    placeholder="Seleccionar..."
+                                    required readonly autocomplete="off"
+                                    style="background-color: #fff !important; cursor:text;" />
+                                <input type="hidden" name="productos[${productItemIndex}][talla]"
+                                    class="talla-input-value" value="${talla}" />
+                                <button type="button"
+                                    class="btn btn-sm btn-atlantico-brand buscar-talla-trigger px-2"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Seleccionar del catálogo de tallas" aria-label="Abrir catálogo de tallas">
+                                    <i class="ri-t-shirt-line me-1" style="color:#fff;"></i>
+                                    <span style="color:#fff; font-size:0.72rem;">Tallas</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Fila 3: Notas + Switch bordado en la misma línea -->
+                    <!-- Fila 3: Notas + Selector servicio de bordado -->
                     <div class="row g-2">
                         <div class="col-8">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-file-text-line me-1"></i>Notas</label>
                             <textarea name="productos[${productItemIndex}][descripcion]"
                                 class="form-control form-control-sm"
                                 placeholder="Notas u observaciones (opcional)"
                                 rows="1" style="resize: none;">${descripcion}</textarea>
                         </div>
-                        <div class="col-4 d-flex align-items-center">
-                            <div class="form-check form-switch mb-0">
-                                <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="0">
-                                <input class="form-check-input lleva-bordado-checkbox" type="checkbox"
-                                    id="lleva-bordado-${productItemIndex}"
-                                    name="productos[${productItemIndex}][lleva_bordado]" value="1"
-                                    ${llevaBordado ? 'checked' : ''}>
-                                <label class="form-check-label small" for="lleva-bordado-${productItemIndex}">Bordado/Logo</label>
+                        <div class="col-4 d-flex align-items-end">
+                            <div class="w-100">
+                                <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-scissors-cut-line me-1"></i>Servicio</label>
+                                <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]"
+                                    class="lleva-bordado-value" value="${llevaBordadoActivo ? 1 : 0}">
+                                <div class="btn-group btn-group-sm w-100 bordado-toggle" role="group" aria-label="Servicio de bordado">
+                                    <button type="button"
+                                        class="btn bordado-option ${!llevaBordadoActivo ? 'btn-atlantico-brand active' : 'btn-outline-secondary'}"
+                                        data-value="0">Sin bordado</button>
+                                    <button type="button"
+                                        class="btn bordado-option ${llevaBordadoActivo ? 'btn-atlantico-brand active' : 'btn-outline-secondary'}"
+                                        data-value="1">Con bordado</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Contenedor Logo (condicional) -->
-                    <div class="row g-2 mt-1 nombre-logo-container" style="display: ${llevaBordado ? 'flex' : 'none'}">
+                    <div class="row g-2 mt-1 nombre-logo-container" style="display: ${llevaBordadoActivo ? 'flex' : 'none'}">
                         <div class="col-4">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-image-line me-1"></i>Logo</label>
                             <div class="input-group input-group-sm">
                                 <input type="text" name="productos[${productItemIndex}][nombre_logo]"
                                     class="form-control form-control-sm nombre-logo-input"
@@ -741,16 +1063,18 @@
                                     data-bs-placement="top"
                                     title="Seleccionar logo del catálogo">
                                     <i class="ri-search-line me-1" style="color:#fff;"></i>
-                                    <span style="color:#fff; font-size:0.75rem;">Buscar</span>
+                                    <span style="color:#fff; font-size:0.75rem;">Logos</span>
                                 </button>
                             </div>
                         </div>
                         <div class="col-3">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-hashtag me-1"></i>Cant. Logos</label>
                             <input type="number" name="productos[${productItemIndex}][cantidad_logo]"
                                 class="form-control form-control-sm cantidad-logo-input"
                                 placeholder="Cant." min="1" value="${cantidadLogo || 1}" />
                         </div>
                         <div class="col-5">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-map-pin-line me-1"></i>Ubicación</label>
                             <input type="text" name="productos[${productItemIndex}][ubicacion_logo]"
                                 class="form-control form-control-sm ubicacion-logo-input"
                                 placeholder="Ej: Frontal Izquierdo..."
@@ -779,7 +1103,7 @@
         //   1. Badge visual (el círculo con el número)
         //   2. data-product-index en la card
         //   3. name="productos[X][campo]" en TODOS los inputs, selects y textareas
-        //   4. id y for del checkbox "lleva-bordado" para mantener la semántica
+        //   4. Sincronización del contador global
         //
         // ¿Por qué es seguro?
         //   - Solo se mutan ATRIBUTOS HTML (name, id, for, data-*, title, textContent)
@@ -790,14 +1114,20 @@
         function reindexProductItems() {
             $('#productos-container .product-item').each(function (i) {
                 var $card = $(this);
+                var cardVariant = i % 2;
+                var cardBorderColor = cardVariant === 0 ? 'var(--atlantico-cyan)' : 'var(--atlantico-dark-blue)';
+                var cardHeaderBg = cardVariant === 0 ? '#f0f4f8' : '#edf2f9';
 
                 // 1. Actualizar data-product-index
                 $card.attr('data-product-index', i);
+                $card.css('border-left', '3px solid ' + cardBorderColor);
+                $card.find('> .d-flex').first().css('background', cardHeaderBg);
 
-                // 2. Actualizar badge visual (el span circular con el número)
-                var $badge = $card.find('.rounded-circle.fw-bold').first();
+                // 2. Actualizar badge visual y label en el header bar
+                var $badge = $card.find('.product-badge').first();
                 $badge.text(i + 1);
                 $badge.attr('title', 'Producto #' + (i + 1));
+                $card.find('.product-label').first().text('Producto');
 
                 // 3. Re-numerar TODOS los name="productos[X][campo]"
                 $card.find('input, select, textarea').each(function () {
@@ -807,12 +1137,6 @@
                     }
                 });
 
-                // 4. Mantener la semántica del checkbox lleva-bordado
-                var $checkbox = $card.find('.lleva-bordado-checkbox');
-                if ($checkbox.length) {
-                    $checkbox.attr('id', 'lleva-bordado-' + i);
-                    $card.find('label[for^="lleva-bordado-"]').attr('for', 'lleva-bordado-' + i);
-                }
             });
 
             // Sincronizar el contador global con la cantidad real de filas
@@ -826,10 +1150,20 @@
             calculateCotizacionTotals();  // Recalcular totales
         });
 
-        // Mostrar/ocultar campo nombre_logo
-        $('#productos-container').on('change', '.lleva-bordado-checkbox', function () {
-            var container = $(this).closest('.product-item').find('.nombre-logo-container');
-            if ($(this).is(':checked')) {
+        // Mostrar/ocultar bloque de logo usando selector segmentado (0/1)
+        $('#productos-container').on('click', '.bordado-option', function () {
+            var $button = $(this);
+            var $card = $button.closest('.product-item');
+            var $toggle = $button.closest('.bordado-toggle');
+            var selectedValue = String($button.data('value')) === '1' ? 1 : 0;
+
+            $toggle.find('.bordado-option').removeClass('btn-atlantico-brand active').addClass('btn-outline-secondary');
+            $button.removeClass('btn-outline-secondary').addClass('btn-atlantico-brand active');
+
+            $card.find('.lleva-bordado-value').val(selectedValue).trigger('change');
+
+            var container = $card.find('.nombre-logo-container');
+            if (selectedValue === 1) {
                 container.show();
                 container.find('.nombre-logo-input, .ubicacion-logo-input, .cantidad-logo-input').prop('required', true);
             } else {

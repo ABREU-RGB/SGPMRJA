@@ -205,15 +205,18 @@
                 <div class="modal-body p-3">
                     <input type="hidden" id="id-field" />
                     <input type="hidden" id="cliente-id-field" name="cliente_id" />
-                    <div class="row g-3">
+                    <div class="row g-3 align-items-start">
 
                         <!-- Columna Izquierda: Datos del Cliente + Estado -->
-                        <div class="col-lg-5">
+                        <div class="col-lg-5"
+                            style="background: rgba(30, 60, 114, 0.025); border-radius: 8px; padding-top: 4px; padding-bottom: 4px;">
 
                             <!-- Card Cliente -->
                             <div class="card border-0 shadow-sm mb-3">
                                 <div class="card-header border-0 bg-soft-primary">
                                     <h6 class="mb-0 text-atlantico-dark">
+                                        <span
+                                            style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">1</span>
                                         <i class="ri-user-3-line me-2"></i>Datos del Cliente
                                     </h6>
                                 </div>
@@ -318,21 +321,29 @@
                                 </div>
                             </div>
 
-                            <!-- Card Notas / Condiciones -->
+                            <!-- Card Notas / Condiciones (Collapsible) -->
                             <div class="card border-0 shadow-sm mb-3">
-                                <div class="card-header border-0 bg-soft-primary">
-                                    <h6 class="mb-0 text-atlantico-dark">
-                                        <i class="ri-file-text-line me-2"></i>Notas / Condiciones
+                                <div class="card-header border-0 bg-soft-primary" style="cursor: pointer;"
+                                    data-bs-toggle="collapse" data-bs-target="#notasCollapseBody" aria-expanded="false"
+                                    aria-controls="notasCollapseBody">
+                                    <h6
+                                        class="mb-0 text-atlantico-dark d-flex align-items-center justify-content-between">
+                                        <span>
+                                            <i class="ri-file-text-line me-2"></i>Notas / Condiciones
+                                        </span>
+                                        <i class="ri-arrow-down-s-line notas-chevron"
+                                            style="font-size:1.1rem; transition: transform 0.3s ease;"></i>
                                     </h6>
                                 </div>
-                                <div class="card-body pb-2">
-                                    <textarea id="notas-field" name="notas" class="form-control form-control-sm"
-                                        rows="4"
-                                        placeholder="Ej: Validez de la cotización: 15 días. Forma de pago: 50% anticipo..."
-                                        style="resize: vertical; min-height: 80px;"></textarea>
-                                    <small class="text-muted d-block mt-1">
-                                        <i class="ri-information-line me-1"></i>Opcional · máx. 2000 caracteres
-                                    </small>
+                                <div class="collapse" id="notasCollapseBody">
+                                    <div class="card-body pb-2">
+                                        <textarea id="notas-field" name="notas" class="form-control form-control-sm"
+                                            rows="4" placeholder="Condiciones, forma de pago, tiempo de entrega..."
+                                            style="resize: vertical; min-height: 80px;"></textarea>
+                                        <small class="text-muted d-block mt-1">
+                                            <i class="ri-information-line me-1"></i>Opcional · máx. 2000 caracteres
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
 
@@ -371,9 +382,11 @@
                                 <div
                                     class="card-header border-0 bg-soft-primary d-flex align-items-center justify-content-between">
                                     <h6 class="mb-0 text-atlantico-dark">
+                                        <span
+                                            style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">2</span>
                                         <i class="ri-shopping-bag-3-line me-2"></i>Productos de la Cotización
                                     </h6>
-                                    <button type="button" class="btn btn-sm btn-success" id="add-producto-item">
+                                    <button type="button" class="btn btn-sm btn-success px-3" id="add-producto-item">
                                         <i class="ri-add-line me-1"></i>Agregar Producto
                                     </button>
                                 </div>
@@ -388,15 +401,16 @@
 
                     </div>
                 </div>
-                <div class="modal-footer bg-light border-0">
+                <div class="modal-footer border-0" style="background: #f8f9fa;">
                     <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal"
+                            style="border:1px solid #dee2e6;">
                             <i class="ri-close-line me-1"></i>Cerrar
                         </button>
-                        <button type="submit" class="btn btn-success" id="add-btn">
+                        <button type="submit" class="btn btn-success px-4" id="add-btn">
                             <i class="ri-add-line me-1"></i>Agregar
                         </button>
-                        <button type="submit" class="btn btn-success" id="edit-btn" style="display: none;">
+                        <button type="submit" class="btn btn-success px-4" id="edit-btn" style="display:none;">
                             <i class="ri-save-line me-1"></i>Actualizar
                         </button>
                     </div>
@@ -814,6 +828,98 @@
                     </div>
                 </div>
             </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: Catálogo de Colores
+     Nivel 2 — Modal utilitario de selección (sobre #showModal)
+     Patrón idéntico a #logoSearchModal y #productosModalCotizacion
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="colorCatalogoModal" tabindex="-1" aria-labelledby="colorCatalogoModalLabel"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1070;">
+    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"
+            style="box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(30,60,114,0.22); border-top: 3px solid #00d9a5;">
+            <!-- Header — Atlántico Brand -->
+            <div class="modal-header p-3" style="background-color: #132649 !important;">
+                <h5 class="modal-title" style="color: #ffffff !important;" id="colorCatalogoModalLabel">
+                    <i class="ri-palette-line me-2" style="opacity:0.7;"></i>Catálogo de Colores
+                </h5>
+                <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-3" style="overflow-x: hidden;">
+                <!-- Disclaimer -->
+                <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-start"
+                    style="font-size: 0.78rem; background: rgba(241, 196, 15, 0.12); border-color: rgba(241, 196, 15, 0.3); color: #7d6608;">
+                    <i class="ri-information-line me-2 mt-1 flex-shrink-0" style="font-size: 1rem;"></i>
+                    <span><strong>Nota:</strong> Los colores mostrados son meramente referenciales.
+                        El tono físico del material o tela puede variar.</span>
+                </div>
+
+                <!-- Buscador -->
+                <div class="input-group input-group-sm mb-3">
+                    <span class="input-group-text" style="background: rgba(30,60,114,0.1); border-color: #1e3c72;">
+                        <i class="ri-search-line" style="color: #1e3c72;"></i>
+                    </span>
+                    <input type="text" id="buscarColorModal" class="form-control" placeholder="Buscar color..."
+                        style="border-color: #1e3c72;">
+                </div>
+
+                <!-- Grid de Swatches — renderizado por JS -->
+                <div id="coloresSwatchGrid" style="max-height: 360px; overflow-y: auto; overflow-x: hidden;">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: Catálogo de Tallas
+     Nivel 2 — Modal utilitario de selección (sobre #showModal)
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="tallaCatalogoModal" tabindex="-1" aria-labelledby="tallaCatalogoModalLabel"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1070;">
+    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"
+            style="box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(30,60,114,0.22); border-top: 3px solid #00d9a5;">
+            <div class="modal-header p-3" style="background-color: #132649 !important;">
+                <h5 class="modal-title" style="color: #ffffff !important;" id="tallaCatalogoModalLabel">
+                    <i class="ri-t-shirt-line me-2" style="opacity:0.7;"></i>Catálogo de Tallas
+                </h5>
+                <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-3" style="overflow-x: hidden;">
+                <div class="input-group input-group-sm mb-3">
+                    <span class="input-group-text" style="background: rgba(30,60,114,0.1); border-color: #1e3c72;">
+                        <i class="ri-search-line" style="color: #1e3c72;"></i>
+                    </span>
+                    <input type="text" id="buscarTallaModal" class="form-control" placeholder="Buscar talla..."
+                        style="border-color: #1e3c72;">
+                </div>
+
+                <div id="tallasCatalogoGrid" style="max-height: 360px; overflow-y: auto; overflow-x: hidden;">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+
             <div class="modal-footer bg-light border-0">
                 <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
                     <i class="ri-close-line me-1"></i>Cancelar

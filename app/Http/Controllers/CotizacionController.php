@@ -117,7 +117,12 @@ class CotizacionController extends Controller
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
-            'productos.*.talla' => 'nullable|in:Talla Unica,XS,S,M,L,XL,XXL,2,4,6,8,10,12,14,16',
+            'productos.*.talla' => [
+                'required',
+                Rule::exists('tallas', 'nombre')->where(function ($query) {
+                    $query->where('activo', true);
+                }),
+            ],
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
@@ -144,7 +149,8 @@ class CotizacionController extends Controller
             'productos.*.ubicacion_logo.required_if' => 'La ubicación del logo es obligatoria cuando lleva bordado.',
             'productos.*.cantidad_logo.required_if' => 'La cantidad de logos es obligatoria cuando lleva bordado.',
             'productos.*.cantidad_logo.min' => 'La cantidad de logos debe ser al menos 1.',
-            'productos.*.talla.in' => 'La talla seleccionada no es válida.',
+            'productos.*.talla.required' => 'La talla es obligatoria.',
+            'productos.*.talla.exists' => 'La talla seleccionada no es válida.',
             'productos.*.insumos.*.id.required' => 'Debe seleccionar un insumo.',
             'productos.*.insumos.*.id.exists' => 'El insumo seleccionado no existe.',
             'productos.*.insumos.*.cantidad_estimada.required' => 'La cantidad estimada del insumo es obligatoria.',
@@ -204,7 +210,12 @@ class CotizacionController extends Controller
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
-            'productos.*.talla' => 'nullable|in:Talla Unica,XS,S,M,L,XL,XXL,2,4,6,8,10,12,14,16',
+            'productos.*.talla' => [
+                'required',
+                Rule::exists('tallas', 'nombre')->where(function ($query) {
+                    $query->where('activo', true);
+                }),
+            ],
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
@@ -233,7 +244,8 @@ class CotizacionController extends Controller
             'productos.*.ubicacion_logo.required_if' => 'La ubicación del logo es obligatoria cuando lleva bordado.',
             'productos.*.cantidad_logo.required_if' => 'La cantidad de logos es obligatoria cuando lleva bordado.',
             'productos.*.cantidad_logo.min' => 'La cantidad de logos debe ser al menos 1.',
-            'productos.*.talla.in' => 'La talla seleccionada no es válida.',
+            'productos.*.talla.required' => 'La talla es obligatoria.',
+            'productos.*.talla.exists' => 'La talla seleccionada no es válida.',
             'productos.*.insumos.*.id.required' => 'Debe seleccionar un insumo.',
             'productos.*.insumos.*.id.exists' => 'El insumo seleccionado no existe.',
             'productos.*.insumos.*.cantidad_estimada.required' => 'La cantidad estimada del insumo es obligatoria.',
