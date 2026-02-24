@@ -969,34 +969,16 @@
                             <button type="button"
                                 class="btn btn-sm btn-atlantico-brand producto-selector-trigger"
                                 data-bs-toggle="tooltip" data-bs-placement="top"
-                                title="Buscar y seleccionar producto del catálogo">
-                                <i class="ri-search-line me-1" style="color:#fff;"></i>
-                                <span style="color:#fff; font-size:0.72rem;">Buscar</span>
+                                title="Buscar">
+                                <i class="ri-search-line" style="color:#fff;"></i>
                             </button>
                         </div>
                         <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" required />
                     </div>
 
-                    <!-- Fila 2: Cantidad + Precio + Color + Talla en una sola fila -->
+                    <!-- Fila 2: Color + Talla + Cantidad + Precio Unitario -->
                     <div class="row g-2 mb-2">
-                        <div class="col-6 col-md-auto" style="max-width:80px;">
-                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Cant.</label>
-                            <input type="number" name="productos[${productItemIndex}][cantidad]"
-                                class="form-control form-control-sm text-center cantidad-input"
-                                placeholder="0" min="1" value="${cantidad}" required />
-                        </div>
-                        <div class="col-6 col-md-auto" style="max-width:140px;">
-                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Precio Unit. ($)</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text text-success"
-                                    style="background: rgba(46,204,113,0.1); border-color: #2ecc71;">$</span>
-                                <input type="number" name="productos[${productItemIndex}][precio_unitario]"
-                                    class="form-control precio-unitario-input"
-                                    placeholder="0.00" step="0.01" min="0" value="${precioUnitario}" required
-                                    style="border-color: #2ecc71;" />
-                            </div>
-                        </div>
-                        <div class="col-6 col-md">
+                        <div class="col-6 col-md-4">
                             <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-palette-line me-1"></i>Color</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text color-dot-display"
@@ -1012,9 +994,8 @@
                                 <button type="button"
                                     class="btn btn-sm btn-atlantico-brand buscar-color-trigger"
                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Seleccionar del catálogo de colores">
-                                    <i class="ri-palette-line me-1" style="color:#fff;"></i>
-                                    <span style="color:#fff; font-size:0.72rem;">Catálogo</span>
+                                    title="Catálogo">
+                                    <i class="ri-palette-line" style="color:#fff;"></i>
                                 </button>
                             </div>
                         </div>
@@ -1022,7 +1003,7 @@
                             <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-t-shirt-line me-1"></i>Talla</label>
                             <div class="input-group input-group-sm">
                                 <input type="text"
-                                    class="form-control form-control-sm talla-input-display"
+                                    class="form-control form-control-sm text-center talla-input-display"
                                     value="${tallaLabel}"
                                     placeholder="Seleccionar..."
                                     required readonly autocomplete="off"
@@ -1032,24 +1013,40 @@
                                 <button type="button"
                                     class="btn btn-sm btn-atlantico-brand buscar-talla-trigger px-2"
                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Seleccionar del catálogo de tallas" aria-label="Abrir catálogo de tallas">
-                                    <i class="ri-t-shirt-line me-1" style="color:#fff;"></i>
-                                    <span style="color:#fff; font-size:0.72rem;">Tallas</span>
+                                    title="Tallas" aria-label="Abrir catálogo de tallas">
+                                    <i class="ri-t-shirt-line" style="color:#fff;"></i>
                                 </button>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Cant.</label>
+                            <input type="number" name="productos[${productItemIndex}][cantidad]"
+                                class="form-control form-control-sm text-center cantidad-input"
+                                placeholder="0" min="1" value="${cantidad}" required />
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Precio Unit. ($)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text text-success"
+                                    style="background: rgba(46,204,113,0.1); border-color: #2ecc71;">$</span>
+                                <input type="number" name="productos[${productItemIndex}][precio_unitario]"
+                                    class="form-control precio-unitario-input"
+                                    placeholder="0.00" step="0.01" min="0" value="${precioUnitario}" required
+                                    style="border-color: #2ecc71;" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- Fila 3: Notas + Check moderno de bordado -->
+                    <!-- Fila 3: Notas + Servicio de Bordado -->
                     <div class="row g-2">
-                        <div class="col-8">
+                        <div class="col-md-8">
                             <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-file-text-line me-1"></i>Notas</label>
                             <textarea name="productos[${productItemIndex}][descripcion]"
                                 class="form-control form-control-sm"
                                 placeholder="Notas u observaciones (opcional)"
                                 rows="1" style="resize: none;">${descripcion}</textarea>
                         </div>
-                        <div class="col-4 d-flex align-items-end">
+                        <div class="col-md-4 d-flex align-items-center">
                             <div class="w-100">
                                 <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-scissors-cut-line me-1"></i>Servicio</label>
                                 <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]"
@@ -1081,16 +1078,15 @@
                                     class="btn btn-sm btn-atlantico-brand buscar-logo-trigger"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
-                                    title="Seleccionar logo del catálogo">
-                                    <i class="ri-search-line me-1" style="color:#fff;"></i>
-                                    <span style="color:#fff; font-size:0.75rem;">Logos</span>
+                                    title="Logos">
+                                    <i class="ri-search-line" style="color:#fff;"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="col-3">
                             <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-hashtag me-1"></i>Cant. Logos</label>
                             <input type="number" name="productos[${productItemIndex}][cantidad_logo]"
-                                class="form-control form-control-sm cantidad-logo-input"
+                                class="form-control form-control-sm text-center cantidad-logo-input"
                                 placeholder="Cant." min="1" value="${cantidadLogo || 1}" />
                         </div>
                         <div class="col-5">
