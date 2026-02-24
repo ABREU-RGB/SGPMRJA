@@ -166,6 +166,31 @@
             text-transform: uppercase;
             letter-spacing: 0.02em;
         }
+
+        #viewModal .card-header {
+            background: rgba(30, 60, 114, 0.1) !important;
+        }
+
+        #viewModal .card-header h6 {
+            color: #1e3c72 !important;
+        }
+
+        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
+            width: 32px !important;
+            min-width: 32px !important;
+            max-width: 32px !important;
+            height: 32px !important;
+            min-height: 32px !important;
+            max-height: 32px !important;
+            flex: 0 0 32px !important;
+            aspect-ratio: 1 / 1;
+            border-radius: 50% !important;
+            background: rgba(30, 60, 114, 0.1) !important;
+        }
+
+        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
+            color: #1e3c72 !important;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
