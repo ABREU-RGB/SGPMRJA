@@ -131,6 +131,50 @@
         color: #00a884;
         text-shadow: 0 0 4px rgba(0, 168, 132, 0.18);
     }
+
+    .ubicacion-std-row,
+    .ubicacion-personalizada-row {
+        transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .ubicacion-row-disabled {
+        background: rgba(30, 60, 114, 0.03);
+        border-color: rgba(30, 60, 114, 0.16) !important;
+    }
+
+    .ubicacion-row-pending {
+        background: rgba(46, 204, 113, 0.06);
+        border-color: rgba(46, 204, 113, 0.32) !important;
+    }
+
+    .ubicacion-row-complete {
+        background: rgba(0, 217, 165, 0.08);
+        border-color: rgba(0, 217, 165, 0.4) !important;
+        box-shadow: inset 0 0 0 1px rgba(0, 217, 165, 0.16);
+    }
+
+    .ubicacion-mini-field {
+        width: 95px;
+    }
+
+    .ubicacion-mini-field.is-cantidad {
+        width: 75px;
+    }
+
+    .ubicacion-mini-label {
+        display: block;
+        font-size: 0.66rem;
+        color: #6c7a94;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .ubicacion-estado-ayuda {
+        font-size: 0.72rem;
+        line-height: 1.2;
+    }
 </style>
 <script>
     $(document).ready(function () {
@@ -596,6 +640,16 @@
             if (!logoName || !currentLogoInput) return;
 
             currentLogoInput.val(logoName);
+
+            var ubicacionRow = currentLogoInput.closest('.ubicacion-std-row, .ubicacion-personalizada-row');
+            if (ubicacionRow && ubicacionRow.length) {
+                if (ubicacionRow.hasClass('ubicacion-std-row')) {
+                    actualizarEstadoUbicacionStdRow(ubicacionRow);
+                } else {
+                    actualizarEstadoUbicacionPersonalizadaRow(ubicacionRow);
+                }
+                actualizarResumenRecargoModal();
+            }
 
             // Cerrar modal de logos
             if (logoModal) logoModal.hide();
@@ -1096,10 +1150,13 @@
             $totalLineaEl.data('total-prev', totalLinea);
 
             var bordadosCount = getCardBordados($card).length;
+            var estadoVisible = !llevaBordado || bordadosCount > 0;
             var estadoTexto = !llevaBordado
                 ? 'Servicio de bordado inactivo'
-                : (bordadosCount > 0 ? 'Configuración aplicada' : 'Pendiente de configurar logos y ubicaciones');
-            $card.find('.bordado-resumen-estado').text(estadoTexto);
+                : (bordadosCount > 0 ? 'Configuración aplicada' : '');
+            $card.find('.bordado-resumen-estado')
+                .text(estadoTexto)
+                .toggleClass('d-none', !estadoVisible);
         }
 
         function renderizarUbicacionesModal(filtro) {
@@ -1141,16 +1198,21 @@
 
                     grid.append(
                         '<div class="mb-2 border rounded px-2 py-2 ubicacion-std-row" style="border-color:rgba(30,60,114,0.18)!important;">' +
-                        '  <div class="d-flex align-items-center gap-2">' +
+                        '  <div class="d-flex align-items-start gap-2">' +
                         '    <input type="checkbox" class="form-check-input mt-0 ubicacion-std-check" data-id="' + item.id + '" data-nombre="' + item.nombre + '" ' + (checked ? 'checked' : '') + '>' +
                         '    <div class="flex-grow-1">' +
-                        '      <div class="fw-semibold" style="font-size:0.82rem;color:#1e3c72;">' + item.nombre + '</div>' +
+                        '      <div class="d-flex align-items-center justify-content-between gap-2">' +
+                        '        <div class="fw-semibold" style="font-size:0.82rem;color:#1e3c72;">' + item.nombre + '</div>' +
+                        '        <span class="badge rounded-pill bg-soft-primary text-atlantico-dark ubicacion-estado-badge">No incluida</span>' +
+                        '      </div>' +
                         '      <small class="text-muted">Base catálogo: $' + parseFloat(item.precio_base || 0).toFixed(2) + '</small>' +
                         '    </div>' +
-                        '    <div style="width:95px;">' +
+                        '    <div class="ubicacion-mini-field">' +
+                        '      <span class="ubicacion-mini-label">Precio</span>' +
                         '      <input type="number" class="form-control form-control-sm ubicacion-std-precio" step="0.01" min="0" value="' + precio.toFixed(2) + '">' +
                         '    </div>' +
-                        '    <div style="width:75px;">' +
+                        '    <div class="ubicacion-mini-field is-cantidad">' +
+                        '      <span class="ubicacion-mini-label">Cant.</span>' +
                         '      <input type="number" class="form-control form-control-sm ubicacion-std-cantidad text-center" step="1" min="1" value="' + cantidad + '">' +
                         '    </div>' +
                         '  </div>' +
@@ -1160,12 +1222,14 @@
                         '      <i class="ri-search-line" style="color:#fff;"></i>' +
                         '    </button>' +
                         '  </div>' +
+                        '  <small class="text-muted d-block mt-1 ubicacion-estado-ayuda"></small>' +
                         '</div>'
                     );
                 });
             });
 
             actualizarResumenRecargoModal();
+            actualizarEstadosUbicacionesModal();
         }
 
         function renderizarUbicacionesPersonalizadasModal() {
@@ -1186,10 +1250,16 @@
             customItems.forEach(function (item) {
                 container.append(crearFilaUbicacionPersonalizada(item.nombre_aplicado, item.precio_aplicado, item.cantidad, item.nombre_logo));
             });
+
+            actualizarEstadosUbicacionesModal();
         }
 
         function crearFilaUbicacionPersonalizada(nombre, precio, cantidad, logoNombre) {
             return '<div class="d-flex flex-column gap-2 ubicacion-personalizada-row border rounded p-2" style="border-color:rgba(30,60,114,0.18)!important;">' +
+                '  <div class="d-flex align-items-center justify-content-between">' +
+                '    <small class="text-muted fw-semibold">Ubicación personalizada</small>' +
+                '    <span class="badge rounded-pill bg-soft-warning text-atlantico-dark ubicacion-estado-badge">Incompleta</span>' +
+                '  </div>' +
                 '  <div class="d-flex align-items-center gap-2">' +
                 '    <input type="text" class="form-control form-control-sm ubicacion-personalizada-nombre" placeholder="Ubicación especial..." value="' + (nombre || '') + '">' +
                 '    <input type="number" class="form-control form-control-sm ubicacion-personalizada-precio" style="max-width:100px;" step="0.01" min="0" value="' + (parseFloat(precio || 0)).toFixed(2) + '">' +
@@ -1200,7 +1270,85 @@
                 '    <input type="text" class="form-control form-control-sm bordado-logo-input ubicacion-personalizada-logo" placeholder="Logo para esta ubicación" value="' + (logoNombre || '') + '" readonly autocomplete="off" style="background-color:#fff;cursor:default;">' +
                 '    <button type="button" class="btn btn-sm btn-atlantico-brand bordado-logo-picker"><i class="ri-search-line" style="color:#fff;"></i></button>' +
                 '  </div>' +
+                '  <small class="text-muted ubicacion-estado-ayuda"></small>' +
                 '</div>';
+        }
+
+        function aplicarEstadoVisualUbicacion($row, state, text, helpText) {
+            if (!$row || !$row.length) return;
+
+            var $badge = $row.find('.ubicacion-estado-badge').first();
+            var $help = $row.find('.ubicacion-estado-ayuda').first();
+
+            $row.removeClass('ubicacion-row-disabled ubicacion-row-pending ubicacion-row-complete');
+            $badge.removeClass('bg-soft-primary bg-soft-warning bg-soft-success text-atlantico-dark');
+
+            if (state === 'disabled') {
+                $row.addClass('ubicacion-row-disabled');
+                $badge.addClass('bg-soft-primary text-atlantico-dark');
+            } else if (state === 'complete') {
+                $row.addClass('ubicacion-row-complete');
+                $badge.addClass('bg-soft-success text-atlantico-dark');
+            } else {
+                $row.addClass('ubicacion-row-pending');
+                $badge.addClass('bg-soft-warning text-atlantico-dark');
+            }
+
+            $badge.text(text || '');
+            $help.text(helpText || '');
+        }
+
+        function actualizarEstadoUbicacionStdRow($row) {
+            if (!$row || !$row.length) return;
+
+            var checked = $row.find('.ubicacion-std-check').is(':checked');
+            var logo = String($row.find('.ubicacion-std-logo').val() || '').trim();
+
+            if (!checked) {
+                aplicarEstadoVisualUbicacion($row, 'disabled', 'No incluida', 'Actívala para sumar esta ubicación al bordado.');
+                return;
+            }
+
+            if (!logo) {
+                aplicarEstadoVisualUbicacion($row, 'pending', 'Falta logo', 'Selecciona un logo para completar esta ubicación.');
+                return;
+            }
+
+            aplicarEstadoVisualUbicacion($row, 'complete', 'Completa', 'Ubicación lista para aplicar en esta prenda.');
+        }
+
+        function actualizarEstadoUbicacionPersonalizadaRow($row) {
+            if (!$row || !$row.length) return;
+
+            var nombre = String($row.find('.ubicacion-personalizada-nombre').val() || '').trim();
+            var logo = String($row.find('.ubicacion-personalizada-logo').val() || '').trim();
+
+            if (!nombre && !logo) {
+                aplicarEstadoVisualUbicacion($row, 'pending', 'Sin definir', 'Completa nombre y logo para usar esta ubicación personalizada.');
+                return;
+            }
+
+            if (!nombre) {
+                aplicarEstadoVisualUbicacion($row, 'pending', 'Falta nombre', 'Define el nombre de la ubicación personalizada.');
+                return;
+            }
+
+            if (!logo) {
+                aplicarEstadoVisualUbicacion($row, 'pending', 'Falta logo', 'Selecciona el logo de esta ubicación personalizada.');
+                return;
+            }
+
+            aplicarEstadoVisualUbicacion($row, 'complete', 'Completa', 'Ubicación personalizada lista para aplicar.');
+        }
+
+        function actualizarEstadosUbicacionesModal() {
+            $('#ubicacionesCatalogoGrid .ubicacion-std-row').each(function () {
+                actualizarEstadoUbicacionStdRow($(this));
+            });
+
+            $('#ubicacionesPersonalizadasContainer .ubicacion-personalizada-row').each(function () {
+                actualizarEstadoUbicacionPersonalizadaRow($(this));
+            });
         }
 
         function actualizarResumenRecargoModal() {
@@ -1335,6 +1483,7 @@
             if (!enabled) {
                 row.find('.ubicacion-std-logo').val('');
             }
+            actualizarEstadoUbicacionStdRow(row);
             actualizarResumenRecargoModal();
         });
 
@@ -1350,6 +1499,12 @@
         });
 
         $(document).on('input change', '.ubicacion-std-check, .ubicacion-std-precio, .ubicacion-std-cantidad, .ubicacion-personalizada-precio, .ubicacion-personalizada-cantidad, .ubicacion-personalizada-nombre', function () {
+            var row = $(this).closest('.ubicacion-std-row, .ubicacion-personalizada-row');
+            if (row.hasClass('ubicacion-std-row')) {
+                actualizarEstadoUbicacionStdRow(row);
+            } else if (row.hasClass('ubicacion-personalizada-row')) {
+                actualizarEstadoUbicacionPersonalizadaRow(row);
+            }
             actualizarResumenRecargoModal();
         });
 
@@ -1357,6 +1512,7 @@
             var container = $('#ubicacionesPersonalizadasContainer');
             if (container.find('small.text-muted').length) container.empty();
             container.append(crearFilaUbicacionPersonalizada('', 0, 1, ''));
+            actualizarEstadosUbicacionesModal();
         });
 
         $(document).on('click', '.eliminar-ubicacion-personalizada-btn', function () {
@@ -1558,7 +1714,7 @@
                                     <span class="bordado-resumen-title">Total de la línea</span>
                                     <span class="bordado-resumen-value bordado-linea-total-value">$0.00</span>
                                 </div>
-                                <div class="text-muted mt-1 bordado-resumen-estado">Pendiente de configurar logos y ubicaciones</div>
+                                <div class="text-muted mt-1 bordado-resumen-estado d-none"></div>
                             </div>
                         </div>
                     </div>
