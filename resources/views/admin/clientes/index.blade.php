@@ -187,6 +187,81 @@
             text-transform: uppercase;
             letter-spacing: 0.02em;
         }
+
+        #showModal .modal-body {
+            padding: 0.85rem;
+        }
+
+        #showModal .modal-form-section {
+            padding: 0.7rem 0.75rem;
+            margin-bottom: 0.6rem;
+        }
+
+        #showModal .modal-form-section-title {
+            font-size: 0.78rem;
+            margin-bottom: 0.45rem;
+        }
+
+        #showModal .section-header-compact {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+
+        #showModal .section-header-compact .modal-form-section-title {
+            margin-bottom: 0;
+        }
+
+        #showModal .status-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            flex-wrap: nowrap;
+        }
+
+        #showModal .status-inline-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #495057;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        #showModal .status-inline .form-check {
+            margin: 0 !important;
+        }
+
+        #showModal .form-label {
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        #showModal .form-control,
+        #showModal .form-select {
+            font-size: 0.85rem;
+            min-height: calc(1.5em + 0.5rem + 2px);
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+        #showModal textarea.form-control {
+            min-height: 64px;
+        }
+
+        #showModal .form-check.form-switch {
+            margin-top: 0.35rem !important;
+        }
+
+        #showModal .invalid-feedback,
+        #showModal small {
+            font-size: 0.72rem;
+        }
+
+        #showModal .modal-footer {
+            padding: 0.55rem 0.85rem;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -446,7 +521,7 @@
     <!-- Modal para agregar/editar -->
     <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
             <form id="clienteForm" class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Cliente</h5>
@@ -456,10 +531,21 @@
                     <input type="hidden" id="id-field" />
 
                     <div class="modal-form-section">
-                        <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
+                        <div class="section-header-compact">
+                            <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
+                            <div class="status-inline">
+                                <span class="status-inline-label">Estatus</span>
+                                <div class="form-check form-switch form-switch-success">
+                                    <input type="hidden" name="estatus" value="0" />
+                                    <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
+                                        name="estatus" value="1" checked />
+                                    <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
+                                </div>
+                            </div>
+                        </div>
 
-                        <div class="row mb-0">
-                            <div class="col-md-5">
+                        <div class="row g-2 mb-0">
+                            <div class="col-md-6">
                                 <x-forms.input name="documento_number" label="Documento (Cédula o RIF)"
                                     id="documento-number-field" required maxlength="10" placeholder="Nro. documento"
                                     prependRaw="true">
@@ -473,22 +559,13 @@
                                     </x-slot:prepend>
                                 </x-forms.input>
                                 <input type="hidden" id="documento-field" name="documento" />
-                                <small class="text-muted" style="margin-top: -10px; display: block; margin-bottom: 10px;">Máximo
+                                <small class="text-muted" style="margin-top: -6px; display: block; margin-bottom: 6px;">Máximo
                                     10 dígitos</small>
                                 <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
                                     :options="['natural' => 'Natural', 'juridico' => 'Jurídico', 'gubernamental' => 'Gubernamental']" />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label d-block">Estatus</label>
-                                <div class="form-check form-switch form-switch-success mt-2">
-                                    <input type="hidden" name="estatus" value="0" />
-                                    <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
-                                        name="estatus" value="1" checked />
-                                    <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -496,7 +573,7 @@
                     <div class="modal-form-section">
                         <div class="modal-form-section-title"><i class="ri-user-3-line"></i>Datos del Cliente</div>
 
-                        <div id="campos-persona-natural" class="row mb-3">
+                        <div id="campos-persona-natural" class="row g-2 mb-0">
                             <div class="col-md-6">
                                 <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" maxlength="100" required
                                     id="nombre-field" />
@@ -507,7 +584,7 @@
                             </div>
                         </div>
 
-                        <div id="campos-razon-social" class="row mb-0 d-none">
+                        <div id="campos-razon-social" class="row g-2 mb-0 d-none">
                             <div class="col-12">
                                 <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa"
                                     maxlength="200" id="razon-social-field" hint="Se almacenará como nombre del cliente" />
@@ -518,7 +595,7 @@
                     <div class="modal-form-section">
                         <div class="modal-form-section-title"><i class="ri-contacts-book-2-line"></i>Contacto</div>
 
-                        <div class="row mb-3">
+                        <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com"
                                     id="email-field" />
@@ -543,10 +620,10 @@
                             </div>
                         </div>
 
-                        <div class="row mb-0">
+                        <div class="row g-2 mb-0">
                             <div class="col-12">
                                 <x-forms.textarea name="direccion" label="Dirección" placeholder="Dirección completa"
-                                    maxlength="500" required id="direccion-field" rows="3" />
+                                    maxlength="500" required id="direccion-field" rows="2" />
                             </div>
                         </div>
                     </div>
@@ -554,7 +631,7 @@
                     <div class="modal-form-section mb-0">
                         <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
 
-                        <div class="row">
+                        <div class="row g-2">
                             <div class="col-md-6">
                                 <label for="estado_territorial-field" class="form-label required">Estado</label>
                                 <select name="estado_territorial" id="estado_territorial-field" class="form-select" required>
