@@ -128,6 +128,118 @@
         #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
             color: #1e3c72 !important;
         }
+
+        #view-metodo-pago {
+            gap: 0.35rem !important;
+        }
+
+        .metodo-pago-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            border-radius: 999px;
+            padding: 0.2rem 0.55rem;
+            font-size: 0.76rem;
+            font-weight: 700;
+            line-height: 1.1;
+            border: 1px solid transparent;
+        }
+
+        .metodo-pago-pill i {
+            font-size: 0.78rem;
+        }
+
+        .metodo-pago-pill--efectivo {
+            background: rgba(0, 217, 165, 0.16);
+            color: #006b52;
+            border-color: rgba(0, 217, 165, 0.38);
+        }
+
+        .metodo-pago-pill--transferencia {
+            background: rgba(30, 60, 114, 0.14);
+            color: #1e3c72;
+            border-color: rgba(30, 60, 114, 0.34);
+        }
+
+        .metodo-pago-pill--pago-movil {
+            background: rgba(42, 82, 152, 0.14);
+            color: #2a5298;
+            border-color: rgba(42, 82, 152, 0.34);
+        }
+
+        .metodo-pago-pill--none {
+            background: rgba(108, 117, 125, 0.12);
+            color: #5f6b76;
+            border-color: rgba(108, 117, 125, 0.3);
+        }
+
+        .pago-kpi-box {
+            border: 1px solid rgba(30, 60, 114, 0.18);
+            border-radius: 8px;
+            background: rgba(30, 60, 114, 0.03);
+            padding: 0.55rem;
+        }
+
+        .metodo-toggle-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .metodo-toggle.form-check {
+            margin: 0;
+            padding: 0;
+        }
+
+        .metodo-toggle .form-check-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .metodo-toggle .form-check-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            border-radius: 999px;
+            border: 1px solid rgba(30, 60, 114, 0.28);
+            background: rgba(30, 60, 114, 0.05);
+            color: #1e3c72;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.32rem 0.7rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+
+        .metodo-toggle .form-check-label i {
+            font-size: 0.82rem;
+        }
+
+        .metodo-toggle .form-check-input:checked+.form-check-label {
+            background: rgba(0, 217, 165, 0.16);
+            border-color: rgba(0, 217, 165, 0.42);
+            color: #006b52;
+            box-shadow: 0 1px 6px rgba(0, 217, 165, 0.18);
+        }
+
+        .metodo-form-block {
+            background: rgba(30, 60, 114, 0.04);
+            border: 1px dashed rgba(30, 60, 114, 0.22);
+            border-radius: 8px;
+            padding: 0.6rem;
+        }
+
+        .metodo-form-title {
+            color: #1e3c72;
+            font-size: 0.86rem;
+            font-weight: 700;
+            margin-bottom: 0.45rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
     </style>
 @endpush
 
@@ -665,11 +777,14 @@
                                         </div>
                                     </div>
                                     <div class="row g-3 mt-1">
-                                        <div class="col-12 col-md-6 col-xl-4" id="view-referencia-transferencia-container">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-hashtag" style="color: #1e3c72;"></i>
+                                        <div class="col-12 col-md-6" id="view-bloque-transferencia-container" style="display:none;">
+                                            <div class="rounded p-2" style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
+                                                <span class="fw-bold d-block mb-2" style="font-size:0.9rem; color:#1e3c72;">
+                                                    <i class="ri-bank-card-line me-1" style="font-size:0.9rem;"></i>Transferencia
+                                                </span>
+                                                <div class="mb-1">
+                                                    <small class="text-muted d-block">Banco</small>
+                                                    <span class="fw-semibold" id="view-banco-transferencia">-</span>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Referencia</small>
@@ -677,27 +792,18 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-xl-4" id="view-referencia-pago-movil-container" style="display:none;">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-hashtag" style="color: #1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Ref. Pago Móvil</small>
-                                                    <span class="fw-semibold" id="view-referencia-pago-movil">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-6 col-xl-4" id="view-banco-container">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-bank-line" style="color: #1e3c72;"></i>
-                                                </div>
-                                                <div>
+                                        <div class="col-12 col-md-6" id="view-bloque-pago-movil-container" style="display:none;">
+                                            <div class="rounded p-2" style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
+                                                <span class="fw-bold d-block mb-2" style="font-size:0.9rem; color:#1e3c72;">
+                                                    <i class="ri-smartphone-line me-1" style="font-size:0.9rem;"></i>Pago Móvil
+                                                </span>
+                                                <div class="mb-1">
                                                     <small class="text-muted d-block">Banco</small>
-                                                    <span class="fw-semibold" id="view-banco">-</span>
+                                                    <span class="fw-semibold" id="view-banco-pago-movil">-</span>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Referencia</small>
+                                                    <span class="fw-semibold" id="view-referencia-pago-movil">-</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -892,60 +998,76 @@
                                             <div class="col-md-4">
                                                 <label for="total-display-field" class="form-label small fw-semibold mb-1">Total del Pedido
                                                     ($)</label>
-                                                <input type="text" id="total-display-field" class="form-control form-control-sm"
-                                                        readonly />
+                                                <div class="pago-kpi-box">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="text" id="total-display-field" class="form-control"
+                                                            readonly />
+                                                    </div>
+                                                </div>
                                                 <small class="text-muted d-block mt-1" style="font-size:0.68rem;">
                                                     <i class="ri-refresh-line me-1"></i>Se actualiza automáticamente
                                                 </small>
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="abono-field" class="form-label small fw-semibold mb-1">Abono ($)</label>
-                                                <input type="number" id="abono-field" name="abono" class="form-control form-control-sm"
-                                                    step="0.01" min="0" value="0" required />
+                                                <div class="pago-kpi-box">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" id="abono-field" name="abono" class="form-control"
+                                                            step="0.01" min="0" value="0" required />
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="restante-display-field" class="form-label small fw-semibold mb-1">Restante ($)</label>
-                                                <input type="text" id="restante-display-field"
-                                                    class="form-control form-control-sm"
-                                                        readonly />
+                                                <div class="pago-kpi-box">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="text" id="restante-display-field"
+                                                            class="form-control"
+                                                            readonly />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="mt-3">
                                             <label class="form-label small fw-semibold mb-1">Método de Pago</label>
-                                            <div class="form-check form-check-inline small">
-                                                <input class="form-check-input" type="checkbox" id="efectivo-pagado-field"
-                                                    name="efectivo_pagado" value="1">
-                                                <label class="form-check-label" for="efectivo-pagado-field">Efectivo</label>
-                                            </div>
-                                            <div class="form-check form-check-inline small">
-                                                <input class="form-check-input" type="checkbox"
-                                                    id="transferencia-pagado-field" name="transferencia_pagado" value="1">
-                                                <label class="form-check-label"
-                                                    for="transferencia-pagado-field">Transferencia</label>
-                                            </div>
-                                            <div class="form-check form-check-inline small">
-                                                <input class="form-check-input" type="checkbox" id="pago-movil-pagado-field"
-                                                    name="pago_movil_pagado" value="1">
-                                                <label class="form-check-label" for="pago-movil-pagado-field">Pago
-                                                    Móvil</label>
+                                            <div class="metodo-toggle-group mt-1">
+                                                <div class="form-check metodo-toggle">
+                                                    <input class="form-check-input" type="checkbox" id="efectivo-pagado-field"
+                                                        name="efectivo_pagado" value="1">
+                                                    <label class="form-check-label" for="efectivo-pagado-field">
+                                                        <i class="ri-money-dollar-circle-line"></i>Efectivo
+                                                    </label>
+                                                </div>
+                                                <div class="form-check metodo-toggle">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="transferencia-pagado-field" name="transferencia_pagado" value="1">
+                                                    <label class="form-check-label"
+                                                        for="transferencia-pagado-field">
+                                                        <i class="ri-bank-card-line"></i>Transferencia
+                                                    </label>
+                                                </div>
+                                                <div class="form-check metodo-toggle">
+                                                    <input class="form-check-input" type="checkbox" id="pago-movil-pagado-field"
+                                                        name="pago_movil_pagado" value="1">
+                                                    <label class="form-check-label" for="pago-movil-pagado-field">
+                                                        <i class="ri-smartphone-line"></i>Pago Móvil
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="mt-2" id="referencia-transferencia-container">
+                                            <div class="metodo-form-block">
+                                                <div class="metodo-form-title"><i class="ri-bank-card-line"></i>Transferencia</div>
                                             <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label for="referencia-transferencia-field" class="form-label small fw-semibold mb-1"><i
-                                                            class="ri-numbers-line align-bottom me-1"></i>Referencia
-                                                        Transferencia</label>
-                                                    <input type="text" id="referencia-transferencia-field"
-                                                        name="referencia_transferencia" class="form-control form-control-sm"
-                                                        placeholder="Número de referencia" />
-                                                </div>
                                                 <div class="col-md-6">
                                                     <label for="banco-transferencia-id-field" class="form-label small fw-semibold mb-1"><i
                                                             class="ri-bank-line align-bottom me-1"></i>Banco
-                                                        Destino</label>
+                                                            Transferencia</label>
                                                     <select id="banco-transferencia-id-field" name="banco_transferencia_id"
                                                         class="form-select form-select-sm">
                                                         <option value="">Seleccione un banco</option>
@@ -954,23 +1076,25 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
+                                                    <div class="col-md-6">
+                                                        <label for="referencia-transferencia-field" class="form-label small fw-semibold mb-1"><i
+                                                                class="ri-numbers-line align-bottom me-1"></i>Referencia
+                                                            Transferencia</label>
+                                                        <input type="text" id="referencia-transferencia-field"
+                                                            name="referencia_transferencia" class="form-control form-control-sm"
+                                                            placeholder="Número de referencia" />
+                                                    </div>
+                                            </div>
                                             </div>
                                         </div>
                                         <div class="mt-2" id="referencia-pago-movil-container">
+                                            <div class="metodo-form-block">
+                                                <div class="metodo-form-title"><i class="ri-smartphone-line"></i>Pago Móvil</div>
                                             <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label for="referencia-pago-movil-field" class="form-label small fw-semibold mb-1"><i
-                                                            class="ri-smartphone-line align-bottom me-1"></i>Referencia
-                                                        Pago
-                                                        Móvil</label>
-                                                    <input type="text" id="referencia-pago-movil-field"
-                                                        name="referencia_pago_movil" class="form-control form-control-sm"
-                                                        placeholder="Número de referencia" />
-                                                </div>
                                                 <div class="col-md-6">
                                                     <label for="banco-pago-movil-id-field" class="form-label small fw-semibold mb-1"><i
                                                             class="ri-bank-line align-bottom me-1"></i>Banco
-                                                        Destino</label>
+                                                            Pago Móvil</label>
                                                     <select id="banco-pago-movil-id-field" name="banco_pago_movil_id"
                                                         class="form-select form-select-sm">
                                                         <option value="">Seleccione un banco</option>
@@ -979,6 +1103,15 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
+                                                    <div class="col-md-6">
+                                                        <label for="referencia-pago-movil-field" class="form-label small fw-semibold mb-1"><i
+                                                                class="ri-numbers-line align-bottom me-1"></i>Referencia
+                                                            Pago Móvil</label>
+                                                        <input type="text" id="referencia-pago-movil-field"
+                                                            name="referencia_pago_movil" class="form-control form-control-sm"
+                                                            placeholder="Número de referencia" />
+                                                    </div>
+                                            </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1640,23 +1773,15 @@
                             var nombreAplicado = escAttr(bordado.nombre_aplicado || 'Ubicación');
                             var logoAplicado = escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || 'Sin logo');
                             var cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
-                            var precioAplicado = parseFloat(bordado.precio_aplicado || 0).toFixed(2);
 
                             return `
-                                <div class="border rounded p-2 mb-2" style="border-color: rgba(30, 60, 114, 0.16) !important; background: #fff;">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-semibold" style="font-size:0.8rem;color:#1e3c72;">${nombreAplicado}</span>
-                                        <span class="badge bg-soft-info text-atlantico-dark">$${precioAplicado}</span>
-                                    </div>
-                                    <div class="d-flex flex-wrap gap-3" style="font-size:0.76rem;">
-                                        <span><small class="text-muted">Logo:</small> <strong>${logoAplicado}</strong></span>
-                                        <span><small class="text-muted">Cant.:</small> <strong>${cantidadAplicada}</strong></span>
-                                    </div>
+                                <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
+                                    <span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${logoAplicado} → ${nombreAplicado} x${cantidadAplicada}</span>
                                 </div>
                             `;
                         }).join('');
                     } else {
-                        bordadosHtml = '<small class="text-muted">Sin líneas de bordado configuradas.</small>';
+                        bordadosHtml = `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${escAttr(nombreLogo || 'Sin logo')} → ${escAttr(ubicacionLogo || 'Sin ubicación')} x${Math.max(1, parseInt(cantidadLogo || 1, 10))}</span></div>`;
                     }
 
                     hiddenBordadosHtml = bordadosArray.map(function (bordado, idx) {
@@ -1744,16 +1869,13 @@
                                                                                                                 </div>
 
                                                                                                                 ${llevaBordado ? `
-                                                                                                                <!-- Bordado/Logo -->
-                                                                                                                <div class="rounded p-2 mb-2" style="background: rgba(0, 217, 165, 0.08);">
+                                                                                                                <!-- Logos -->
+                                                                                                                <div class="rounded p-2 mb-2" style="background: rgba(30, 60, 114, 0.08);">
                                                                                                                     <div class="d-flex align-items-center mb-2">
-                                                                                                                        <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
-                                                                                                                        <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
+                                                                                                                        <i class="ri-scissors-cut-line me-2" style="color: #1e3c72;"></i>
+                                                                                                                        <span class="fw-semibold" style="color: #1e3c72; font-size: 0.85rem;">Logos</span>
                                                                                                                     </div>
-                                                                                                                    <div class="d-flex justify-content-between align-items-center mb-2" style="font-size:0.78rem;">
-                                                                                                                        <span class="text-muted">Precio base estimado: <strong>$${precioBaseEstimado.toFixed(2)}</strong></span>
-                                                                                                                        <span class="text-muted">Recargo bordado: <strong>$${recargoUnitario.toFixed(2)}</strong></span>
-                                                                                                                    </div>
+                                                                                                                    <small class="text-muted d-block mb-1" style="font-size: 0.72rem;">Aplicaciones</small>
                                                                                                                     ${bordadosHtml}
                                                                                                                 </div>
                                                                                                                 ` : ''}
@@ -2111,39 +2233,31 @@
                         $('#view-usuario-creador').text(data.user ? data.user.name : 'N/A');
 
                         // Cargar y mostrar nuevos campos de pago y prioridad
-                        $('#view-abono').text(parseFloat(data.abono).toFixed(2));
+                        $('#view-abono').text('$' + parseFloat(data.abono).toFixed(2));
                         let restante = parseFloat(data.total) - parseFloat(data.abono);
-                        $('#view-restante').text(restante.toFixed(2));
+                        $('#view-restante').text('$' + restante.toFixed(2));
 
                         let metodosPago = [];
-                        if (data.efectivo_pagado) metodosPago.push('<span class="badge rounded-pill bg-success">Efectivo</span>');
-                        if (data.transferencia_pagado) metodosPago.push('<span class="badge rounded-pill bg-primary">Transferencia</span>');
-                        if (data.pago_movil_pagado) metodosPago.push('<span class="badge rounded-pill bg-info text-dark">Pago Móvil</span>');
-                        $('#view-metodo-pago').html(metodosPago.join('') || '<span class="badge rounded-pill bg-secondary">Sin método</span>');
+                        if (data.efectivo_pagado) metodosPago.push('<span class="metodo-pago-pill metodo-pago-pill--efectivo"><i class="ri-money-dollar-circle-line"></i>Efectivo</span>');
+                        if (data.transferencia_pagado) metodosPago.push('<span class="metodo-pago-pill metodo-pago-pill--transferencia"><i class="ri-bank-card-line"></i>Transferencia</span>');
+                        if (data.pago_movil_pagado) metodosPago.push('<span class="metodo-pago-pill metodo-pago-pill--pago-movil"><i class="ri-smartphone-line"></i>Pago Móvil</span>');
+                        $('#view-metodo-pago').html(metodosPago.join('') || '<span class="metodo-pago-pill metodo-pago-pill--none">Sin método</span>');
 
-                        if (data.referencia_transferencia) {
-                            $('#view-referencia-transferencia').text(data.referencia_transferencia);
-                            $('#view-referencia-transferencia-container').show();
-                        } else {
-                            $('#view-referencia-transferencia').text('');
-                            $('#view-referencia-transferencia-container').hide();
-                        }
+                        const referenciaTransferencia = data.referencia_transferencia || '';
+                        const bancoTransferenciaNombre = data.banco_transferencia?.nombre || data.banco?.nombre || '';
+                        const mostrarBloqueTransferencia = Boolean(data.transferencia_pagado || referenciaTransferencia || bancoTransferenciaNombre);
 
-                        if (data.referencia_pago_movil) {
-                            $('#view-referencia-pago-movil').text(data.referencia_pago_movil);
-                            $('#view-referencia-pago-movil-container').show();
-                        } else {
-                            $('#view-referencia-pago-movil').text('');
-                            $('#view-referencia-pago-movil-container').hide();
-                        }
+                        $('#view-referencia-transferencia').text(referenciaTransferencia || 'Sin referencia');
+                        $('#view-banco-transferencia').text(bancoTransferenciaNombre || 'Sin banco');
+                        $('#view-bloque-transferencia-container').toggle(mostrarBloqueTransferencia);
 
-                        if (data.banco && data.banco.nombre) {
-                            $('#view-banco').text(data.banco.nombre);
-                            $('#view-banco-container').show();
-                        } else {
-                            $('#view-banco').text('');
-                            $('#view-banco-container').hide();
-                        }
+                        const referenciaPagoMovil = data.referencia_pago_movil || '';
+                        const bancoPagoMovilNombre = data.banco_pago_movil?.nombre || data.banco?.nombre || '';
+                        const mostrarBloquePagoMovil = Boolean(data.pago_movil_pagado || referenciaPagoMovil || bancoPagoMovilNombre);
+
+                        $('#view-referencia-pago-movil').text(referenciaPagoMovil || 'Sin referencia');
+                        $('#view-banco-pago-movil').text(bancoPagoMovilNombre || 'Sin banco');
+                        $('#view-bloque-pago-movil-container').toggle(mostrarBloquePagoMovil);
 
                         // Mostrar prioridad con badge
                         let prioridadBadgeClass = '';
