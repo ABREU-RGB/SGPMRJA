@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Cotizacion;
 use App\Models\DetalleCotizacion;
+use App\Models\DetalleCotizacionBordado;
 use App\Models\DetallePedido;
+use App\Models\DetallePedidoBordado;
 use App\Models\Pedido;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Auth;
@@ -100,7 +102,7 @@ class CotizacionService
             }
 
             // 4. Eager-load detalles y validar que no estén vacíos
-            $cotizacion->load('productos');
+            $cotizacion->load('productos.bordados');
             if ($cotizacion->productos->isEmpty()) {
                 throw new \RuntimeException('La cotización no tiene productos. No se puede crear un pedido vacío.');
             }
@@ -122,7 +124,7 @@ class CotizacionService
 
             // 6. Transferir TODOS los detalles (incluyendo color, talla, precio cotizado)
             foreach ($cotizacion->productos as $detalle) {
-                DetallePedido::create([
+                $detallePedido = DetallePedido::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => $detalle->producto_id,
                     'cantidad' => $detalle->cantidad,
@@ -130,11 +132,22 @@ class CotizacionService
                     'descripcion' => $detalle->descripcion,
                     'lleva_bordado' => $detalle->lleva_bordado ?? false,
                     'nombre_logo' => $detalle->nombre_logo,
-                    'ubicacion_logo' => $detalle->ubicacion_logo,
-                    'cantidad_logo' => $detalle->cantidad_logo,
                     'color' => $detalle->color,
                     'talla' => $detalle->talla,
                 ]);
+
+                foreach ($detalle->bordados as $index => $bordado) {
+                    DetallePedidoBordado::create([
+                        'detalle_pedido_id' => $detallePedido->id,
+                        'ubicacion_bordado_id' => $bordado->ubicacion_bordado_id,
+                        'nombre_aplicado' => $bordado->nombre_aplicado,
+                        'nombre_logo_aplicado' => $bordado->nombre_logo_aplicado,
+                        'es_personalizada' => (bool) $bordado->es_personalizada,
+                        'cantidad' => (int) ($bordado->cantidad ?: 1),
+                        'precio_aplicado' => (float) $bordado->precio_aplicado,
+                        'orden' => (int) $index,
+                    ]);
+                }
             }
 
             // 7. Marcar como convertida (dentro de la misma transacción)
@@ -153,16 +166,40 @@ class CotizacionService
     }
 
     /**
-     * Calcular total de la cotización sumando precio_base × cantidad.
+     * Calcular total de la cotización sumando (precio_base + recargos de bordado) × cantidad.
      */
     private function calcularTotal(array $productos): float
     {
         $total = 0;
         foreach ($productos as $item) {
             $producto = Producto::find($item['producto_id']);
-            $total += $producto->precio_base * $item['cantidad'];
+            $precioBase = isset($item['precio_unitario'])
+                ? (float) $item['precio_unitario']
+                : (float) ($producto->precio_base ?? 0);
+
+            $recargoBordadoUnitario = $this->calcularRecargoBordadoUnitario($item);
+            $precioUnitarioFinal = $precioBase + $recargoBordadoUnitario;
+
+            $total += $precioUnitarioFinal * (int) $item['cantidad'];
         }
         return $total;
+    }
+
+    private function calcularRecargoBordadoUnitario(array $item): float
+    {
+        $llevaBordado = !empty($item['lleva_bordado']) && (int) $item['lleva_bordado'] === 1;
+        if (!$llevaBordado || empty($item['bordados']) || !is_array($item['bordados'])) {
+            return 0;
+        }
+
+        $recargo = 0;
+        foreach ($item['bordados'] as $bordado) {
+            $precio = (float) ($bordado['precio_aplicado'] ?? 0);
+            $cantidad = max(1, (int) ($bordado['cantidad'] ?? 1));
+            $recargo += ($precio * $cantidad);
+        }
+
+        return $recargo;
     }
 
     /**
@@ -172,18 +209,53 @@ class CotizacionService
     {
         foreach ($productos as $item) {
             $producto = Producto::find($item['producto_id']);
-            DetalleCotizacion::create([
+            $precioBase = isset($item['precio_unitario'])
+                ? (float) $item['precio_unitario']
+                : (float) ($producto->precio_base ?? 0);
+            $recargoBordadoUnitario = $this->calcularRecargoBordadoUnitario($item);
+            $precioUnitarioFinal = $precioBase + $recargoBordadoUnitario;
+            $bordados = is_array($item['bordados'] ?? null) ? $item['bordados'] : [];
+
+            $detalle = DetalleCotizacion::create([
                 'cotizacion_id' => $cotizacion->id,
                 'producto_id' => $item['producto_id'],
                 'cantidad' => $item['cantidad'],
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                'nombre_logo' => $item['nombre_logo'] ?? null,
-                'ubicacion_logo' => $item['ubicacion_logo'] ?? null,
-                'cantidad_logo' => $item['cantidad_logo'] ?? null,
+                'nombre_logo' => $this->resolverNombreLogoDetalle($item, $bordados),
+                'color' => $item['color'] ?? null,
                 'talla' => $item['talla'] ?? null,
-                'precio_unitario' => $producto->precio_base,
+                'precio_unitario' => $precioUnitarioFinal,
             ]);
+
+            foreach ($bordados as $index => $bordado) {
+                DetalleCotizacionBordado::create([
+                    'detalle_cotizacion_id' => $detalle->id,
+                    'ubicacion_bordado_id' => $bordado['ubicacion_bordado_id'] ?? null,
+                    'nombre_aplicado' => trim((string) ($bordado['nombre_aplicado'] ?? '')),
+                    'nombre_logo_aplicado' => trim((string) ($bordado['nombre_logo'] ?? $item['nombre_logo'] ?? '')),
+                    'es_personalizada' => (bool) ($bordado['es_personalizada'] ?? false),
+                    'cantidad' => max(1, (int) ($bordado['cantidad'] ?? 1)),
+                    'precio_aplicado' => (float) ($bordado['precio_aplicado'] ?? 0),
+                    'orden' => (int) $index,
+                ]);
+            }
         }
+    }
+
+    private function resolverNombreLogoDetalle(array $item, array $bordados): ?string
+    {
+        $logos = collect($bordados)
+            ->map(fn($bordado) => trim((string) ($bordado['nombre_logo'] ?? '')))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($logos->isNotEmpty()) {
+            return mb_substr($logos->implode(', '), 0, 100);
+        }
+
+        $legacy = trim((string) ($item['nombre_logo'] ?? ''));
+        return $legacy !== '' ? mb_substr($legacy, 0, 100) : null;
     }
 }

@@ -292,10 +292,10 @@
                                         </div>
                                         <div class="col-6">
                                             <label for="fecha-validez-field" class="form-label small fw-semibold mb-1">
-                                                Fecha Validez <span class="text-danger">*</span>
+                                                Fecha Validez
                                             </label>
                                             <input type="date" id="fecha-validez-field" name="fecha_validez"
-                                                class="form-control form-control-sm" required />
+                                                class="form-control form-control-sm" />
                                         </div>
                                     </div>
                                 </div>
@@ -321,7 +321,7 @@
                                 </div>
                             </div>
 
-                            <!-- Card Notas / Condiciones (Collapsible) -->
+                            <!-- Card Notas generales / Condiciones (Collapsible) -->
                             <div class="card border-0 shadow-sm mb-3">
                                 <div class="card-header border-0 bg-soft-primary" style="cursor: pointer;"
                                     data-bs-toggle="collapse" data-bs-target="#notasCollapseBody" aria-expanded="false"
@@ -329,7 +329,7 @@
                                     <h6
                                         class="mb-0 text-atlantico-dark d-flex align-items-center justify-content-between">
                                         <span>
-                                            <i class="ri-file-text-line me-2"></i>Notas / Condiciones
+                                            <i class="ri-file-text-line me-2"></i>Notas generales / Condiciones
                                         </span>
                                         <i class="ri-arrow-down-s-line notas-chevron"
                                             style="font-size:1.1rem; transition: transform 0.3s ease;"></i>
@@ -368,7 +368,7 @@
                                         </div>
                                         <div class="text-end">
                                             <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;"
-                                                id="total-display-value">$0.00</span>
+                                                id="total-display-value">$0,00</span>
                                             <input type="hidden" id="total-display-field" />
                                         </div>
                                     </div>
@@ -699,7 +699,7 @@
 
 <!-- Modal para seleccionar Logo (Catálogo de Logos) -->
 <div class="modal fade" id="logoSearchModal" tabindex="-1" aria-labelledby="logoSearchModalLabel" aria-hidden="true"
-    data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1070;">
+    data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1110;">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <!-- Header — Nivel 3: Modal utilitario de catálogo de logos -->
@@ -921,6 +921,73 @@
             </div>
 
             <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+    MODAL: Configuración de Bordados por Producto
+     Nivel 2 — Modal utilitario de selección (sobre #showModal)
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="ubicacionCatalogoModal" tabindex="-1" aria-labelledby="ubicacionCatalogoModalLabel"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1070;">
+    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"
+            style="box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(30,60,114,0.22); border-top: 3px solid #00d9a5;">
+            <div class="modal-header p-3" style="background-color: #132649 !important;">
+                <h5 class="modal-title" style="color: #ffffff !important;" id="ubicacionCatalogoModalLabel">
+                    <i class="ri-map-pin-line me-2" style="opacity:0.7;"></i>Configurar Servicio de Bordado
+                </h5>
+                <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-3" style="overflow-x: hidden;">
+                <div class="input-group input-group-sm mb-3">
+                    <span class="input-group-text" style="background: rgba(30,60,114,0.1); border-color: #1e3c72;">
+                        <i class="ri-search-line" style="color: #1e3c72;"></i>
+                    </span>
+                    <input type="text" id="buscarUbicacionModal" class="form-control" placeholder="Buscar ubicación..."
+                        style="border-color: #1e3c72;">
+                </div>
+
+                <div class="alert alert-info py-2 px-3 mb-3" style="font-size:0.78rem;">
+                    Asigna logo por cada ubicación, ajusta precio por ubicación y cantidad de bordados por prenda.
+                </div>
+
+                <div id="ubicacionesCatalogoGrid" style="max-height: 280px; overflow-y: auto; overflow-x: hidden;">
+                    <!-- Se llena dinámicamente -->
+                </div>
+
+                <hr class="my-3">
+
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0" style="font-size:0.85rem;color:#1e3c72;">
+                        <i class="ri-edit-2-line me-1"></i>Ubicaciones personalizadas
+                    </h6>
+                    <button type="button" class="btn btn-sm btn-atlantico-brand" id="agregarUbicacionPersonalizadaBtn">
+                        <i class="ri-add-line"></i> Agregar
+                    </button>
+                </div>
+
+                <div id="ubicacionesPersonalizadasContainer" class="d-flex flex-column gap-2">
+                    <!-- Se llena dinámicamente -->
+                </div>
+
+                <div class="rounded p-2 mt-3" style="background: rgba(30,60,114,0.06);">
+                    <div class="small text-muted">Recargo unitario del producto</div>
+                    <div class="fw-bold" id="resumenRecargoBordadoModal" style="color:#1e3c72;">$0.00</div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-sm btn-success px-3" id="aplicarUbicacionesBordadoBtn">
+                    <i class="ri-check-line me-1"></i>Aplicar configuración
+                </button>
                 <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
                     <i class="ri-close-line me-1"></i>Cancelar
                 </button>

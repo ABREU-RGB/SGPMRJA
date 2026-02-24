@@ -120,7 +120,7 @@ class PedidoController extends Controller
         $pedido = Pedido::with([
             'user:id,name',
             'productos.producto.tipoProducto',
-            'productos.producto.tipoProducto',
+            'productos.bordados',
             'banco:id,nombre',
             'cliente.persona.telefonos',
             'cliente.persona.direcciones'
@@ -191,7 +191,7 @@ class PedidoController extends Controller
     public function pedidoPdf(Pedido $pedido)
     {
         // Cargar relaciones necesarias
-        $pedido->load(['user:id,name', 'productos.producto', 'cliente', 'cliente.persona']);
+        $pedido->load(['user:id,name', 'productos.producto', 'productos.bordados', 'cliente', 'cliente.persona']);
 
         // Cálculos financieros
         $ivaTasa = 0.16; // 16 %

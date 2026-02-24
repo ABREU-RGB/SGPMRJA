@@ -104,26 +104,48 @@
     .bordado-label.active {
         color: var(--atlantico-dark-blue);
     }
+
+    .bordado-resumen-box {
+        border: 1px dashed rgba(30, 60, 114, 0.25);
+        border-radius: 8px;
+        background: rgba(30, 60, 114, 0.06);
+    }
+
+    .bordado-resumen-title {
+        font-size: 0.72rem;
+        color: #5a6a85;
+        font-weight: 600;
+    }
+
+    .bordado-resumen-value {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--atlantico-dark-blue);
+    }
+
+    .bordado-resumen-estado {
+        font-size: 0.73rem;
+    }
+
+    .bordado-linea-total-value.total-updated {
+        color: #00a884;
+        text-shadow: 0 0 4px rgba(0, 168, 132, 0.18);
+    }
 </style>
 <script>
     $(document).ready(function () {
-        // === Datalist de ubicaciones de bordado (se inyecta una sola vez en el DOM) ===
-        if (!$('#ubicacion-bordado-sugeridas').length) {
-            $('body').append(
-                '<datalist id="ubicacion-bordado-sugeridas">' +
-                '<option value="Frontal Izquierdo"></option>' +
-                '<option value="Frontal Derecho"></option>' +
-                '<option value="Manga Izquierda"></option>' +
-                '<option value="Manga Derecha"></option>' +
-                '<option value="Espaldar"></option>' +
-                '</datalist>'
-            );
-        }
-
         // === FUNCIÓN GLOBAL: Capitalizar solo la primera letra ===
         function capitalizeFirstLetter(str) {
             if (!str) return str;
             return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function formatMoney(value) {
+            var amount = Number(value || 0);
+            return '$' + amount.toLocaleString('es-VE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
 
         // Aplicar a campos de dirección al perder foco
@@ -394,7 +416,7 @@
                     '<td><span class="badge bg-dark">' + (p.codigo || '-') + '</span></td>' +
                     '<td><span class="badge bg-primary">' + tipoNombre + '</span></td>' +
                     '<td>' + p.modelo + '</td>' +
-                    '<td class="text-success fw-bold text-end">$ ' + parseFloat(p.precio_base).toFixed(2) + '</td>' +
+                    '<td class="text-success fw-bold text-end">' + formatMoney(parseFloat(p.precio_base || 0)) + '</td>' +
                     '<td class="text-center"><button type="button" class="btn btn-sm btn-atlantico-brand select-producto-btn-cotizacion" data-id="' + p.id + '"><i class="ri-check-line"></i></button></td>' +
                     '</tr>';
                 tbody.append(row);
@@ -494,14 +516,36 @@
             });
         }
 
+        // Preparar capas antes de animar el modal de logos (evita parpadeos)
+        document.getElementById('logoSearchModal').addEventListener('show.bs.modal', function () {
+            var zIndex = 1085;
+            if ($('#ubicacionCatalogoModal').hasClass('show')) {
+                zIndex = 1105;
+            } else if ($('#showModal').hasClass('show')) {
+                zIndex = 1095;
+            }
+
+            $('#logoSearchModal').css('z-index', zIndex);
+            window.requestAnimationFrame(function () {
+                var $lastBackdrop = $('.modal-backdrop').last();
+                if ($lastBackdrop.length) {
+                    $lastBackdrop.css('z-index', zIndex - 1).addClass('logo-modal-backdrop');
+                }
+            });
+        });
+
         // Renderizar al abrir el modal de logos
         document.getElementById('logoSearchModal').addEventListener('shown.bs.modal', function () {
+
             $('#buscarLogoModal').val('').focus();
             renderizarLogosModal('');
         });
 
         // Limpieza de backdrop al cerrar el modal de logos (mismo patrón que productos)
         document.getElementById('logoSearchModal').addEventListener('hidden.bs.modal', function () {
+            $('#logoSearchModal').css('z-index', '');
+            $('.modal-backdrop.logo-modal-backdrop').removeClass('logo-modal-backdrop').css('z-index', '');
+
             if ($('#showModal').hasClass('show')) {
                 $('body').addClass('modal-open');
                 var backdrops = $('.modal-backdrop');
@@ -521,10 +565,15 @@
             renderizarLogosModal($(this).val());
         });
 
-        // Abrir modal de logos desde la fila del producto (delegación de eventos)
-        $('#productos-container').on('click', '.buscar-logo-trigger', function (e) {
+        // Abrir modal de logos desde inputs de bordado (y compatibilidad legacy)
+        $(document).on('click', '.buscar-logo-trigger, .bordado-logo-picker', function (e) {
             e.preventDefault();
-            currentLogoInput = $(this).closest('.nombre-logo-container').find('.nombre-logo-input');
+            var $targetGroup = $(this).closest('.input-group');
+            currentLogoInput = $targetGroup.find('.nombre-logo-input, .bordado-logo-input').first();
+            if (!currentLogoInput || !currentLogoInput.length || currentLogoInput.prop('disabled')) {
+                currentLogoInput = null;
+                return;
+            }
             if (logoModal) logoModal.show();
         });
 
@@ -775,7 +824,7 @@
                 // Cerrar modal antes de agregar
                 cerrarModalSeguro();
                 // Agregar item
-                addProductItem(producto.id, 1, producto.precio_base, '', false, '', '', '', '', 1);
+                addProductItem(producto.id, 1, producto.precio_base, '', false, '', '', '', []);
                 // Recalcular
                 calculateCotizacionTotals();
             }
@@ -916,7 +965,417 @@
         // === FIN LÓGICA MODAL DE TALLAS ===
         // ============================================================
 
-        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', ubicacionLogo = '', cantidadLogo = 1) {
+        // ============================================================
+        // === INICIO LÓGICA MODAL DE UBICACIÓN DE BORDADO ===
+        // ============================================================
+        var ubicacionModal = null;
+        var ubicacionModalEl = document.getElementById('ubicacionCatalogoModal');
+        var currentBordadoCard = null;
+        var ubicacionesBordadoArray = [];
+
+        if (ubicacionModalEl) {
+            ubicacionModal = new bootstrap.Modal(ubicacionModalEl);
+        }
+
+        function cargarUbicacionesBordado(callback) {
+            $.get("{{ route('cotizaciones.ubicacionesBordado.data') }}", function (data) {
+                ubicacionesBordadoArray = Array.isArray(data) ? data : [];
+                if (typeof callback === 'function') callback();
+            });
+        }
+
+        cargarUbicacionesBordado();
+
+        function getCardBordados($card) {
+            var bordados = $card.data('bordados');
+            return Array.isArray(bordados) ? bordados : [];
+        }
+
+        function setCardBordados($card, bordados) {
+            var normalized = Array.isArray(bordados) ? bordados.map(function (item) {
+                return {
+                    ubicacion_bordado_id: item.ubicacion_bordado_id || null,
+                    nombre_aplicado: item.nombre_aplicado || '',
+                    nombre_logo: item.nombre_logo || item.nombre_logo_aplicado || '',
+                    es_personalizada: !!item.es_personalizada,
+                    precio_aplicado: parseFloat(item.precio_aplicado || 0),
+                    cantidad: Math.max(1, parseInt(item.cantidad || 1, 10))
+                };
+            }) : [];
+
+            $card.data('bordados', normalized);
+        }
+
+        function calcularRecargoUnitarioBordadoDesdeLista(bordados) {
+            if (!Array.isArray(bordados) || !bordados.length) return 0;
+            return bordados.reduce(function (acc, item) {
+                var precio = parseFloat(item.precio_aplicado) || 0;
+                var cantidad = Math.max(1, parseInt(item.cantidad || 1, 10));
+                return acc + (precio * cantidad);
+            }, 0);
+        }
+
+        function sincronizarCamposOcultosBordados($card) {
+            var container = $card.find('.bordados-hidden-fields');
+            container.empty();
+
+            var bordados = getCardBordados($card);
+            var logosUnicos = [];
+            bordados.forEach(function (item, idx) {
+                var logoNombre = String(item.nombre_logo || '').trim();
+                if (logoNombre && logosUnicos.indexOf(logoNombre) === -1) {
+                    logosUnicos.push(logoNombre);
+                }
+
+                var fields = [
+                    { key: 'ubicacion_bordado_id', value: item.ubicacion_bordado_id || '' },
+                    { key: 'nombre_aplicado', value: item.nombre_aplicado || '' },
+                    { key: 'nombre_logo', value: logoNombre },
+                    { key: 'es_personalizada', value: item.es_personalizada ? 1 : 0 },
+                    { key: 'precio_aplicado', value: parseFloat(item.precio_aplicado || 0).toFixed(2) },
+                    { key: 'cantidad', value: Math.max(1, parseInt(item.cantidad || 1, 10)) }
+                ];
+
+                fields.forEach(function (field) {
+                    container.append(
+                        '<input type="hidden" name="productos[' + $card.data('product-index') + '][bordados][' + idx + '][' + field.key + ']" value="' + field.value + '">' 
+                    );
+                });
+            });
+
+            $card.find('.nombre-logo-legacy-input').val(logosUnicos.join(', '));
+        }
+
+        function actualizarResumenBordadosEnCard($card) {
+            var bordados = getCardBordados($card);
+            var resumenInput = $card.find('.bordados-summary-input');
+
+            if (!bordados.length) {
+                resumenInput.val('Sin configuración de bordado');
+            } else {
+                var resumenItems = bordados.map(function (item) {
+                    var cantidad = Math.max(1, parseInt(item.cantidad || 1, 10));
+                    var precio = formatMoney(parseFloat(item.precio_aplicado || 0));
+                    var logo = String(item.nombre_logo || '').trim();
+                    var logoTexto = logo ? (logo + ' → ') : '';
+                    return logoTexto + item.nombre_aplicado + ' x' + cantidad + ' (' + precio + ')';
+                });
+
+                var resumen = resumenItems.length > 2
+                    ? resumenItems.slice(0, 2).join(' · ') + ' · +' + (resumenItems.length - 2) + ' más'
+                    : resumenItems.join(' · ');
+
+                resumenInput.val(resumen);
+            }
+
+            var recargo = calcularRecargoUnitarioBordadoDesdeLista(bordados);
+            var base = parseFloat($card.find('.precio-unitario-input').val()) || 0;
+            var finalUnit = base + recargo;
+            var llevaBordado = parseInt($card.find('.lleva-bordado-value').val() || 0, 10) === 1;
+            actualizarPanelResumenMonetario($card, recargo, finalUnit, llevaBordado);
+            sincronizarCamposOcultosBordados($card);
+        }
+
+        function actualizarPanelResumenMonetario($card, recargo, finalUnit, llevaBordado) {
+            var cantidad = parseFloat($card.find('.cantidad-input').val()) || 0;
+            var totalLinea = finalUnit * cantidad;
+            var $totalLineaEl = $card.find('.bordado-linea-total-value');
+            var totalAnterior = parseFloat(($totalLineaEl.data('total-prev') || 0));
+
+            $card.find('.bordado-recargo-value').text(formatMoney(recargo));
+            $card.find('.bordado-final-value').text(formatMoney(finalUnit));
+            $totalLineaEl.text(formatMoney(totalLinea));
+
+            if (Math.abs(totalLinea - totalAnterior) > 0.0001) {
+                $totalLineaEl.addClass('total-updated');
+                setTimeout(function () {
+                    $totalLineaEl.removeClass('total-updated');
+                }, 380);
+            }
+
+            $totalLineaEl.data('total-prev', totalLinea);
+
+            var bordadosCount = getCardBordados($card).length;
+            var estadoTexto = !llevaBordado
+                ? 'Servicio de bordado inactivo'
+                : (bordadosCount > 0 ? 'Configuración aplicada' : 'Pendiente de configurar logos y ubicaciones');
+            $card.find('.bordado-resumen-estado').text(estadoTexto);
+        }
+
+        function renderizarUbicacionesModal(filtro) {
+            var grid = $('#ubicacionesCatalogoGrid');
+            grid.empty();
+            filtro = (filtro || '').toLowerCase().trim();
+
+            var bordadosActivos = currentBordadoCard ? getCardBordados(currentBordadoCard) : [];
+            var grouped = {};
+            ubicacionesBordadoArray.forEach(function (item) {
+                var nombre = String(item.nombre || '').trim();
+                var grupo = String(item.grupo || 'General').trim();
+                if (!nombre) return;
+                if (filtro && nombre.toLowerCase().indexOf(filtro) === -1 && grupo.toLowerCase().indexOf(filtro) === -1) return;
+
+                if (!grouped[grupo]) grouped[grupo] = [];
+                grouped[grupo].push(item);
+            });
+
+            var nombresGrupos = Object.keys(grouped);
+            if (!nombresGrupos.length) {
+                grid.html('<div class="text-center text-muted py-4"><i class="ri-map-pin-line d-block" style="font-size:2rem;opacity:0.3;"></i><small>No se encontraron ubicaciones</small></div>');
+                return;
+            }
+
+            nombresGrupos.sort(function (a, b) { return a.localeCompare(b, 'es', { sensitivity: 'base' }); });
+            nombresGrupos.forEach(function (grupo) {
+                grid.append('<div class="color-grupo-header">' + grupo + '</div>');
+
+                grouped[grupo].forEach(function (item) {
+                    var found = bordadosActivos.find(function (b) {
+                        return !b.es_personalizada && String(b.ubicacion_bordado_id) === String(item.id);
+                    });
+
+                    var checked = !!found;
+                    var precio = found ? parseFloat(found.precio_aplicado || item.precio_base || 0) : parseFloat(item.precio_base || 0);
+                    var cantidad = found ? Math.max(1, parseInt(found.cantidad || 1, 10)) : 1;
+                    var logoNombre = found ? String(found.nombre_logo || '').trim() : '';
+
+                    grid.append(
+                        '<div class="mb-2 border rounded px-2 py-2 ubicacion-std-row" style="border-color:rgba(30,60,114,0.18)!important;">' +
+                        '  <div class="d-flex align-items-center gap-2">' +
+                        '    <input type="checkbox" class="form-check-input mt-0 ubicacion-std-check" data-id="' + item.id + '" data-nombre="' + item.nombre + '" ' + (checked ? 'checked' : '') + '>' +
+                        '    <div class="flex-grow-1">' +
+                        '      <div class="fw-semibold" style="font-size:0.82rem;color:#1e3c72;">' + item.nombre + '</div>' +
+                        '      <small class="text-muted">Base catálogo: $' + parseFloat(item.precio_base || 0).toFixed(2) + '</small>' +
+                        '    </div>' +
+                        '    <div style="width:95px;">' +
+                        '      <input type="number" class="form-control form-control-sm ubicacion-std-precio" step="0.01" min="0" value="' + precio.toFixed(2) + '">' +
+                        '    </div>' +
+                        '    <div style="width:75px;">' +
+                        '      <input type="number" class="form-control form-control-sm ubicacion-std-cantidad text-center" step="1" min="1" value="' + cantidad + '">' +
+                        '    </div>' +
+                        '  </div>' +
+                        '  <div class="input-group input-group-sm mt-2">' +
+                        '    <input type="text" class="form-control bordado-logo-input ubicacion-std-logo" placeholder="Logo para esta ubicación" value="' + logoNombre + '" readonly autocomplete="off" style="background-color:#fff;cursor:default;" ' + (checked ? '' : 'disabled') + '>' +
+                        '    <button type="button" class="btn btn-sm btn-atlantico-brand bordado-logo-picker" ' + (checked ? '' : 'disabled') + '>' +
+                        '      <i class="ri-search-line" style="color:#fff;"></i>' +
+                        '    </button>' +
+                        '  </div>' +
+                        '</div>'
+                    );
+                });
+            });
+
+            actualizarResumenRecargoModal();
+        }
+
+        function renderizarUbicacionesPersonalizadasModal() {
+            var container = $('#ubicacionesPersonalizadasContainer');
+            container.empty();
+
+            if (!currentBordadoCard) return;
+
+            var customItems = getCardBordados(currentBordadoCard).filter(function (item) {
+                return !!item.es_personalizada;
+            });
+
+            if (!customItems.length) {
+                container.html('<small class="text-muted">No hay ubicaciones personalizadas.</small>');
+                return;
+            }
+
+            customItems.forEach(function (item) {
+                container.append(crearFilaUbicacionPersonalizada(item.nombre_aplicado, item.precio_aplicado, item.cantidad, item.nombre_logo));
+            });
+        }
+
+        function crearFilaUbicacionPersonalizada(nombre, precio, cantidad, logoNombre) {
+            return '<div class="d-flex flex-column gap-2 ubicacion-personalizada-row border rounded p-2" style="border-color:rgba(30,60,114,0.18)!important;">' +
+                '  <div class="d-flex align-items-center gap-2">' +
+                '    <input type="text" class="form-control form-control-sm ubicacion-personalizada-nombre" placeholder="Ubicación especial..." value="' + (nombre || '') + '">' +
+                '    <input type="number" class="form-control form-control-sm ubicacion-personalizada-precio" style="max-width:100px;" step="0.01" min="0" value="' + (parseFloat(precio || 0)).toFixed(2) + '">' +
+                '    <input type="number" class="form-control form-control-sm ubicacion-personalizada-cantidad text-center" style="max-width:75px;" step="1" min="1" value="' + (Math.max(1, parseInt(cantidad || 1, 10))) + '">' +
+                '    <button type="button" class="btn btn-sm btn-outline-danger eliminar-ubicacion-personalizada-btn"><i class="ri-delete-bin-line"></i></button>' +
+                '  </div>' +
+                '  <div class="input-group input-group-sm">' +
+                '    <input type="text" class="form-control form-control-sm bordado-logo-input ubicacion-personalizada-logo" placeholder="Logo para esta ubicación" value="' + (logoNombre || '') + '" readonly autocomplete="off" style="background-color:#fff;cursor:default;">' +
+                '    <button type="button" class="btn btn-sm btn-atlantico-brand bordado-logo-picker"><i class="ri-search-line" style="color:#fff;"></i></button>' +
+                '  </div>' +
+                '</div>';
+        }
+
+        function actualizarResumenRecargoModal() {
+            var recargo = 0;
+
+            $('#ubicacionesCatalogoGrid .ubicacion-std-check:checked').each(function () {
+                var row = $(this).closest('.ubicacion-std-row');
+                var precio = parseFloat(row.find('.ubicacion-std-precio').val()) || 0;
+                var cantidad = Math.max(1, parseInt(row.find('.ubicacion-std-cantidad').val() || 1, 10));
+                recargo += (precio * cantidad);
+            });
+
+            $('#ubicacionesPersonalizadasContainer .ubicacion-personalizada-row').each(function () {
+                var nombre = String($(this).find('.ubicacion-personalizada-nombre').val() || '').trim();
+                if (!nombre) return;
+                var precio = parseFloat($(this).find('.ubicacion-personalizada-precio').val()) || 0;
+                var cantidad = Math.max(1, parseInt($(this).find('.ubicacion-personalizada-cantidad').val() || 1, 10));
+                recargo += (precio * cantidad);
+            });
+
+            $('#resumenRecargoBordadoModal').text(formatMoney(recargo));
+        }
+
+        function aplicarBordadosDesdeModal() {
+            if (!currentBordadoCard) return;
+
+            var bordados = [];
+            var erroresLogo = [];
+
+            $('#ubicacionesCatalogoGrid .ubicacion-std-check:checked').each(function () {
+                var row = $(this).closest('.ubicacion-std-row');
+                var ubicacionId = $(this).data('id');
+                var nombre = $(this).data('nombre');
+                var precio = parseFloat(row.find('.ubicacion-std-precio').val()) || 0;
+                var cantidad = Math.max(1, parseInt(row.find('.ubicacion-std-cantidad').val() || 1, 10));
+                var logo = String(row.find('.ubicacion-std-logo').val() || '').trim();
+
+                if (!logo) {
+                    erroresLogo.push('Asigna un logo para: ' + nombre);
+                    return;
+                }
+
+                bordados.push({
+                    ubicacion_bordado_id: ubicacionId,
+                    nombre_aplicado: nombre,
+                    nombre_logo: logo,
+                    es_personalizada: false,
+                    precio_aplicado: precio,
+                    cantidad: cantidad
+                });
+            });
+
+            $('#ubicacionesPersonalizadasContainer .ubicacion-personalizada-row').each(function () {
+                var nombre = String($(this).find('.ubicacion-personalizada-nombre').val() || '').trim();
+                if (!nombre) return;
+                var precio = parseFloat($(this).find('.ubicacion-personalizada-precio').val()) || 0;
+                var cantidad = Math.max(1, parseInt($(this).find('.ubicacion-personalizada-cantidad').val() || 1, 10));
+                var logo = String($(this).find('.ubicacion-personalizada-logo').val() || '').trim();
+
+                if (!logo) {
+                    erroresLogo.push('Asigna un logo para ubicación personalizada: ' + nombre);
+                    return;
+                }
+
+                bordados.push({
+                    ubicacion_bordado_id: null,
+                    nombre_aplicado: nombre,
+                    nombre_logo: logo,
+                    es_personalizada: true,
+                    precio_aplicado: precio,
+                    cantidad: cantidad
+                });
+            });
+
+            if (erroresLogo.length) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Logo requerido',
+                    text: erroresLogo[0],
+                    customClass: {
+                        confirmButton: 'btn btn-primary w-xs me-2',
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+                return;
+            }
+
+            setCardBordados(currentBordadoCard, bordados);
+            actualizarResumenBordadosEnCard(currentBordadoCard);
+            calculateCotizacionTotals();
+
+            if (ubicacionModal) ubicacionModal.hide();
+        }
+
+        if (ubicacionModalEl) {
+            ubicacionModalEl.addEventListener('shown.bs.modal', function () {
+                $('#buscarUbicacionModal').val('').trigger('focus');
+
+                if (!ubicacionesBordadoArray.length) {
+                    $('#ubicacionesCatalogoGrid').html('<div class="text-center text-muted py-4"><small>Cargando ubicaciones...</small></div>');
+                    cargarUbicacionesBordado(function () {
+                        renderizarUbicacionesPersonalizadasModal();
+                        renderizarUbicacionesModal('');
+                    });
+                    return;
+                }
+
+                renderizarUbicacionesPersonalizadasModal();
+                renderizarUbicacionesModal('');
+            });
+
+            ubicacionModalEl.addEventListener('hidden.bs.modal', function () {
+                if ($('#showModal').hasClass('show')) {
+                    $('body').addClass('modal-open');
+                    var backdrops = $('.modal-backdrop');
+                    if (backdrops.length > 1) {
+                        backdrops.not(backdrops.first()).remove();
+                    }
+                }
+            });
+        }
+
+        $('#buscarUbicacionModal').on('keyup', function () {
+            renderizarUbicacionesModal($(this).val());
+        });
+
+        $(document).on('change', '.ubicacion-std-check', function () {
+            var row = $(this).closest('.ubicacion-std-row');
+            var enabled = $(this).is(':checked');
+            row.find('.ubicacion-std-logo, .bordado-logo-picker').prop('disabled', !enabled);
+            if (!enabled) {
+                row.find('.ubicacion-std-logo').val('');
+            }
+            actualizarResumenRecargoModal();
+        });
+
+        $('#productos-container').on('click', '.configurar-bordados-trigger', function (e) {
+            e.preventDefault();
+            currentBordadoCard = $(this).closest('.product-item');
+            if (ubicacionModal) ubicacionModal.show();
+        });
+
+        $('#productos-container').on('click', '.bordados-summary-input', function () {
+            currentBordadoCard = $(this).closest('.product-item');
+            if (ubicacionModal) ubicacionModal.show();
+        });
+
+        $(document).on('input change', '.ubicacion-std-check, .ubicacion-std-precio, .ubicacion-std-cantidad, .ubicacion-personalizada-precio, .ubicacion-personalizada-cantidad, .ubicacion-personalizada-nombre', function () {
+            actualizarResumenRecargoModal();
+        });
+
+        $('#agregarUbicacionPersonalizadaBtn').on('click', function () {
+            var container = $('#ubicacionesPersonalizadasContainer');
+            if (container.find('small.text-muted').length) container.empty();
+            container.append(crearFilaUbicacionPersonalizada('', 0, 1, ''));
+        });
+
+        $(document).on('click', '.eliminar-ubicacion-personalizada-btn', function () {
+            $(this).closest('.ubicacion-personalizada-row').remove();
+            if (!$('#ubicacionesPersonalizadasContainer .ubicacion-personalizada-row').length) {
+                $('#ubicacionesPersonalizadasContainer').html('<small class="text-muted">No hay ubicaciones personalizadas.</small>');
+            }
+            actualizarResumenRecargoModal();
+        });
+
+        $('#aplicarUbicacionesBordadoBtn').on('click', function () {
+            aplicarBordadosDesdeModal();
+        });
+
+        // ============================================================
+        // === FIN LÓGICA MODAL DE UBICACIÓN DE BORDADO ===
+        // ============================================================
+
+        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', bordados = []) {
             var productoDisplay = 'Clic para buscar producto...';
             var textClass = 'text-muted';
             var cardVariant = productItemIndex % 2;
@@ -1025,7 +1484,7 @@
                                 placeholder="0" min="1" value="${cantidad}" required />
                         </div>
                         <div class="col-6 col-md-3">
-                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Precio Unit. ($)</label>
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;">Precio Base ($)</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text text-success"
                                     style="background: rgba(46,204,113,0.1); border-color: #2ecc71;">$</span>
@@ -1040,7 +1499,7 @@
                     <!-- Fila 3: Notas + Servicio de Bordado -->
                     <div class="row g-2">
                         <div class="col-md-8">
-                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-file-text-line me-1"></i>Notas</label>
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-file-text-line me-1"></i>Notas del producto</label>
                             <textarea name="productos[${productItemIndex}][descripcion]"
                                 class="form-control form-control-sm"
                                 placeholder="Notas u observaciones (opcional)"
@@ -1065,38 +1524,42 @@
                         </div>
                     </div>
 
-                    <!-- Contenedor Logo (condicional) -->
+                    <!-- Contenedor Servicio de Bordado (condicional) -->
                     <div class="row g-2 mt-1 nombre-logo-container" style="display: ${llevaBordadoActivo ? 'flex' : 'none'}">
-                        <div class="col-4">
-                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-image-line me-1"></i>Logo</label>
+                        <div class="col-12">
+                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-map-pin-line me-1"></i>Configuración del servicio</label>
                             <div class="input-group input-group-sm">
-                                <input type="text" name="productos[${productItemIndex}][nombre_logo]"
-                                    class="form-control form-control-sm nombre-logo-input"
-                                    placeholder="Nombre del logo" value="${nombreLogo}"
-                                    readonly style="cursor: default; background-color: #fff;" />
+                                <input type="text"
+                                    class="form-control form-control-sm ubicacion-logo-input bordados-summary-input"
+                                    placeholder="Configurar servicio de bordado completo..."
+                                    value=""
+                                    readonly autocomplete="off"
+                                    style="background-color: #fff !important;" />
                                 <button type="button"
-                                    class="btn btn-sm btn-atlantico-brand buscar-logo-trigger"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    title="Logos">
-                                    <i class="ri-search-line" style="color:#fff;"></i>
+                                    class="btn btn-sm btn-atlantico-brand configurar-bordados-trigger"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Configurar servicio">
+                                    <i class="ri-settings-3-line" style="color:#fff;"></i>
                                 </button>
                             </div>
-                        </div>
-                        <div class="col-3">
-                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-hashtag me-1"></i>Cant. Logos</label>
-                            <input type="number" name="productos[${productItemIndex}][cantidad_logo]"
-                                class="form-control form-control-sm text-center cantidad-logo-input"
-                                placeholder="Cant." min="1" value="${cantidadLogo || 1}" />
-                        </div>
-                        <div class="col-5">
-                            <label class="form-label mb-1 small fw-medium" style="color:#495057;"><i class="ri-map-pin-line me-1"></i>Ubicación</label>
-                            <input type="text" name="productos[${productItemIndex}][ubicacion_logo]"
-                                class="form-control form-control-sm ubicacion-logo-input"
-                                placeholder="Ej: Frontal Izquierdo..."
-                                list="ubicacion-bordado-sugeridas"
-                                autocomplete="off"
-                                value="${ubicacionLogo || ''}" />
+                            <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" class="nombre-logo-legacy-input" value="${nombreLogo || ''}" />
+                            <div class="bordados-hidden-fields"></div>
+                            <small class="text-muted">Define logos, ubicaciones, cantidades y tarifas del servicio de bordado.</small>
+                            <div class="bordado-resumen-box p-2 mt-2">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="bordado-resumen-title">Recargo unitario por bordado</span>
+                                    <span class="badge bg-soft-info text-atlantico-dark bordado-recargo-value">$0.00</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="bordado-resumen-title">Precio final unitario</span>
+                                    <span class="bordado-resumen-value bordado-final-value">$0.00</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="bordado-resumen-title">Total de la línea</span>
+                                    <span class="bordado-resumen-value bordado-linea-total-value">$0.00</span>
+                                </div>
+                                <div class="text-muted mt-1 bordado-resumen-estado">Pendiente de configurar logos y ubicaciones</div>
+                            </div>
                         </div>
                     </div>
 
@@ -1108,6 +1571,12 @@
             $('#productos-container .card').last().find('[data-bs-toggle="tooltip"]').each(function () {
                 new bootstrap.Tooltip(this, { trigger: 'hover' });
             });
+
+            var $newCard = $('#productos-container .card').last();
+            setCardBordados($newCard, Array.isArray(bordados) ? bordados : []);
+            $newCard.find('.bordados-summary-input').val('Sin configuración de bordado');
+            actualizarResumenBordadosEnCard($newCard);
+
             productItemIndex++;
             reindexProductItems(); // Re-secuenciar tras agregar
         }
@@ -1185,23 +1654,33 @@
             var container = $card.find('.nombre-logo-container');
             if (selectedValue === 1) {
                 container.show();
-                container.find('.nombre-logo-input, .ubicacion-logo-input, .cantidad-logo-input').prop('required', true);
             } else {
                 container.hide();
-                container.find('.nombre-logo-input, .ubicacion-logo-input, .cantidad-logo-input').val('').prop('required', false);
+                container.find('.nombre-logo-legacy-input').val('');
+                setCardBordados($card, []);
+                actualizarResumenBordadosEnCard($card);
+                $card.find('.lleva-bordado-value').val(0);
             }
+
+            calculateCotizacionTotals();
         });
 
         // Calcular el total de la cotización y el restante
         function calculateCotizacionTotals() {
             let sum = 0;
             $('#productos-container .product-item').each(function () {
-                let quantity = parseFloat($(this).find('.cantidad-input').val()) || 0;
-                let price = parseFloat($(this).find('.precio-unitario-input').val()) || 0;
-                sum += (quantity * price);
+                var $card = $(this);
+                let quantity = parseFloat($card.find('.cantidad-input').val()) || 0;
+                let basePrice = parseFloat($card.find('.precio-unitario-input').val()) || 0;
+                let llevaBordado = parseInt($card.find('.lleva-bordado-value').val() || 0, 10) === 1;
+                let recargoBordado = llevaBordado ? calcularRecargoUnitarioBordadoDesdeLista(getCardBordados($card)) : 0;
+                let finalUnitPrice = basePrice + recargoBordado;
+
+                actualizarPanelResumenMonetario($card, recargoBordado, finalUnitPrice, llevaBordado);
+                sum += (quantity * finalUnitPrice);
             });
             $('#total-display-field').val(sum.toFixed(2));
-            $('#total-display-value').text('$' + sum.toFixed(2));
+            $('#total-display-value').text(formatMoney(sum));
             updateCotizacionRemaining();
         }
         function updateCotizacionRemaining() {
@@ -1220,7 +1699,7 @@
             $(this).closest('.card').find('.precio-unitario-input').val(precio);
 
             if (precio) {
-                spanPrecio.text('$' + parseFloat(precio).toFixed(2));
+                spanPrecio.text(formatMoney(parseFloat(precio)));
             } else {
                 spanPrecio.text('');
             }
@@ -1347,17 +1826,23 @@
                     if (data.productos && data.productos.length > 0) {
                         productItemIndex = 0;
                         data.productos.forEach(function (detalle) {
+                            var recargoUnitario = (detalle.bordados || []).reduce(function (acc, bordado) {
+                                var precio = parseFloat(bordado.precio_aplicado || 0);
+                                var cantidad = Math.max(1, parseInt(bordado.cantidad || 1, 10));
+                                return acc + (precio * cantidad);
+                            }, 0);
+                            var precioBase = Math.max(0, (parseFloat(detalle.precio_unitario || 0) - recargoUnitario));
+
                             addProductItem(
                                 detalle.producto_id,
                                 detalle.cantidad,
-                                detalle.precio_unitario,
+                                precioBase,
                                 detalle.descripcion,
                                 detalle.lleva_bordado,
                                 detalle.nombre_logo,
                                 detalle.color || '',
                                 detalle.talla,
-                                detalle.ubicacion_logo,
-                                detalle.cantidad_logo
+                                detalle.bordados || []
                             );
                         });
                     }
@@ -1579,13 +2064,13 @@
                                                 <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
                                             </div>
                                             <div class="row g-2">
-                                                <div class="col-6">
+                                                <div class="col-12">
                                                     <small class="text-muted">Logo:</small>
-                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.nombre_logo || 'N/A'}</span>
+                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${(item.bordados && item.bordados.length) ? Array.from(new Set(item.bordados.map(function (b) { return b.nombre_logo || b.nombre_logo_aplicado || ''; }).filter(Boolean))).join(', ') : (item.nombre_logo || 'N/A')}</span>
                                                 </div>
-                                                <div class="col-6">
-                                                    <small class="text-muted">Ubicación:</small>
-                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.ubicacion_logo || 'N/A'}</span>
+                                                <div class="col-12">
+                                                    <small class="text-muted">Ubicaciones:</small>
+                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${(item.bordados && item.bordados.length) ? item.bordados.map(function (b) { return (b.nombre_logo || b.nombre_logo_aplicado || 'Logo') + ' → ' + b.nombre_aplicado + ' x' + (b.cantidad || 1); }).join(', ') : 'N/A'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1611,7 +2096,7 @@
                         productosBody.append('<p class="text-muted text-center py-4"><i class="ri-file-list-3-line fs-1 d-block mb-2"></i>No hay productos en esta cotización.</p>');
                     }
                     // Formatear el total
-                    $('#view-total').text('$' + parseFloat(data.total).toFixed(2));
+                    $('#view-total').text(formatMoney(parseFloat(data.total || 0)));
                     // Establecer enlace PDF
                     $('#view-pdf-btn').attr('href', '/cotizaciones/' + id + '/pdf');
                     $('#viewModal').modal('show');

@@ -139,6 +139,9 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         // Tallas
         Route::get('tallas-data', [TallaController::class, 'getTallas'])->name('tallas.data');
 
+        // Ubicaciones de bordado (catálogo)
+        Route::get('cotizaciones-ubicaciones-bordado-data', [CotizacionController::class, 'getUbicacionesBordado'])->name('cotizaciones.ubicacionesBordado.data');
+
         // Productos
         Route::resource('productos', ProductoController::class);
         Route::get('productos-data', [ProductoController::class, 'getProductos'])->name('productos.data');

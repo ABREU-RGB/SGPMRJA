@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\DetallePedido;
+use App\Models\DetallePedidoBordado;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -107,6 +108,13 @@ class PedidoService
             } else {
                 $producto = Producto::find($item['producto_id']);
                 $precio = $producto->precio_base;
+
+                if (!empty($item['lleva_bordado']) && is_array($item['bordados'] ?? null)) {
+                    $precio += collect($item['bordados'])->sum(function ($bordado) {
+                        $cantidad = max(1, (int) ($bordado['cantidad'] ?? 1));
+                        return ((float) ($bordado['precio_aplicado'] ?? 0)) * $cantidad;
+                    });
+                }
             }
             $total += $precio * $item['cantidad'];
         }
@@ -127,19 +135,48 @@ class PedidoService
                 $precioUnitario = $producto->precio_base;
             }
 
-            DetallePedido::create([
+            $bordados = is_array($item['bordados'] ?? null) ? $item['bordados'] : [];
+
+            $detalle = DetallePedido::create([
                 'pedido_id' => $pedido->id,
                 'producto_id' => $item['producto_id'],
                 'cantidad' => $item['cantidad'],
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                'nombre_logo' => $item['nombre_logo'] ?? null,
-                'ubicacion_logo' => $item['ubicacion_logo'] ?? null,
-                'cantidad_logo' => $item['cantidad_logo'] ?? null,
+                'nombre_logo' => $this->resolverNombreLogoDetalle($item, $bordados),
                 'color' => $item['color'] ?? null,
                 'talla' => $item['talla'] ?? null,
                 'precio_unitario' => $precioUnitario,
             ]);
+
+            foreach ($bordados as $index => $bordado) {
+                DetallePedidoBordado::create([
+                    'detalle_pedido_id' => $detalle->id,
+                    'ubicacion_bordado_id' => $bordado['ubicacion_bordado_id'] ?? null,
+                    'nombre_aplicado' => trim((string) ($bordado['nombre_aplicado'] ?? '')),
+                    'nombre_logo_aplicado' => trim((string) ($bordado['nombre_logo'] ?? $item['nombre_logo'] ?? '')),
+                    'es_personalizada' => (bool) ($bordado['es_personalizada'] ?? false),
+                    'cantidad' => max(1, (int) ($bordado['cantidad'] ?? 1)),
+                    'precio_aplicado' => (float) ($bordado['precio_aplicado'] ?? 0),
+                    'orden' => (int) $index,
+                ]);
+            }
         }
+    }
+
+    private function resolverNombreLogoDetalle(array $item, array $bordados): ?string
+    {
+        $logos = collect($bordados)
+            ->map(fn($bordado) => trim((string) ($bordado['nombre_logo'] ?? '')))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($logos->isNotEmpty()) {
+            return mb_substr($logos->implode(', '), 0, 100);
+        }
+
+        $legacy = trim((string) ($item['nombre_logo'] ?? ''));
+        return $legacy !== '' ? mb_substr($legacy, 0, 100) : null;
     }
 }

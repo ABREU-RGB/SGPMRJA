@@ -82,7 +82,8 @@
         #productosModalCotizacion .modal-header,
         #productosModalCotizacion-header,
         #colorCatalogoModal .modal-header,
-        #tallaCatalogoModal .modal-header {
+        #tallaCatalogoModal .modal-header,
+        #ubicacionCatalogoModal .modal-header {
             background-color: #132649 !important;
             /* = var(--vz-header-bg) con data-topbar=dark, app.css:3873 */
             background-image: none !important;
@@ -101,7 +102,8 @@
         #productosModalCotizacion .modal-header .modal-title,
         #logoSearchModal .modal-header .modal-title,
         #colorCatalogoModal .modal-header .modal-title,
-        #tallaCatalogoModal .modal-header .modal-title {
+        #tallaCatalogoModal .modal-header .modal-title,
+        #ubicacionCatalogoModal .modal-header .modal-title {
             color: #ffffff !important;
         }
 
@@ -164,6 +166,10 @@
         /* El input-group que contiene el buscar-logo-trigger:
                                cuando el input adyacente tiene foco, alinear el borde del botón */
         .nombre-logo-input:focus+.buscar-logo-trigger {
+            border-color: #00d9a5 !important;
+        }
+
+        .ubicacion-logo-input:focus+.configurar-bordados-trigger {
             border-color: #00d9a5 !important;
         }
 

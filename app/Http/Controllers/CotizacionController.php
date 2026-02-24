@@ -9,6 +9,7 @@ use App\Models\Pedido;
 use App\Models\Insumo;
 use App\Models\Banco;
 use App\Models\Cliente;
+use App\Models\BordadoUbicacion;
 use App\Services\CotizacionService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -104,6 +105,17 @@ class CotizacionController extends Controller
             ->make(true);
     }
 
+    public function getUbicacionesBordado()
+    {
+        $catalogo = BordadoUbicacion::activo()
+            ->orderBy('grupo')
+            ->orderBy('orden')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'grupo', 'precio_base', 'orden']);
+
+        return response()->json($catalogo);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -116,7 +128,7 @@ class CotizacionController extends Controller
             'productos.*.cantidad' => 'required|integer|min:1',
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
-            'productos.*.nombre_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
+            'productos.*.nombre_logo' => 'nullable|string|max:100',
             'productos.*.talla' => [
                 'required',
                 Rule::exists('tallas', 'nombre')->where(function ($query) {
@@ -126,8 +138,13 @@ class CotizacionController extends Controller
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
-            'productos.*.ubicacion_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
-            'productos.*.cantidad_logo' => 'nullable|integer|min:1|required_if:productos.*.lleva_bordado,true',
+            'productos.*.bordados' => 'nullable|array|required_if:productos.*.lleva_bordado,true|min:1',
+            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicaciones,id',
+            'productos.*.bordados.*.nombre_aplicado' => 'required|string|max:120',
+            'productos.*.bordados.*.nombre_logo' => 'required|string|max:120',
+            'productos.*.bordados.*.es_personalizada' => 'nullable|boolean',
+            'productos.*.bordados.*.precio_aplicado' => 'required|numeric|min:0',
+            'productos.*.bordados.*.cantidad' => 'nullable|integer|min:1',
         ], [
             // Mensajes personalizados
             'cliente_id.required' => 'Debe seleccionar un cliente.',
@@ -144,11 +161,15 @@ class CotizacionController extends Controller
             'productos.*.cantidad.integer' => 'La cantidad debe ser un número entero.',
             'productos.*.cantidad.min' => 'La cantidad debe ser al menos 1.',
             'productos.*.descripcion.max' => 'La descripción no puede exceder 500 caracteres.',
-            'productos.*.nombre_logo.required_if' => 'El nombre del logo es obligatorio cuando lleva bordado.',
             'productos.*.nombre_logo.max' => 'El nombre del logo no puede exceder 100 caracteres.',
-            'productos.*.ubicacion_logo.required_if' => 'La ubicación del logo es obligatoria cuando lleva bordado.',
-            'productos.*.cantidad_logo.required_if' => 'La cantidad de logos es obligatoria cuando lleva bordado.',
-            'productos.*.cantidad_logo.min' => 'La cantidad de logos debe ser al menos 1.',
+            'productos.*.bordados.required_if' => 'Debe seleccionar al menos una ubicación de bordado.',
+            'productos.*.bordados.min' => 'Debe seleccionar al menos una ubicación de bordado.',
+            'productos.*.bordados.*.nombre_aplicado.required' => 'Cada bordado debe tener un nombre de ubicación.',
+            'productos.*.bordados.*.nombre_logo.required' => 'Cada bordado debe tener un logo asignado.',
+            'productos.*.bordados.*.precio_aplicado.required' => 'Cada bordado debe tener un precio aplicado.',
+            'productos.*.bordados.*.precio_aplicado.numeric' => 'El precio aplicado de cada bordado debe ser numérico.',
+            'productos.*.bordados.*.precio_aplicado.min' => 'El precio aplicado de cada bordado no puede ser negativo.',
+            'productos.*.bordados.*.cantidad.min' => 'La cantidad de cada bordado debe ser al menos 1.',
             'productos.*.talla.required' => 'La talla es obligatoria.',
             'productos.*.talla.exists' => 'La talla seleccionada no es válida.',
             'productos.*.insumos.*.id.required' => 'Debe seleccionar un insumo.',
@@ -166,7 +187,7 @@ class CotizacionController extends Controller
     public function show($id)
     {
         // Cargar cliente incluso si está eliminado (soft deleted)
-        $cotizacion = Cotizacion::with(['user:id,name', 'productos.producto.tipoProducto'])
+        $cotizacion = Cotizacion::with(['user:id,name', 'productos.producto.tipoProducto', 'productos.bordados'])
             ->with([
                 'cliente' => function ($query) {
                     $query->withTrashed()->with('persona');
@@ -209,7 +230,7 @@ class CotizacionController extends Controller
             'productos.*.cantidad' => 'required|integer|min:1',
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
-            'productos.*.nombre_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
+            'productos.*.nombre_logo' => 'nullable|string|max:100',
             'productos.*.talla' => [
                 'required',
                 Rule::exists('tallas', 'nombre')->where(function ($query) {
@@ -219,8 +240,13 @@ class CotizacionController extends Controller
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
-            'productos.*.ubicacion_logo' => 'nullable|string|max:100|required_if:productos.*.lleva_bordado,true',
-            'productos.*.cantidad_logo' => 'nullable|integer|min:1|required_if:productos.*.lleva_bordado,true',
+            'productos.*.bordados' => 'nullable|array|required_if:productos.*.lleva_bordado,true|min:1',
+            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicaciones,id',
+            'productos.*.bordados.*.nombre_aplicado' => 'required|string|max:120',
+            'productos.*.bordados.*.nombre_logo' => 'required|string|max:120',
+            'productos.*.bordados.*.es_personalizada' => 'nullable|boolean',
+            'productos.*.bordados.*.precio_aplicado' => 'required|numeric|min:0',
+            'productos.*.bordados.*.cantidad' => 'nullable|integer|min:1',
         ], [
             // Mensajes personalizados
             'cliente_id.required' => 'Debe seleccionar un cliente.',
@@ -239,11 +265,15 @@ class CotizacionController extends Controller
             'productos.*.cantidad.integer' => 'La cantidad debe ser un número entero.',
             'productos.*.cantidad.min' => 'La cantidad debe ser al menos 1.',
             'productos.*.descripcion.max' => 'La descripción no puede exceder 500 caracteres.',
-            'productos.*.nombre_logo.required_if' => 'El nombre del logo es obligatorio cuando lleva bordado.',
             'productos.*.nombre_logo.max' => 'El nombre del logo no puede exceder 100 caracteres.',
-            'productos.*.ubicacion_logo.required_if' => 'La ubicación del logo es obligatoria cuando lleva bordado.',
-            'productos.*.cantidad_logo.required_if' => 'La cantidad de logos es obligatoria cuando lleva bordado.',
-            'productos.*.cantidad_logo.min' => 'La cantidad de logos debe ser al menos 1.',
+            'productos.*.bordados.required_if' => 'Debe seleccionar al menos una ubicación de bordado.',
+            'productos.*.bordados.min' => 'Debe seleccionar al menos una ubicación de bordado.',
+            'productos.*.bordados.*.nombre_aplicado.required' => 'Cada bordado debe tener un nombre de ubicación.',
+            'productos.*.bordados.*.nombre_logo.required' => 'Cada bordado debe tener un logo asignado.',
+            'productos.*.bordados.*.precio_aplicado.required' => 'Cada bordado debe tener un precio aplicado.',
+            'productos.*.bordados.*.precio_aplicado.numeric' => 'El precio aplicado de cada bordado debe ser numérico.',
+            'productos.*.bordados.*.precio_aplicado.min' => 'El precio aplicado de cada bordado no puede ser negativo.',
+            'productos.*.bordados.*.cantidad.min' => 'La cantidad de cada bordado debe ser al menos 1.',
             'productos.*.talla.required' => 'La talla es obligatoria.',
             'productos.*.talla.exists' => 'La talla seleccionada no es válida.',
             'productos.*.insumos.*.id.required' => 'Debe seleccionar un insumo.',
@@ -305,7 +335,8 @@ class CotizacionController extends Controller
             },
             'productos.producto' => function ($query) {
                 $query->withTrashed()->with('tipoProducto');
-            }
+            },
+            'productos.bordados',
         ]);
 
         // Cálculos financieros
@@ -357,7 +388,7 @@ class CotizacionController extends Controller
      */
     public function getDatosParaPedido($id)
     {
-        $cotizacion = Cotizacion::with(['cliente.persona', 'productos.producto.tipoProducto'])
+        $cotizacion = Cotizacion::with(['cliente.persona', 'productos.producto.tipoProducto', 'productos.bordados'])
             ->findOrFail($id);
 
         // Verificar que esté aprobada
@@ -381,6 +412,15 @@ class CotizacionController extends Controller
             ] : null,
             'total' => $cotizacion->total,
             'productos' => $cotizacion->productos->map(function ($detalle) {
+                $recargoUnitario = $detalle->bordados->sum(function ($bordado) {
+                    return ((float) $bordado->precio_aplicado) * ((int) ($bordado->cantidad ?: 1));
+                });
+
+                $ubicacionLegacy = $detalle->bordados->pluck('nombre_aplicado')->implode(', ');
+                $cantidadLegacy = $detalle->bordados->sum(function ($bordado) {
+                    return (int) ($bordado->cantidad ?: 1);
+                });
+
                 return [
                     'producto_id' => $detalle->producto_id,
                     'producto_nombre' => $detalle->producto ? $detalle->producto->nombre_completo : 'N/A',
@@ -388,8 +428,19 @@ class CotizacionController extends Controller
                     'descripcion' => $detalle->descripcion,
                     'lleva_bordado' => $detalle->lleva_bordado,
                     'nombre_logo' => $detalle->nombre_logo,
-                    'ubicacion_logo' => $detalle->ubicacion_logo,
-                    'cantidad_logo' => $detalle->cantidad_logo,
+                    'bordados' => $detalle->bordados->map(function ($bordado) {
+                        return [
+                            'ubicacion_bordado_id' => $bordado->ubicacion_bordado_id,
+                            'nombre_aplicado' => $bordado->nombre_aplicado,
+                            'nombre_logo' => $bordado->nombre_logo_aplicado,
+                            'es_personalizada' => (bool) $bordado->es_personalizada,
+                            'cantidad' => (int) $bordado->cantidad,
+                            'precio_aplicado' => (float) $bordado->precio_aplicado,
+                        ];
+                    })->values(),
+                    'recargo_bordado_unitario' => $recargoUnitario,
+                    'ubicacion_logo' => $ubicacionLegacy ?: null,
+                    'cantidad_logo' => $cantidadLegacy ?: null,
                     'talla' => $detalle->talla,
                     'precio_unitario' => $detalle->precio_unitario,
                 ];

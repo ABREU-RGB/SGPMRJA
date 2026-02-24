@@ -226,6 +226,22 @@
             </thead>
             <tbody>
                 @foreach($pedido->productos as $detalle)
+                    @php
+                        $ubicacionesTexto = $detalle->bordados->map(function ($b) {
+                            $cantidad = (int) ($b->cantidad ?? 1);
+                            return $b->nombre_aplicado . ($cantidad > 1 ? ' x' . $cantidad : '');
+                        })->implode(', ');
+                        $logosTexto = $detalle->bordados
+                            ->map(function ($b) {
+                                return trim((string) ($b->nombre_logo_aplicado ?? ''));
+                            })
+                            ->filter()
+                            ->unique()
+                            ->implode(', ');
+                        $cantidadBordados = $detalle->bordados->sum(function ($b) {
+                            return (int) ($b->cantidad ?? 1);
+                        });
+                    @endphp
                     <tr>
                         <td>{{ $detalle->cantidad }}</td>
                         <td>
@@ -238,10 +254,10 @@
                         <td>{{ $detalle->color ?? '-' }}</td>
                         <td>{{ $detalle->talla ?? '-' }}</td>
                         <td>
-                            @if($detalle->lleva_bordado && $detalle->nombre_logo)
-                                {{ $detalle->nombre_logo }}
-                                <br><small>Ubicación: {{ $detalle->ubicacion_logo ?? '-' }}</small>
-                                <br><small>Cantidad: {{ $detalle->cantidad_logo ?? '-' }}</small>
+                            @if($detalle->lleva_bordado)
+                                {{ $logosTexto ?: ($detalle->nombre_logo ?: '-') }}
+                                <br><small>Ubicación: {{ $ubicacionesTexto ?: '-' }}</small>
+                                <br><small>Cantidad: {{ $cantidadBordados ?: '-' }}</small>
                             @else
                                 -
                             @endif

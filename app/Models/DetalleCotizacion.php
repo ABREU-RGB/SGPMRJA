@@ -18,8 +18,6 @@ class DetalleCotizacion extends Model
         'descripcion',
         'lleva_bordado',
         'nombre_logo',
-        'ubicacion_logo',
-        'cantidad_logo',
         'color',
         'talla',
         'precio_unitario',
@@ -31,6 +29,11 @@ class DetalleCotizacion extends Model
         'precio_unitario' => 'decimal:2',
     ];
 
+    protected $appends = [
+        'ubicacion_logo',
+        'cantidad_logo',
+    ];
+
     public function cotizacion()
     {
         return $this->belongsTo(Cotizacion::class);
@@ -39,5 +42,51 @@ class DetalleCotizacion extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    public function bordados()
+    {
+        return $this->hasMany(DetalleCotizacionBordado::class, 'detalle_cotizacion_id')->orderBy('orden')->orderBy('id');
+    }
+
+    public function getUbicacionLogoAttribute()
+    {
+        if (!$this->lleva_bordado) {
+            return null;
+        }
+
+        return $this->bordados->pluck('nombre_aplicado')->implode(', ') ?: null;
+    }
+
+    public function getCantidadLogoAttribute()
+    {
+        if (!$this->lleva_bordado) {
+            return null;
+        }
+
+        $cantidad = $this->bordados->sum(function ($item) {
+            return (int) ($item->cantidad ?? 1);
+        });
+
+        return $cantidad ?: null;
+    }
+
+    public function getNombreLogoAttribute($value)
+    {
+        $logos = $this->relationLoaded('bordados')
+            ? $this->bordados->pluck('nombre_logo_aplicado')
+            : $this->bordados()->pluck('nombre_logo_aplicado');
+
+        $logos = collect($logos)
+            ->map(fn($logo) => trim((string) $logo))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($logos->isNotEmpty()) {
+            return $logos->implode(', ');
+        }
+
+        return $value;
     }
 }

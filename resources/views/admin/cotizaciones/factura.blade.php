@@ -133,14 +133,27 @@
             </thead>
             <tbody>
                 @foreach($cotizacion->productos as $detalle)
+                    @php
+                        $ubicacionesTexto = $detalle->bordados->pluck('nombre_aplicado')->implode(', ');
+                        $logosTexto = $detalle->bordados
+                            ->map(function ($item) {
+                                return trim((string) ($item->nombre_logo_aplicado ?? ''));
+                            })
+                            ->filter()
+                            ->unique()
+                            ->implode(', ');
+                        $cantidadBordados = $detalle->bordados->sum(function ($item) {
+                            return (int) ($item->cantidad ?? 1);
+                        });
+                    @endphp
                     <tr>
                         <td>{{ $detalle->cantidad }}</td>
                         <td>{{ $detalle->producto->nombre ?? '-' }}</td>
                         <td class="text-left">{{ $detalle->descripcion ?? '-' }}</td>
                         <td>{{ $detalle->talla ?? '-' }}</td>
-                        <td>{{ $detalle->lleva_bordado && $detalle->nombre_logo ? $detalle->nombre_logo : '-' }}</td>
-                        <td>{{ $detalle->lleva_bordado ? ($detalle->ubicacion_logo ?? '-') : '-' }}</td>
-                        <td>{{ $detalle->lleva_bordado ? ($detalle->cantidad_logo ?? '-') : '-' }}</td>
+                        <td>{{ $detalle->lleva_bordado ? ($logosTexto ?: ($detalle->nombre_logo ?: '-')) : '-' }}</td>
+                        <td>{{ $detalle->lleva_bordado ? ($ubicacionesTexto ?: '-') : '-' }}</td>
+                        <td>{{ $detalle->lleva_bordado ? ($cantidadBordados ?: '-') : '-' }}</td>
                         <td>{{ number_format($detalle->precio_unitario, 2) }}</td>
                         <td>{{ number_format($detalle->cantidad * $detalle->precio_unitario, 2) }}</td>
                     </tr>
