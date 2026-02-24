@@ -914,6 +914,28 @@
                                                                                             </div>
                                                                                         `;
             }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return 'N/A';
+
+                if (typeof dateStr === 'string') {
+                    var parts = dateStr.trim().split(' ');
+                    var datePart = parts[0] || '';
+                    if (/^\d{2}\/\d{2}\/\d{4}$/.test(datePart)) {
+                        return datePart;
+                    }
+                }
+
+                var date = new Date(dateStr);
+                if (isNaN(date.getTime())) return dateStr;
+
+                var day = String(date.getDate()).padStart(2, '0');
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var year = date.getFullYear();
+
+                return day + '/' + month + '/' + year;
+            }
+
             var table = $('#clientes-table').DataTable({
                 ajax: { url: "{{ route('clientes.data') }}", dataSrc: 'data' },
                 columns: [
@@ -1120,7 +1142,7 @@
                     $("#view-estado-territorial").text(data.estado_territorial || 'N/A');
                     $("#view-ciudad").text(data.ciudad || 'N/A');
                     $("#view-estatus").html(data.estatus == 1 ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>');
-                    $("#view-created").text(data.created_at || 'N/A');
+                    $("#view-created").text(formatDate(data.created_at));
                 });
             });
             $(document).on("click", ".edit-item-btn", function () {

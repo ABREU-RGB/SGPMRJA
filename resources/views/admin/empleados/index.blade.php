@@ -773,6 +773,16 @@
                 `;
             }
 
+            function formatDate(dateStr) {
+                if (!dateStr) return 'N/A';
+                var date = new Date(dateStr);
+                if (isNaN(date.getTime())) return dateStr;
+                var day = String(date.getDate()).padStart(2, '0');
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var year = date.getFullYear();
+                return day + '/' + month + '/' + year;
+            }
+
             var table = $('#empleados-table').DataTable({
                 ajax: { url: "{{ route('empleados.data') }}", dataSrc: 'data' },
                 columns: [
@@ -898,12 +908,12 @@
                     $("#view-telefono").text(data.telefono || 'N/A');
                     $("#view-direccion").text(data.direccion || 'N/A');
                     $("#view-ciudad").text(data.ciudad || 'N/A');
-                    $("#view-fecha-nacimiento").text(data.persona.fecha_nacimiento || 'N/A');
+                    $("#view-fecha-nacimiento").text(formatDate(data.persona.fecha_nacimiento));
                     $("#view-genero").text(data.persona.genero || 'N/A');
                     $("#view-codigo").text(data.codigo_empleado);
                     $("#view-cargo").text(data.cargo);
                     $("#view-departamento").text(data.departamento);
-                    $("#view-fecha-ingreso").text(data.fecha_ingreso);
+                    $("#view-fecha-ingreso").text(formatDate(data.fecha_ingreso));
                     $("#view-estado").html(data.estado == 1 ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>');
                 });
             });
