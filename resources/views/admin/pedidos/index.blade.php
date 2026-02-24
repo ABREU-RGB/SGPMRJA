@@ -100,6 +100,34 @@
         .search-box input {
             padding-left: 30px;
         }
+
+        .bg-soft-primary {
+            background-color: rgba(30, 60, 114, 0.1) !important;
+        }
+
+        .bg-soft-success {
+            background-color: rgba(0, 217, 165, 0.1) !important;
+        }
+
+        .bg-soft-warning {
+            background-color: rgba(46, 204, 113, 0.2) !important;
+        }
+
+        .text-atlantico-dark {
+            color: #1e3c72 !important;
+        }
+
+        .text-atlantico-cyan {
+            color: #00d9a5 !important;
+        }
+
+        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
+            background: rgba(30, 60, 114, 0.12) !important;
+        }
+
+        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
+            color: #1e3c72 !important;
+        }
     </style>
 @endpush
 
@@ -442,6 +470,7 @@
     </div>
 
     @include('admin.pedidos.modals.seleccionar_cotizacion')
+    @include('admin.partials.catalog_modals')
     <!-- Modal para ver detalles del Pedido -->
     <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
@@ -457,8 +486,8 @@
                         <div class="col-lg-6">
                             <!-- Card Datos del Cliente -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                <div class="card-header border-0 bg-soft-primary">
+                                    <h6 class="mb-0 text-atlantico-dark">
                                         <i class="ri-user-star-line me-2"></i>Información del Cliente
                                     </h6>
                                 </div>
@@ -518,8 +547,8 @@
 
                             <!-- Card Datos del Pedido -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(46, 204, 113, 0.1);">
-                                    <h6 class="mb-0" style="color: #2ecc71;">
+                                <div class="card-header border-0 bg-soft-primary">
+                                    <h6 class="mb-0 text-atlantico-dark">
                                         <i class="ri-calendar-todo-line me-2"></i>Datos del Pedido
                                     </h6>
                                 </div>
@@ -540,8 +569,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-calendar-check-line" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-calendar-check-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Entrega Estimada</small>
@@ -552,8 +581,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-flag-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-flag-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Prioridad</small>
@@ -576,8 +605,8 @@
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-user-settings-line" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-user-settings-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Creado por</small>
@@ -598,11 +627,23 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-3">
-                                        <div class="col-4">
+                                        <div class="col-12 col-lg-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-hand-coin-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-bank-card-2-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Método Pago</small>
+                                                    <div class="d-flex flex-wrap gap-1 mt-1" id="view-metodo-pago">-</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-lg-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-hand-coin-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Abono</small>
@@ -610,19 +651,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-4">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-money-dollar-circle-line" style="color: #00d9a5;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Total</small>
-                                                    <span class="fw-semibold" id="view-total">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
+                                        <div class="col-6 col-lg-3">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
                                                     style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
@@ -634,23 +663,13 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                    </div>
+                                    <div class="row g-3 mt-1">
+                                        <div class="col-12 col-md-6 col-xl-4" id="view-referencia-transferencia-container">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-bank-card-2-line" style="color: #2ecc71;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Método Pago</small>
-                                                    <span class="fw-semibold" id="view-metodo-pago">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4" id="view-referencia-transferencia-container">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-hashtag" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-hashtag" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Referencia</small>
@@ -658,11 +677,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-4" id="view-referencia-pago-movil-container" style="display:none;">
+                                        <div class="col-12 col-md-6 col-xl-4" id="view-referencia-pago-movil-container" style="display:none;">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-hashtag" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-hashtag" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Ref. Pago Móvil</small>
@@ -670,7 +689,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-4" id="view-banco-container">
+                                        <div class="col-12 col-md-6 col-xl-4" id="view-banco-container">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
                                                     style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
@@ -681,6 +700,32 @@
                                                     <span class="fw-semibold" id="view-banco">-</span>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0"
+                                style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                                <div class="card-body py-3 px-4">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width:38px;height:38px;background:rgba(255,255,255,0.15);">
+                                                <i class="ri-money-dollar-circle-line text-white fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-white-50 d-block"
+                                                    style="font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;">Total
+                                                    Pedido</span>
+                                                <small class="text-white-50" style="font-size:0.68rem;">
+                                                    <i class="ri-refresh-line me-1"></i>Se actualiza automáticamente
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;"
+                                                id="view-total-resumen">$0.00</span>
                                         </div>
                                     </div>
                                 </div>
@@ -718,114 +763,116 @@
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title" id="modalTitle">Agregar Pedido</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header p-3" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                    <h5 class="modal-title text-white" id="modalTitle">Agregar Pedido</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <form id="pedidoForm" enctype="multipart/form-data">
                     @csrf
-                    <div class="modal-body">
+                    <div class="modal-body p-3">
                         <input type="hidden" id="id-field" />
                         <input type="hidden" id="cliente-id-field" name="cliente_id" />
-                        <div class="row">
-                            <!-- Columna Izquierda: Datos del Cliente -->
-                            <div class="col-lg-6">
-                                <div class="card shadow-lg border-dark mb-3">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Datos del Pedido</h5>
+                        <div class="row g-3 align-items-start">
+                            <div class="col-lg-5"
+                                style="background: rgba(30, 60, 114, 0.025); border-radius: 8px; padding-top: 4px; padding-bottom: 4px;">
+
+                                <div class="card border-0 shadow-sm mb-3">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <span
+                                                style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">1</span>
+                                            <i class="ri-user-3-line me-2"></i>Datos del Cliente
+                                        </h6>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3 position-relative">
-                                                    <label for="cliente-nombre-field" class="form-label">Nombre
-                                                        Cliente</label>
-                                                    <input type="text" id="cliente-nombre-field" name="cliente_nombre"
-                                                        class="form-control"
-                                                        placeholder="Buscar o escribir nombre del cliente"
-                                                        autocomplete="off" required />
-                                                </div>
-                                                <div id="cliente-autocomplete-list"
-                                                    class="list-group position-absolute w-100" style="z-index: 1050;">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="ci-rif-field" class="form-label">Documento de
-                                                        identidad</label>
+                                        <div class="row g-2">
+                                            <div class="col-12">
+                                                <label for="cliente-nombre-field" class="form-label small fw-semibold mb-1">
+                                                    Nombre del cliente <span class="text-danger">*</span>
+                                                </label>
+                                                <div class="position-relative">
                                                     <div class="input-group">
-                                                        <select class="form-select" id="ci-rif-prefix-field"
-                                                            name="ci_rif_prefix" style="max-width: 80px;">
-                                                            <option value="V-">V-</option>
-                                                            <option value="J-">J-</option>
-                                                            <option value="E-">E-</option>
-                                                            <option value="G-">G-</option>
-                                                        </select>
-                                                        <input type="text" id="ci-rif-number-field" name="ci_rif_number"
-                                                            class="form-control" placeholder="Numero de documento"
-                                                            required />
+                                                        <input type="text" id="cliente-nombre-field" name="cliente_nombre"
+                                                            class="form-control" placeholder="Buscar cliente por nombre..."
+                                                            autocomplete="off" required />
+                                                        <button type="button" class="btn btn-outline-success"
+                                                            id="open-add-cliente-modal" title="Agregar nuevo cliente">
+                                                            <i class="ri-user-add-line"></i>
+                                                        </button>
                                                     </div>
-                                                    <!-- Este campo oculto se actualizará con el valor completo de CI/RIF -->
-                                                    <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
+                                                    <div id="cliente-autocomplete-list"
+                                                        class="list-group position-absolute w-100"
+                                                        style="z-index: 1050; top: 100%;"></div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="cliente-email-field" class="form-label">Email
-                                                        Cliente</label>
+
+                                            <div class="col-12">
+                                                <label for="ci-rif-number-field" class="form-label small fw-semibold mb-1">
+                                                    Documento de identidad <span class="text-danger">*</span>
+                                                </label>
+                                                <div class="input-group">
+                                                    <select class="form-select" id="ci-rif-prefix-field" name="ci_rif_prefix"
+                                                        style="max-width: 70px;">
+                                                        <option value="V-">V-</option>
+                                                        <option value="J-">J-</option>
+                                                        <option value="E-">E-</option>
+                                                        <option value="G-">G-</option>
+                                                    </select>
+                                                    <input type="text" id="ci-rif-number-field" name="ci_rif_number"
+                                                        class="form-control" placeholder="Buscar cliente por documento..." required />
+                                                </div>
+                                                <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
+                                            </div>
+
+                                            <div class="col-6">
+                                                <label for="cliente-email-field" class="form-label small fw-semibold mb-1">Email</label>
                                                     <input type="email" id="cliente-email-field" name="cliente_email"
-                                                        class="form-control" placeholder="Email del cliente" />
-                                                </div>
+                                                        class="form-control form-control-sm" placeholder="Correo del cliente" />
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="cliente-telefono-field" class="form-label">Teléfono
-                                                        Cliente</label>
+
+                                            <div class="col-6">
+                                                <label for="cliente-telefono-field" class="form-label small fw-semibold mb-1">Teléfono</label>
                                                     <input type="text" id="cliente-telefono-field" name="cliente_telefono"
-                                                        class="form-control" placeholder="Teléfono del cliente" />
-                                                </div>
+                                                        class="form-control form-control-sm" placeholder="Número de teléfono" />
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="fecha-pedido-field" class="form-label">Fecha del
-                                                        Pedido</label>
+
+                                            <div class="col-6">
+                                                <label for="fecha-pedido-field" class="form-label small fw-semibold mb-1">Fecha Pedido <span
+                                                        class="text-danger">*</span></label>
                                                     <input type="date" id="fecha-pedido-field" name="fecha_pedido"
-                                                        class="form-control" required />
-                                                </div>
+                                                        class="form-control form-control-sm" required />
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="fecha-entrega-estimada-field" class="form-label">Fecha
-                                                        de
-                                                        Entrega Estimada</label>
+
+                                            <div class="col-6">
+                                                <label for="fecha-entrega-estimada-field"
+                                                    class="form-label small fw-semibold mb-1">Fecha Entrega Estimada</label>
                                                     <input type="date" id="fecha-entrega-estimada-field"
-                                                        name="fecha_entrega_estimada" class="form-control" required />
-                                                </div>
+                                                        name="fecha_entrega_estimada" class="form-control form-control-sm" />
                                             </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="prioridad-field" class="form-label">Prioridad</label>
-                                            <select id="prioridad-field" name="prioridad" class="form-control" required>
+
+                                            <div class="col-12">
+                                                <label for="prioridad-field" class="form-label small fw-semibold mb-1">Prioridad</label>
+                                                <select id="prioridad-field" name="prioridad" class="form-select form-select-sm"
+                                                    required>
                                                 <option value="Normal">Normal</option>
                                                 <option value="Alta">Alta</option>
                                                 <option value="Urgente">Urgente</option>
                                             </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="card shadow-lg border-dark mb-3" id="estado-field-wrapper"
+                                <div class="card border-0 shadow-sm mb-3" id="estado-field-wrapper"
                                     style="display: none;">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Estado del Pedido</h5>
+                                    <div class="card-header border-0 bg-soft-secondary">
+                                        <h6 class="mb-0 text-atlantico-cyan">
+                                            <i class="ri-flag-line me-2"></i>Estado del Pedido
+                                        </h6>
                                     </div>
-                                    <div class="card-body">
-                                        <label for="estado-field" class="form-label">Estado</label>
-                                        <select id="estado-field" name="estado" class="form-control">
+                                    <div class="card-body py-2">
+                                        <select id="estado-field" name="estado" class="form-select form-select-sm">
                                             <option value="Pendiente">Pendiente</option>
                                             <option value="Procesando">Procesando</option>
                                             <option value="Completado">Completado</option>
@@ -834,81 +881,73 @@
                                     </div>
                                 </div>
 
-                                <!-- Sección de Pago (Movida y Agrupada) -->
-                                <div class="card shadow-lg border-dark mb-2">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0"><i class="ri-wallet-line align-bottom me-1"></i>
-                                            Datos
-                                            del Pago</h5>
+                                <div class="card border-0 shadow-sm mb-2">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <i class="ri-wallet-line me-2"></i>Pago y Saldo
+                                        </h6>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">
+                                        <div class="row g-2">
                                             <div class="col-md-4">
-                                                <div class="mb-2">
-                                                    <label for="total-display-field" class="form-label"><i
-                                                            class="ri-currency-line align-bottom me-1"></i> Total del
-                                                        Pedido
-                                                        ($)</label>
-                                                    <input type="text" id="total-display-field" class="form-control"
+                                                <label for="total-display-field" class="form-label small fw-semibold mb-1">Total del Pedido
+                                                    ($)</label>
+                                                <input type="text" id="total-display-field" class="form-control form-control-sm"
                                                         readonly />
-                                                </div>
+                                                <small class="text-muted d-block mt-1" style="font-size:0.68rem;">
+                                                    <i class="ri-refresh-line me-1"></i>Se actualiza automáticamente
+                                                </small>
                                             </div>
                                             <div class="col-md-4">
-                                                <div class="mb-2">
-                                                    <label for="abono-field" class="form-label"><i
-                                                            class="ri-wallet-line align-bottom me-1"></i> Abono
-                                                        ($)</label>
-                                                    <input type="number" id="abono-field" name="abono" class="form-control"
-                                                        step="0.01" min="0" value="0" required />
-                                                </div>
+                                                <label for="abono-field" class="form-label small fw-semibold mb-1">Abono ($)</label>
+                                                <input type="number" id="abono-field" name="abono" class="form-control form-control-sm"
+                                                    step="0.01" min="0" value="0" required />
                                             </div>
                                             <div class="col-md-4">
-                                                <div class="mb-2">
-                                                    <label for="restante-display-field" class="form-label"><i
-                                                            class="ri-wallet-2-line align-bottom me-1"></i> Restante
-                                                        ($)</label>
-                                                    <input type="text" id="restante-display-field" class="form-control"
+                                                <label for="restante-display-field" class="form-label small fw-semibold mb-1">Restante ($)</label>
+                                                <input type="text" id="restante-display-field"
+                                                    class="form-control form-control-sm"
                                                         readonly />
-                                                </div>
                                             </div>
                                         </div>
-                                        <div class="mb-2">
-                                            <label class="form-label"><i class="ri-bank-card-line align-bottom me-1"></i>
-                                                Método de Pago</label>
-                                            <div class="form-check form-check-inline">
+
+                                        <div class="mt-3">
+                                            <label class="form-label small fw-semibold mb-1">Método de Pago</label>
+                                            <div class="form-check form-check-inline small">
                                                 <input class="form-check-input" type="checkbox" id="efectivo-pagado-field"
                                                     name="efectivo_pagado" value="1">
                                                 <label class="form-check-label" for="efectivo-pagado-field">Efectivo</label>
                                             </div>
-                                            <div class="form-check form-check-inline">
+                                            <div class="form-check form-check-inline small">
                                                 <input class="form-check-input" type="checkbox"
                                                     id="transferencia-pagado-field" name="transferencia_pagado" value="1">
                                                 <label class="form-check-label"
                                                     for="transferencia-pagado-field">Transferencia</label>
                                             </div>
-                                            <div class="form-check form-check-inline">
+                                            <div class="form-check form-check-inline small">
                                                 <input class="form-check-input" type="checkbox" id="pago-movil-pagado-field"
                                                     name="pago_movil_pagado" value="1">
                                                 <label class="form-check-label" for="pago-movil-pagado-field">Pago
                                                     Móvil</label>
                                             </div>
                                         </div>
-                                        <div class="mb-2" id="referencia-transferencia-container">
-                                            <div class="row">
+
+                                        <div class="mt-2" id="referencia-transferencia-container">
+                                            <div class="row g-2">
                                                 <div class="col-md-6">
-                                                    <label for="referencia-transferencia-field" class="form-label"><i
-                                                            class="ri-numbers-line align-bottom me-1"></i> Referencia
+                                                    <label for="referencia-transferencia-field" class="form-label small fw-semibold mb-1"><i
+                                                            class="ri-numbers-line align-bottom me-1"></i>Referencia
                                                         Transferencia</label>
                                                     <input type="text" id="referencia-transferencia-field"
-                                                        name="referencia_transferencia" class="form-control"
+                                                        name="referencia_transferencia" class="form-control form-control-sm"
                                                         placeholder="Número de referencia" />
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="banco-transferencia-id-field" class="form-label"><i
-                                                            class="ri-bank-line align-bottom me-1"></i> Banco
+                                                    <label for="banco-transferencia-id-field" class="form-label small fw-semibold mb-1"><i
+                                                            class="ri-bank-line align-bottom me-1"></i>Banco
                                                         Destino</label>
                                                     <select id="banco-transferencia-id-field" name="banco_transferencia_id"
-                                                        class="form-control">
+                                                        class="form-select form-select-sm">
                                                         <option value="">Seleccione un banco</option>
                                                         @foreach($bancos as $banco)
                                                             <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
@@ -917,23 +956,23 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="mb-2" id="referencia-pago-movil-container">
-                                            <div class="row">
+                                        <div class="mt-2" id="referencia-pago-movil-container">
+                                            <div class="row g-2">
                                                 <div class="col-md-6">
-                                                    <label for="referencia-pago-movil-field" class="form-label"><i
-                                                            class="ri-smartphone-line align-bottom me-1"></i> Referencia
+                                                    <label for="referencia-pago-movil-field" class="form-label small fw-semibold mb-1"><i
+                                                            class="ri-smartphone-line align-bottom me-1"></i>Referencia
                                                         Pago
                                                         Móvil</label>
                                                     <input type="text" id="referencia-pago-movil-field"
-                                                        name="referencia_pago_movil" class="form-control"
+                                                        name="referencia_pago_movil" class="form-control form-control-sm"
                                                         placeholder="Número de referencia" />
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label for="banco-pago-movil-id-field" class="form-label"><i
-                                                            class="ri-bank-line align-bottom me-1"></i> Banco
+                                                    <label for="banco-pago-movil-id-field" class="form-label small fw-semibold mb-1"><i
+                                                            class="ri-bank-line align-bottom me-1"></i>Banco
                                                         Destino</label>
                                                     <select id="banco-pago-movil-id-field" name="banco_pago_movil_id"
-                                                        class="form-control">
+                                                        class="form-select form-select-sm">
                                                         <option value="">Seleccione un banco</option>
                                                         @foreach($bancos as $banco)
                                                             <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
@@ -946,17 +985,20 @@
                                 </div>
                             </div>
 
-                            <!-- Columna Derecha: Productos del Pedido (Solo lectura, vienen de la cotización) -->
-                            <div class="col-lg-6">
-                                <div class="card shadow-lg border-dark mb-3">
-                                    <div class="card-header d-flex align-items-center justify-content-between">
-                                        <h5 class="card-title mb-0"><i class="ri-shopping-bag-line me-1"></i>Productos
-                                            del
-                                            Pedido</h5>
-                                        <span class="badge bg-soft-info text-info"><i class="ri-link me-1"></i>Desde
+                            <div class="col-lg-7">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div
+                                        class="card-header border-0 bg-soft-primary d-flex align-items-center justify-content-between">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <span
+                                                style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">2</span>
+                                            <i class="ri-shopping-bag-3-line me-2"></i>Productos del Pedido
+                                        </h6>
+                                        <span class="badge bg-soft-info text-atlantico-dark"><i class="ri-link me-1"></i>Desde
                                             Cotización</span>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body p-2"
+                                        style="max-height: 490px; overflow-y: auto; overflow-x: hidden;">
                                         <div id="productos-container">
                                             <!-- Los productos se cargan automáticamente desde la cotización -->
                                         </div>
@@ -965,15 +1007,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light border-0">
+                    <div class="modal-footer border-0" style="background: #f8f9fa;">
                         <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal"
+                                style="border:1px solid #dee2e6;">
                                 <i class="ri-close-line me-1"></i>Cerrar
                             </button>
-                            <button type="submit" class="btn btn-success" id="add-btn">
+                            <button type="submit" class="btn btn-success px-4" id="add-btn">
                                 <i class="ri-add-line me-1"></i>Agregar
                             </button>
-                            <button type="submit" class="btn btn-success" id="edit-btn" style="display: none;">
+                            <button type="submit" class="btn btn-success px-4" id="edit-btn" style="display: none;">
                                 <i class="ri-save-line me-1"></i>Actualizar
                             </button>
                         </div>
@@ -1541,7 +1584,7 @@
             window.productItemIndex = 0;
             var productItemIndex = window.productItemIndex;
 
-            window.addProductItem = function addProductDisplayCard(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', productInsumos = [], ubicacionLogo = '', cantidadLogo = '') {
+            window.addProductItem = function addProductDisplayCard(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', productInsumos = [], ubicacionLogo = '', cantidadLogo = '', bordados = []) {
                 // Obtener nombre del producto seleccionado
                 var productoText = 'Producto sin nombre';
                 if (productoId) {
@@ -1552,7 +1595,81 @@
                     }
                 }
 
-                var subtotal = (parseFloat(cantidad) || 0) * (parseFloat(precioUnitario) || 0);
+                var bordadosArray = Array.isArray(bordados) ? bordados : [];
+
+                if (llevaBordado && bordadosArray.length === 0 && (ubicacionLogo || nombreLogo)) {
+                    bordadosArray.push({
+                        ubicacion_bordado_id: null,
+                        nombre_aplicado: ubicacionLogo || 'Ubicación legacy',
+                        nombre_logo: nombreLogo || '',
+                        es_personalizada: true,
+                        cantidad: parseInt(cantidadLogo || 1, 10) || 1,
+                        precio_aplicado: 0,
+                        orden: 0,
+                    });
+                }
+
+                var recargoUnitario = bordadosArray.reduce(function (sum, b) {
+                    var cantidadB = Math.max(1, parseInt(b.cantidad || 1, 10));
+                    var precioB = parseFloat(b.precio_aplicado || 0);
+                    return sum + (precioB * cantidadB);
+                }, 0);
+
+                var precioFinalUnitario = parseFloat(precioUnitario) || 0;
+                var precioBaseEstimado = Math.max(0, precioFinalUnitario - recargoUnitario);
+                var subtotal = (parseFloat(cantidad) || 0) * precioFinalUnitario;
+
+                function escAttr(value) {
+                    return String(value ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                }
+
+                var ubicacionLogoLegacy = ubicacionLogo || bordadosArray.map(function (b) {
+                    return String(b.nombre_aplicado || '').trim();
+                }).filter(Boolean).join(', ');
+
+                var cantidadLogoLegacy = cantidadLogo || bordadosArray.reduce(function (acc, b) {
+                    return acc + Math.max(1, parseInt(b.cantidad || 1, 10));
+                }, 0);
+
+                var bordadosHtml = '';
+                var hiddenBordadosHtml = '';
+
+                if (llevaBordado) {
+                    if (bordadosArray.length > 0) {
+                        bordadosHtml = bordadosArray.map(function (bordado, idx) {
+                            var nombreAplicado = escAttr(bordado.nombre_aplicado || 'Ubicación');
+                            var logoAplicado = escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || 'Sin logo');
+                            var cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
+                            var precioAplicado = parseFloat(bordado.precio_aplicado || 0).toFixed(2);
+
+                            return `
+                                <div class="border rounded p-2 mb-2" style="border-color: rgba(30, 60, 114, 0.16) !important; background: #fff;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-semibold" style="font-size:0.8rem;color:#1e3c72;">${nombreAplicado}</span>
+                                        <span class="badge bg-soft-info text-atlantico-dark">$${precioAplicado}</span>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-3" style="font-size:0.76rem;">
+                                        <span><small class="text-muted">Logo:</small> <strong>${logoAplicado}</strong></span>
+                                        <span><small class="text-muted">Cant.:</small> <strong>${cantidadAplicada}</strong></span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        bordadosHtml = '<small class="text-muted">Sin líneas de bordado configuradas.</small>';
+                    }
+
+                    hiddenBordadosHtml = bordadosArray.map(function (bordado, idx) {
+                        return `
+                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][ubicacion_bordado_id]" value="${escAttr(bordado.ubicacion_bordado_id || '')}" />
+                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_aplicado]" value="${escAttr(bordado.nombre_aplicado || '')}" />
+                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_logo]" value="${escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || '')}" />
+                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][es_personalizada]" value="${bordado.es_personalizada ? 1 : 0}" />
+                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][cantidad]" value="${Math.max(1, parseInt(bordado.cantidad || 1, 10))}" />
+                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][precio_aplicado]" value="${parseFloat(bordado.precio_aplicado || 0)}" />
+                        `;
+                    }).join('');
+                }
 
                 var itemHtml = `
                                                                                                         <div class="card border-0 shadow-sm mb-3 product-item" style="border-left: 4px solid #00d9a5 !important;" data-product-index="${productItemIndex}">
@@ -1620,7 +1737,7 @@
                                                                                                                             </div>
                                                                                                                             <div>
                                                                                                                                 <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
-                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(precioUnitario || 0).toFixed(2)}</span>
+                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">$${precioFinalUnitario.toFixed(2)}</span>
                                                                                                                             </div>
                                                                                                                         </div>
                                                                                                                     </div>
@@ -1633,20 +1750,11 @@
                                                                                                                         <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
                                                                                                                         <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
                                                                                                                     </div>
-                                                                                                                    <div class="row g-2">
-                                                                                                                        <div class="col-4">
-                                                                                                                            <small class="text-muted">Logo:</small>
-                                                                                                                            <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${nombreLogo || 'N/A'}</span>
-                                                                                                                        </div>
-                                                                                                                        <div class="col-4">
-                                                                                                                            <small class="text-muted">Ubicación:</small>
-                                                                                                                            <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${ubicacionLogo || 'N/A'}</span>
-                                                                                                                        </div>
-                                                                                                                        <div class="col-4">
-                                                                                                                            <small class="text-muted">Cantidad:</small>
-                                                                                                                            <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${cantidadLogo || 1}</span>
-                                                                                                                        </div>
+                                                                                                                    <div class="d-flex justify-content-between align-items-center mb-2" style="font-size:0.78rem;">
+                                                                                                                        <span class="text-muted">Precio base estimado: <strong>$${precioBaseEstimado.toFixed(2)}</strong></span>
+                                                                                                                        <span class="text-muted">Recargo bordado: <strong>$${recargoUnitario.toFixed(2)}</strong></span>
                                                                                                                     </div>
+                                                                                                                    ${bordadosHtml}
                                                                                                                 </div>
                                                                                                                 ` : ''}
 
@@ -1666,14 +1774,15 @@
                                                                                                                 <!-- Hidden inputs para enviar datos al backend -->
                                                                                                                 <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" />
                                                                                                                 <input type="hidden" name="productos[${productItemIndex}][cantidad]" class="cantidad-input" value="${cantidad}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioUnitario}" />
+                                                                                                                <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioFinalUnitario}" />
                                                                                                                 <input type="hidden" name="productos[${productItemIndex}][color]" value="${color}" />
                                                                                                                 <input type="hidden" name="productos[${productItemIndex}][talla]" value="${talla}" />
                                                                                                                 <input type="hidden" name="productos[${productItemIndex}][descripcion]" value="${descripcion}" />
                                                                                                                 <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="${llevaBordado ? 1 : 0}" />
                                                                                                                 <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" value="${nombreLogo}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][ubicacion_logo]" value="${ubicacionLogo}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][cantidad_logo]" value="${cantidadLogo || 1}" />
+                                                                                                                <input type="hidden" name="productos[${productItemIndex}][ubicacion_logo]" value="${ubicacionLogoLegacy}" />
+                                                                                                                <input type="hidden" name="productos[${productItemIndex}][cantidad_logo]" value="${cantidadLogoLegacy || 1}" />
+                                                                                                                ${hiddenBordadosHtml}
                                                                                                             </div>
                                                                                                         </div>
                                                                                                         `;
@@ -1794,6 +1903,11 @@
                 var id = $('#id-field').val();
                 var url = id ? '/pedidos/' + id : '/pedidos';
 
+                const clienteId = $('#cliente-id-field').val();
+                if (!formData.get('cliente_id') && clienteId) {
+                    formData.set('cliente_id', clienteId);
+                }
+
 
                 // A�adir el token CSRF y el m�todo HTTP manualmente para PUT/DELETE
                 if (id) {
@@ -1857,7 +1971,7 @@
                     method: 'GET',
                     success: function (data) {
                         // Cargar cliente y bloquear campos visualmente
-                        $('#cliente-id-field').val(data.cliente_id || '').prop('disabled', true).addClass('campo-protegido');
+                        $('#cliente-id-field').val(data.cliente_id || '').prop('disabled', false).addClass('campo-protegido');
 
                         $('#cliente-nombre-field').val(data.cliente_nombre_completo || data.cliente_nombre || '')
                             .prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
@@ -1920,7 +2034,8 @@
                                     item.talla,
                                     insumosTransformados,
                                     item.ubicacion_logo || '',
-                                    item.cantidad_logo || 1
+                                    item.cantidad_logo || 1,
+                                    item.bordados || []
                                 );
                             });
                             calculateProductTotals();
@@ -1991,7 +2106,8 @@
                         }
                         $('#view-estado').html(`<span class="badge ${estadoBadgeClass}">${data.estado}</span>`);
 
-                        $('#view-total').text(parseFloat(data.total).toFixed(2));
+                        var totalFormatted = parseFloat(data.total).toFixed(2);
+                        $('#view-total-resumen').text('$' + totalFormatted);
                         $('#view-usuario-creador').text(data.user ? data.user.name : 'N/A');
 
                         // Cargar y mostrar nuevos campos de pago y prioridad
@@ -2000,10 +2116,10 @@
                         $('#view-restante').text(restante.toFixed(2));
 
                         let metodosPago = [];
-                        if (data.efectivo_pagado) metodosPago.push('<span class="badge bg-success">Efectivo</span>');
-                        if (data.transferencia_pagado) metodosPago.push('<span class="badge bg-primary">Transferencia</span>');
-                        if (data.pago_movil_pagado) metodosPago.push('<span class="badge bg-info">Pago Móvil</span>');
-                        $('#view-metodo-pago').html(metodosPago.join(' ') || 'N/A');
+                        if (data.efectivo_pagado) metodosPago.push('<span class="badge rounded-pill bg-success">Efectivo</span>');
+                        if (data.transferencia_pagado) metodosPago.push('<span class="badge rounded-pill bg-primary">Transferencia</span>');
+                        if (data.pago_movil_pagado) metodosPago.push('<span class="badge rounded-pill bg-info text-dark">Pago Móvil</span>');
+                        $('#view-metodo-pago').html(metodosPago.join('') || '<span class="badge rounded-pill bg-secondary">Sin método</span>');
 
                         if (data.referencia_transferencia) {
                             $('#view-referencia-transferencia').text(data.referencia_transferencia);
@@ -2052,6 +2168,14 @@
                         if (data.productos && data.productos.length > 0) {
                             data.productos.forEach(function (item, index) {
                                 var subtotal = item.cantidad * item.precio_unitario;
+                                var colorDisplay = String(item.color || item.color_nombre || item.color_aplicado || '').trim();
+                                var colorHtml = colorDisplay
+                                    ? `<span class="fw-semibold" style="font-size: 0.85rem;">${colorDisplay}</span>`
+                                    : `<span class="badge bg-soft-warning text-atlantico-dark" style="font-size:0.68rem;">Sin color</span>`;
+                                var tallaLabel = getTallaLabel(item.talla);
+                                var tallaHtml = (item.talla && tallaLabel !== 'N/A')
+                                    ? `<span class="fw-semibold" style="font-size: 0.85rem;">${tallaLabel}</span>`
+                                    : `<span class="badge bg-soft-primary text-atlantico-dark" style="font-size:0.68rem;">Sin talla</span>`;
                                 productosBody.append(`
                                                                                                 <div class="card border-0 shadow-sm mb-3" style="border-left: 4px solid #00d9a5 !important;">
                                                                                                     <div class="card-body p-3">
@@ -2077,8 +2201,8 @@
                                                                                                             <div class="col-6 col-md-3">
                                                                                                                 <div class="d-flex align-items-center">
                                                                                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                        <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                        <i class="ri-stack-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
                                                                                                                     </div>
                                                                                                                     <div>
                                                                                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
@@ -2089,12 +2213,12 @@
                                                                                                             <div class="col-6 col-md-3">
                                                                                                                 <div class="d-flex align-items-center">
                                                                                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 28px; height: 28px; background: rgba(0, 217, 165, 0.15);">
-                                                                                                                        <i class="ri-palette-line" style="color: #00d9a5; font-size: 0.85rem;"></i>
+                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                        <i class="ri-palette-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
                                                                                                                     </div>
                                                                                                                     <div>
                                                                                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
-                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${item.color || 'N/A'}</span>
+                                                                                                                        ${colorHtml}
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
@@ -2106,15 +2230,15 @@
                                                                                                                     </div>
                                                                                                                     <div>
                                                                                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${getTallaLabel(item.talla)}</span>
+                                                                                                                        ${tallaHtml}
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                             <div class="col-6 col-md-3">
                                                                                                                 <div class="d-flex align-items-center">
                                                                                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                        <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                        <i class="ri-money-dollar-circle-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
                                                                                                                     </div>
                                                                                                                     <div>
                                                                                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
@@ -2125,28 +2249,31 @@
                                                                                                         </div>
 
                                                                                                         <!-- Bordado/Logo si aplica -->
-                                                                                                        ${item.lleva_bordado ? `
-                                                                                                            <div class="rounded p-2 mb-3" style="background: rgba(0, 217, 165, 0.08);">
-                                                                                                                <div class="d-flex align-items-center mb-2">
-                                                                                                                    <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
-                                                                                                                    <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
+                                                                                                        ${item.lleva_bordado ? (() => {
+                                                                                                            const bordados = Array.isArray(item.bordados) ? item.bordados : [];
+                                                                                                            const bordadosHtml = bordados.length
+                                                                                                                ? bordados.map((bordado) => {
+                                                                                                                    const nombreAplicado = bordado.nombre_aplicado || 'Ubicación';
+                                                                                                                    const logoAplicado = bordado.nombre_logo_aplicado || bordado.nombre_logo || item.nombre_logo || 'Sin logo';
+                                                                                                                    const cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
+                                                                                                                    return `
+                                                                                                                                <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
+                                                                                                                                <span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${logoAplicado} → ${nombreAplicado} x${cantidadAplicada}</span>
+                                                                                                                        </div>
+                                                                                                                    `;
+                                                                                                                }).join('')
+                                                                                                                        : `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${item.nombre_logo || 'Sin logo'} → ${item.ubicacion_logo || 'Sin ubicación'} x${item.cantidad_logo || 1}</span></div>`;
+
+                                                                                                            return `
+                                                                                                                <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.08);">
+                                                                                                                    <div class="d-flex align-items-center mb-2">
+                                                                                                                        <i class="ri-scissors-cut-line me-2" style="color: #1e3c72;"></i>
+                                                                                                                        <span class="fw-semibold" style="color: #1e3c72; font-size: 0.85rem;">Logos</span>
+                                                                                                                    </div>
+                                                                                                                    ${bordadosHtml}
                                                                                                                 </div>
-                                                                                                                <div class="row g-2">
-                                                                                                                    <div class="col-6">
-                                                                                                                        <small class="text-muted">Logo:</small>
-                                                                                                                        <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.nombre_logo || 'N/A'}</span>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-6">
-                                                                                                                        <small class="text-muted">Ubicación:</small>
-                                                                                                                        <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${item.ubicacion_logo || 'N/A'}</span>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-12">
-                                                                                                                        <small class="text-muted">Cantidad:</small>
-                                                                                                                        <span class="badge bg-primary ms-1">${item.cantidad_logo || '0'}</span>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            ` : ''}
+                                                                                                            `;
+                                                                                                        })() : ''}
 
                                                                                                         <!-- Descripción -->
                                                                                                         ${item.descripcion ? `
@@ -2737,7 +2864,8 @@
                                         item.talla || '',
                                         insumosTransformados,
                                         item.ubicacion_logo || '',
-                                        item.cantidad_logo || 1
+                                        item.cantidad_logo || 1,
+                                        item.bordados || []
                                     );
                                 });
                                 if (typeof calculateProductTotals === 'function') {

@@ -15,7 +15,11 @@ class StorePedidoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cotizacion_id' => 'nullable|exists:cotizacion,id',
+            'cotizacion_id' => [
+                'nullable',
+                'exists:cotizacion,id',
+                Rule::unique('pedido', 'cotizacion_id'),
+            ],
             'cliente_id' => 'required|exists:cliente,id',
             'fecha_pedido' => 'required|date',
             'fecha_entrega_estimada' => 'nullable|date|after_or_equal:fecha_pedido',
@@ -25,6 +29,7 @@ class StorePedidoRequest extends FormRequest
             'pago_movil_pagado' => 'boolean',
             'referencia_transferencia' => 'nullable|string|max:255|required_if:transferencia_pagado,true',
             'referencia_pago_movil' => 'nullable|string|max:255|required_if:pago_movil_pagado,true',
+            'banco_id' => 'nullable|exists:banco,id',
             'banco_transferencia_id' => 'nullable|exists:banco,id|required_if:transferencia_pagado,true',
             'banco_pago_movil_id' => 'nullable|exists:banco,id|required_if:pago_movil_pagado,true',
             'prioridad' => 'required|in:Normal,Alta,Urgente',

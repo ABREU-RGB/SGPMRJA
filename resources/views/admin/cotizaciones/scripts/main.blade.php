@@ -1886,6 +1886,12 @@
             let formData = new FormData(this);
             var id = $('#id-field').val();
             var url = id ? '/cotizaciones/' + id : '/cotizaciones';
+
+            const clienteId = $('#cliente-id-field').val();
+            if (!formData.get('cliente_id') && clienteId) {
+                formData.set('cliente_id', clienteId);
+            }
+
             if (id) {
                 formData.append('_method', 'PUT');
             }
@@ -1953,7 +1959,7 @@
                 url: '/cotizaciones/' + id,
                 method: 'GET',
                 success: function (data) {
-                    $('#cliente-id-field').val(data.cliente_id || '').prop('disabled', true).addClass('campo-protegido');
+                    $('#cliente-id-field').val(data.cliente_id || '').prop('disabled', false).addClass('campo-protegido');
                     // Obtener datos del cliente desde la relación
                     if (data.cliente) {
                         $('#cliente-nombre-field').val(data.cliente.nombre);
@@ -2153,8 +2159,8 @@
                                             <div class="col-6 col-md-3">
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                        <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                        <i class="ri-stack-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
                                                     </div>
                                                     <div>
                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
@@ -2177,8 +2183,8 @@
                                             <div class="col-6 col-md-3">
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 28px; height: 28px; background: rgba(108, 92, 231, 0.15);">
-                                                        <i class="ri-palette-line" style="color: #6c5ce7; font-size: 0.85rem;"></i>
+                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                        <i class="ri-palette-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
                                                     </div>
                                                     <div>
                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
@@ -2189,8 +2195,8 @@
                                             <div class="col-6 col-md-3">
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                        <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                        <i class="ri-money-dollar-circle-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
                                                     </div>
                                                     <div>
                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
@@ -2201,8 +2207,8 @@
                                             <div class="col-6 col-md-3">
                                                 <div class="d-flex align-items-center">
                                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 28px; height: 28px; background: rgba(0, 217, 165, 0.15);">
-                                                        <i class="ri-scissors-cut-line" style="color: #00d9a5; font-size: 0.85rem;"></i>
+                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                        <i class="ri-scissors-cut-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
                                                     </div>
                                                     <div>
                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Bordado</small>
@@ -2212,21 +2218,34 @@
                                             </div>
                                         </div>
                                         
-                                        <!-- Bordado/Logo si aplica -->
+                                        <!-- Logos si aplica -->
                                         ${item.lleva_bordado ? `
-                                        <div class="rounded p-2 mb-3" style="background: rgba(0, 217, 165, 0.08);">
+                                        <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.08);">
                                             <div class="d-flex align-items-center mb-2">
-                                                <i class="ri-scissors-cut-line me-2" style="color: #00d9a5;"></i>
-                                                <span class="fw-semibold" style="color: #00d9a5; font-size: 0.85rem;">Bordado / Logo</span>
+                                                <i class="ri-scissors-cut-line me-2" style="color: #1e3c72;"></i>
+                                                <span class="fw-semibold" style="color: #1e3c72; font-size: 0.85rem;">Logos</span>
                                             </div>
                                             <div class="row g-2">
                                                 <div class="col-12">
-                                                    <small class="text-muted">Logo:</small>
-                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${(item.bordados && item.bordados.length) ? Array.from(new Set(item.bordados.map(function (b) { return b.nombre_logo || b.nombre_logo_aplicado || ''; }).filter(Boolean))).join(', ') : (item.nombre_logo || 'N/A')}</span>
-                                                </div>
-                                                <div class="col-12">
-                                                    <small class="text-muted">Ubicaciones:</small>
-                                                    <span class="fw-semibold ms-1" style="font-size: 0.85rem;">${(item.bordados && item.bordados.length) ? item.bordados.map(function (b) { return (b.nombre_logo || b.nombre_logo_aplicado || 'Logo') + ' → ' + b.nombre_aplicado + ' x' + (b.cantidad || 1); }).join(', ') : 'N/A'}</span>
+                                                    <small class="text-muted d-block" style="font-size: 0.72rem;">Aplicaciones</small>
+                                                    <div class="d-flex flex-column" style="font-size: 0.85rem;">${(item.bordados && item.bordados.length)
+                                                        ? item.bordados.map(function (b) {
+                                                            return '<div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">' +
+                                                                '<span class="fw-semibold">' +
+                                                                    (b.nombre_logo || b.nombre_logo_aplicado || 'Logo') +
+                                                                    ' → ' + (b.nombre_aplicado || 'Ubicación') +
+                                                                    ' x' + (b.cantidad || 1) +
+                                                                '</span>' +
+                                                                '</div>';
+                                                        }).join('')
+                                                        : '<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">' +
+                                                            '<span class="fw-semibold">' +
+                                                                (item.nombre_logo || 'Sin logo') +
+                                                                ' → ' + (item.ubicacion_logo || 'Sin ubicación') +
+                                                                ' x' + (item.cantidad_logo || 1) +
+                                                            '</span>' +
+                                                            '</div>'
+                                                    }</div>
                                                 </div>
                                             </div>
                                         </div>

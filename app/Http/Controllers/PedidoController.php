@@ -109,7 +109,11 @@ class PedidoController extends Controller
 
     public function store(StorePedidoRequest $request)
     {
-        $this->pedidoService->crear($request->validated());
+        try {
+            $this->pedidoService->crear($request->validated());
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
 
         return response()->json(['success' => 'Pedido creado exitosamente.']);
     }
@@ -144,7 +148,11 @@ class PedidoController extends Controller
             return response()->json(['error' => 'No se puede editar un pedido completado o cancelado.'], 403);
         }
 
-        $this->pedidoService->actualizar($pedido, $request->validated());
+        try {
+            $this->pedidoService->actualizar($pedido, $request->validated());
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
 
         return response()->json(['success' => 'Pedido actualizado exitosamente.']);
     }

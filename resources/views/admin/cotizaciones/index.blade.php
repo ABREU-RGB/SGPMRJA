@@ -149,6 +149,14 @@
             color: #ffffff !important;
         }
 
+        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
+            background: rgba(30, 60, 114, 0.12) !important;
+        }
+
+        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
+            color: #1e3c72 !important;
+        }
+
         /* ── Input "Nombre del logo" — foco estilo Navy/Cyan ─────────────────────
                                Bootstrap usa --bs-primary (morado) como color de foco por defecto.
                                Al sobreescribir box-shadow y border-color con !important sobre las

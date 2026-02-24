@@ -15,14 +15,17 @@ use Illuminate\Support\Facades\Log;
 
 class CotizacionService
 {
+    public function __construct(
+        private BordadoPricingService $bordadoPricingService
+    ) {
+    }
+
     /**
      * Crear una nueva cotización con sus detalles.
      */
     public function crear(array $data): Cotizacion
     {
-        $cotizacion = null;
-
-        DB::transaction(function () use ($data, &$cotizacion) {
+        $cotizacion = DB::transaction(function () use ($data) {
             $total = $this->calcularTotal($data['productos']);
 
             $cotizacion = Cotizacion::create([
@@ -36,6 +39,8 @@ class CotizacionService
             ]);
 
             $this->crearDetalles($cotizacion, $data['productos']);
+
+            return $cotizacion;
         });
 
         Log::info('Cotización creada', [
@@ -177,29 +182,12 @@ class CotizacionService
                 ? (float) $item['precio_unitario']
                 : (float) ($producto->precio_base ?? 0);
 
-            $recargoBordadoUnitario = $this->calcularRecargoBordadoUnitario($item);
-            $precioUnitarioFinal = $precioBase + $recargoBordadoUnitario;
+            $bordados = $this->bordadoPricingService->normalizeBordados($item);
+            $precioUnitarioFinal = $this->bordadoPricingService->calcularPrecioUnitarioFinal($precioBase, $bordados);
 
             $total += $precioUnitarioFinal * (int) $item['cantidad'];
         }
         return $total;
-    }
-
-    private function calcularRecargoBordadoUnitario(array $item): float
-    {
-        $llevaBordado = !empty($item['lleva_bordado']) && (int) $item['lleva_bordado'] === 1;
-        if (!$llevaBordado || empty($item['bordados']) || !is_array($item['bordados'])) {
-            return 0;
-        }
-
-        $recargo = 0;
-        foreach ($item['bordados'] as $bordado) {
-            $precio = (float) ($bordado['precio_aplicado'] ?? 0);
-            $cantidad = max(1, (int) ($bordado['cantidad'] ?? 1));
-            $recargo += ($precio * $cantidad);
-        }
-
-        return $recargo;
     }
 
     /**
@@ -212,9 +200,8 @@ class CotizacionService
             $precioBase = isset($item['precio_unitario'])
                 ? (float) $item['precio_unitario']
                 : (float) ($producto->precio_base ?? 0);
-            $recargoBordadoUnitario = $this->calcularRecargoBordadoUnitario($item);
-            $precioUnitarioFinal = $precioBase + $recargoBordadoUnitario;
-            $bordados = is_array($item['bordados'] ?? null) ? $item['bordados'] : [];
+            $bordados = $this->bordadoPricingService->normalizeBordados($item);
+            $precioUnitarioFinal = $this->bordadoPricingService->calcularPrecioUnitarioFinal($precioBase, $bordados);
 
             $detalle = DetalleCotizacion::create([
                 'cotizacion_id' => $cotizacion->id,
@@ -222,13 +209,13 @@ class CotizacionService
                 'cantidad' => $item['cantidad'],
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                'nombre_logo' => $this->resolverNombreLogoDetalle($item, $bordados),
+                'nombre_logo' => $this->bordadoPricingService->resolverNombreLogoDetalle($item, $bordados),
                 'color' => $item['color'] ?? null,
                 'talla' => $item['talla'] ?? null,
                 'precio_unitario' => $precioUnitarioFinal,
             ]);
 
-            foreach ($bordados as $index => $bordado) {
+            foreach ($bordados as $bordado) {
                 DetalleCotizacionBordado::create([
                     'detalle_cotizacion_id' => $detalle->id,
                     'ubicacion_bordado_id' => $bordado['ubicacion_bordado_id'] ?? null,
@@ -237,25 +224,9 @@ class CotizacionService
                     'es_personalizada' => (bool) ($bordado['es_personalizada'] ?? false),
                     'cantidad' => max(1, (int) ($bordado['cantidad'] ?? 1)),
                     'precio_aplicado' => (float) ($bordado['precio_aplicado'] ?? 0),
-                    'orden' => (int) $index,
+                    'orden' => (int) ($bordado['orden'] ?? 0),
                 ]);
             }
         }
-    }
-
-    private function resolverNombreLogoDetalle(array $item, array $bordados): ?string
-    {
-        $logos = collect($bordados)
-            ->map(fn($bordado) => trim((string) ($bordado['nombre_logo'] ?? '')))
-            ->filter()
-            ->unique()
-            ->values();
-
-        if ($logos->isNotEmpty()) {
-            return mb_substr($logos->implode(', '), 0, 100);
-        }
-
-        $legacy = trim((string) ($item['nombre_logo'] ?? ''));
-        return $legacy !== '' ? mb_substr($legacy, 0, 100) : null;
     }
 }
