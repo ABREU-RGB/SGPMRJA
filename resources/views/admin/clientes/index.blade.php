@@ -130,6 +130,63 @@
             color: #878a99;
             font-size: 14px;
         }
+
+        .atlantico-modal .modal-content {
+            border: 1px solid rgba(30, 60, 114, 0.16);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+        }
+
+        .atlantico-modal .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            border-bottom: 0;
+            padding: 0.85rem 1rem !important;
+        }
+
+        .atlantico-modal .modal-header .modal-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .atlantico-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+
+        .atlantico-modal .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .atlantico-modal .modal-body {
+            padding: 1.2rem;
+        }
+
+        .atlantico-modal .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+            padding: 0.75rem 1rem;
+        }
+
+        .modal-form-section {
+            border: 1px solid rgba(30, 60, 114, 0.12);
+            border-radius: 0.65rem;
+            padding: 0.9rem;
+            background: rgba(30, 60, 114, 0.025);
+            margin-bottom: 0.9rem;
+        }
+
+        .modal-form-section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -176,7 +233,7 @@
     </div>
 
     <!-- Modal para ver detalles del Cliente -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -190,8 +247,8 @@
                         <div class="col-lg-6">
                             <!-- Card Datos Personales -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
                                         <i class="ri-user-line me-2"></i>Información Personal
                                     </h6>
                                 </div>
@@ -212,8 +269,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-user-follow-line" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-user-follow-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Apellido</small>
@@ -224,8 +281,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-bank-card-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-bank-card-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Documento</small>
@@ -251,8 +308,8 @@
 
                             <!-- Card Contacto -->
                             <div class="card border-0 shadow-sm">
-                                <div class="card-header border-0" style="background: rgba(46, 204, 113, 0.1);">
-                                    <h6 class="mb-0" style="color: #2ecc71;">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
                                         <i class="ri-contacts-line me-2"></i>Información de Contacto
                                     </h6>
                                 </div>
@@ -273,8 +330,8 @@
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-phone-line" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-phone-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Teléfono</small>
@@ -301,8 +358,8 @@
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-home-4-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-home-4-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Dirección</small>
@@ -325,8 +382,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-building-line" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-building-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Ciudad</small>
@@ -340,8 +397,8 @@
 
                             <!-- Card Estatus -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
                                         <i class="ri-information-line me-2"></i>Estatus del Cliente
                                     </h6>
                                 </div>
@@ -362,8 +419,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-calendar-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-calendar-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Fecha Registro</small>
@@ -387,7 +444,7 @@
     </div>
 
     <!-- Modal para agregar/editar -->
-    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
             <form id="clienteForm" class="modal-content">
@@ -398,132 +455,142 @@
                 <div class="modal-body">
                     <input type="hidden" id="id-field" />
 
-                    <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
-                    <div class="row mb-3">
-                        <div class="col-md-5">
-                            <x-forms.input name="documento_number" label="Documento (Cédula o RIF)"
-                                id="documento-number-field" required maxlength="10" placeholder="Nro. documento"
-                                prependRaw="true">
-                                <x-slot:prepend>
-                                    <select class="form-select" id="documento-prefix-field" style="max-width: 70px;">
-                                        <option value="V-">V-</option>
-                                        <option value="J-">J-</option>
-                                        <option value="E-">E-</option>
-                                        <option value="G-">G-</option>
-                                    </select>
-                                </x-slot:prepend>
-                            </x-forms.input>
-                            <input type="hidden" id="documento-field" name="documento" />
-                            <small class="text-muted" style="margin-top: -10px; display: block; margin-bottom: 10px;">Máximo
-                                10 dígitos</small>
-                            <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
-                                :options="['natural' => 'Natural', 'juridico' => 'Jurídico', 'gubernamental' => 'Gubernamental']" />
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label d-block">Estatus</label>
-                            <div class="form-check form-switch form-switch-success mt-2">
-                                <input type="hidden" name="estatus" value="0" />
-                                <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
-                                    name="estatus" value="1" checked />
-                                <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
+                    <div class="modal-form-section">
+                        <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
+
+                        <div class="row mb-0">
+                            <div class="col-md-5">
+                                <x-forms.input name="documento_number" label="Documento (Cédula o RIF)"
+                                    id="documento-number-field" required maxlength="10" placeholder="Nro. documento"
+                                    prependRaw="true">
+                                    <x-slot:prepend>
+                                        <select class="form-select" id="documento-prefix-field" style="max-width: 70px;">
+                                            <option value="V-">V-</option>
+                                            <option value="J-">J-</option>
+                                            <option value="E-">E-</option>
+                                            <option value="G-">G-</option>
+                                        </select>
+                                    </x-slot:prepend>
+                                </x-forms.input>
+                                <input type="hidden" id="documento-field" name="documento" />
+                                <small class="text-muted" style="margin-top: -10px; display: block; margin-bottom: 10px;">Máximo
+                                    10 dígitos</small>
+                                <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
+                                    :options="['natural' => 'Natural', 'juridico' => 'Jurídico', 'gubernamental' => 'Gubernamental']" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label d-block">Estatus</label>
+                                <div class="form-check form-switch form-switch-success mt-2">
+                                    <input type="hidden" name="estatus" value="0" />
+                                    <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
+                                        name="estatus" value="1" checked />
+                                    <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Fila 2: Nombre + Apellido (solo para Natural) -->
-                    <div id="campos-persona-natural" class="row mb-3">
-                        <div class="col-md-6">
-                            <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" maxlength="100" required
-                                id="nombre-field" />
+                    <div class="modal-form-section">
+                        <div class="modal-form-section-title"><i class="ri-user-3-line"></i>Datos del Cliente</div>
+
+                        <div id="campos-persona-natural" class="row mb-3">
+                            <div class="col-md-6">
+                                <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" maxlength="100" required
+                                    id="nombre-field" />
+                            </div>
+                            <div class="col-md-6">
+                                <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" maxlength="100" required
+                                    id="apellido-field" />
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" maxlength="100" required
-                                id="apellido-field" />
+
+                        <div id="campos-razon-social" class="row mb-0 d-none">
+                            <div class="col-12">
+                                <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa"
+                                    maxlength="200" id="razon-social-field" hint="Se almacenará como nombre del cliente" />
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Fila 2B: Razón Social (solo para Jurídico/Gubernamental) -->
-                    <div id="campos-razon-social" class="row mb-3 d-none">
-                        <div class="col-12">
-                            <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa"
-                                maxlength="200" id="razon-social-field" hint="Se almacenará como nombre del cliente" />
+                    <div class="modal-form-section">
+                        <div class="modal-form-section-title"><i class="ri-contacts-book-2-line"></i>Contacto</div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com"
+                                    id="email-field" />
+                            </div>
+                            <div class="col-md-6">
+                                <x-forms.input name="telefono_number" label="Teléfono" id="telefono-number-field" required
+                                    maxlength="7" placeholder="1234567" prependRaw="true">
+                                    <x-slot:prepend>
+                                        <select class="form-select" id="telefono-prefix-field"
+                                            style="max-width: 100px; min-width: 100px;">
+                                            <option value="0412">0412</option>
+                                            <option value="0422">0422</option>
+                                            <option value="0414">0414</option>
+                                            <option value="0424" selected>0424</option>
+                                            <option value="0416">0416</option>
+                                            <option value="0426">0426</option>
+                                        </select>
+                                    </x-slot:prepend>
+                                </x-forms.input>
+                                <input type="hidden" id="telefono-field" name="telefono" />
+                                <div id="telefono-error" class="invalid-feedback" style="display: none;"></div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-0">
+                            <div class="col-12">
+                                <x-forms.textarea name="direccion" label="Dirección" placeholder="Dirección completa"
+                                    maxlength="500" required id="direccion-field" rows="3" />
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Fila 3: Email + Teléfono -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com"
-                                id="email-field" />
-                        </div>
-                        <div class="col-md-6">
-                            <x-forms.input name="telefono_number" label="Teléfono" id="telefono-number-field" required
-                                maxlength="7" placeholder="1234567" prependRaw="true">
-                                <x-slot:prepend>
-                                    <select class="form-select" id="telefono-prefix-field"
-                                        style="max-width: 100px; min-width: 100px;">
-                                        <option value="0412">0412</option>
-                                        <option value="0422">0422</option>
-                                        <option value="0414">0414</option>
-                                        <option value="0424" selected>0424</option>
-                                        <option value="0416">0416</option>
-                                        <option value="0426">0426</option>
-                                    </select>
-                                </x-slot:prepend>
-                            </x-forms.input>
-                            <input type="hidden" id="telefono-field" name="telefono" />
-                            <div id="telefono-error" class="invalid-feedback" style="display: none;"></div>
-                        </div>
-                    </div>
+                    <div class="modal-form-section mb-0">
+                        <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
 
-                    <!-- Fila 4: Dirección -->
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <x-forms.textarea name="direccion" label="Dirección" placeholder="Dirección completa"
-                                maxlength="500" required id="direccion-field" rows="3" />
-                        </div>
-                    </div>
-
-                    <!-- Fila 5: Estado (Territorio) + Ciudad -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="estado_territorial-field" class="form-label required">Estado</label>
-                            <select name="estado_territorial" id="estado_territorial-field" class="form-select" required>
-                                <option value="">Seleccione estado</option>
-                                <option value="Amazonas">Amazonas</option>
-                                <option value="Anzoátegui">Anzoátegui</option>
-                                <option value="Apure">Apure</option>
-                                <option value="Aragua">Aragua</option>
-                                <option value="Barinas">Barinas</option>
-                                <option value="Bolívar">Bolívar</option>
-                                <option value="Carabobo">Carabobo</option>
-                                <option value="Cojedes">Cojedes</option>
-                                <option value="Delta Amacuro">Delta Amacuro</option>
-                                <option value="Distrito Capital">Distrito Capital</option>
-                                <option value="Falcón">Falcón</option>
-                                <option value="Guárico">Guárico</option>
-                                <option value="La Guaira">La Guaira</option>
-                                <option value="Lara">Lara</option>
-                                <option value="Mérida">Mérida</option>
-                                <option value="Miranda">Miranda</option>
-                                <option value="Monagas">Monagas</option>
-                                <option value="Nueva Esparta">Nueva Esparta</option>
-                                <option value="Portuguesa">Portuguesa</option>
-                                <option value="Sucre">Sucre</option>
-                                <option value="Táchira">Táchira</option>
-                                <option value="Trujillo">Trujillo</option>
-                                <option value="Yaracuy">Yaracuy</option>
-                                <option value="Zulia">Zulia</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="ciudad-field" class="form-label required">Municipio</label>
-                            <select name="ciudad" id="ciudad-field" class="form-select" required>
-                                <option value="">Primero seleccione un estado</option>
-                            </select>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="estado_territorial-field" class="form-label required">Estado</label>
+                                <select name="estado_territorial" id="estado_territorial-field" class="form-select" required>
+                                    <option value="">Seleccione estado</option>
+                                    <option value="Amazonas">Amazonas</option>
+                                    <option value="Anzoátegui">Anzoátegui</option>
+                                    <option value="Apure">Apure</option>
+                                    <option value="Aragua">Aragua</option>
+                                    <option value="Barinas">Barinas</option>
+                                    <option value="Bolívar">Bolívar</option>
+                                    <option value="Carabobo">Carabobo</option>
+                                    <option value="Cojedes">Cojedes</option>
+                                    <option value="Delta Amacuro">Delta Amacuro</option>
+                                    <option value="Distrito Capital">Distrito Capital</option>
+                                    <option value="Falcón">Falcón</option>
+                                    <option value="Guárico">Guárico</option>
+                                    <option value="La Guaira">La Guaira</option>
+                                    <option value="Lara">Lara</option>
+                                    <option value="Mérida">Mérida</option>
+                                    <option value="Miranda">Miranda</option>
+                                    <option value="Monagas">Monagas</option>
+                                    <option value="Nueva Esparta">Nueva Esparta</option>
+                                    <option value="Portuguesa">Portuguesa</option>
+                                    <option value="Sucre">Sucre</option>
+                                    <option value="Táchira">Táchira</option>
+                                    <option value="Trujillo">Trujillo</option>
+                                    <option value="Yaracuy">Yaracuy</option>
+                                    <option value="Zulia">Zulia</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ciudad-field" class="form-label required">Municipio</label>
+                                <select name="ciudad" id="ciudad-field" class="form-select" required>
+                                    <option value="">Primero seleccione un estado</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 

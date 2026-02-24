@@ -70,6 +70,63 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+
+        .atlantico-modal .modal-content {
+            border: 1px solid rgba(30, 60, 114, 0.16);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+        }
+
+        .atlantico-modal .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            border-bottom: 0;
+            padding: 0.85rem 1rem !important;
+        }
+
+        .atlantico-modal .modal-header .modal-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .atlantico-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+
+        .atlantico-modal .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .atlantico-modal .modal-body {
+            padding: 1.2rem;
+        }
+
+        .atlantico-modal .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+            padding: 0.75rem 1rem;
+        }
+
+        .modal-form-section {
+            border: 1px solid rgba(30, 60, 114, 0.12);
+            border-radius: 0.65rem;
+            padding: 0.9rem;
+            background: rgba(30, 60, 114, 0.025);
+            margin-bottom: 0.9rem;
+        }
+
+        .modal-form-section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -119,7 +176,7 @@
     </div>
 
     <!-- Modal para ver detalles -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -133,8 +190,8 @@
                         <div class="col-lg-6">
                             <!-- Card Datos del Proveedor -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
                                         <i class="ri-store-2-line me-2"></i>Datos del Proveedor
                                     </h6>
                                 </div>
@@ -155,8 +212,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-building-line" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-building-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Nombre/Razón Social</small>
@@ -167,8 +224,8 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-bank-card-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-bank-card-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Documento/RIF</small>
@@ -204,8 +261,8 @@
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-home-4-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-home-4-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Dirección</small>
@@ -222,8 +279,8 @@
                         <div class="col-lg-6">
                             <!-- Card Contacto -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(46, 204, 113, 0.1);">
-                                    <h6 class="mb-0" style="color: #2ecc71;">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
                                         <i class="ri-contacts-line me-2"></i>Información de Contacto
                                     </h6>
                                 </div>
@@ -244,8 +301,8 @@
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-phone-line" style="color: #00d9a5;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-phone-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Teléfono</small>
@@ -256,8 +313,8 @@
                                         <div class="col-12" id="view-contacto-section">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-user-follow-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-user-follow-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Persona de Contacto</small>
@@ -283,8 +340,8 @@
 
                             <!-- Card Estado -->
                             <div class="card border-0 shadow-sm">
-                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
                                         <i class="ri-information-line me-2"></i>Registro
                                     </h6>
                                 </div>
@@ -293,8 +350,8 @@
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-calendar-line" style="color: #2ecc71;"></i>
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-calendar-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Fecha de Registro</small>
@@ -318,7 +375,7 @@
     </div>
 
     <!-- Modal para agregar/editar -->
-    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -331,176 +388,206 @@
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
 
-                        <!-- Fila 1: Tipo de Proveedor + Estatus -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <x-forms.select name="tipo_proveedor" label="Tipo de Proveedor" required id="tipo-proveedor-field"
-                                    :options="['juridico' => 'Jurídico (Empresa)', 'natural' => 'Natural (Persona)']"
-                                    placeholder="" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label d-block">Estatus</label>
-                                <div class="form-check form-switch form-switch-success mt-2">
-                                    <input type="hidden" name="estado" value="0" />
-                                    <input class="form-check-input" type="checkbox" role="switch" id="estado-field"
-                                        name="estado" value="1" checked />
-                                    <label class="form-check-label" for="estado-field" id="estado-label">Activo</label>
+                        <div class="modal-form-section">
+                            <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.select name="tipo_proveedor" label="Tipo de Proveedor" required id="tipo-proveedor-field"
+                                        :options="['juridico' => 'Jurídico (Empresa)', 'natural' => 'Natural (Persona)']"
+                                        placeholder="" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label d-block">Estatus</label>
+                                    <div class="form-check form-switch form-switch-success mt-2">
+                                        <input type="hidden" name="estado" value="0" />
+                                        <input class="form-check-input" type="checkbox" role="switch" id="estado-field"
+                                            name="estado" value="1" checked />
+                                        <label class="form-check-label" for="estado-field" id="estado-label">Activo</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- CAMPOS PARA PROVEEDOR JURÍDICO (EMPRESA) -->
                         <div id="campos-juridico">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="10" required prependRaw="true">
-                                        <x-slot:prepend>
-                                            <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
-                                                <option value="J-">J-</option>
-                                                <option value="V-">V-</option>
-                                                <option value="G-">G-</option>
-                                                <option value="E-">E-</option>
-                                            </select>
-                                        </x-slot:prepend>
-                                    </x-forms.input>
-                                    <input type="hidden" id="rif-field" name="rif" />
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-building-line"></i>Datos Empresariales</div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="10" required prependRaw="true">
+                                            <x-slot:prepend>
+                                                <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
+                                                    <option value="J-">J-</option>
+                                                    <option value="V-">V-</option>
+                                                    <option value="G-">G-</option>
+                                                    <option value="E-">E-</option>
+                                                </select>
+                                            </x-slot:prepend>
+                                        </x-forms.input>
+                                        <input type="hidden" id="rif-field" name="rif" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="razon_social" label="Razón Social" maxlength="200" placeholder="Nombre de la empresa" id="razon-social-field" />
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="razon_social" label="Razón Social" maxlength="200" placeholder="Nombre de la empresa" id="razon-social-field" />
+
+                                <div class="mb-3">
+                                    <x-forms.input name="direccion" label="Dirección" maxlength="500" placeholder="Dirección de la empresa" id="direccion-jur-field" />
+                                </div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="telefono_jur_number" label="Teléfono" id="telefono-jur-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
+                                            <x-slot:prepend>
+                                                <select class="form-select" id="telefono-jur-prefix-field"
+                                                    style="max-width: 100px; min-width: 100px;">
+                                                    <option value="0212">0212</option>
+                                                    <option value="0251">0251</option>
+                                                    <option value="0241">0241</option>
+                                                    <option value="0255">0255</option>
+                                                    <option value="0412">0412</option>
+                                                    <option value="0414">0414</option>
+                                                    <option value="0424" selected>0424</option>
+                                                    <option value="0416">0416</option>
+                                                    <option value="0426">0426</option>
+                                                </select>
+                                            </x-slot:prepend>
+                                        </x-forms.input>
+                                        <input type="hidden" id="telefono-jur-field" name="telefono" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="email" label="Email" type="email" placeholder="correo@empresa.com" id="email-jur-field" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <x-forms.input name="direccion" label="Dirección" maxlength="500" placeholder="Dirección de la empresa" id="direccion-jur-field" />
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="telefono_jur_number" label="Teléfono" id="telefono-jur-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
-                                        <x-slot:prepend>
-                                            <select class="form-select" id="telefono-jur-prefix-field"
-                                                style="max-width: 100px; min-width: 100px;">
-                                                <option value="0212">0212</option>
-                                                <option value="0251">0251</option>
-                                                <option value="0241">0241</option>
-                                                <option value="0255">0255</option>
-                                                <option value="0412">0412</option>
-                                                <option value="0414">0414</option>
-                                                <option value="0424" selected>0424</option>
-                                                <option value="0416">0416</option>
-                                                <option value="0426">0426</option>
-                                            </select>
-                                        </x-slot:prepend>
-                                    </x-forms.input>
-                                    <input type="hidden" id="telefono-jur-field" name="telefono" />
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="email" label="Email" type="email" placeholder="correo@empresa.com" id="email-jur-field" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="contacto" label="Persona de Contacto" maxlength="100" placeholder="Nombre del contacto" id="contacto-field" />
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="telefono_contacto_number" label="Teléfono de Contacto" id="telefono-contacto-number-field" maxlength="7" placeholder="1234567" prependRaw="true">
-                                        <x-slot:prepend>
-                                            <select class="form-select" id="telefono-contacto-prefix-field"
-                                                style="max-width: 100px; min-width: 100px;">
-                                                <option value="0412">0412</option>
-                                                <option value="0414">0414</option>
-                                                <option value="0424" selected>0424</option>
-                                                <option value="0416">0416</option>
-                                                <option value="0426">0426</option>
-                                            </select>
-                                        </x-slot:prepend>
-                                    </x-forms.input>
-                                    <input type="hidden" id="telefono-contacto-field" name="telefono_contacto" />
+
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-user-follow-line"></i>Contacto Secundario</div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="contacto" label="Persona de Contacto" maxlength="100" placeholder="Nombre del contacto" id="contacto-field" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="telefono_contacto_number" label="Teléfono de Contacto" id="telefono-contacto-number-field" maxlength="7" placeholder="1234567" prependRaw="true">
+                                            <x-slot:prepend>
+                                                <select class="form-select" id="telefono-contacto-prefix-field"
+                                                    style="max-width: 100px; min-width: 100px;">
+                                                    <option value="0412">0412</option>
+                                                    <option value="0414">0414</option>
+                                                    <option value="0424" selected>0424</option>
+                                                    <option value="0416">0416</option>
+                                                    <option value="0426">0426</option>
+                                                </select>
+                                            </x-slot:prepend>
+                                        </x-forms.input>
+                                        <input type="hidden" id="telefono-contacto-field" name="telefono_contacto" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- CAMPOS PARA PROVEEDOR NATURAL (PERSONA) -->
                         <div id="campos-natural" style="display: none;">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="nombre" label="Nombre" maxlength="100" placeholder="Nombre" id="nombre-field" />
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="apellido" label="Apellido" maxlength="100" placeholder="Apellido" id="apellido-field" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="15" placeholder="Ej: 12345678" required prependRaw="true">
-                                        <x-slot:prepend>
-                                            <select class="form-select" id="tipo-documento-field" name="tipo_documento"
-                                                style="max-width: 80px;">
-                                                <option value="V-">V-</option>
-                                                <option value="E-">E-</option>
-                                                <option value="J-">J-</option>
-                                                <option value="G-">G-</option>
-                                            </select>
-                                        </x-slot:prepend>
-                                    </x-forms.input>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <x-forms.input name="telefono_nat_number" label="Teléfono" id="telefono-nat-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
-                                        <x-slot:prepend>
-                                            <select class="form-select" id="telefono-nat-prefix-field"
-                                                style="max-width: 100px; min-width: 100px;">
-                                                <option value="0412">0412</option>
-                                                <option value="0422">0422</option>
-                                                <option value="0414">0414</option>
-                                                <option value="0424" selected>0424</option>
-                                                <option value="0416">0416</option>
-                                                <option value="0426">0426</option>
-                                            </select>
-                                        </x-slot:prepend>
-                                    </x-forms.input>
-                                    <input type="hidden" id="telefono-nat-field" name="telefono" />
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-user-3-line"></i>Datos Personales</div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="nombre" label="Nombre" maxlength="100" placeholder="Nombre" id="nombre-field" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="apellido" label="Apellido" maxlength="100" placeholder="Apellido" id="apellido-field" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <x-forms.input name="email" label="Email" type="email" placeholder="correo@email.com" id="email-nat-field" />
-                            </div>
-                            <div class="mb-3">
-                                <x-forms.input name="direccion" label="Dirección" maxlength="255" placeholder="Dirección completa" id="direccion-nat-field" />
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="estado-territorial-field" class="form-label">Estado</label>
-                                    <select id="estado-territorial-field" name="estado_territorial" class="form-select">
-                                        <option value="">Seleccione estado</option>
-                                        <option value="Amazonas">Amazonas</option>
-                                        <option value="Anzoátegui">Anzoátegui</option>
-                                        <option value="Apure">Apure</option>
-                                        <option value="Aragua">Aragua</option>
-                                        <option value="Barinas">Barinas</option>
-                                        <option value="Bolívar">Bolívar</option>
-                                        <option value="Carabobo">Carabobo</option>
-                                        <option value="Cojedes">Cojedes</option>
-                                        <option value="Delta Amacuro">Delta Amacuro</option>
-                                        <option value="Distrito Capital">Distrito Capital</option>
-                                        <option value="Falcón">Falcón</option>
-                                        <option value="Guárico">Guárico</option>
-                                        <option value="La Guaira">La Guaira</option>
-                                        <option value="Lara">Lara</option>
-                                        <option value="Mérida">Mérida</option>
-                                        <option value="Miranda">Miranda</option>
-                                        <option value="Monagas">Monagas</option>
-                                        <option value="Nueva Esparta">Nueva Esparta</option>
-                                        <option value="Portuguesa">Portuguesa</option>
-                                        <option value="Sucre">Sucre</option>
-                                        <option value="Táchira">Táchira</option>
-                                        <option value="Trujillo">Trujillo</option>
-                                        <option value="Yaracuy">Yaracuy</option>
-                                        <option value="Zulia">Zulia</option>
-                                    </select>
+
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-contacts-book-line"></i>Contacto</div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="15" placeholder="Ej: 12345678" required prependRaw="true">
+                                            <x-slot:prepend>
+                                                <select class="form-select" id="tipo-documento-field" name="tipo_documento"
+                                                    style="max-width: 80px;">
+                                                    <option value="V-">V-</option>
+                                                    <option value="E-">E-</option>
+                                                    <option value="J-">J-</option>
+                                                    <option value="G-">G-</option>
+                                                </select>
+                                            </x-slot:prepend>
+                                        </x-forms.input>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="telefono_nat_number" label="Teléfono" id="telefono-nat-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
+                                            <x-slot:prepend>
+                                                <select class="form-select" id="telefono-nat-prefix-field"
+                                                    style="max-width: 100px; min-width: 100px;">
+                                                    <option value="0412">0412</option>
+                                                    <option value="0422">0422</option>
+                                                    <option value="0414">0414</option>
+                                                    <option value="0424" selected>0424</option>
+                                                    <option value="0416">0416</option>
+                                                    <option value="0426">0426</option>
+                                                </select>
+                                            </x-slot:prepend>
+                                        </x-forms.input>
+                                        <input type="hidden" id="telefono-nat-field" name="telefono" />
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="ciudad-field" class="form-label">Municipio</label>
-                                    <select id="ciudad-field" name="ciudad" class="form-select">
-                                        <option value="">Primero seleccione un estado</option>
-                                    </select>
+
+                                <div class="mb-3">
+                                    <x-forms.input name="email" label="Email" type="email" placeholder="correo@email.com" id="email-nat-field" />
+                                </div>
+
+                                <div class="mb-0">
+                                    <x-forms.input name="direccion" label="Dirección" maxlength="255" placeholder="Dirección completa" id="direccion-nat-field" />
+                                </div>
+                            </div>
+
+                            <div class="modal-form-section mb-0">
+                                <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="estado-territorial-field" class="form-label">Estado</label>
+                                        <select id="estado-territorial-field" name="estado_territorial" class="form-select">
+                                            <option value="">Seleccione estado</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ciudad-field" class="form-label">Municipio</label>
+                                        <select id="ciudad-field" name="ciudad" class="form-select">
+                                            <option value="">Primero seleccione un estado</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>

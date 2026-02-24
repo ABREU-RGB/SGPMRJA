@@ -74,6 +74,71 @@
             max-width: 80px;
             text-align: center;
         }
+
+        .atlantico-modal .modal-content {
+            border: 1px solid rgba(30, 60, 114, 0.16);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+        }
+
+        .atlantico-modal .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            border-bottom: 0;
+            padding: 0.85rem 1rem !important;
+        }
+
+        .atlantico-modal .modal-header .modal-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .atlantico-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+
+        .atlantico-modal .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .atlantico-modal .modal-body {
+            padding: 1.2rem;
+        }
+
+        .atlantico-modal .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+            padding: 0.75rem 1rem;
+        }
+
+        .modal-form-section {
+            border: 1px solid rgba(30, 60, 114, 0.12);
+            border-radius: 0.65rem;
+            padding: 0.9rem;
+            background: rgba(30, 60, 114, 0.025);
+            margin-bottom: 0.9rem;
+        }
+
+        .modal-form-section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .producto-info-item {
+            border: 1px solid rgba(30, 60, 114, 0.1);
+            border-radius: 0.6rem;
+            background: #fff;
+            padding: 0.6rem 0.7rem;
+            height: 100%;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -127,7 +192,7 @@
     </div>
 
     <!-- Modal para ver detalles del Producto -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -137,24 +202,31 @@
                 </div>
                 <div class="modal-body p-4">
                     <!-- Imagen del Producto centrada -->
-                    <div class="text-center mb-4" id="producto-imagen-container" style="display: none;">
-                        <div class="rounded mx-auto d-inline-block p-2" style="background: rgba(30, 60, 114, 0.05);">
-                            <img id="producto-imagen" src="" alt="Imagen del producto" class="rounded"
-                                style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                    <div class="card border-0 shadow-sm mb-4" id="producto-imagen-container" style="display: none;">
+                        <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                            <h6 class="mb-0" style="color: #1e3c72;">
+                                <i class="ri-image-line me-2"></i>Vista del Producto
+                            </h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="rounded mx-auto d-inline-block p-2" style="background: rgba(30, 60, 114, 0.05);">
+                                <img id="producto-imagen" src="" alt="Imagen del producto" class="rounded"
+                                    style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                            </div>
                         </div>
                     </div>
 
                     <!-- Card Información del Producto -->
                     <div class="card border-0 shadow-sm">
-                        <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                            <h6 class="mb-0" style="color: #00d9a5;">
+                        <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                            <h6 class="mb-0" style="color: #1e3c72;">
                                 <i class="ri-information-line me-2"></i>Información del Producto
                             </h6>
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
-                                <div class="col-12">
-                                    <div class="d-flex align-items-center">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center producto-info-item">
                                         <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
                                             style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
                                             <i class="ri-price-tag-3-line" style="color: #1e3c72;"></i>
@@ -165,11 +237,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="d-flex align-items-center">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center producto-info-item">
                                         <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                            style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                            <i class="ri-hashtag" style="color: #2ecc71;"></i>
+                                            style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                            <i class="ri-hashtag" style="color: #1e3c72;"></i>
                                         </div>
                                         <div>
                                             <small class="text-muted d-block">Modelo</small>
@@ -177,11 +249,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="d-flex align-items-center">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center producto-info-item">
                                         <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                            style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                            <i class="ri-money-dollar-circle-line" style="color: #00d9a5;"></i>
+                                            style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                            <i class="ri-money-dollar-circle-line" style="color: #1e3c72;"></i>
                                         </div>
                                         <div>
                                             <small class="text-muted d-block">Precio Base</small>
@@ -189,8 +261,20 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center producto-info-item">
+                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                            style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                            <i class="ri-calendar-line" style="color: #1e3c72;"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Fecha de Creación</small>
+                                            <span class="fw-semibold" id="view-created">-</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="col-12">
-                                    <div class="d-flex align-items-start">
+                                    <div class="d-flex align-items-start producto-info-item">
                                         <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
                                             style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
                                             <i class="ri-file-text-line" style="color: #1e3c72;"></i>
@@ -198,18 +282,6 @@
                                         <div>
                                             <small class="text-muted d-block">Descripción</small>
                                             <span class="fw-semibold" id="view-descripcion">-</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                            style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                            <i class="ri-calendar-line" style="color: #2ecc71;"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block">Fecha de Creación</small>
-                                            <span class="fw-semibold" id="view-created">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -227,7 +299,7 @@
     </div>
 
     <!-- Modal para agregar/editar -->
-    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
@@ -241,56 +313,67 @@
                         <input type="hidden" id="id-field" />
                         <div class="row">
                             <div class="col-md-6">
-                                {{-- Tipo de Producto — mantiene HTML custom por data-prefijo + botón "+" --}}
-                                <div class="mb-3">
-                                    <label for="tipo-producto-field" class="form-label">Tipo de Producto <span
-                                            class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <select id="tipo-producto-field" name="tipo_producto_id" class="form-select"
-                                            required>
-                                            <option value="">Seleccione un tipo...</option>
-                                            @foreach($tiposProducto as $tipo)
-                                                <option value="{{ $tipo->id }}" data-prefijo="{{ $tipo->codigo_prefijo }}">
-                                                    {{ $tipo->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                            data-bs-target="#addTipoModal" title="Agregar nuevo tipo">
-                                            <i class="ri-add-line"></i>
-                                        </button>
+                                <div class="modal-form-section">
+                                    <div class="modal-form-section-title"><i class="ri-price-tag-3-line"></i>Identificación del Producto</div>
+
+                                    {{-- Tipo de Producto — mantiene HTML custom por data-prefijo + botón "+" --}}
+                                    <div class="mb-3">
+                                        <label for="tipo-producto-field" class="form-label">Tipo de Producto <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <select id="tipo-producto-field" name="tipo_producto_id" class="form-select"
+                                                required>
+                                                <option value="">Seleccione un tipo...</option>
+                                                @foreach($tiposProducto as $tipo)
+                                                    <option value="{{ $tipo->id }}" data-prefijo="{{ $tipo->codigo_prefijo }}">
+                                                        {{ $tipo->nombre }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                                data-bs-target="#addTipoModal" title="Agregar nuevo tipo">
+                                                <i class="ri-add-line"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <x-forms.input name="modelo" label="Modelo"
-                                    placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required id="modelo-field" />
-                                <x-forms.input name="codigo" label="Código" readonly class="bg-light"
-                                    placeholder="Se genera automáticamente"
-                                    hint="El código se genera al seleccionar el tipo de producto" id="codigo-field" />
-                                {{-- Descripción — textarea --}}
-                                <div class="mb-3">
-                                    <label for="descripcion-field" class="form-label">Descripción <span
-                                            class="text-danger">*</span></label>
-                                    <textarea id="descripcion-field" name="descripcion" class="form-control" rows="3"
-                                        placeholder="Descripción adicional del producto" required></textarea>
+
+                                    <x-forms.input name="modelo" label="Modelo"
+                                        placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required id="modelo-field" />
+                                    <x-forms.input name="codigo" label="Código" readonly class="bg-light"
+                                        placeholder="Se genera automáticamente"
+                                        hint="El código se genera al seleccionar el tipo de producto" id="codigo-field" />
+
+                                    <div class="mb-0">
+                                        <label for="descripcion-field" class="form-label">Descripción <span
+                                                class="text-danger">*</span></label>
+                                        <textarea id="descripcion-field" name="descripcion" class="form-control" rows="3"
+                                            placeholder="Descripción adicional del producto" required></textarea>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01" min="0"
-                                    placeholder="0.00" required id="precio-base-field" />
-                                {{-- Imagen — mantiene HTML nativo por preview --}}
-                                <div class="mb-3">
-                                    <label for="imagen-field" class="form-label">Imagen <span
-                                            class="text-danger">*</span></label>
-                                    <input type="file" id="imagen-field" name="imagen" class="form-control" accept="image/*"
-                                        required />
-                                    <div id="imagen-preview" class="mt-2 text-center" style="display: none;">
-                                        <img src="" alt="Vista previa de la imagen" class="img-fluid"
-                                            style="max-width: 200px;">
+                                <div class="modal-form-section mb-0">
+                                    <div class="modal-form-section-title"><i class="ri-money-dollar-circle-line"></i>Precio, Imagen y Estado</div>
+
+                                    <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01" min="0"
+                                        placeholder="0.00" required id="precio-base-field" />
+
+                                    {{-- Imagen — mantiene HTML nativo por preview --}}
+                                    <div class="mb-3">
+                                        <label for="imagen-field" class="form-label">Imagen <span
+                                                class="text-danger">*</span></label>
+                                        <input type="file" id="imagen-field" name="imagen" class="form-control" accept="image/*"
+                                            required />
+                                        <div id="imagen-preview" class="mt-2 text-center" style="display: none;">
+                                            <img src="" alt="Vista previa de la imagen" class="img-fluid"
+                                                style="max-width: 200px;">
+                                        </div>
                                     </div>
+
+                                    <x-forms.select name="estado" label="Estado" required
+                                        :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1"
+                                        id="estado-field" />
                                 </div>
-                                <x-forms.select name="estado" label="Estado" required
-                                    :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1"
-                                    id="estado-field" />
                             </div>
                         </div>
                     </div>
@@ -310,7 +393,7 @@
     </div>
 
     <!-- Modal para gestionar Tipos de Producto -->
-    <div class="modal fade" id="tiposModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade atlantico-modal" id="tiposModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
@@ -347,7 +430,7 @@
     </div>
 
     <!-- Modal para agregar/editar Tipo de Producto -->
-    <div class="modal fade" id="addTipoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade atlantico-modal" id="addTipoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
@@ -358,25 +441,29 @@
                 <form id="tipoForm">
                     <div class="modal-body">
                         <input type="hidden" id="tipo-id-field" />
-                        <div class="mb-3">
-                            <label for="tipo-nombre-field" class="form-label required">Nombre del Tipo</label>
-                            <input type="text" id="tipo-nombre-field" name="nombre" class="form-control"
-                                placeholder="Ej: Chemise, Franela, Pantalón" required />
-                            <div id="tipo-nombre-error" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tipo-prefijo-field" class="form-label required">Prefijo de Código</label>
-                            <input type="text" id="tipo-prefijo-field" name="codigo_prefijo" class="form-control"
-                                placeholder="Ej: CHM, FRN, PNT (máx 5 letras)" maxlength="5" required
-                                style="text-transform: uppercase;" />
-                            <div id="tipo-prefijo-error" class="invalid-feedback"></div>
-                            <small class="text-muted">Se usará para generar códigos como CHM-001</small>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tipo-descripcion-field" class="form-label required">Descripción</label>
-                            <textarea id="tipo-descripcion-field" name="descripcion" class="form-control" rows="2"
-                                placeholder="Descripción opcional" required></textarea>
-                            <div id="tipo-descripcion-error" class="invalid-feedback"></div>
+                        <div class="modal-form-section mb-0">
+                            <div class="modal-form-section-title"><i class="ri-list-settings-line"></i>Datos del Tipo de Producto</div>
+
+                            <div class="mb-3">
+                                <label for="tipo-nombre-field" class="form-label required">Nombre del Tipo</label>
+                                <input type="text" id="tipo-nombre-field" name="nombre" class="form-control"
+                                    placeholder="Ej: Chemise, Franela, Pantalón" required />
+                                <div id="tipo-nombre-error" class="invalid-feedback"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tipo-prefijo-field" class="form-label required">Prefijo de Código</label>
+                                <input type="text" id="tipo-prefijo-field" name="codigo_prefijo" class="form-control"
+                                    placeholder="Ej: CHM, FRN, PNT (máx 5 letras)" maxlength="5" required
+                                    style="text-transform: uppercase;" />
+                                <div id="tipo-prefijo-error" class="invalid-feedback"></div>
+                                <small class="text-muted">Se usará para generar códigos como CHM-001</small>
+                            </div>
+                            <div class="mb-0">
+                                <label for="tipo-descripcion-field" class="form-label required">Descripción</label>
+                                <textarea id="tipo-descripcion-field" name="descripcion" class="form-control" rows="2"
+                                    placeholder="Descripción opcional" required></textarea>
+                                <div id="tipo-descripcion-error" class="invalid-feedback"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light border-0">

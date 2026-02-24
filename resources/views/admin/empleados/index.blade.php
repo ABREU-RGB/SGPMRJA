@@ -109,6 +109,63 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+
+        .atlantico-modal .modal-content {
+            border: 1px solid rgba(30, 60, 114, 0.16);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+        }
+
+        .atlantico-modal .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            border-bottom: 0;
+            padding: 0.85rem 1rem !important;
+        }
+
+        .atlantico-modal .modal-header .modal-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .atlantico-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+
+        .atlantico-modal .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .atlantico-modal .modal-body {
+            padding: 1.2rem;
+        }
+
+        .atlantico-modal .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+            padding: 0.75rem 1rem;
+        }
+
+        .modal-form-section {
+            border: 1px solid rgba(30, 60, 114, 0.12);
+            border-radius: 0.65rem;
+            padding: 0.9rem;
+            background: rgba(30, 60, 114, 0.025);
+            margin-bottom: 0.9rem;
+        }
+
+        .modal-form-section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -157,7 +214,7 @@
 
     <!-- Modal para ver detalles -->
     <!-- Modal para ver detalles del Empleado -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -392,7 +449,7 @@
     </div>
 
     <!-- Modal para agregar/editar Empleado (Estándar Clientes) -->
-    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -404,92 +461,95 @@
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
 
-                        <!-- Fila 1: Documento + Nombre + Apellido -->
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="field-documento_identidad" class="form-label required">Documento de Identidad</label>
-                                <div class="input-group">
-                                    <select class="form-select" id="tipo-documento-field" name="tipo_documento"
-                                        style="max-width: 80px;">
-                                        <option value="V-">V-</option>
-                                        <option value="E-">E-</option>
-                                        <option value="J-">J-</option>
-                                        <option value="G-">G-</option>
-                                    </select>
-                                    <input type="text" id="field-documento_identidad" name="documento_identidad"
-                                        class="form-control" placeholder="Nro. documento" required />
+                        <div class="modal-form-section">
+                            <div class="modal-form-section-title"><i class="ri-user-3-line"></i>Datos Personales</div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="field-documento_identidad" class="form-label required">Documento de Identidad</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="tipo-documento-field" name="tipo_documento"
+                                            style="max-width: 80px;">
+                                            <option value="V-">V-</option>
+                                            <option value="E-">E-</option>
+                                            <option value="J-">J-</option>
+                                            <option value="G-">G-</option>
+                                        </select>
+                                        <input type="text" id="field-documento_identidad" name="documento_identidad"
+                                            class="form-control" placeholder="Nro. documento" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" required />
+                                </div>
+                                <div class="col-md-4">
+                                    <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" required />
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <x-forms.input name="nombre" label="Nombre" placeholder="Nombre" required />
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
+                                </div>
+                                <div class="col-md-6">
+                                    <x-forms.input name="telefono" label="Teléfono" placeholder="0424-1234567" />
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" required />
+
+                            <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.input name="fecha_nacimiento" label="Fecha de Nacimiento" type="date" />
+                                </div>
+                                <div class="col-md-6">
+                                    <x-forms.select name="genero" label="Género"
+                                        :options="['M' => 'Masculino', 'F' => 'Femenino']" />
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Fila 2: Email + Teléfono -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
+                        <div class="modal-form-section">
+                            <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
+
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <x-forms.input name="direccion" label="Dirección" placeholder="Dirección completa" />
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <x-forms.input name="telefono" label="Teléfono" placeholder="0424-1234567" />
+
+                            <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.input name="estado_persona" label="Estado" placeholder="Estado" />
+                                </div>
+                                <div class="col-md-6">
+                                    <x-forms.input name="ciudad" label="Ciudad" placeholder="Ciudad" />
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Fila 3: Fecha Nacimiento + Género -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <x-forms.input name="fecha_nacimiento" label="Fecha de Nacimiento" type="date" />
-                            </div>
-                            <div class="col-md-6">
-                                <x-forms.select name="genero" label="Género"
-                                    :options="['M' => 'Masculino', 'F' => 'Femenino']" />
-                            </div>
-                        </div>
+                        <div class="modal-form-section mb-0">
+                            <div class="modal-form-section-title"><i class="ri-briefcase-4-line"></i>Información Laboral</div>
 
-                        <!-- Fila 4: Dirección -->
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <x-forms.input name="direccion" label="Dirección" placeholder="Dirección completa" />
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <x-forms.input name="cargo" label="Cargo" placeholder="Ej: Operario" required />
+                                </div>
+                                <div class="col-md-4">
+                                    <x-forms.select name="departamento" label="Departamento"
+                                        :options="$departamentos ?? ['Administracion' => 'Administración', 'Produccion' => 'Producción']"
+                                        required add-button-target="#addDepartamentoModal" />
+                                </div>
+                                <div class="col-md-4">
+                                    <x-forms.input name="fecha_ingreso" label="Fecha de Ingreso" type="date" required />
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Fila 5: Estado + Ciudad -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <x-forms.input name="estado_persona" label="Estado" placeholder="Estado" />
-                            </div>
-                            <div class="col-md-6">
-                                <x-forms.input name="ciudad" label="Ciudad" placeholder="Ciudad" />
-                            </div>
-                        </div>
-
-                        <hr class="my-3">
-
-                        <!-- Fila 6: Cargo + Departamento + Fecha Ingreso -->
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <x-forms.input name="cargo" label="Cargo" placeholder="Ej: Operario" required />
-                            </div>
-                            <div class="col-md-4">
-                                <x-forms.select name="departamento" label="Departamento"
-                                    :options="$departamentos ?? ['Administracion' => 'Administración', 'Produccion' => 'Producción']"
-                                    required add-button-target="#addDepartamentoModal" />
-                            </div>
-                            <div class="col-md-4">
-                                <x-forms.input name="fecha_ingreso" label="Fecha de Ingreso" type="date" required />
-                            </div>
-                        </div>
-
-                        <!-- Fila 7: Estado laboral (oculta código autogenerado) -->
-                        <input type="hidden" id="field-codigo_empleado" name="codigo_empleado" />
-                        <div class="row">
-                            <div class="col-md-6">
-                                <x-forms.select name="estado" label="Estado Laboral"
-                                    :options="['1' => 'Activo', '0' => 'Inactivo']" required
-                                    placeholder="" value="1" />
+                            <input type="hidden" id="field-codigo_empleado" name="codigo_empleado" />
+                            <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.select name="estado" label="Estado Laboral"
+                                        :options="['1' => 'Activo', '0' => 'Inactivo']" required
+                                        placeholder="" value="1" />
+                                </div>
                             </div>
                         </div>
 
@@ -513,7 +573,7 @@
         </div>
     </div>
     <!-- Mini-Modal para agregar Departamento on the fly -->
-    <div class="modal fade" id="addDepartamentoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade atlantico-modal" id="addDepartamentoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">

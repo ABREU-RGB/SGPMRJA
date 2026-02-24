@@ -72,6 +72,63 @@
             background-color: rgba(233, 30, 99, 0.15);
             color: #e91e63;
         }
+
+        .atlantico-modal .modal-content {
+            border: 1px solid rgba(30, 60, 114, 0.16);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+        }
+
+        .atlantico-modal .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            border-bottom: 0;
+            padding: 0.85rem 1rem !important;
+        }
+
+        .atlantico-modal .modal-header .modal-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .atlantico-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+
+        .atlantico-modal .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .atlantico-modal .modal-body {
+            padding: 1.2rem;
+        }
+
+        .atlantico-modal .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+            padding: 0.75rem 1rem;
+        }
+
+        .modal-form-section {
+            border: 1px solid rgba(30, 60, 114, 0.12);
+            border-radius: 0.65rem;
+            padding: 0.9rem;
+            background: rgba(30, 60, 114, 0.025);
+            margin-bottom: 0.9rem;
+        }
+
+        .modal-form-section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
     </style>
 @endpush
 
@@ -139,7 +196,7 @@
     </div>
 
     <!-- Modal para ver detalles -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -191,7 +248,7 @@
     </div>
 
     <!-- Modal para agregar/editar -->
-    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -203,20 +260,56 @@
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
-                        <x-forms.input name="nombre" label="Nombre" required />
-                        <x-forms.select name="tipo" label="Tipo" required
-                            :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
-                        <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
-                        <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0"
-                            required />
-                        <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0"
-                            required />
-                        <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0"
-                            required />
-                        <x-forms.select name="proveedor_id" label="Proveedor" required
-                            :options="$proveedores->pluck('razon_social', 'id')->toArray()" />
-                        <x-forms.select name="estado" label="Estado" required
-                            :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1" />
+
+                        <div class="modal-form-section">
+                            <div class="modal-form-section-title"><i class="ri-box-3-line"></i>Datos del Insumo</div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.input name="nombre" label="Nombre" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <x-forms.select name="tipo" label="Tipo" required
+                                        :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <x-forms.select name="proveedor_id" label="Proveedor" required
+                                        :options="$proveedores->pluck('razon_social', 'id')->toArray()" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-form-section mb-0">
+                            <div class="modal-form-section-title"><i class="ri-bar-chart-grouped-line"></i>Control de Inventario y Costo</div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-4">
+                                    <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0"
+                                        required />
+                                </div>
+                                <div class="col-md-4">
+                                    <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0"
+                                        required />
+                                </div>
+                                <div class="col-md-4">
+                                    <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0"
+                                        required />
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.select name="estado" label="Estado" required
+                                        :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
