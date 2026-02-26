@@ -196,7 +196,7 @@ class ClienteController extends Controller
     public function exportarPDF()
     {
         $clientes = Cliente::with('persona')->get();
-        $pdf = Pdf::loadView('admin.clientes.reporte_pdf', compact('clientes'))->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView('admin.clientes.reporte_pdf', compact('clientes'))->setPaper('a4', 'landscape');
         return $pdf->download('reporte_clientes_' . now()->format('Ymd_His') . '.pdf');
     }
 
