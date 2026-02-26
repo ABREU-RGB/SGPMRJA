@@ -18,7 +18,11 @@ class UserController extends Controller
     public function getUsers()
     {
         $users = User::all();
-        return DataTables::of($users)->make(true);
+        return DataTables::of($users)
+            ->editColumn('avatar', function ($user) {
+                return $user->avatar ? asset('storage/' . $user->avatar) : null;
+            })
+            ->make(true);
     }
 
     private function handleFileUpload($file, $oldPath, $directory)
@@ -62,7 +66,9 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return response()->json($user);
+        $data = $user->toArray();
+        $data['avatar'] = $user->avatar ? asset('storage/' . $user->avatar) : null;
+        return response()->json($data);
     }
 
     public function update(UpdateUserRequest $request, $id)
@@ -114,9 +120,9 @@ class UserController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'role' => $user->role,
-            'avatar' => $user->avatar ? asset($user->avatar) : null,
+            'avatar' => $user->avatar ? asset('storage/' . $user->avatar) : null,
 
-            'created_at' => $user->created_at->format('d/m/Y H:i:s'),
+            'created_at' => $user->created_at->format('d/m/Y'),
             'updated_at' => $user->updated_at->format('d/m/Y H:i:s')
         ]);
     }

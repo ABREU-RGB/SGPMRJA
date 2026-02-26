@@ -93,6 +93,63 @@
             background-color: rgba(41, 156, 219, 0.15);
             color: #299cdb;
         }
+
+        .atlantico-modal .modal-content {
+            border: 1px solid rgba(30, 60, 114, 0.16);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+        }
+
+        .atlantico-modal .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            border-bottom: 0;
+            padding: 0.85rem 1rem !important;
+        }
+
+        .atlantico-modal .modal-header .modal-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .atlantico-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+        }
+
+        .atlantico-modal .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .atlantico-modal .modal-body {
+            padding: 1.2rem;
+        }
+
+        .atlantico-modal .modal-footer {
+            background: #f8f9fa;
+            border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+            padding: 0.75rem 1rem;
+        }
+
+        .modal-form-section {
+            border: 1px solid rgba(30, 60, 114, 0.12);
+            border-radius: 0.65rem;
+            padding: 0.9rem;
+            background: rgba(30, 60, 114, 0.025);
+            margin-bottom: 0.9rem;
+        }
+
+        .modal-form-section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
     </style>
     <div class="row">
         <div class="col-lg-12">
@@ -136,7 +193,7 @@
     </div>
 
     <!-- Modal para ver detalles del Usuario -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-md">
             <div class="modal-content">
@@ -156,8 +213,8 @@
 
                     <!-- Card Información del Usuario -->
                     <div class="card border-0 shadow-sm">
-                        <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                            <h6 class="mb-0" style="color: #00d9a5;">
+                        <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                            <h6 class="mb-0" style="color: #1e3c72;">
                                 <i class="ri-information-line me-2"></i>Información del Usuario
                             </h6>
                         </div>
@@ -178,8 +235,8 @@
                                 <div class="col-12">
                                     <div class="d-flex align-items-center">
                                         <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                            style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                            <i class="ri-mail-line" style="color: #2ecc71;"></i>
+                                            style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                            <i class="ri-mail-line" style="color: #1e3c72;"></i>
                                         </div>
                                         <div>
                                             <small class="text-muted d-block">Email</small>
@@ -190,8 +247,8 @@
                                 <div class="col-6">
                                     <div class="d-flex align-items-center">
                                         <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                            style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                            <i class="ri-shield-user-line" style="color: #00d9a5;"></i>
+                                            style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                            <i class="ri-shield-user-line" style="color: #1e3c72;"></i>
                                         </div>
                                         <div>
                                             <small class="text-muted d-block">Rol</small>
@@ -225,9 +282,9 @@
     </div>
 
     <!-- Modal para agregar/editar -->
-    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Usuario</h5>
@@ -236,23 +293,49 @@
                 <form id="userForm">
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
-                        <div class="row">
-                            <div class="col-md-6">
-                                <x-forms.input name="name" label="Nombre" placeholder="Nombre" required />
-                                <x-forms.input name="email" label="Email" type="email" placeholder="Email" required />
-                                <div class="mb-3" id="password-group">
+
+                        <div class="modal-form-section">
+                            <div class="modal-form-section-title"><i class="ri-shield-keyhole-line"></i>Credenciales de Acceso</div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <x-forms.input name="name" label="Nombre" placeholder="Nombre completo" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com" required />
+                                </div>
+                            </div>
+
+                            <div class="row mb-0" id="password-group">
+                                <div class="col-md-6">
                                     <x-forms.input name="password" label="Contraseña" type="password"
                                         placeholder="Contraseña"
-                                        hint="Dejar en blanco para mantener la contraseña actual al editar" />
+                                        hint="Dejar en blanco para mantener la actual al editar" />
                                 </div>
-                                <x-forms.input name="password_confirmation" label="Confirmar Contraseña" type="password"
-                                    placeholder="Confirmar Contraseña" required />
-                                <x-forms.select name="role" label="Rol" required
-                                    :options="['Administrador' => 'Administrador', 'Supervisor' => 'Supervisor']"
-                                    placeholder="Seleccione un rol" />
+                                <div class="col-md-6">
+                                    <x-forms.input name="password_confirmation" label="Confirmar Contraseña" type="password"
+                                        placeholder="Confirmar Contraseña" required />
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-4">
+                        </div>
+
+                        <div class="modal-form-section mb-0">
+                            <div class="modal-form-section-title"><i class="ri-user-settings-line"></i>Perfil de Usuario</div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <x-forms.select name="role" label="Rol" required
+                                        :options="['Administrador' => 'Administrador', 'Supervisor' => 'Supervisor']"
+                                        placeholder="Seleccione un rol" />
+                                </div>
+                                <div class="col-md-6">
+                                    <x-forms.select name="estado" label="Estado" :options="['1' => 'Activo', '0' => 'Inactivo']"
+                                        placeholder="" value="1" />
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6">
                                     <label for="field-avatar" class="form-label">Avatar</label>
                                     <input type="file" id="field-avatar" name="avatar" class="form-control"
                                         accept="image/*" />
@@ -261,11 +344,9 @@
                                             style="max-width: 100px;">
                                     </div>
                                 </div>
-
-                                <x-forms.select name="estado" label="Estado" :options="['1' => 'Activo', '0' => 'Inactivo']"
-                                    placeholder="" value="1" />
                             </div>
                         </div>
+
                     </div>
                     <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">

@@ -9,7 +9,8 @@
                             <img src="{{ asset('atlantico-logo-wide.png') }}" alt="" height="22">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{ asset('atlantico-logo-wide.png') }}" alt="" style="height: auto; width: auto; max-width: 100%; max-height: 70px; display: block; margin: 0 auto;">
+                            <img src="{{ asset('atlantico-logo-wide.png') }}" alt=""
+                                style="height: auto; width: auto; max-width: 100%; max-height: 70px; display: block; margin: 0 auto;">
                         </span>
                     </a>
 
@@ -18,7 +19,8 @@
                             <img src="{{ asset('atlantico-logo-wide.png') }}" alt="" height="22">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{ asset('atlantico-logo-wide.png') }}" alt="" style="height: auto; width: auto; max-width: 100%; max-height: 70px; display: block; margin: 0 auto;">
+                            <img src="{{ asset('atlantico-logo-wide.png') }}" alt=""
+                                style="height: auto; width: auto; max-width: 100%; max-height: 70px; display: block; margin: 0 auto;">
                         </span>
                     </a>
                 </div>
@@ -166,10 +168,12 @@
                     <div class="d-flex align-items-center px-3 py-1 rounded-pill topbar-info-pill">
                         <i class="ri-calendar-line text-white me-2 fs-18"></i>
                         <div class="text-white text-center">
-                            <small id="header-date" class="d-block fw-bold" style="font-size: 0.7rem; line-height: 1.2;">
+                            <small id="header-date" class="d-block fw-bold"
+                                style="font-size: 0.7rem; line-height: 1.2;">
                                 <!-- Date will be populated by JavaScript -->
                             </small>
-                            <small id="header-time" class="d-block" style="font-size: 0.65rem; line-height: 1.2; opacity: 0.9;">
+                            <small id="header-time" class="d-block"
+                                style="font-size: 0.65rem; line-height: 1.2; opacity: 0.9;">
                                 <!-- Time will be populated by JavaScript -->
                             </small>
                         </div>
@@ -513,22 +517,25 @@
 
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     @auth
-                        <button type="button" class="btn bg-white bg-opacity-10 border border-light border-opacity-25 rounded-pill px-3 py-1 text-white"
+                        <button type="button"
+                            class="btn bg-white bg-opacity-10 border border-light border-opacity-25 rounded-pill px-3 py-1 text-white"
                             id="page-header-user-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
                             aria-haspopup="true" aria-expanded="false">
                             <span class="d-flex align-items-center">
                                 <img class="rounded-circle header-profile-user border border-2 border-light border-opacity-25"
-                                    src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('assets/images/users/avatar-1.jpg') }}"
+                                    src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('assets/images/users/avatar-1.jpg') }}"
                                     alt="Header Avatar">
                                 <span class="text-start ms-xl-2">
-                                    <span class="d-none d-xl-inline-block ms-1 fw-semibold text-white">{{ Auth::user()->name }}</span>
+                                    <span
+                                        class="d-none d-xl-inline-block ms-1 fw-semibold text-white">{{ Auth::user()->name }}</span>
                                     <span class="d-none d-xl-block ms-1 fs-13 text-white-50">{{ Auth::user()->role }}</span>
                                 </span>
                                 <i class="mdi mdi-chevron-down text-white-50 ms-2 d-none d-xl-inline-block"></i>
                             </span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end p-0 overflow-hidden border-0 shadow-lg profile-dropdown-menu"
-                            id="profile-dropdown-menu" aria-labelledby="page-header-user-dropdown" style="min-width: 240px;">
+                            id="profile-dropdown-menu" aria-labelledby="page-header-user-dropdown"
+                            style="min-width: 240px;">
                             <div class="profile-dropdown-header px-3 pt-1 pb-0 border-bottom bg-light-subtle">
                                 <h6 class="profile-dropdown-title mb-0">{{ Auth::user()->name }}</h6>
                                 <small class="profile-dropdown-subtitle text-muted">{{ Auth::user()->role }}</small>
@@ -538,32 +545,32 @@
                                     <i class="mdi mdi-account-circle fs-16 align-middle me-2 text-primary"></i>
                                     <span class="align-middle">Perfil</span>
                                 </a>
-                            {{-- <a class="dropdown-item" href="apps-chat.html"><i
-                                    class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle">Messages</span></a>
-                            <a class="dropdown-item" href="apps-tasks-kanban.html"><i
-                                    class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle">Taskboard</span></a>
-                            <a class="dropdown-item" href="pages-faqs.html"><i
-                                    class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle">Help</span></a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="pages-profile.html"><i
-                                    class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle">Balance : <b>$5971.67</b></span></a>
-                            <a class="dropdown-item" href="pages-profile-settings.html"><span
-                                    class="badge bg-success-subtle text-success mt-1 float-end">New</span><i
-                                    class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle">Settings</span></a>
-                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i
-                                    class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span
-                                    class="align-middle">Lock screen</span></a>--}}
-                            @if (Auth::user()->isAdmin())
-                                <a class="dropdown-item d-flex align-items-center" href="{{ url('users') }}">
-                                    <i class="mdi mdi-account-group-outline fs-16 align-middle me-2 text-primary"></i>
-                                    <span class="align-middle">Usuarios</span>
-                                </a>
-                            @endif
+                                {{-- <a class="dropdown-item" href="apps-chat.html"><i
+                                        class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Messages</span></a>
+                                <a class="dropdown-item" href="apps-tasks-kanban.html"><i
+                                        class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Taskboard</span></a>
+                                <a class="dropdown-item" href="pages-faqs.html"><i
+                                        class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Help</span></a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="pages-profile.html"><i
+                                        class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Balance : <b>$5971.67</b></span></a>
+                                <a class="dropdown-item" href="pages-profile-settings.html"><span
+                                        class="badge bg-success-subtle text-success mt-1 float-end">New</span><i
+                                        class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Settings</span></a>
+                                <a class="dropdown-item" href="auth-lockscreen-basic.html"><i
+                                        class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Lock screen</span></a>--}}
+                                @if (Auth::user()->isAdmin())
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ url('users') }}">
+                                        <i class="mdi mdi-account-group-outline fs-16 align-middle me-2 text-primary"></i>
+                                        <span class="align-middle">Usuarios</span>
+                                    </a>
+                                @endif
                             </div>
                             <div class="dropdown-divider my-0"></div>
                             <div class="py-1">
@@ -612,7 +619,7 @@
             </div>
 
         </div><!-- /.modal-content -->
-</div><!-- /.modal-dialog -->
+    </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 <style>
@@ -644,7 +651,7 @@
         border-color: rgba(255, 255, 255, 0.35) !important;
         box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.12) !important;
     }
-    
+
     #page-header-user-dropdown:hover .header-profile-user,
     #page-header-user-dropdown:focus .header-profile-user,
     #page-header-user-dropdown:active .header-profile-user,
@@ -689,25 +696,25 @@
 <script>
     function updateHeaderDateTime() {
         const now = new Date();
-        
+
         // Format date as DD/MM/YYYY
         const day = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = now.getFullYear();
-        
+
         // Format time as HH:MM AM/PM
         let hours = now.getHours();
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12; // 0 should be 12
-        
+
         const dateString = `${day}/${month}/${year}`;
         const timeString = `${hours}:${minutes} ${ampm}`;
-        
+
         const dateElement = document.getElementById('header-date');
         const timeElement = document.getElementById('header-time');
-        
+
         if (dateElement) {
             dateElement.textContent = dateString;
         }
@@ -715,14 +722,14 @@
             timeElement.textContent = timeString;
         }
     }
-    
+
     // Update immediately on page load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         updateHeaderDateTime();
         // Update every second
         setInterval(updateHeaderDateTime, 1000);
 
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             if (event.key !== 'Escape') {
                 return;
             }
@@ -765,7 +772,7 @@
                 items[safeIndex].focus();
             };
 
-            profileDropdownTrigger.addEventListener('keydown', function(event) {
+            profileDropdownTrigger.addEventListener('keydown', function (event) {
                 const dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(profileDropdownTrigger, {
                     autoClose: 'outside'
                 });
@@ -790,7 +797,7 @@
             });
 
             if (profileDropdownMenu) {
-                profileDropdownMenu.addEventListener('keydown', function(event) {
+                profileDropdownMenu.addEventListener('keydown', function (event) {
                     const items = getProfileDropdownItems();
                     if (!items.length) {
                         return;
