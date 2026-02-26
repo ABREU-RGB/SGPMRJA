@@ -521,7 +521,7 @@
     <!-- Modal para agregar/editar -->
     <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <form id="clienteForm" class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Cliente</h5>
@@ -559,7 +559,8 @@
                                     </x-slot:prepend>
                                 </x-forms.input>
                                 <input type="hidden" id="documento-field" name="documento" />
-                                <small class="text-muted" style="margin-top: -6px; display: block; margin-bottom: 6px;">Máximo
+                                <small class="text-muted"
+                                    style="margin-top: -6px; display: block; margin-bottom: 6px;">Máximo
                                     10 dígitos</small>
                                 <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
                             </div>
@@ -579,8 +580,8 @@
                                     id="nombre-field" />
                             </div>
                             <div class="col-md-6">
-                                <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" maxlength="100" required
-                                    id="apellido-field" />
+                                <x-forms.input name="apellido" label="Apellido" placeholder="Apellido" maxlength="100"
+                                    required id="apellido-field" />
                             </div>
                         </div>
 
@@ -634,7 +635,8 @@
                         <div class="row g-2">
                             <div class="col-md-6">
                                 <label for="estado_territorial-field" class="form-label required">Estado</label>
-                                <select name="estado_territorial" id="estado_territorial-field" class="form-select" required>
+                                <select name="estado_territorial" id="estado_territorial-field" class="form-select"
+                                    required>
                                     <option value="">Seleccione estado</option>
                                     <option value="Amazonas">Amazonas</option>
                                     <option value="Anzoátegui">Anzoátegui</option>
@@ -978,18 +980,18 @@
             });
             function generateButtons(clienteId) {
                 return `
-                                                                                            <div class="d-flex gap-2 justify-content-center">
-                                                                                                <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
-                                                                                                    <i class="ri-eye-fill"></i>
-                                                                                                </button>
-                                                                                                <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
-                                                                                                    <i class="ri-pencil-fill"></i>
-                                                                                                </button>
-                                                                                                <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
-                                                                                                    <i class="ri-delete-bin-fill"></i>
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        `;
+                                                                                                <div class="d-flex gap-2 justify-content-center">
+                                                                                                    <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
+                                                                                                        <i class="ri-eye-fill"></i>
+                                                                                                    </button>
+                                                                                                    <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
+                                                                                                        <i class="ri-pencil-fill"></i>
+                                                                                                    </button>
+                                                                                                    <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
+                                                                                                        <i class="ri-delete-bin-fill"></i>
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            `;
             }
 
             function formatDate(dateStr) {

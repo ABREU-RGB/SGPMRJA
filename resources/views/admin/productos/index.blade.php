@@ -301,7 +301,7 @@
     <!-- Modal para agregar/editar -->
     <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Producto</h5>
@@ -314,7 +314,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="modal-form-section">
-                                    <div class="modal-form-section-title"><i class="ri-price-tag-3-line"></i>Identificación del Producto</div>
+                                    <div class="modal-form-section-title"><i class="ri-price-tag-3-line"></i>Identificación
+                                        del Producto</div>
 
                                     {{-- Tipo de Producto — mantiene HTML custom por data-prefijo + botón "+" --}}
                                     <div class="mb-3">
@@ -338,7 +339,8 @@
                                     </div>
 
                                     <x-forms.input name="modelo" label="Modelo"
-                                        placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required id="modelo-field" />
+                                        placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required
+                                        id="modelo-field" />
                                     <x-forms.input name="codigo" label="Código" readonly class="bg-light"
                                         placeholder="Se genera automáticamente"
                                         hint="El código se genera al seleccionar el tipo de producto" id="codigo-field" />
@@ -353,17 +355,18 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="modal-form-section mb-0">
-                                    <div class="modal-form-section-title"><i class="ri-money-dollar-circle-line"></i>Precio, Imagen y Estado</div>
+                                    <div class="modal-form-section-title"><i class="ri-money-dollar-circle-line"></i>Precio,
+                                        Imagen y Estado</div>
 
-                                    <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01" min="0"
-                                        placeholder="0.00" required id="precio-base-field" />
+                                    <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01"
+                                        min="0" placeholder="0.00" required id="precio-base-field" />
 
                                     {{-- Imagen — mantiene HTML nativo por preview --}}
                                     <div class="mb-3">
                                         <label for="imagen-field" class="form-label">Imagen <span
                                                 class="text-danger">*</span></label>
-                                        <input type="file" id="imagen-field" name="imagen" class="form-control" accept="image/*"
-                                            required />
+                                        <input type="file" id="imagen-field" name="imagen" class="form-control"
+                                            accept="image/*" required />
                                         <div id="imagen-preview" class="mt-2 text-center" style="display: none;">
                                             <img src="" alt="Vista previa de la imagen" class="img-fluid"
                                                 style="max-width: 200px;">
@@ -442,7 +445,8 @@
                     <div class="modal-body">
                         <input type="hidden" id="tipo-id-field" />
                         <div class="modal-form-section mb-0">
-                            <div class="modal-form-section-title"><i class="ri-list-settings-line"></i>Datos del Tipo de Producto</div>
+                            <div class="modal-form-section-title"><i class="ri-list-settings-line"></i>Datos del Tipo de
+                                Producto</div>
 
                             <div class="mb-3">
                                 <label for="tipo-nombre-field" class="form-label required">Nombre del Tipo</label>
@@ -560,18 +564,18 @@
                         searchable: false,
                         render: function (data) {
                             return `
-                                        <div class="d-flex gap-2 justify-content-center">
-                                            <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
-                                                <i class="ri-eye-fill"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
-                                                <i class="ri-pencil-fill"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
-                                                <i class="ri-delete-bin-fill"></i>
-                                            </button>
-                                        </div>
-                                    `;
+                                            <div class="d-flex gap-2 justify-content-center">
+                                                <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
+                                                    <i class="ri-eye-fill"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
+                                                    <i class="ri-pencil-fill"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
+                                                    <i class="ri-delete-bin-fill"></i>
+                                                </button>
+                                            </div>
+                                        `;
                         }
                     }
                 ],
@@ -870,24 +874,24 @@
 
                     tipos.forEach(function (tipo) {
                         tbody.append(`
-                                        <tr>
-                                            <td>${tipo.nombre}</td>
-                                            <td><span class="badge bg-secondary">${tipo.codigo_prefijo}</span></td>
-                                            <td><span class="badge bg-info">${tipo.contador}</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
-                                                    data-id="${tipo.id}" 
-                                                    data-nombre="${tipo.nombre}" 
-                                                    data-prefijo="${tipo.codigo_prefijo}"
-                                                    data-descripcion="${tipo.descripcion || ''}">
-                                                    <i class="ri-pencil-line"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger delete-tipo-btn" data-id="${tipo.id}">
-                                                    <i class="ri-delete-bin-line"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `);
+                                            <tr>
+                                                <td>${tipo.nombre}</td>
+                                                <td><span class="badge bg-secondary">${tipo.codigo_prefijo}</span></td>
+                                                <td><span class="badge bg-info">${tipo.contador}</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
+                                                        data-id="${tipo.id}" 
+                                                        data-nombre="${tipo.nombre}" 
+                                                        data-prefijo="${tipo.codigo_prefijo}"
+                                                        data-descripcion="${tipo.descripcion || ''}">
+                                                        <i class="ri-pencil-line"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-tipo-btn" data-id="${tipo.id}">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        `);
                     });
                 });
             }
