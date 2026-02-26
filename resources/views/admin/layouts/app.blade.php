@@ -73,44 +73,63 @@
             font-weight: bold;
         }
 
-        /* Estilos globales para botones de SweetAlert con degradado */
+        /* ========== SWEETALERT2 — ESTÁNDAR ATLÁNTICO ========== */
+
+        /* Botón primario (Confirmar) — Ambos modos: con y sin buttonsStyling */
         .swal2-confirm.swal2-styled,
-        .swal2-styled.swal2-confirm {
+        .swal2-styled.swal2-confirm,
+        .swal2-actions .btn-primary {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
             border: none !important;
             box-shadow: 0 4px 6px rgba(30, 60, 114, 0.3) !important;
             font-weight: 600 !important;
             padding: 10px 24px !important;
             border-radius: 6px !important;
+            color: #ffffff !important;
             transition: all 0.3s ease !important;
         }
 
         .swal2-confirm.swal2-styled:hover,
-        .swal2-styled.swal2-confirm:hover {
+        .swal2-styled.swal2-confirm:hover,
+        .swal2-actions .btn-primary:hover {
             background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%) !important;
             box-shadow: 0 6px 12px rgba(30, 60, 114, 0.4) !important;
             transform: translateY(-2px) !important;
         }
 
+        /* Botón peligro (Cancelar / Eliminar) */
         .swal2-cancel.swal2-styled,
-        .swal2-styled.swal2-cancel {
+        .swal2-styled.swal2-cancel,
+        .swal2-actions .btn-danger {
             background: linear-gradient(135deg, #8b3a3a 0%, #a04545 100%) !important;
             border: none !important;
             box-shadow: 0 4px 6px rgba(139, 58, 58, 0.3) !important;
             font-weight: 600 !important;
             padding: 10px 24px !important;
             border-radius: 6px !important;
+            color: #ffffff !important;
             transition: all 0.3s ease !important;
         }
 
         .swal2-cancel.swal2-styled:hover,
-        .swal2-styled.swal2-cancel:hover {
+        .swal2-styled.swal2-cancel:hover,
+        .swal2-actions .btn-danger:hover {
             background: linear-gradient(135deg, #a04545 0%, #8b3a3a 100%) !important;
             box-shadow: 0 6px 12px rgba(139, 58, 58, 0.4) !important;
             transform: translateY(-2px) !important;
         }
 
-        /* Botón de cierre personalizado */
+        /* Ícono de Warning — amber refinado para la marca */
+        .swal2-icon.swal2-warning {
+            border-color: #e8a838 !important;
+            color: #e8a838 !important;
+        }
+
+        .swal2-icon.swal2-warning .swal2-icon-content {
+            color: #e8a838 !important;
+        }
+
+        /* Botón de cierre */
         .swal2-close {
             color: #6c757d !important;
             font-size: 28px !important;
@@ -278,6 +297,98 @@
         [data-bs-theme="dark"] .pagination .page-item.active .page-link {
             background-color: #60a5fa !important;
             border-color: #60a5fa !important;
+        }
+
+        /* ========== SWEETALERT2 — DARK MODE ========== */
+        [data-bs-theme="dark"] .swal2-popup {
+            background-color: #242832 !important;
+            color: #e4e7eb !important;
+            border: 1px solid #2d3139 !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-title {
+            color: #e4e7eb !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-html-container,
+        [data-bs-theme="dark"] .swal2-content {
+            color: #c8cbd0 !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-close {
+            color: #8b92a7 !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-close:hover {
+            color: #e4e7eb !important;
+        }
+
+        /* Icon ring colors for dark mode */
+        [data-bs-theme="dark"] .swal2-icon.swal2-warning {
+            border-color: #f0ad4e !important;
+            color: #f0ad4e !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-icon.swal2-error {
+            border-color: #e74c3c !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+            background-color: #e74c3c !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-icon.swal2-success {
+            border-color: #2ecc71 !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-icon.swal2-success [class^='swal2-success-line'] {
+            background-color: #2ecc71 !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-icon.swal2-success .swal2-success-ring {
+            border-color: rgba(46, 204, 113, 0.3) !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-icon.swal2-info {
+            border-color: #60a5fa !important;
+            color: #60a5fa !important;
+        }
+
+        /* Timer progress bar */
+        [data-bs-theme="dark"] .swal2-timer-progress-bar {
+            background: rgba(96, 165, 250, 0.5) !important;
+        }
+
+        /* Input fields inside SweetAlert */
+        [data-bs-theme="dark"] .swal2-input,
+        [data-bs-theme="dark"] .swal2-textarea,
+        [data-bs-theme="dark"] .swal2-select {
+            background-color: #1f2229 !important;
+            border-color: #2d3139 !important;
+            color: #c8cbd0 !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-input:focus,
+        [data-bs-theme="dark"] .swal2-textarea:focus {
+            border-color: #60a5fa !important;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15) !important;
+        }
+
+        /* Footer text */
+        [data-bs-theme="dark"] .swal2-footer {
+            border-top-color: #2d3139 !important;
+            color: #8b92a7 !important;
+        }
+
+        /* Validation message */
+        [data-bs-theme="dark"] .swal2-validation-message {
+            background-color: #1f2229 !important;
+            color: #e74c3c !important;
+        }
+
+        /* SweetAlert2 backdrop (overlay) */
+        [data-bs-theme="dark"] .swal2-container {
+            background: rgba(0, 0, 0, 0.6) !important;
         }
     </style>
 
