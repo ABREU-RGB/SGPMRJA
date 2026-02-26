@@ -48,26 +48,94 @@
             padding-left: 30px;
         }
 
+        /* ========== DATATABLE — ESTÁNDAR ATLÁNTICO ========== */
         #clientes-table {
-            width: auto !important;
-            /* El ancho justo del contenido */
+            width: 100% !important;
             font-size: 13px;
-            min-width: 0 !important;
-            /* No forzar ancho mínimo */
+            table-layout: fixed;
         }
 
         #clientes-table th,
         #clientes-table td {
-            padding: 0.35rem 0.5rem;
+            padding: 0.4rem 0.6rem;
             vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Acciones: Ancho mínimo fijo */
-        #clientes-table th:last-child,
-        #clientes-table td:last-child {
-            width: 80px;
-            /* Suficiente para 3 botones */
+        /* Anchos de columna balanceados */
+        #clientes-table th:nth-child(1) {
+            width: 14%;
+        }
+
+        /* Documento */
+        #clientes-table th:nth-child(2) {
+            width: 25%;
+        }
+
+        /* Cliente */
+        #clientes-table th:nth-child(3) {
+            width: 11%;
+        }
+
+        /* Tipo */
+        #clientes-table th:nth-child(4) {
+            width: 14%;
+        }
+
+        /* Teléfono */
+        #clientes-table th:nth-child(5) {
+            width: 22%;
+        }
+
+        /* Email */
+        #clientes-table th:nth-child(6) {
+            width: 14%;
             text-align: center;
+        }
+
+        /* Acciones */
+
+        #clientes-table td:last-child {
+            text-align: center;
+            overflow: visible;
+        }
+
+        /* Header Atlántico */
+        #clientes-table thead th {
+            background: #1e3c72 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-color: #2a5298 !important;
+        }
+
+        /* Email con tooltip — truncar con ellipsis */
+        #clientes-table td:nth-child(5) {
+            max-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Zebra striping — visible y legible */
+        #clientes-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        #clientes-table tbody tr:nth-child(odd) {
+            background-color: transparent;
+        }
+
+        #clientes-table tbody tr:nth-child(even) {
+            background-color: rgba(30, 60, 114, 0.06);
+        }
+
+        #clientes-table tbody tr:hover {
+            background-color: rgba(30, 60, 114, 0.12) !important;
         }
 
         .btn-purple {
@@ -82,14 +150,14 @@
             color: #fff;
         }
 
-        /* Badges de tipo de cliente */
+        /* Badges de tipo — compactos */
         .badge-tipo {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
         }
 
@@ -979,19 +1047,17 @@
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
             function generateButtons(clienteId) {
-                return `
-                                                                                                <div class="d-flex gap-2 justify-content-center">
-                                                                                                    <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${clienteId}" title="Ver">
-                                                                                                        <i class="ri-eye-fill"></i>
-                                                                                                    </button>
-                                                                                                    <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${clienteId}" title="Editar">
-                                                                                                        <i class="ri-pencil-fill"></i>
-                                                                                                    </button>
-                                                                                                    <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${clienteId}" title="Eliminar">
-                                                                                                        <i class="ri-delete-bin-fill"></i>
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            `;
+                return '<div class="d-flex gap-1 justify-content-center">' +
+                    '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + clienteId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + clienteId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + clienteId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '</div>';
             }
 
             function formatDate(dateStr) {
@@ -1038,8 +1104,14 @@
                         }
                     },
                     { data: 'telefono' },
-                    { data: 'email' },
-                    { data: null, render: function (data, type, row) { return generateButtons(row.id); } }
+                    {
+                        data: 'email',
+                        render: function (data) {
+                            if (!data) return '<span class="text-muted">—</span>';
+                            return '<span title="' + data + '" style="cursor:default;">' + data + '</span>';
+                        }
+                    },
+                    { data: null, orderable: false, render: function (data, type, row) { return generateButtons(row.id); } }
                 ],
                 order: [[0, 'asc']], // Ordenar por documento (primera columna)
                 dom: 'rtip',
