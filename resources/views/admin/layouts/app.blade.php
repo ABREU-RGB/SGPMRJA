@@ -21,6 +21,25 @@
 
     <!-- DataTables css se carga en cada vista individual -->
 
+    <!-- FOUC Prevention: Apply saved theme BEFORE layout.js reads sessionStorage -->
+    <script>
+        (function () {
+            var savedTheme = localStorage.getItem('sgpmrja-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                // Sync into sessionStorage so layout.js doesn't reset it
+                var defaults = sessionStorage.getItem('defaultAttribute');
+                if (defaults) {
+                    try {
+                        var parsed = JSON.parse(defaults);
+                        parsed['data-bs-theme'] = savedTheme;
+                        sessionStorage.setItem('defaultAttribute', JSON.stringify(parsed));
+                    } catch (e) { }
+                }
+                sessionStorage.setItem('data-bs-theme', savedTheme);
+            }
+        })();
+    </script>
     <!-- Layout config Js -->
     <script src="{{ asset('assets/js/layout.js') }}"></script>
     <!-- Bootstrap Css -->
@@ -315,6 +334,44 @@
 
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
+
+    <!-- Theme Persistence & Icon Sync -->
+    <script>
+        (function () {
+            // Sync toggle icon on page load
+            function syncThemeIcon() {
+                var html = document.documentElement;
+                var icon = document.querySelector('.light-dark-mode i');
+                if (!icon) return;
+                if (html.getAttribute('data-bs-theme') === 'dark') {
+                    icon.classList.remove('bx-moon');
+                    icon.classList.add('bx-sun');
+                } else {
+                    icon.classList.remove('bx-sun');
+                    icon.classList.add('bx-moon');
+                }
+            }
+
+            // Run on DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', syncThemeIcon);
+            } else {
+                syncThemeIcon();
+            }
+
+            // Watch for theme changes (covers toggle clicks and any programmatic changes)
+            var observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (m) {
+                    if (m.attributeName === 'data-bs-theme') {
+                        var theme = document.documentElement.getAttribute('data-bs-theme');
+                        localStorage.setItem('sgpmrja-theme', theme);
+                        syncThemeIcon();
+                    }
+                });
+            });
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+        })();
+    </script>
     <script>
         const lenguajeData = {
             emptyTable: "No hay datos disponibles",
