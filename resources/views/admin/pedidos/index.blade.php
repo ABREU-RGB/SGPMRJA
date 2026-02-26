@@ -378,10 +378,10 @@
         }
 
         /* ── Atlántico Brand Utility Theme — Clases compartidas ─────────────────
-                   Estas clases son las mismas que en cotizaciones/index.blade.php.
-                   Al definirlas aquí también, cualquier modal utilitario en esta página
-                   las hereda automáticamente sin necesidad de inline styles adicionales.
-                ───────────────────────────────────────────────────────────────────────── */
+                           Estas clases son las mismas que en cotizaciones/index.blade.php.
+                           Al definirlas aquí también, cualquier modal utilitario en esta página
+                           las hereda automáticamente sin necesidad de inline styles adicionales.
+                        ───────────────────────────────────────────────────────────────────────── */
         #productosModal .modal-header,
         #productosModal-header {
             background-color: #132649 !important;
@@ -777,10 +777,13 @@
                                         </div>
                                     </div>
                                     <div class="row g-3 mt-1">
-                                        <div class="col-12 col-md-6" id="view-bloque-transferencia-container" style="display:none;">
-                                            <div class="rounded p-2" style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
+                                        <div class="col-12 col-md-6" id="view-bloque-transferencia-container"
+                                            style="display:none;">
+                                            <div class="rounded p-2"
+                                                style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
                                                 <span class="fw-bold d-block mb-2" style="font-size:0.9rem; color:#1e3c72;">
-                                                    <i class="ri-bank-card-line me-1" style="font-size:0.9rem;"></i>Transferencia
+                                                    <i class="ri-bank-card-line me-1"
+                                                        style="font-size:0.9rem;"></i>Transferencia
                                                 </span>
                                                 <div class="mb-1">
                                                     <small class="text-muted d-block">Banco</small>
@@ -792,10 +795,13 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6" id="view-bloque-pago-movil-container" style="display:none;">
-                                            <div class="rounded p-2" style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
+                                        <div class="col-12 col-md-6" id="view-bloque-pago-movil-container"
+                                            style="display:none;">
+                                            <div class="rounded p-2"
+                                                style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
                                                 <span class="fw-bold d-block mb-2" style="font-size:0.9rem; color:#1e3c72;">
-                                                    <i class="ri-smartphone-line me-1" style="font-size:0.9rem;"></i>Pago Móvil
+                                                    <i class="ri-smartphone-line me-1" style="font-size:0.9rem;"></i>Pago
+                                                    Móvil
                                                 </span>
                                                 <div class="mb-1">
                                                     <small class="text-muted d-block">Banco</small>
@@ -918,60 +924,64 @@
                                                     Documento de identidad <span class="text-danger">*</span>
                                                 </label>
                                                 <div class="input-group">
-                                                    <select class="form-select" id="ci-rif-prefix-field" name="ci_rif_prefix"
-                                                        style="max-width: 70px;">
+                                                    <select class="form-select" id="ci-rif-prefix-field"
+                                                        name="ci_rif_prefix" style="max-width: 70px;">
                                                         <option value="V-">V-</option>
                                                         <option value="J-">J-</option>
                                                         <option value="E-">E-</option>
                                                         <option value="G-">G-</option>
                                                     </select>
                                                     <input type="text" id="ci-rif-number-field" name="ci_rif_number"
-                                                        class="form-control" placeholder="Buscar cliente por documento..." required />
+                                                        class="form-control" placeholder="Buscar cliente por documento..."
+                                                        required />
                                                 </div>
                                                 <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
                                             </div>
 
                                             <div class="col-6">
-                                                <label for="cliente-email-field" class="form-label small fw-semibold mb-1">Email</label>
-                                                    <input type="email" id="cliente-email-field" name="cliente_email"
-                                                        class="form-control form-control-sm" placeholder="Correo del cliente" />
+                                                <label for="cliente-email-field"
+                                                    class="form-label small fw-semibold mb-1">Email</label>
+                                                <input type="email" id="cliente-email-field" name="cliente_email"
+                                                    class="form-control form-control-sm" placeholder="Correo del cliente" />
                                             </div>
 
                                             <div class="col-6">
-                                                <label for="cliente-telefono-field" class="form-label small fw-semibold mb-1">Teléfono</label>
-                                                    <input type="text" id="cliente-telefono-field" name="cliente_telefono"
-                                                        class="form-control form-control-sm" placeholder="Número de teléfono" />
+                                                <label for="cliente-telefono-field"
+                                                    class="form-label small fw-semibold mb-1">Teléfono</label>
+                                                <input type="text" id="cliente-telefono-field" name="cliente_telefono"
+                                                    class="form-control form-control-sm" placeholder="Número de teléfono" />
                                             </div>
 
                                             <div class="col-6">
-                                                <label for="fecha-pedido-field" class="form-label small fw-semibold mb-1">Fecha Pedido <span
+                                                <label for="fecha-pedido-field"
+                                                    class="form-label small fw-semibold mb-1">Fecha Pedido <span
                                                         class="text-danger">*</span></label>
-                                                    <input type="date" id="fecha-pedido-field" name="fecha_pedido"
-                                                        class="form-control form-control-sm" required />
+                                                <input type="date" id="fecha-pedido-field" name="fecha_pedido"
+                                                    class="form-control form-control-sm" required />
                                             </div>
 
                                             <div class="col-6">
                                                 <label for="fecha-entrega-estimada-field"
                                                     class="form-label small fw-semibold mb-1">Fecha Entrega Estimada</label>
-                                                    <input type="date" id="fecha-entrega-estimada-field"
-                                                        name="fecha_entrega_estimada" class="form-control form-control-sm" />
+                                                <input type="date" id="fecha-entrega-estimada-field"
+                                                    name="fecha_entrega_estimada" class="form-control form-control-sm" />
                                             </div>
 
                                             <div class="col-12">
-                                                <label for="prioridad-field" class="form-label small fw-semibold mb-1">Prioridad</label>
-                                                <select id="prioridad-field" name="prioridad" class="form-select form-select-sm"
-                                                    required>
-                                                <option value="Normal">Normal</option>
-                                                <option value="Alta">Alta</option>
-                                                <option value="Urgente">Urgente</option>
-                                            </select>
+                                                <label for="prioridad-field"
+                                                    class="form-label small fw-semibold mb-1">Prioridad</label>
+                                                <select id="prioridad-field" name="prioridad"
+                                                    class="form-select form-select-sm" required>
+                                                    <option value="Normal">Normal</option>
+                                                    <option value="Alta">Alta</option>
+                                                    <option value="Urgente">Urgente</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="card border-0 shadow-sm mb-3" id="estado-field-wrapper"
-                                    style="display: none;">
+                                <div class="card border-0 shadow-sm mb-3" id="estado-field-wrapper" style="display: none;">
                                     <div class="card-header border-0 bg-soft-secondary">
                                         <h6 class="mb-0 text-atlantico-cyan">
                                             <i class="ri-flag-line me-2"></i>Estado del Pedido
@@ -996,7 +1006,8 @@
                                     <div class="card-body">
                                         <div class="row g-2">
                                             <div class="col-md-4">
-                                                <label for="total-display-field" class="form-label small fw-semibold mb-1">Total del Pedido
+                                                <label for="total-display-field"
+                                                    class="form-label small fw-semibold mb-1">Total del Pedido
                                                     ($)</label>
                                                 <div class="pago-kpi-box">
                                                     <div class="input-group input-group-sm">
@@ -1010,22 +1021,23 @@
                                                 </small>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="abono-field" class="form-label small fw-semibold mb-1">Abono ($)</label>
+                                                <label for="abono-field" class="form-label small fw-semibold mb-1">Abono
+                                                    ($)</label>
                                                 <div class="pago-kpi-box">
                                                     <div class="input-group input-group-sm">
                                                         <span class="input-group-text">$</span>
-                                                        <input type="number" id="abono-field" name="abono" class="form-control"
-                                                            step="0.01" min="0" value="0" required />
+                                                        <input type="number" id="abono-field" name="abono"
+                                                            class="form-control" step="0.01" min="0" value="0" required />
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="restante-display-field" class="form-label small fw-semibold mb-1">Restante ($)</label>
+                                                <label for="restante-display-field"
+                                                    class="form-label small fw-semibold mb-1">Restante ($)</label>
                                                 <div class="pago-kpi-box">
                                                     <div class="input-group input-group-sm">
                                                         <span class="input-group-text">$</span>
-                                                        <input type="text" id="restante-display-field"
-                                                            class="form-control"
+                                                        <input type="text" id="restante-display-field" class="form-control"
                                                             readonly />
                                                     </div>
                                                 </div>
@@ -1036,23 +1048,23 @@
                                             <label class="form-label small fw-semibold mb-1">Método de Pago</label>
                                             <div class="metodo-toggle-group mt-1">
                                                 <div class="form-check metodo-toggle">
-                                                    <input class="form-check-input" type="checkbox" id="efectivo-pagado-field"
-                                                        name="efectivo_pagado" value="1">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="efectivo-pagado-field" name="efectivo_pagado" value="1">
                                                     <label class="form-check-label" for="efectivo-pagado-field">
                                                         <i class="ri-money-dollar-circle-line"></i>Efectivo
                                                     </label>
                                                 </div>
                                                 <div class="form-check metodo-toggle">
                                                     <input class="form-check-input" type="checkbox"
-                                                        id="transferencia-pagado-field" name="transferencia_pagado" value="1">
-                                                    <label class="form-check-label"
-                                                        for="transferencia-pagado-field">
+                                                        id="transferencia-pagado-field" name="transferencia_pagado"
+                                                        value="1">
+                                                    <label class="form-check-label" for="transferencia-pagado-field">
                                                         <i class="ri-bank-card-line"></i>Transferencia
                                                     </label>
                                                 </div>
                                                 <div class="form-check metodo-toggle">
-                                                    <input class="form-check-input" type="checkbox" id="pago-movil-pagado-field"
-                                                        name="pago_movil_pagado" value="1">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="pago-movil-pagado-field" name="pago_movil_pagado" value="1">
                                                     <label class="form-check-label" for="pago-movil-pagado-field">
                                                         <i class="ri-smartphone-line"></i>Pago Móvil
                                                     </label>
@@ -1062,56 +1074,65 @@
 
                                         <div class="mt-2" id="referencia-transferencia-container">
                                             <div class="metodo-form-block">
-                                                <div class="metodo-form-title"><i class="ri-bank-card-line"></i>Transferencia</div>
-                                            <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label for="banco-transferencia-id-field" class="form-label small fw-semibold mb-1"><i
-                                                            class="ri-bank-line align-bottom me-1"></i>Banco
-                                                            Transferencia</label>
-                                                    <select id="banco-transferencia-id-field" name="banco_transferencia_id"
-                                                        class="form-select form-select-sm">
-                                                        <option value="">Seleccione un banco</option>
-                                                        @foreach($bancos as $banco)
-                                                            <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                                <div class="metodo-form-title"><i
+                                                        class="ri-bank-card-line"></i>Transferencia</div>
+                                                <div class="row g-2">
                                                     <div class="col-md-6">
-                                                        <label for="referencia-transferencia-field" class="form-label small fw-semibold mb-1"><i
+                                                        <label for="banco-transferencia-id-field"
+                                                            class="form-label small fw-semibold mb-1"><i
+                                                                class="ri-bank-line align-bottom me-1"></i>Banco
+                                                            Transferencia</label>
+                                                        <select id="banco-transferencia-id-field"
+                                                            name="banco_transferencia_id"
+                                                            class="form-select form-select-sm">
+                                                            <option value="">Seleccione un banco</option>
+                                                            @foreach($bancos as $banco)
+                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="referencia-transferencia-field"
+                                                            class="form-label small fw-semibold mb-1"><i
                                                                 class="ri-numbers-line align-bottom me-1"></i>Referencia
                                                             Transferencia</label>
                                                         <input type="text" id="referencia-transferencia-field"
-                                                            name="referencia_transferencia" class="form-control form-control-sm"
+                                                            name="referencia_transferencia"
+                                                            class="form-control form-control-sm"
                                                             placeholder="Número de referencia" />
                                                     </div>
-                                            </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="mt-2" id="referencia-pago-movil-container">
                                             <div class="metodo-form-block">
-                                                <div class="metodo-form-title"><i class="ri-smartphone-line"></i>Pago Móvil</div>
-                                            <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label for="banco-pago-movil-id-field" class="form-label small fw-semibold mb-1"><i
-                                                            class="ri-bank-line align-bottom me-1"></i>Banco
-                                                            Pago Móvil</label>
-                                                    <select id="banco-pago-movil-id-field" name="banco_pago_movil_id"
-                                                        class="form-select form-select-sm">
-                                                        <option value="">Seleccione un banco</option>
-                                                        @foreach($bancos as $banco)
-                                                            <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
-                                                        @endforeach
-                                                    </select>
+                                                <div class="metodo-form-title"><i class="ri-smartphone-line"></i>Pago Móvil
                                                 </div>
+                                                <div class="row g-2">
                                                     <div class="col-md-6">
-                                                        <label for="referencia-pago-movil-field" class="form-label small fw-semibold mb-1"><i
+                                                        <label for="banco-pago-movil-id-field"
+                                                            class="form-label small fw-semibold mb-1"><i
+                                                                class="ri-bank-line align-bottom me-1"></i>Banco
+                                                            Pago Móvil</label>
+                                                        <select id="banco-pago-movil-id-field" name="banco_pago_movil_id"
+                                                            class="form-select form-select-sm">
+                                                            <option value="">Seleccione un banco</option>
+                                                            @foreach($bancos as $banco)
+                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="referencia-pago-movil-field"
+                                                            class="form-label small fw-semibold mb-1"><i
                                                                 class="ri-numbers-line align-bottom me-1"></i>Referencia
                                                             Pago Móvil</label>
                                                         <input type="text" id="referencia-pago-movil-field"
-                                                            name="referencia_pago_movil" class="form-control form-control-sm"
+                                                            name="referencia_pago_movil"
+                                                            class="form-control form-control-sm"
                                                             placeholder="Número de referencia" />
                                                     </div>
-                                            </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1127,7 +1148,8 @@
                                                 style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">2</span>
                                             <i class="ri-shopping-bag-3-line me-2"></i>Productos del Pedido
                                         </h6>
-                                        <span class="badge bg-soft-info text-atlantico-dark"><i class="ri-link me-1"></i>Desde
+                                        <span class="badge bg-soft-info text-atlantico-dark"><i
+                                                class="ri-link me-1"></i>Desde
                                             Cotización</span>
                                     </div>
                                     <div class="card-body p-2"
@@ -1353,20 +1375,20 @@
             const suggestion = suggestions[0]; // Tomar la mejor sugerencia
 
             const suggestionHtml = `
-                                                                                                                                                                                                                                                                                                                                                                                <div class="autocorrect-suggestion" data-field-id="${field.id}">
-                                                                                                                                                                                                                                                                                                                                                                                    <div class="suggestion-text">
-                                                                                                                                                                                                                                                                                                                                                                                        ¿Quisiste decir "<strong>${suggestion.word}</strong>"?
-                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                    <div class="suggestion-buttons">
-                                                                                                                                                                                                                                                                                                                                                                                        <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion.word}">
-                                                                                                                                                                                                                                                                                                                                                                                            Sí
-                                                                                                                                                                                                                                                                                                                                                                                        </button>
-                                                                                                                                                                                                                                                                                                                                                                                        <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
-                                                                                                                                                                                                                                                                                                                                                                                            No
-                                                                                                                                                                                                                                                                                                                                                                                        </button>
-                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                           </d                                                                                                                                                                                                iv>
-                                                                                                                                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                                                                                                                                        <div class="autocorrect-suggestion" data-field-id="${field.id}">
+                                                                                                                                                                                                                                                                                                                                                                                            <div class="suggestion-text">
+                                                                                                                                                                                                                                                                                                                                                                                                ¿Quisiste decir "<strong>${suggestion.word}</strong>"?
+                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                                            <div class="suggestion-buttons">
+                                                                                                                                                                                                                                                                                                                                                                                                <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion.word}">
+                                                                                                                                                                                                                                                                                                                                                                                                    Sí
+                                                                                                                                                                                                                                                                                                                                                                                                </button>
+                                                                                                                                                                                                                                                                                                                                                                                                <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
+                                                                                                                                                                                                                                                                                                                                                                                                    No
+                                                                                                                                                                                                                                                                                                                                                                                                </button>
+                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                   </d                                                                                                                                                                                                iv>
+                                                                                                                                                                                                                                                                                                                                                    `;
 
             $('bo            dy').append(suggestionHtml);
 
@@ -1514,20 +1536,20 @@
                 const fieldOffset = $field.offset();
 
                 const suggestionHtml = `
-                                                                                                                                                                                                                                                                                                                                                                                    <div class="autocorrect-suggestion" data-field-id="${field.id}">
-                                                                                                                                                                                                                                                                                                                                                                                        <div class="suggestion-text">
-                                                                                                                                                                                                                                                                                                                                                                                            ¿Quisiste decir "<strong>${suggestion}</strong>"?
-                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                        <div class="suggestion-buttons">
-                                                                                                                                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion}">
-                                                                                                                                                                                                                                                                                                                                                                                                Sí
-                                                                                                                                                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                                                                                                                                                            <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
-                                                                                                                                                                                                                                                                                                                                                                                                No
-                                                                                                                                                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                `;
+                                                                                                                                                                                                                                                                                                                                                                                            <div class="autocorrect-suggestion" data-field-id="${field.id}">
+                                                                                                                                                                                                                                                                                                                                                                                                <div class="suggestion-text">
+                                                                                                                                                                                                                                                                                                                                                                                                    ¿Quisiste decir "<strong>${suggestion}</strong>"?
+                                                                                                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                                                                                                <div class="suggestion-buttons">
+                                                                                                                                                                                                                                                                                                                                                                                                    <button type="button" class="btn btn-sm btn-warning btn-suggestion accept-suggestion" data-suggestion="${suggestion}">
+                                                                                                                                                                                                                                                                                                                                                                                                        Sí
+                                                                                                                                                                                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                                                                                                                                                                                    <button type="button" class="btn btn-sm btn-secondary btn-suggestion ignore-suggestion">
+                                                                                                                                                                                                                                                                                                                                                                                                        No
+                                                                                                                                                                                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                                        `;
 
                 $('body').append(suggestionHtml);
 
@@ -1624,24 +1646,24 @@
                             var editDelete = '';
                             if (isAdmin && row.estado !== 'Completado' && row.estado !== 'Cancelado') {
                                 editDelete = `
-                                                                                                                                    <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
-                                                                                                                                        <i class="ri-pencil-fill"></i>
-                                                                                                                                    </button>
-                                                                                                                                    <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
-                                                                                                                                        <i class="ri-delete-bin-fill"></i>
-                                                                                                                                    </button>`;
+                                                                                                                                            <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
+                                                                                                                                                <i class="ri-pencil-fill"></i>
+                                                                                                                                            </button>
+                                                                                                                                            <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
+                                                                                                                                                <i class="ri-delete-bin-fill"></i>
+                                                                                                                                            </button>`;
                             }
                             return `
-                                                                                                                                <div class="d-flex gap-1 justify-content-center align-items-center">
-                                                                                                                                    <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
-                                                                                                                                        <i class="ri-eye-fill"></i>
-                                                                                                                                    </button>
-                                                                                                                                    ${editDelete}
-                                                                                                                                    <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
-                                                                                                                                        <i class="ri-file-pdf-line"></i>
-                                                                                                                                    </a>
-                                                                                                                                </div>
-                                                                                                                            `;
+                                                                                                                                        <div class="d-flex gap-1 justify-content-center align-items-center">
+                                                                                                                                            <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
+                                                                                                                                                <i class="ri-eye-fill"></i>
+                                                                                                                                            </button>
+                                                                                                                                            ${editDelete}
+                                                                                                                                            <a class="btn btn-sm btn-soft-secondary" href="/pedidos/${data}/pdf" target="_blank" title="PDF">
+                                                                                                                                                <i class="ri-file-pdf-line"></i>
+                                                                                                                                            </a>
+                                                                                                                                        </div>
+                                                                                                                                    `;
                         }
                     }
                 ],
@@ -1775,10 +1797,10 @@
                             var cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
 
                             return `
-                                <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
-                                    <span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${logoAplicado} → ${nombreAplicado} x${cantidadAplicada}</span>
-                                </div>
-                            `;
+                                        <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
+                                            <span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${logoAplicado} → ${nombreAplicado} x${cantidadAplicada}</span>
+                                        </div>
+                                    `;
                         }).join('');
                     } else {
                         bordadosHtml = `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${escAttr(nombreLogo || 'Sin logo')} → ${escAttr(ubicacionLogo || 'Sin ubicación')} x${Math.max(1, parseInt(cantidadLogo || 1, 10))}</span></div>`;
@@ -1786,128 +1808,128 @@
 
                     hiddenBordadosHtml = bordadosArray.map(function (bordado, idx) {
                         return `
-                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][ubicacion_bordado_id]" value="${escAttr(bordado.ubicacion_bordado_id || '')}" />
-                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_aplicado]" value="${escAttr(bordado.nombre_aplicado || '')}" />
-                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_logo]" value="${escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || '')}" />
-                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][es_personalizada]" value="${bordado.es_personalizada ? 1 : 0}" />
-                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][cantidad]" value="${Math.max(1, parseInt(bordado.cantidad || 1, 10))}" />
-                            <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][precio_aplicado]" value="${parseFloat(bordado.precio_aplicado || 0)}" />
-                        `;
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][ubicacion_bordado_id]" value="${escAttr(bordado.ubicacion_bordado_id || '')}" />
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_aplicado]" value="${escAttr(bordado.nombre_aplicado || '')}" />
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_logo]" value="${escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || '')}" />
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][es_personalizada]" value="${bordado.es_personalizada ? 1 : 0}" />
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][cantidad]" value="${Math.max(1, parseInt(bordado.cantidad || 1, 10))}" />
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][precio_aplicado]" value="${parseFloat(bordado.precio_aplicado || 0)}" />
+                                `;
                     }).join('');
                 }
 
                 var itemHtml = `
-                                                                                                        <div class="card border-0 shadow-sm mb-3 product-item" style="border-left: 4px solid #00d9a5 !important;" data-product-index="${productItemIndex}">
-                                                                                                            <div class="card-body p-3">
-                                                                                                                <!-- Header del Producto -->
-                                                                                                                <div class="d-flex align-items-center mb-3">
-                                                                                                                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 45px; height: 45px; background: #1e3c72;">
-                                                                                                                        <i class="ri-t-shirt-2-line text-white fs-5"></i>
-                                                                                                                    </div>
-                                                                                                                    <div class="flex-grow-1">
-                                                                                                                        <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${productoText}</h6>
-                                                                                                                        <small class="text-muted">Producto #${productItemIndex + 1}</small>
-                                                                                                                    </div>
-                                                                                                                    <div>
-                                                                                                                        <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
-                                                                                                                            $${subtotal.toFixed(2)}
-                                                                                                                        </span>
-                                                                                                                    </div>
-                                                                                                                </div>
-
-                                                                                                                <!-- Detalles del Producto -->
-                                                                                                                <div class="row g-2 mb-2">
-                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                                <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                                                <div class="card border-0 shadow-sm mb-3 product-item" style="border-left: 4px solid #00d9a5 !important;" data-product-index="${productItemIndex}">
+                                                                                                                    <div class="card-body p-3">
+                                                                                                                        <!-- Header del Producto -->
+                                                                                                                        <div class="d-flex align-items-center mb-3">
+                                                                                                                            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                                                                                                                style="width: 45px; height: 45px; background: #1e3c72;">
+                                                                                                                                <i class="ri-t-shirt-2-line text-white fs-5"></i>
+                                                                                                                            </div>
+                                                                                                                            <div class="flex-grow-1">
+                                                                                                                                <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${productoText}</h6>
+                                                                                                                                <small class="text-muted">Producto #${productItemIndex + 1}</small>
                                                                                                                             </div>
                                                                                                                             <div>
-                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
-                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${cantidad}</span>
+                                                                                                                                <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
+                                                                                                                                    $${subtotal.toFixed(2)}
+                                                                                                                                </span>
                                                                                                                             </div>
                                                                                                                         </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
-                                                                                                                                <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+
+                                                                                                                        <!-- Detalles del Producto -->
+                                                                                                                        <div class="row g-2 mb-2">
+                                                                                                                            <div class="col-6 col-md-3">
+                                                                                                                                <div class="d-flex align-items-center">
+                                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                        style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                                                                        <i class="ri-stack-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                                                                    </div>
+                                                                                                                                    <div>
+                                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
+                                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${cantidad}</span>
+                                                                                                                                    </div>
+                                                                                                                                </div>
                                                                                                                             </div>
-                                                                                                                            <div>
-                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${getTallaLabel(talla)}</span>
+                                                                                                                            <div class="col-6 col-md-3">
+                                                                                                                                <div class="d-flex align-items-center">
+                                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                                        <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                                                                    </div>
+                                                                                                                                    <div>
+                                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
+                                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${getTallaLabel(talla)}</span>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                            <div class="col-6 col-md-3">
+                                                                                                                                <div class="d-flex align-items-center">
+                                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                        style="width: 28px; height: 28px; background: rgba(108, 92, 231, 0.15);">
+                                                                                                                                        <i class="ri-palette-line" style="color: #6c5ce7; font-size: 0.85rem;"></i>
+                                                                                                                                    </div>
+                                                                                                                                    <div>
+                                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
+                                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${color || 'N/A'}</span>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                            <div class="col-6 col-md-3">
+                                                                                                                                <div class="d-flex align-items-center">
+                                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                        style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
+                                                                                                                                        <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
+                                                                                                                                    </div>
+                                                                                                                                    <div>
+                                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
+                                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">$${precioFinalUnitario.toFixed(2)}</span>
+                                                                                                                                    </div>
+                                                                                                                                </div>
                                                                                                                             </div>
                                                                                                                         </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                style="width: 28px; height: 28px; background: rgba(108, 92, 231, 0.15);">
-                                                                                                                                <i class="ri-palette-line" style="color: #6c5ce7; font-size: 0.85rem;"></i>
+
+                                                                                                                        ${llevaBordado ? `
+                                                                                                                        <!-- Logos -->
+                                                                                                                        <div class="rounded p-2 mb-2" style="background: rgba(30, 60, 114, 0.08);">
+                                                                                                                            <div class="d-flex align-items-center mb-2">
+                                                                                                                                <i class="ri-scissors-cut-line me-2" style="color: #1e3c72;"></i>
+                                                                                                                                <span class="fw-semibold" style="color: #1e3c72; font-size: 0.85rem;">Logos</span>
                                                                                                                             </div>
-                                                                                                                            <div>
-                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
-                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${color || 'N/A'}</span>
+                                                                                                                            <small class="text-muted d-block mb-1" style="font-size: 0.72rem;">Aplicaciones</small>
+                                                                                                                            ${bordadosHtml}
+                                                                                                                        </div>
+                                                                                                                        ` : ''}
+
+                                                                                                                        ${descripcion ? `
+                                                                                                                        <!-- Descripción -->
+                                                                                                                        <div class="rounded p-2" style="background: rgba(30, 60, 114, 0.05);">
+                                                                                                                            <div class="d-flex align-items-start">
+                                                                                                                                <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
+                                                                                                                                <div>
+                                                                                                                                    <small class="text-muted d-block">Descripción</small>
+                                                                                                                                    <span style="font-size: 0.85rem;">${descripcion}</span>
+                                                                                                                                </div>
                                                                                                                             </div>
                                                                                                                         </div>
-                                                                                                                    </div>
-                                                                                                                    <div class="col-6 col-md-3">
-                                                                                                                        <div class="d-flex align-items-center">
-                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                                style="width: 28px; height: 28px; background: rgba(46, 204, 113, 0.15);">
-                                                                                                                                <i class="ri-money-dollar-circle-line" style="color: #2ecc71; font-size: 0.85rem;"></i>
-                                                                                                                            </div>
-                                                                                                                            <div>
-                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
-                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">$${precioFinalUnitario.toFixed(2)}</span>
-                                                                                                                            </div>
-                                                                                                                        </div>
+                                                                                                                        ` : ''}
+
+                                                                                                                        <!-- Hidden inputs para enviar datos al backend -->
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][cantidad]" class="cantidad-input" value="${cantidad}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioFinalUnitario}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][color]" value="${color}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][talla]" value="${talla}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][descripcion]" value="${descripcion}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="${llevaBordado ? 1 : 0}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" value="${nombreLogo}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][ubicacion_logo]" value="${ubicacionLogoLegacy}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][cantidad_logo]" value="${cantidadLogoLegacy || 1}" />
+                                                                                                                        ${hiddenBordadosHtml}
                                                                                                                     </div>
                                                                                                                 </div>
-
-                                                                                                                ${llevaBordado ? `
-                                                                                                                <!-- Logos -->
-                                                                                                                <div class="rounded p-2 mb-2" style="background: rgba(30, 60, 114, 0.08);">
-                                                                                                                    <div class="d-flex align-items-center mb-2">
-                                                                                                                        <i class="ri-scissors-cut-line me-2" style="color: #1e3c72;"></i>
-                                                                                                                        <span class="fw-semibold" style="color: #1e3c72; font-size: 0.85rem;">Logos</span>
-                                                                                                                    </div>
-                                                                                                                    <small class="text-muted d-block mb-1" style="font-size: 0.72rem;">Aplicaciones</small>
-                                                                                                                    ${bordadosHtml}
-                                                                                                                </div>
-                                                                                                                ` : ''}
-
-                                                                                                                ${descripcion ? `
-                                                                                                                <!-- Descripción -->
-                                                                                                                <div class="rounded p-2" style="background: rgba(30, 60, 114, 0.05);">
-                                                                                                                    <div class="d-flex align-items-start">
-                                                                                                                        <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
-                                                                                                                        <div>
-                                                                                                                            <small class="text-muted d-block">Descripción</small>
-                                                                                                                            <span style="font-size: 0.85rem;">${descripcion}</span>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                                ` : ''}
-
-                                                                                                                <!-- Hidden inputs para enviar datos al backend -->
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][cantidad]" class="cantidad-input" value="${cantidad}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioFinalUnitario}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][color]" value="${color}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][talla]" value="${talla}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][descripcion]" value="${descripcion}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="${llevaBordado ? 1 : 0}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" value="${nombreLogo}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][ubicacion_logo]" value="${ubicacionLogoLegacy}" />
-                                                                                                                <input type="hidden" name="productos[${productItemIndex}][cantidad_logo]" value="${cantidadLogoLegacy || 1}" />
-                                                                                                                ${hiddenBordadosHtml}
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        `;
+                                                                                                                `;
                 $('#productos-container').append(itemHtml);
                 window.productItemIndex++;
             }
@@ -2291,137 +2313,137 @@
                                     ? `<span class="fw-semibold" style="font-size: 0.85rem;">${tallaLabel}</span>`
                                     : `<span class="badge bg-soft-primary text-atlantico-dark" style="font-size:0.68rem;">Sin talla</span>`;
                                 productosBody.append(`
-                                                                                                <div class="card border-0 shadow-sm mb-3" style="border-left: 4px solid #00d9a5 !important;">
-                                                                                                    <div class="card-body p-3">
-                                                                                                        <!-- Header del Producto -->
-                                                                                                        <div class="d-flex align-items-center mb-3">
-                                                                                                            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                                                                                                style="width: 45px; height: 45px; background: #1e3c72;">
-                                                                                                                <i class="ri-shopping-bag-line text-white fs-5"></i>
-                                                                                                            </div>
-                                                                                                            <div>
-                                                                                                                <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'} ${item.producto.modelo}</h6>
-                                                                                                                <small class="text-muted">Producto #${index + 1}</small>
-                                                                                                            </div>
-                                                                                                            <div class="ms-auto">
-                                                                                                                <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
-                                                                                                                    $${subtotal.toFixed(2)}
-                                                                                                                </span>
-                                                                                                            </div>
-                                                                                                        </div>
+                                                                                                        <div class="card border-0 shadow-sm mb-3" style="border-left: 4px solid #00d9a5 !important;">
+                                                                                                            <div class="card-body p-3">
+                                                                                                                <!-- Header del Producto -->
+                                                                                                                <div class="d-flex align-items-center mb-3">
+                                                                                                                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                                                                                                        style="width: 45px; height: 45px; background: #1e3c72;">
+                                                                                                                        <i class="ri-shopping-bag-line text-white fs-5"></i>
+                                                                                                                    </div>
+                                                                                                                    <div>
+                                                                                                                        <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'} ${item.producto.modelo}</h6>
+                                                                                                                        <small class="text-muted">Producto #${index + 1}</small>
+                                                                                                                    </div>
+                                                                                                                    <div class="ms-auto">
+                                                                                                                        <span class="badge" style="background: #00d9a5; font-size: 0.9rem;">
+                                                                                                                            $${subtotal.toFixed(2)}
+                                                                                                                        </span>
+                                                                                                                    </div>
+                                                                                                                </div>
 
-                                                                                                        <!-- Detalles del Producto -->
-                                                                                                        <div class="row g-2 mb-3">
-                                                                                                            <div class="col-6 col-md-3">
-                                                                                                                <div class="d-flex align-items-center">
-                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
-                                                                                                                        <i class="ri-stack-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                                                <!-- Detalles del Producto -->
+                                                                                                                <div class="row g-2 mb-3">
+                                                                                                                    <div class="col-6 col-md-3">
+                                                                                                                        <div class="d-flex align-items-center">
+                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                                <i class="ri-stack-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                                                            </div>
+                                                                                                                            <div>
+                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
+                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">${item.cantidad}</span>
+                                                                                                                            </div>
+                                                                                                                        </div>
                                                                                                                     </div>
-                                                                                                                    <div>
-                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Cantidad</small>
-                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${item.cantidad}</span>
+                                                                                                                    <div class="col-6 col-md-3">
+                                                                                                                        <div class="d-flex align-items-center">
+                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                                <i class="ri-palette-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                                                            </div>
+                                                                                                                            <div>
+                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
+                                                                                                                                ${colorHtml}
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                    <div class="col-6 col-md-3">
+                                                                                                                        <div class="d-flex align-items-center">
+                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                                <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                                                            </div>
+                                                                                                                            <div>
+                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
+                                                                                                                                ${tallaHtml}
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                    <div class="col-6 col-md-3">
+                                                                                                                        <div class="d-flex align-items-center">
+                                                                                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                                                                                                style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
+                                                                                                                                <i class="ri-money-dollar-circle-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
+                                                                                                                            </div>
+                                                                                                                            <div>
+                                                                                                                                <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
+                                                                                                                                <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(item.precio_unitario).toFixed(2)}</span>
+                                                                                                                            </div>
+                                                                                                                        </div>
                                                                                                                     </div>
                                                                                                                 </div>
-                                                                                                            </div>
-                                                                                                            <div class="col-6 col-md-3">
-                                                                                                                <div class="d-flex align-items-center">
-                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
-                                                                                                                        <i class="ri-palette-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
-                                                                                                                    </div>
-                                                                                                                    <div>
-                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
-                                                                                                                        ${colorHtml}
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div class="col-6 col-md-3">
-                                                                                                                <div class="d-flex align-items-center">
-                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
-                                                                                                                        <i class="ri-t-shirt-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
-                                                                                                                    </div>
-                                                                                                                    <div>
-                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                                                                                        ${tallaHtml}
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <div class="col-6 col-md-3">
-                                                                                                                <div class="d-flex align-items-center">
-                                                                                                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                                                                                        style="width: 28px; height: 28px; background: rgba(30, 60, 114, 0.15);">
-                                                                                                                        <i class="ri-money-dollar-circle-line" style="color: #1e3c72; font-size: 0.85rem;"></i>
-                                                                                                                    </div>
-                                                                                                                    <div>
-                                                                                                                        <small class="text-muted d-block" style="font-size: 0.7rem;">P. Unitario</small>
-                                                                                                                        <span class="fw-semibold" style="font-size: 0.85rem;">$${parseFloat(item.precio_unitario).toFixed(2)}</span>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
 
-                                                                                                        <!-- Bordado/Logo si aplica -->
-                                                                                                        ${item.lleva_bordado ? (() => {
-                                                                                                            const bordados = Array.isArray(item.bordados) ? item.bordados : [];
-                                                                                                            const bordadosHtml = bordados.length
-                                                                                                                ? bordados.map((bordado) => {
-                                                                                                                    const nombreAplicado = bordado.nombre_aplicado || 'Ubicación';
-                                                                                                                    const logoAplicado = bordado.nombre_logo_aplicado || bordado.nombre_logo || item.nombre_logo || 'Sin logo';
-                                                                                                                    const cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
-                                                                                                                    return `
-                                                                                                                                <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
-                                                                                                                                <span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${logoAplicado} → ${nombreAplicado} x${cantidadAplicada}</span>
+                                                                                                                <!-- Bordado/Logo si aplica -->
+                                                                                                                ${item.lleva_bordado ? (() => {
+                                        const bordados = Array.isArray(item.bordados) ? item.bordados : [];
+                                        const bordadosHtml = bordados.length
+                                            ? bordados.map((bordado) => {
+                                                const nombreAplicado = bordado.nombre_aplicado || 'Ubicación';
+                                                const logoAplicado = bordado.nombre_logo_aplicado || bordado.nombre_logo || item.nombre_logo || 'Sin logo';
+                                                const cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
+                                                return `
+                                                                                                                                        <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
+                                                                                                                                        <span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${logoAplicado} → ${nombreAplicado} x${cantidadAplicada}</span>
+                                                                                                                                </div>
+                                                                                                                            `;
+                                            }).join('')
+                                            : `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${item.nombre_logo || 'Sin logo'} → ${item.ubicacion_logo || 'Sin ubicación'} x${item.cantidad_logo || 1}</span></div>`;
+
+                                        return `
+                                                                                                                        <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.08);">
+                                                                                                                            <div class="d-flex align-items-center mb-2">
+                                                                                                                                <i class="ri-scissors-cut-line me-2" style="color: #1e3c72;"></i>
+                                                                                                                                <span class="fw-semibold" style="color: #1e3c72; font-size: 0.85rem;">Logos</span>
+                                                                                                                            </div>
+                                                                                                                            ${bordadosHtml}
                                                                                                                         </div>
                                                                                                                     `;
-                                                                                                                }).join('')
-                                                                                                                        : `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${item.nombre_logo || 'Sin logo'} → ${item.ubicacion_logo || 'Sin ubicación'} x${item.cantidad_logo || 1}</span></div>`;
+                                    })() : ''}
 
-                                                                                                            return `
-                                                                                                                <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.08);">
-                                                                                                                    <div class="d-flex align-items-center mb-2">
-                                                                                                                        <i class="ri-scissors-cut-line me-2" style="color: #1e3c72;"></i>
-                                                                                                                        <span class="fw-semibold" style="color: #1e3c72; font-size: 0.85rem;">Logos</span>
+                                                                                                                <!-- Descripción -->
+                                                                                                                ${item.descripcion ? `
+                                                                                                                    <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.05);">
+                                                                                                                        <div class="d-flex align-items-start">
+                                                                                                                            <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
+                                                                                                                            <div>
+                                                                                                                                <small class="text-muted d-block">Descripción</small>
+                                                                                                                                <span style="font-size: 0.85rem;">${item.descripcion}</span>
+                                                                                                                            </div>
+                                                                                                                        </div>
                                                                                                                     </div>
-                                                                                                                    ${bordadosHtml}
-                                                                                                                </div>
-                                                                                                            `;
-                                                                                                        })() : ''}
+                                                                                                                    ` : ''}
 
-                                                                                                        <!-- Descripción -->
-                                                                                                        ${item.descripcion ? `
-                                                                                                            <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.05);">
-                                                                                                                <div class="d-flex align-items-start">
-                                                                                                                    <i class="ri-file-text-line me-2 mt-1" style="color: #1e3c72;"></i>
-                                                                                                                    <div>
-                                                                                                                        <small class="text-muted d-block">Descripción</small>
-                                                                                                                        <span style="font-size: 0.85rem;">${item.descripcion}</span>
+                                                                                                                <!-- Insumos -->
+                                                                                                                ${item.insumos && item.insumos.length > 0 ? `
+                                                                                                                    <div class="rounded p-2" style="background: rgba(46, 204, 113, 0.08);">
+                                                                                                                        <div class="d-flex align-items-center mb-2">
+                                                                                                                            <i class="ri-tools-line me-2" style="color: #2ecc71;"></i>
+                                                                                                                            <span class="fw-semibold" style="color: #2ecc71; font-size: 0.85rem;">Insumos Requeridos</span>
+                                                                                                                        </div>
+                                                                                                                        <div class="d-flex flex-wrap gap-2">
+                                                                                                                            ${item.insumos.map(insumo => `
+                                                                                                                                <span class="badge" style="background: rgba(46, 204, 113, 0.2); color: #1e3c72;">
+                                                                                                                                    ${insumo.nombre}
+                                                                                                                                    <span class="badge bg-primary ms-1">${parseFloat(insumo.pivot.cantidad_estimada).toFixed(2)} ${insumo.unidad_medida}</span>
+                                                                                                                                </span>
+                                                                                                                            `).join('')}
+                                                                                                                        </div>
                                                                                                                     </div>
-                                                                                                                </div>
+                                                                                                                    ` : ''}
                                                                                                             </div>
-                                                                                                            ` : ''}
-
-                                                                                                        <!-- Insumos -->
-                                                                                                        ${item.insumos && item.insumos.length > 0 ? `
-                                                                                                            <div class="rounded p-2" style="background: rgba(46, 204, 113, 0.08);">
-                                                                                                                <div class="d-flex align-items-center mb-2">
-                                                                                                                    <i class="ri-tools-line me-2" style="color: #2ecc71;"></i>
-                                                                                                                    <span class="fw-semibold" style="color: #2ecc71; font-size: 0.85rem;">Insumos Requeridos</span>
-                                                                                                                </div>
-                                                                                                                <div class="d-flex flex-wrap gap-2">
-                                                                                                                    ${item.insumos.map(insumo => `
-                                                                                                                        <span class="badge" style="background: rgba(46, 204, 113, 0.2); color: #1e3c72;">
-                                                                                                                            ${insumo.nombre}
-                                                                                                                            <span class="badge bg-primary ms-1">${parseFloat(insumo.pivot.cantidad_estimada).toFixed(2)} ${insumo.unidad_medida}</span>
-                                                                                                                        </span>
-                                                                                                                    `).join('')}
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            ` : ''}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                `);
+                                                                                                        </div>
+                                                                                                        `);
                             });
                         } else {
                             productosBody.append('<p class="text-muted text-center py-4"><i class="ri-shopping-bag-line fs-1 d-block mb-2"></i>No hay productos en este pedido.</p>');
@@ -3014,15 +3036,20 @@
                                     showConfirmButton: false,
                                     timer: 4000,
                                     timerProgressBar: true,
+                                    backdrop: false,
                                     didOpen: function (toast) {
-                                        // Mover el container del Toast directamente al body
-                                        // para escapar los stacking contexts del layout (transform/position)
                                         var container = toast.parentElement;
+                                        // Mover fuera de cualquier stacking context
                                         if (container && container.parentElement !== document.body) {
                                             document.body.appendChild(container);
                                         }
-                                        // Forzar z-index superior al modal de Bootstrap
+                                        // Eliminar TODO efecto visual del container
                                         container.style.zIndex = '99999';
+                                        container.style.background = 'transparent';
+                                        container.style.backdropFilter = 'none';
+                                        container.style.webkitBackdropFilter = 'none';
+                                        container.style.pointerEvents = 'none';
+                                        toast.style.pointerEvents = 'auto';
                                     }
                                 });
                             });

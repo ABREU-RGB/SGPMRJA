@@ -129,6 +129,70 @@
             color: #e8a838 !important;
         }
 
+        /* Ícono de Question — azul Atlántico */
+        .swal2-icon.swal2-question {
+            border-color: #1e3c72 !important;
+            color: #1e3c72 !important;
+        }
+
+        .swal2-icon.swal2-question .swal2-icon-content {
+            color: #1e3c72 !important;
+        }
+
+        /* Ícono de Success — verde vibrante */
+        .swal2-icon.swal2-success {
+            border-color: #28a745 !important;
+        }
+
+        .swal2-icon.swal2-success [class^='swal2-success-line'] {
+            background-color: #28a745 !important;
+        }
+
+        .swal2-icon.swal2-success .swal2-success-ring {
+            border-color: rgba(40, 167, 69, 0.3) !important;
+        }
+
+        /* Botones secundarios (Cancelar, Quedarme aquí, etc.) */
+        .swal2-actions .btn-secondary,
+        .swal2-actions .btn-light,
+        .swal2-actions .btn-outline-secondary,
+        .swal2-deny.swal2-styled {
+            background: #f0f2f5 !important;
+            border: 1px solid #d1d5db !important;
+            color: #3d4852 !important;
+            font-weight: 600 !important;
+            padding: 10px 24px !important;
+            border-radius: 6px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-actions .btn-secondary:hover,
+        .swal2-actions .btn-light:hover,
+        .swal2-actions .btn-outline-secondary:hover,
+        .swal2-deny.swal2-styled:hover {
+            background: #e2e6ea !important;
+            border-color: #bfc4cc !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* Botones secundarios en dark mode */
+        [data-bs-theme="dark"] .swal2-actions .btn-secondary,
+        [data-bs-theme="dark"] .swal2-actions .btn-light,
+        [data-bs-theme="dark"] .swal2-actions .btn-outline-secondary,
+        [data-bs-theme="dark"] .swal2-deny.swal2-styled {
+            background: #2d3139 !important;
+            border: 1px solid #3d4452 !important;
+            color: #c8cbd0 !important;
+        }
+
+        [data-bs-theme="dark"] .swal2-actions .btn-secondary:hover,
+        [data-bs-theme="dark"] .swal2-actions .btn-light:hover,
+        [data-bs-theme="dark"] .swal2-actions .btn-outline-secondary:hover,
+        [data-bs-theme="dark"] .swal2-deny.swal2-styled:hover {
+            background: #3d4452 !important;
+            border-color: #4d5566 !important;
+        }
+
         /* Botón de cierre */
         .swal2-close {
             color: #6c757d !important;
@@ -137,6 +201,28 @@
 
         .swal2-close:hover {
             color: #495057 !important;
+        }
+
+        /* ========== SWEETALERT2 TOASTS — Sin backdrop ni blur ========== */
+        /* Cuando SweetAlert2 usa position: 'top-end' (toasts), agrega estas clases */
+        .swal2-container.swal2-top-end,
+        .swal2-container.swal2-top-right,
+        .swal2-container.swal2-top,
+        .swal2-container.swal2-bottom-end,
+        .swal2-container.swal2-bottom-right,
+        .swal2-container.swal2-noanimation {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            pointer-events: none !important;
+        }
+
+        .swal2-container.swal2-top-end .swal2-popup,
+        .swal2-container.swal2-top-right .swal2-popup,
+        .swal2-container.swal2-top .swal2-popup,
+        .swal2-container.swal2-bottom-end .swal2-popup,
+        .swal2-container.swal2-bottom-right .swal2-popup {
+            pointer-events: auto !important;
         }
 
         /* ========== DARK MODE STYLES ========== */
