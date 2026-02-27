@@ -121,21 +121,45 @@
             white-space: nowrap;
         }
 
-        /* Zebra striping — visible y legible */
-        #clientes-table tbody tr {
-            transition: background-color 0.15s ease;
+        /* Zebra striping — limpio, consistente y más legible */
+        #clientes-table.dataTable tbody tr {
+            transition: background-color 0.16s ease;
         }
 
-        #clientes-table tbody tr:nth-child(odd) {
-            background-color: transparent;
+        #clientes-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(30, 60, 114, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+            background-clip: padding-box;
         }
 
-        #clientes-table tbody tr:nth-child(even) {
-            background-color: rgba(30, 60, 114, 0.06);
+        #clientes-table.dataTable tbody tr.odd td {
+            background-color: #ffffff;
         }
 
-        #clientes-table tbody tr:hover {
-            background-color: rgba(30, 60, 114, 0.12) !important;
+        #clientes-table.dataTable tbody tr.even td {
+            background-color: rgba(30, 60, 114, 0.065);
+        }
+
+        #clientes-table.dataTable tbody tr:hover td {
+            background-color: rgba(30, 60, 114, 0.14) !important;
+        }
+
+        /* Zebra striping — dark mode */
+        [data-bs-theme="dark"] #clientes-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        }
+
+        [data-bs-theme="dark"] #clientes-table.dataTable tbody tr.odd td {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        [data-bs-theme="dark"] #clientes-table.dataTable tbody tr.even td {
+            background-color: rgba(42, 82, 152, 0.2);
+        }
+
+        [data-bs-theme="dark"] #clientes-table.dataTable tbody tr:hover td {
+            background-color: rgba(42, 82, 152, 0.34) !important;
         }
 
         .btn-purple {
