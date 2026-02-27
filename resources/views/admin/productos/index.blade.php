@@ -28,7 +28,7 @@
 
     <style>
         .card-body {
-            /* overflow-x: auto; */
+            overflow-x: auto;
         }
 
         /* Estilo para buscador personalizado */
@@ -48,31 +48,141 @@
             padding-left: 30px;
         }
 
+        /* ========== DATATABLE — ESTÁNDAR ATLÁNTICO ========== */
         #productos-table {
             width: 100% !important;
             font-size: 13px;
+            table-layout: fixed;
         }
 
         #productos-table th,
         #productos-table td {
-            padding: 0.35rem 0.5rem;
+            padding: 0.4rem 0.6rem;
             vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        #productos-table th:last-child,
+        /* Anchos de columna adaptados (100%) */
+        #productos-table th:nth-child(1) {
+            width: 10%;
+        }
+
+        #productos-table th:nth-child(2) {
+            width: 12%;
+        }
+
+        #productos-table th:nth-child(3) {
+            width: 16%;
+        }
+
+        #productos-table th:nth-child(4) {
+            width: 24%;
+        }
+
+        #productos-table th:nth-child(5) {
+            width: 12%;
+        }
+
+        #productos-table th:nth-child(6) {
+            width: 12%;
+        }
+
+        #productos-table th:nth-child(7) {
+            width: 14%;
+            text-align: center;
+        }
+
         #productos-table td:last-child {
-            width: 48px;
-            min-width: 40px;
-            max-width: 60px;
             text-align: center;
+            overflow: visible;
         }
 
-        #productos-table th:first-child,
-        #productos-table td:first-child {
-            width: 60px;
-            min-width: 40px;
-            max-width: 80px;
-            text-align: center;
+        #productos-table td:nth-child(2) {
+            overflow: visible;
+        }
+
+        #productos-table td:nth-child(4) {
+            max-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #productos-table thead th {
+            background: #1e3c72 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-color: #2a5298 !important;
+        }
+
+        #productos-table.dataTable tbody tr {
+            transition: background-color 0.16s ease;
+        }
+
+        #productos-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(30, 60, 114, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+            background-clip: padding-box;
+        }
+
+        #productos-table.dataTable tbody tr.odd td {
+            background-color: #ffffff;
+        }
+
+        #productos-table.dataTable tbody tr.even td {
+            background-color: rgba(30, 60, 114, 0.065);
+        }
+
+        #productos-table.dataTable tbody tr:hover td {
+            background-color: rgba(30, 60, 114, 0.14) !important;
+        }
+
+        [data-bs-theme="dark"] #productos-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        }
+
+        [data-bs-theme="dark"] #productos-table.dataTable tbody tr.odd td {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        [data-bs-theme="dark"] #productos-table.dataTable tbody tr.even td {
+            background-color: rgba(42, 82, 152, 0.2);
+        }
+
+        [data-bs-theme="dark"] #productos-table.dataTable tbody tr:hover td {
+            background-color: rgba(42, 82, 152, 0.34) !important;
+        }
+
+        .badge-tipo,
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+
+        .badge-tipo-producto {
+            background-color: rgba(41, 156, 219, 0.15);
+            color: #299cdb;
+        }
+
+        .badge-status.status-activo {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+
+        .badge-status.status-inactivo {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
         }
 
         .atlantico-modal .modal-content {
@@ -516,6 +626,25 @@
         }
 
         $(document).ready(function () {
+            function generateButtons(productoId) {
+                return '<div class="d-flex gap-1 justify-content-center">' +
+                    '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + productoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + productoId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + productoId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '</div>';
+            }
+
+            function renderEllipsis(value) {
+                if (!value) return '<span class="text-muted">—</span>';
+                return '<span title="' + value + '" style="cursor:default;">' + value + '</span>';
+            }
+
             var table = $('#productos-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -532,17 +661,24 @@
                         data: 'imagen',
                         name: 'imagen',
                         render: function (data) {
-                            return data ? '<img src="' + data + '" alt="Imagen del producto" class="img-thumbnail" width="50">' : '<span class="text-muted">Sin imagen</span>';
+                            return data ? '<img src="' + data + '" alt="Imagen del producto" class="img-thumbnail" width="44" style="height:44px; object-fit:cover;">' : '<span class="text-muted">Sin imagen</span>';
                         }
                     },
                     {
                         data: 'tipo_nombre',
                         name: 'tipo_nombre',
                         render: function (data) {
-                            return '<span class="badge bg-primary">' + data + '</span>';
+                            if (!data) return '<span class="text-muted">—</span>';
+                            return '<span class="badge badge-tipo badge-tipo-producto" title="' + data + '"><i class="ri-price-tag-3-line"></i> ' + data + '</span>';
                         }
                     },
-                    { data: 'modelo', name: 'modelo' },
+                    {
+                        data: 'modelo',
+                        name: 'modelo',
+                        render: function (data) {
+                            return renderEllipsis(data);
+                        }
+                    },
                     {
                         data: 'precio_base',
                         name: 'precio_base',
@@ -554,7 +690,7 @@
                         data: 'estado',
                         name: 'estado',
                         render: function (data) {
-                            return data ? '<span class="badge badge-status status-activo"><i class="ri-checkbox-circle-line me-1"></i>Activo</span>' : '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line me-1"></i>Inactivo</span>';
+                            return data ? '<span class="badge badge-status status-activo"><i class="ri-checkbox-circle-line"></i> Activo</span>' : '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line"></i> Inactivo</span>';
                         }
                     },
                     {
@@ -563,19 +699,7 @@
                         orderable: false,
                         searchable: false,
                         render: function (data) {
-                            return `
-                                            <div class="d-flex gap-2 justify-content-center">
-                                                <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
-                                                    <i class="ri-eye-fill"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
-                                                    <i class="ri-pencil-fill"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
-                                                    <i class="ri-delete-bin-fill"></i>
-                                                </button>
-                                            </div>
-                                        `;
+                            return generateButtons(data);
                         }
                     }
                 ],
