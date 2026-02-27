@@ -34,6 +34,39 @@
 
         #users-table {
             width: 100% !important;
+            font-size: 13px;
+            table-layout: fixed;
+        }
+
+        #users-table th,
+        #users-table td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Anchos de columna balanceados (100%) */
+        #users-table th:nth-child(1) {
+            width: 28%;
+        }
+
+        #users-table th:nth-child(2) {
+            width: 30%;
+        }
+
+        #users-table th:nth-child(3) {
+            width: 14%;
+        }
+
+        #users-table th:nth-child(4) {
+            width: 14%;
+        }
+
+        #users-table th:nth-child(5) {
+            width: 14%;
+            text-align: center;
         }
 
         .btn-purple {
@@ -48,12 +81,65 @@
             color: #fff;
         }
 
-        #users-table th:last-child,
         #users-table td:last-child {
-            width: 48px;
-            min-width: 40px;
-            max-width: 60px;
             text-align: center;
+            overflow: visible;
+        }
+
+        #users-table thead th {
+            background: #1e3c72 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-color: #2a5298 !important;
+        }
+
+        #users-table td:nth-child(2) {
+            max-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #users-table.dataTable tbody tr {
+            transition: background-color 0.16s ease;
+        }
+
+        #users-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(30, 60, 114, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+            background-clip: padding-box;
+        }
+
+        #users-table.dataTable tbody tr.odd td {
+            background-color: #ffffff;
+        }
+
+        #users-table.dataTable tbody tr.even td {
+            background-color: rgba(30, 60, 114, 0.065);
+        }
+
+        #users-table.dataTable tbody tr:hover td {
+            background-color: rgba(30, 60, 114, 0.14) !important;
+        }
+
+        [data-bs-theme="dark"] #users-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        }
+
+        [data-bs-theme="dark"] #users-table.dataTable tbody tr.odd td {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        [data-bs-theme="dark"] #users-table.dataTable tbody tr.even td {
+            background-color: rgba(42, 82, 152, 0.2);
+        }
+
+        [data-bs-theme="dark"] #users-table.dataTable tbody tr:hover td {
+            background-color: rgba(42, 82, 152, 0.34) !important;
         }
 
         /* Estilo para buscador personalizado */
@@ -77,11 +163,31 @@
         .badge-tipo {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+
+        .badge-status-activo {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+
+        .badge-status-inactivo {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
         }
 
         .badge-rol-admin {
@@ -174,7 +280,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="users-table" class="table table-bordered table-striped align-middle">
+                    <table id="users-table" class="table table-bordered table-striped table-sm align-middle">
                         <thead>
                             <tr>
                                 <th>Nombre</th>
@@ -381,19 +487,22 @@
             });
 
             function generateButtons(userId) {
-                return `
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${userId}" title="Ver">
-                                        <i class="ri-eye-fill"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${userId}" title="Editar">
-                                        <i class="ri-pencil-fill"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${userId}" title="Eliminar">
-                                        <i class="ri-delete-bin-fill"></i>
-                                    </button>
-                                </div>
-                            `;
+                return '<div class="d-flex gap-1 justify-content-center">' +
+                    '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + userId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + userId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + userId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '</div>';
+            }
+
+            function renderEllipsis(value) {
+                if (!value) return '<span class="text-muted">—</span>';
+                return '<span title="' + value + '" style="cursor:default;">' + value + '</span>';
             }
 
             var table = $('#users-table').DataTable({
@@ -412,13 +521,16 @@
                                                                             <img src="${row.avatar || '/assets/images/users/user-dummy-img.jpg'}" alt="Avatar" class="img-fluid rounded-circle">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="flex-grow-1">${data}</div>
+                                                                    <div class="flex-grow-1 text-truncate" title="${data || ''}">${data || '—'}</div>
                                                                 </div>
                                                             `;
                         }
                     },
                     {
-                        data: 'email'
+                        data: 'email',
+                        render: function (data) {
+                            return renderEllipsis(data);
+                        }
                     },
                     {
                         data: 'role',
@@ -434,15 +546,15 @@
                     {
                         data: 'estado',
                         render: function (data, type, row) {
-                            if (data == 1) {
-                                return '<span class="badge bg-success">Activo</span>';
-                            } else {
-                                return '<span class="badge bg-danger">Inactivo</span>';
-                            }
+                            return data == 1
+                                ? '<span class="badge-status badge-status-activo"><i class="ri-checkbox-circle-line"></i> Activo</span>'
+                                : '<span class="badge-status badge-status-inactivo"><i class="ri-close-circle-line"></i> Inactivo</span>';
                         }
                     },
                     {
                         data: null,
+                        orderable: false,
+                        searchable: false,
                         render: function (data, type, row) {
                             return generateButtons(row.id);
                         }
@@ -452,7 +564,7 @@
                     [0, 'asc']
                 ],
                 dom: 'rtip',
-                responsive: true,
+                responsive: false,
                 language: {
                     "sProcessing": "Procesando...",
                     "sLengthMenu": "Mostrar _MENU_ registros",

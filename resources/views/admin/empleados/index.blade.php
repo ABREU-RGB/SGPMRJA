@@ -48,23 +48,113 @@
             padding-left: 30px;
         }
 
+        /* ========== DATATABLE — ESTÁNDAR ATLÁNTICO ========== */
         #empleados-table {
             width: 100% !important;
             font-size: 13px;
+            table-layout: fixed;
         }
 
         #empleados-table th,
         #empleados-table td {
-            padding: 0.35rem 0.5rem;
+            padding: 0.4rem 0.6rem;
             vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        #empleados-table th:last-child,
-        #empleados-table td:last-child {
-            width: 48px;
-            min-width: 40px;
-            max-width: 60px;
+        /* Anchos de columna balanceados (100%) */
+        #empleados-table th:nth-child(1) {
+            width: 13%;
+        }
+
+        #empleados-table th:nth-child(2) {
+            width: 21%;
+        }
+
+        #empleados-table th:nth-child(3) {
+            width: 14%;
+        }
+
+        #empleados-table th:nth-child(4) {
+            width: 16%;
+        }
+
+        #empleados-table th:nth-child(5) {
+            width: 14%;
+        }
+
+        #empleados-table th:nth-child(6) {
+            width: 8%;
+        }
+
+        #empleados-table th:nth-child(7) {
+            width: 14%;
             text-align: center;
+        }
+
+        #empleados-table td:last-child {
+            text-align: center;
+            overflow: visible;
+        }
+
+        #empleados-table thead th {
+            background: #1e3c72 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-color: #2a5298 !important;
+        }
+
+        #empleados-table td:nth-child(2),
+        #empleados-table td:nth-child(4),
+        #empleados-table td:nth-child(5) {
+            max-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #empleados-table.dataTable tbody tr {
+            transition: background-color 0.16s ease;
+        }
+
+        #empleados-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(30, 60, 114, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+            background-clip: padding-box;
+        }
+
+        #empleados-table.dataTable tbody tr.odd td {
+            background-color: #ffffff;
+        }
+
+        #empleados-table.dataTable tbody tr.even td {
+            background-color: rgba(30, 60, 114, 0.065);
+        }
+
+        #empleados-table.dataTable tbody tr:hover td {
+            background-color: rgba(30, 60, 114, 0.14) !important;
+        }
+
+        [data-bs-theme="dark"] #empleados-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        }
+
+        [data-bs-theme="dark"] #empleados-table.dataTable tbody tr.odd td {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        [data-bs-theme="dark"] #empleados-table.dataTable tbody tr.even td {
+            background-color: rgba(42, 82, 152, 0.2);
+        }
+
+        [data-bs-theme="dark"] #empleados-table.dataTable tbody tr:hover td {
+            background-color: rgba(42, 82, 152, 0.34) !important;
         }
 
         .btn-purple {
@@ -83,11 +173,31 @@
         .badge-tipo {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+
+        .badge-status-activo {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+
+        .badge-status-inactivo {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
         }
         .badge-depto-administracion {
             background-color: rgba(111, 66, 193, 0.15);
@@ -758,19 +868,22 @@
             });
 
             function generateButtons(empleadoId) {
-                return `
-                    <div class="d-flex gap-2 justify-content-center">
-                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${empleadoId}" title="Ver">
-                            <i class="ri-eye-fill"></i>
-                        </button>
-                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${empleadoId}" title="Editar">
-                            <i class="ri-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${empleadoId}" title="Eliminar">
-                            <i class="ri-delete-bin-fill"></i>
-                        </button>
-                    </div>
-                `;
+                return '<div class="d-flex gap-1 justify-content-center">' +
+                    '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + empleadoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + empleadoId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + empleadoId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '</div>';
+            }
+
+            function renderEllipsis(value) {
+                if (!value) return '<span class="text-muted">—</span>';
+                return '<span title="' + value + '" style="cursor:default;">' + value + '</span>';
             }
 
             function formatDate(dateStr) {
@@ -791,9 +904,19 @@
                             return row.persona ? row.persona.tipo_documento + row.persona.documento_identidad : 'N/A';
                         }
                     },
-                    { data: 'nombre_completo' },
+                    {
+                        data: 'nombre_completo',
+                        render: function (data) {
+                            return renderEllipsis(data);
+                        }
+                    },
                     { data: 'telefono', defaultContent: 'N/A' },
-                    { data: 'cargo' },
+                    {
+                        data: 'cargo',
+                        render: function (data) {
+                            return renderEllipsis(data);
+                        }
+                    },
                     {
                         data: 'departamento',
                         render: function (data) {
@@ -809,11 +932,16 @@
                     },
                     {
                         data: 'estado', render: function (data) {
-                            return data == 1 ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
+                            return data == 1
+                                ? '<span class="badge-status badge-status-activo"><i class="ri-checkbox-circle-line"></i> Activo</span>'
+                                : '<span class="badge-status badge-status-inactivo"><i class="ri-close-circle-line"></i> Inactivo</span>';
                         }
                     },
                     {
-                        data: null, render: function (data, type, row) {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
                             return generateButtons(row.id);
                         }
                     }

@@ -27,6 +27,10 @@
     </div>
 
     <style>
+        .card-body {
+            overflow-x: auto;
+        }
+
         /* Estilo para buscador personalizado */
         .search-box {
             position: relative;
@@ -44,14 +48,117 @@
             padding-left: 30px;
         }
 
+        /* ========== DATATABLE — ESTÁNDAR ATLÁNTICO ========== */
+        #proveedores-table {
+            width: 100% !important;
+            font-size: 13px;
+            table-layout: fixed;
+        }
+
+        #proveedores-table th,
+        #proveedores-table td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Anchos de columna balanceados (100%) */
+        #proveedores-table th:nth-child(1) {
+            width: 14%;
+        }
+
+        #proveedores-table th:nth-child(2) {
+            width: 26%;
+        }
+
+        #proveedores-table th:nth-child(3) {
+            width: 12%;
+        }
+
+        #proveedores-table th:nth-child(4) {
+            width: 14%;
+        }
+
+        #proveedores-table th:nth-child(5) {
+            width: 20%;
+        }
+
+        #proveedores-table th:nth-child(6) {
+            width: 14%;
+            text-align: center;
+        }
+
+        #proveedores-table td:last-child {
+            text-align: center;
+            overflow: visible;
+        }
+
+        #proveedores-table thead th {
+            background: #1e3c72 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-color: #2a5298 !important;
+        }
+
+        #proveedores-table td:nth-child(5) {
+            max-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #proveedores-table.dataTable tbody tr {
+            transition: background-color 0.16s ease;
+        }
+
+        #proveedores-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(30, 60, 114, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+            background-clip: padding-box;
+        }
+
+        #proveedores-table.dataTable tbody tr.odd td {
+            background-color: #ffffff;
+        }
+
+        #proveedores-table.dataTable tbody tr.even td {
+            background-color: rgba(30, 60, 114, 0.065);
+        }
+
+        #proveedores-table.dataTable tbody tr:hover td {
+            background-color: rgba(30, 60, 114, 0.14) !important;
+        }
+
+        [data-bs-theme="dark"] #proveedores-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        }
+
+        [data-bs-theme="dark"] #proveedores-table.dataTable tbody tr.odd td {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        [data-bs-theme="dark"] #proveedores-table.dataTable tbody tr.even td {
+            background-color: rgba(42, 82, 152, 0.2);
+        }
+
+        [data-bs-theme="dark"] #proveedores-table.dataTable tbody tr:hover td {
+            background-color: rgba(42, 82, 152, 0.34) !important;
+        }
+
         /* Badges de tipo de proveedor */
         .badge-tipo {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
         }
         .badge-tipo-natural {
@@ -156,7 +263,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="proveedores-table" class="table table-bordered table-striped align-middle">
+                    <table id="proveedores-table" class="table table-bordered table-striped table-sm align-middle">
                         <thead>
                             <tr>
                                 <th>Documento</th>
@@ -618,6 +725,25 @@
 
     <script>
         $(document).ready(function () {
+            function generateButtons(proveedorId) {
+                var isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
+                var editDeleteBtns = isAdmin
+                    ? '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + proveedorId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + proveedorId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '</button>'
+                    : '';
+
+                return '<div class="d-flex gap-1 justify-content-center">' +
+                    '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + proveedorId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    editDeleteBtns +
+                    '</div>';
+            }
+
             // Toggle campos según tipo de proveedor
             function toggleCampos() {
                 var tipo = $('#tipo-proveedor-field').val();
@@ -680,30 +806,21 @@
                         }
                     },
                     { data: 'telefono_display', name: 'telefono' },
-                    { data: 'email_display', name: 'email' },
+                    {
+                        data: 'email_display',
+                        name: 'email',
+                        render: function (data) {
+                            if (!data) return '<span class="text-muted">—</span>';
+                            return '<span title="' + data + '" style="cursor:default;">' + data + '</span>';
+                        }
+                    },
                     {
                         data: 'id',
                         name: 'actions',
                         orderable: false,
                         searchable: false,
                         render: function (data) {
-                            var isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
-                            var editDeleteBtns = isAdmin ? `
-                                                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
-                                                            <i class="ri-pencil-fill"></i>
-                                                        </button>
-                                                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
-                                                            <i class="ri-delete-bin-fill"></i>
-                                                        </button>
-                                                    ` : '';
-                            return `
-                                                        <div class="d-flex gap-2 justify-content-center">
-                                                            <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
-                                                                <i class="ri-eye-fill"></i>
-                                                            </button>
-                                                            ${editDeleteBtns}
-                                                        </div>
-                                                    `;
+                            return generateButtons(data);
                         }
                     }
                 ],

@@ -8,6 +8,10 @@
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
     <style>
+        .card-body {
+            overflow-x: auto;
+        }
+
         .stock-bajo {
             color: #dc3545;
         }
@@ -37,14 +41,119 @@
             padding-left: 30px;
         }
 
+        /* ========== DATATABLE — ESTÁNDAR ATLÁNTICO ========== */
+        #insumos-table {
+            width: 100% !important;
+            font-size: 13px;
+            table-layout: fixed;
+        }
+
+        #insumos-table th,
+        #insumos-table td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Anchos de columna balanceados (100%) */
+        #insumos-table th:nth-child(1) {
+            width: 20%;
+        }
+
+        #insumos-table th:nth-child(2) {
+            width: 13%;
+        }
+
+        #insumos-table th:nth-child(3) {
+            width: 11%;
+        }
+
+        #insumos-table th:nth-child(4) {
+            width: 14%;
+        }
+
+        #insumos-table th:nth-child(5) {
+            width: 28%;
+            min-width: 220px;
+        }
+
+        #insumos-table th:nth-child(6) {
+            width: 14%;
+            text-align: center;
+        }
+
+        #insumos-table td:last-child {
+            text-align: center;
+            overflow: visible;
+        }
+
+        #insumos-table thead th {
+            background: #1e3c72 !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-color: #2a5298 !important;
+        }
+
+        #insumos-table td:nth-child(1),
+        #insumos-table td:nth-child(5) {
+            max-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #insumos-table.dataTable tbody tr {
+            transition: background-color 0.16s ease;
+        }
+
+        #insumos-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(30, 60, 114, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+            background-clip: padding-box;
+        }
+
+        #insumos-table.dataTable tbody tr.odd td {
+            background-color: #ffffff;
+        }
+
+        #insumos-table.dataTable tbody tr.even td {
+            background-color: rgba(30, 60, 114, 0.065);
+        }
+
+        #insumos-table.dataTable tbody tr:hover td {
+            background-color: rgba(30, 60, 114, 0.14) !important;
+        }
+
+        [data-bs-theme="dark"] #insumos-table.dataTable tbody tr td {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        }
+
+        [data-bs-theme="dark"] #insumos-table.dataTable tbody tr.odd td {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        [data-bs-theme="dark"] #insumos-table.dataTable tbody tr.even td {
+            background-color: rgba(42, 82, 152, 0.2);
+        }
+
+        [data-bs-theme="dark"] #insumos-table.dataTable tbody tr:hover td {
+            background-color: rgba(42, 82, 152, 0.34) !important;
+        }
+
         /* Badges de tipo de insumo */
         .badge-tipo {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
         }
 
@@ -175,7 +284,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="insumos-table" class="table table-bordered table-striped align-middle">
+                        <table id="insumos-table" class="table table-bordered table-striped table-sm align-middle">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -346,9 +455,29 @@
 
     <script>
         $(document).ready(function () {
+            function generateButtons(insumoId) {
+                return '<div class="d-flex gap-1 justify-content-center">' +
+                    '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + insumoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + insumoId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + insumoId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '</button>' +
+                    '</div>';
+            }
+
+            function renderEllipsis(value) {
+                if (!value) return '<span class="text-muted">—</span>';
+                return '<span title="' + value + '" style="cursor:default;">' + value + '</span>';
+            }
+
             var table = $('#insumos-table').DataTable({
                 processing: true,
                 serverSide: true,
+                autoWidth: false,
                 responsive: false,
                 ajax: "{{ route('insumos.data') }}",
                 dom: 'rtip',
@@ -375,10 +504,18 @@
                     }
                 ],
                 columns: [
-                    { data: 'nombre', name: 'nombre' },
+                    {
+                        data: 'nombre',
+                        name: 'nombre',
+                        width: '20%',
+                        render: function (data) {
+                            return renderEllipsis(data);
+                        }
+                    },
                     {
                         data: 'tipo',
                         name: 'tipo',
+                        width: '13%',
                         render: function (data) {
                             var tipos = {
                                 'Tela': '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
@@ -393,6 +530,7 @@
                     {
                         data: 'stock_actual',
                         name: 'stock_actual',
+                        width: '11%',
                         render: function (data, type, row) {
                             var stockClass = 'stock-' + row.stock_status;
                             return `<span class="${stockClass}">${data}</span>`;
@@ -401,30 +539,27 @@
                     {
                         data: 'costo_unitario',
                         name: 'costo_unitario',
+                        width: '14%',
                         render: function (data) {
                             return '$/ ' + parseFloat(data).toFixed(2);
                         }
                     },
-                    { data: 'proveedor_nombre', name: 'proveedor.razon_social' },
+                    {
+                        data: 'proveedor_nombre',
+                        name: 'proveedor.razon_social',
+                        width: '28%',
+                        render: function (data) {
+                            return renderEllipsis(data);
+                        }
+                    },
                     {
                         data: 'id',
                         name: 'actions',
+                        width: '14%',
                         orderable: false,
                         searchable: false,
                         render: function (data) {
-                            return `
-                                    <div class="d-flex gap-2 justify-content-center">
-                                        <button class="btn btn-sm btn-soft-info view-item-btn" data-id="${data}" title="Ver">
-                                            <i class="ri-eye-fill"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-soft-success edit-item-btn" data-id="${data}" title="Editar">
-                                            <i class="ri-pencil-fill"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="${data}" title="Eliminar">
-                                            <i class="ri-delete-bin-fill"></i>
-                                        </button>
-                                    </div>
-                                `;
+                            return generateButtons(data);
                         }
                     }
                 ],
