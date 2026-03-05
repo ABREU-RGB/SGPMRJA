@@ -304,6 +304,45 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-3">
+                                        {{-- Proveedor Natural: Nombre + Apellido en 2 columnas --}}
+                                        <div class="col-6" id="view-block-prov-nombre">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-user-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Nombre</small>
+                                                    <span class="fw-semibold" id="view-nombre">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6" id="view-block-prov-apellido">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-user-follow-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Apellido</small>
+                                                    <span class="fw-semibold" id="view-apellido">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- Proveedor Jurídico: Razón Social en ancho completo --}}
+                                        <div class="col-12 d-none" id="view-block-prov-razon-social">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-building-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Razón Social</small>
+                                                    <span class="fw-semibold" id="view-razon-social">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- Tipo: siempre visible --}}
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
@@ -316,18 +355,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-building-line" style="color: #1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Nombre/Razón Social</small>
-                                                    <span class="fw-semibold" id="view-nombre">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {{-- Documento: label dinámico (Cédula / RIF) --}}
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
@@ -335,20 +363,8 @@
                                                     <i class="ri-bank-card-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block">Documento/RIF</small>
+                                                    <small class="text-muted d-block" id="view-label-documento">Documento</small>
                                                     <span class="fw-semibold" id="view-documento">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Estatus</small>
-                                                    <span class="fw-semibold" id="view-estatus">-</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -454,7 +470,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-3">
-                                        <div class="col-12">
+                                        <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
                                                     style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
@@ -463,6 +479,18 @@
                                                 <div>
                                                     <small class="text-muted d-block">Fecha de Registro</small>
                                                     <span class="fw-semibold" id="view-created">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Estatus</small>
+                                                    <span class="fw-semibold" id="view-estatus">-</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -855,11 +883,31 @@
                 $.get("{{ route('proveedores.show', ':id') }}".replace(':id', id), function (data) {
                     var tipoText = data.tipo_proveedor === 'natural' ? 'Natural (Persona)' : 'Jurídico (Empresa)';
                     $("#view-tipo").text(tipoText);
-                    $("#view-nombre").text(data.nombre_display || data.razon_social);
-                    $("#view-documento").text(data.documento_display || data.rif);
+
+                    // Layout dinámico según tipo de proveedor
+                    if (data.tipo_proveedor === 'natural') {
+                        $("#view-block-prov-nombre").removeClass('d-none');
+                        $("#view-block-prov-apellido").removeClass('d-none');
+                        $("#view-block-prov-razon-social").addClass('d-none');
+                        $("#view-nombre").text(data.nombre || 'N/A');
+                        $("#view-apellido").text(data.apellido || 'N/A');
+                        $("#view-label-documento").text('Cédula');
+                        $("#view-documento").text(data.documento_display || data.documento_identidad || 'N/A');
+                    } else {
+                        $("#view-block-prov-nombre").addClass('d-none');
+                        $("#view-block-prov-apellido").addClass('d-none');
+                        $("#view-block-prov-razon-social").removeClass('d-none');
+                        $("#view-razon-social").text(data.razon_social || 'N/A');
+                        $("#view-label-documento").text('RIF');
+                        $("#view-documento").text(data.rif || 'N/A');
+                    }
+
                     $("#view-telefono").text(data.telefono);
                     $("#view-email").text(data.email || 'No especificado');
                     $("#view-direccion").text(data.direccion || 'No especificada');
+                    $("#view-estatus").html(data.estado == 1 ?
+                        '<span class="badge bg-success">Activo</span>' :
+                        '<span class="badge bg-danger">Inactivo</span>');
 
                     // Mostrar/ocultar campos de contacto según tipo
                     if (data.tipo_proveedor === 'juridico') {
