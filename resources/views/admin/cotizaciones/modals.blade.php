@@ -265,18 +265,26 @@
                                                     style="z-index: 1050; top: 100%;"></div>
                                             </div>
                                         </div>
-                                        <!-- Nombre + Apellido -->
-                                        <div class="col-6">
+                                        {{-- Natural: Nombre + Apellido en 2 columnas --}}
+                                        <div class="col-6" id="block-cot-nombre">
                                             <label for="cliente-nombre-field"
                                                 class="form-label small fw-semibold mb-1">Nombre</label>
                                             <input type="text" id="cliente-nombre-field" name="cliente_nombre"
                                                 class="form-control form-control-sm bg-light" readonly
                                                 style="cursor: not-allowed;" />
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-6" id="block-cot-apellido">
                                             <label for="cliente-apellido-field"
                                                 class="form-label small fw-semibold mb-1">Apellido</label>
                                             <input type="text" id="cliente-apellido-field" name="cliente_apellido"
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
+                                        </div>
+                                        {{-- Jurídico/Gubernamental: Razón Social en ancho completo --}}
+                                        <div class="col-12 d-none" id="block-cot-razon-social">
+                                            <label for="cliente-razon-social-display"
+                                                class="form-label small fw-semibold mb-1">Razón Social</label>
+                                            <input type="text" id="cliente-razon-social-display"
                                                 class="form-control form-control-sm bg-light" readonly
                                                 style="cursor: not-allowed;" />
                                         </div>

@@ -184,6 +184,33 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
+        // === LAYOUT DINÁMICO DE CLIENTE EN COTIZACIÓN ===
+        function aplicarLayoutCliente(prefix, nombre, apellido) {
+            if (prefix === 'J-' || prefix === 'G-') {
+                $('#block-cot-nombre').addClass('d-none');
+                $('#block-cot-apellido').addClass('d-none');
+                $('#block-cot-razon-social').removeClass('d-none');
+                $('#cliente-nombre-field').val(nombre);
+                $('#cliente-apellido-field').val('');
+                $('#cliente-razon-social-display').val(nombre);
+            } else {
+                $('#block-cot-nombre').removeClass('d-none');
+                $('#block-cot-apellido').removeClass('d-none');
+                $('#block-cot-razon-social').addClass('d-none');
+                $('#cliente-nombre-field').val(nombre);
+                $('#cliente-apellido-field').val(apellido || '');
+            }
+        }
+
+        // Resetear layout de cliente al abrir el modal en modo agregar
+        document.getElementById('showModal').addEventListener('show.bs.modal', function () {
+            if (!$('#id-field').val()) {
+                $('#block-cot-nombre').removeClass('d-none');
+                $('#block-cot-apellido').removeClass('d-none');
+                $('#block-cot-razon-social').addClass('d-none');
+            }
+        });
+
         function formatMoney(value) {
             var amount = Number(value || 0);
             return '$' + amount.toLocaleString('es-VE', {
@@ -1962,18 +1989,18 @@
                     $('#cliente-id-field').val(data.cliente_id || '').prop('disabled', false).addClass('campo-protegido');
                     // Obtener datos del cliente desde la relación
                     if (data.cliente) {
-                        $('#cliente-nombre-field').val(data.cliente.nombre);
-                        $('#cliente-apellido-field').val(data.cliente.apellido || '');
                         $('#cliente-email-field').val(data.cliente.email || '');
                         $('#cliente-telefono-field').val(data.cliente.telefono || '');
                         var documento = data.cliente.documento || '';
+                        var prefix = 'V-';
                         if (documento) {
-                            var prefix = documento.substring(0, 2);
+                            prefix = documento.substring(0, 2);
                             var number = documento.substring(2);
                             $('#ci-rif-prefix-field').val(prefix);
                             $('#ci-rif-number-field').val(number);
                             $('#ci-rif-full-field').val(documento);
                         }
+                        aplicarLayoutCliente(prefix, data.cliente.nombre, data.cliente.apellido || '');
                     }
                     // Formatear fechas para input date (YYYY-MM-DD)
                     var fechaCotizacion = data.fecha_cotizacion ? data.fecha_cotizacion.split('T')[0] : '';
@@ -2519,12 +2546,6 @@
             // Guardar cliente_id
             $('#cliente-id-field').val(clienteId);
 
-            // Llenar campos básicos
-            $('#cliente-nombre-field').val(nombre);
-            $('#cliente-apellido-field').val(apellido);
-            $('#cliente-email-field').val(email);
-            $('#cliente-telefono-field').val(telefono);
-
             // Procesar documento - Convertir siempre a string primero
             let prefix = 'V-';
             let number = '';
@@ -2548,6 +2569,11 @@
             $('#ci-rif-prefix-field').val(prefix);
             $('#ci-rif-number-field').val(number);
             $('#ci-rif-full-field').val(prefix + number);
+
+            // Layout dinámico según tipo de cliente
+            aplicarLayoutCliente(prefix, nombre, apellido);
+            $('#cliente-email-field').val(email);
+            $('#cliente-telefono-field').val(telefono);
             $('#cliente-autocomplete-list').empty().hide();
             clienteSeleccionado = true;
         });
@@ -2788,12 +2814,6 @@
                     // Actualizar campo cliente_id en formulario de cotización
                     $('#cliente-id-field').val(clienteId);
 
-                    // Rellenar campos visibles
-                    $('#cliente-nombre-field').val(nombre);
-                    $('#cliente-apellido-field').val(apellido || '');
-                    $('#cliente-email-field').val(email || '');
-                    $('#cliente-telefono-field').val(telefono || '');
-
                     // Separar prefijo y número del documento
                     let prefix = 'V-';
                     let number = '';
@@ -2813,6 +2833,11 @@
                     $('#ci-rif-prefix-field').val(prefix);
                     $('#ci-rif-number-field').val(number);
                     $('#ci-rif-full-field').val(prefix + number);
+
+                    // Layout dinámico según tipo de cliente
+                    aplicarLayoutCliente(prefix, nombre, apellido || '');
+                    $('#cliente-email-field').val(email || '');
+                    $('#cliente-telefono-field').val(telefono || '');
 
                     // Re-habilitar botón
                     $('#add-btn-cliente').prop('disabled', false);
