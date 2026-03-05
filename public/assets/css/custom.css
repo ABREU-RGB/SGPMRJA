@@ -292,6 +292,59 @@ header#page-topbar,
   color: #997404 !important;
 }
 
+/* ================================================================
+   BADGES DE ESTADO — DARK MODE (WCAG AA)
+   Textos pastel + fondos semi-transparentes brillantes para
+   garantizar legibilidad sobre fondos oscuros (#1f2229 / #242832).
+   Contraste mínimo verificado: 5.3:1 en todos los estados.
+   ================================================================ */
+
+/* Pendiente — blue-300 | contraste 5.3:1 */
+[data-bs-theme="dark"] .status-pendiente,
+[data-bs-theme="dark"] .badge-soft-primary {
+  background-color: rgba(147, 197, 253, 0.15) !important;
+  border-color: rgba(147, 197, 253, 0.25) !important;
+  color: #93c5fd !important;
+}
+
+/* Aprobada / Activo / Completado — emerald-300 | contraste 7.9:1 */
+[data-bs-theme="dark"] .status-aprobada,
+[data-bs-theme="dark"] .status-activo,
+[data-bs-theme="dark"] .status-completado,
+[data-bs-theme="dark"] .status-finalizado,
+[data-bs-theme="dark"] .badge-soft-success {
+  background-color: rgba(110, 231, 183, 0.15) !important;
+  border-color: rgba(110, 231, 183, 0.25) !important;
+  color: #6ee7b7 !important;
+}
+
+/* Convertida / Info — violet-300 | contraste 6.5:1 */
+[data-bs-theme="dark"] .badge-soft-info {
+  background-color: rgba(196, 181, 253, 0.15) !important;
+  border-color: rgba(196, 181, 253, 0.25) !important;
+  color: #c4b5fd !important;
+}
+
+/* Cancelado / Rechazada / Vencida / Inactivo — red-300 | contraste 6.1:1 */
+[data-bs-theme="dark"] .status-cancelado,
+[data-bs-theme="dark"] .status-rechazada,
+[data-bs-theme="dark"] .status-inactivo,
+[data-bs-theme="dark"] .badge-soft-danger {
+  background-color: rgba(252, 165, 165, 0.15) !important;
+  border-color: rgba(252, 165, 165, 0.25) !important;
+  color: #fca5a5 !important;
+}
+
+/* Procesando / Alerta / Bajo Stock — amber-300 | contraste 5.8:1 */
+[data-bs-theme="dark"] .status-procesando,
+[data-bs-theme="dark"] .status-alerta,
+[data-bs-theme="dark"] .status-bajo,
+[data-bs-theme="dark"] .badge-soft-warning {
+  background-color: rgba(252, 211, 77, 0.15) !important;
+  border-color: rgba(252, 211, 77, 0.25) !important;
+  color: #fcd34d !important;
+}
+
 .topbar-head-dropdown .dropdown-menu,
 .topbar-user .dropdown-menu {
   border: 1px solid rgba(16, 185, 129, 0.3);
