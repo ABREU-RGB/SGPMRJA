@@ -551,13 +551,11 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="10" required prependRaw="true">
+                                        <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="9" required prependRaw="true">
                                             <x-slot:prepend>
                                                 <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
                                                     <option value="J-">J-</option>
-                                                    <option value="V-">V-</option>
                                                     <option value="G-">G-</option>
-                                                    <option value="E-">E-</option>
                                                 </select>
                                             </x-slot:prepend>
                                         </x-forms.input>
@@ -644,14 +642,12 @@
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="15" placeholder="Ej: 12345678" required prependRaw="true">
+                                        <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="8" placeholder="Ej: 12345678" required prependRaw="true">
                                             <x-slot:prepend>
                                                 <select class="form-select" id="tipo-documento-field" name="tipo_documento"
                                                     style="max-width: 80px;">
                                                     <option value="V-">V-</option>
                                                     <option value="E-">E-</option>
-                                                    <option value="J-">J-</option>
-                                                    <option value="G-">G-</option>
                                                 </select>
                                             </x-slot:prepend>
                                         </x-forms.input>
@@ -891,7 +887,7 @@
                         $("#view-block-prov-razon-social").addClass('d-none');
                         $("#view-nombre").text(data.nombre || 'N/A');
                         $("#view-apellido").text(data.apellido || 'N/A');
-                        $("#view-label-documento").text('Cédula');
+                        $("#view-label-documento").text('Documento de Identidad');
                         $("#view-documento").text(data.documento_display || data.documento_identidad || 'N/A');
                     } else {
                         $("#view-block-prov-nombre").addClass('d-none');
