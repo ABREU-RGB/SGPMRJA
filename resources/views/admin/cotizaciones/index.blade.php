@@ -362,7 +362,7 @@
     </style>
     <div class="row">
         <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-transactional">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Cotizaciones</h5>
@@ -387,7 +387,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle">
+                    <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle dt-transactional">
                         <thead>
                             <tr>
                                 <th>Nro.</th>

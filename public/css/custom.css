@@ -155,6 +155,84 @@ footer .social-icon {
     color: #0d6efd;
 }
 
+/* ================================================================
+   DATATABLE — ESTÁNDAR OPERATIVO (Gestión de Transacciones)
+   Paleta: Teal Operativo — contrasta con Navy Institucional
+   Aplica a: Cotizaciones, Pedidos, Órdenes de Producción,
+             Movimiento de Inventario, y futuros módulos.
+   Uso: clase "dt-transactional" en el <table>
+        clase "card-transactional" en el <div class="card"> padre.
+   ================================================================ */
+
+:root {
+    --op-dark:       #0a5d56;              /* Teal oscuro — header base        */
+    --op-mid:        #0e8b7e;              /* Teal medio — gradient end        */
+    --op-border:     #0c7a6e;              /* Borde cabecera                   */
+    --op-accent:     #00d9a5;              /* Cyan acento — ya en uso global   */
+    --op-hover-bg:   rgba(0,217,165,0.12); /* Row hover — light mode           */
+    --op-even-bg:    rgba(0,217,165,0.055);/* Zebra even — light mode          */
+    --op-row-border: rgba(10,93,86,0.07);  /* Separadores de fila              */
+}
+
+/* ── Card accent — borde izquierdo teal en card de transacciones ── */
+.card-transactional > .card-header {
+    border-left: 4px solid var(--op-accent);
+    padding-left: 16px;
+}
+
+/* ── Header Operativo — gradiente teal oscuro ─────────────────── */
+.dt-transactional thead th {
+    background: linear-gradient(135deg, var(--op-dark) 0%, var(--op-mid) 100%) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-color: var(--op-border) !important;
+}
+
+/* ── Body — transición y separadores ─────────────────────────── */
+.dt-transactional.dataTable tbody tr {
+    transition: background-color 0.16s ease;
+}
+
+.dt-transactional.dataTable tbody tr td {
+    border-top: 1px solid var(--op-row-border);
+    border-bottom: 1px solid rgba(255,255,255,0.7);
+    background-clip: padding-box;
+}
+
+/* ── Zebra striping — light mode ──────────────────────────────── */
+.dt-transactional.dataTable tbody tr.odd td {
+    background-color: #ffffff;
+}
+
+.dt-transactional.dataTable tbody tr.even td {
+    background-color: var(--op-even-bg);
+}
+
+.dt-transactional.dataTable tbody tr:hover td {
+    background-color: var(--op-hover-bg) !important;
+}
+
+/* ── Zebra striping — dark mode ───────────────────────────────── */
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr td {
+    border-top: 1px solid rgba(0,217,165,0.08);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr.odd td {
+    background-color: rgba(255,255,255,0.015);
+}
+
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr.even td {
+    background-color: rgba(0,217,165,0.12);
+}
+
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr:hover td {
+    background-color: rgba(0,217,165,0.22) !important;
+}
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
     .carousel-item {
