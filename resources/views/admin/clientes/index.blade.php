@@ -421,7 +421,8 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-3">
-                                        <div class="col-6">
+                                        {{-- Cliente Natural: Nombre + Apellido en 2 columnas --}}
+                                        <div class="col-6" id="view-block-nombre">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
                                                     style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
@@ -433,7 +434,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-6" id="view-block-apellido">
                                             <div class="d-flex align-items-center">
                                                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
                                                     style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
@@ -442,6 +443,19 @@
                                                 <div>
                                                     <small class="text-muted d-block">Apellido</small>
                                                     <span class="fw-semibold" id="view-apellido">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- Cliente Jurídico/Gubernamental: Razón Social en ancho completo --}}
+                                        <div class="col-12 d-none" id="view-block-razon-social">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
+                                                    <i class="ri-building-line" style="color: #1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Razón Social</small>
+                                                    <span class="fw-semibold" id="view-razon-social">-</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1306,9 +1320,19 @@
                 var id = $(this).data("id");
                 $.get("{{ route('clientes.show', '') }}/" + id, function (data) {
                     $("#viewModal").modal("show");
-                    $("#view-nombre").text(data.nombre || 'N/A');
-                    $("#view-apellido").text(data.apellido || 'N/A');
                     var tipoTexto = data.tipo_cliente === 'natural' ? 'Natural' : (data.tipo_cliente === 'juridico' ? 'Jurídico' : 'Gubernamental');
+                    if (data.tipo_cliente === 'natural') {
+                        $("#view-block-nombre").removeClass('d-none');
+                        $("#view-block-apellido").removeClass('d-none');
+                        $("#view-block-razon-social").addClass('d-none');
+                        $("#view-nombre").text(data.nombre || 'N/A');
+                        $("#view-apellido").text(data.apellido || 'N/A');
+                    } else {
+                        $("#view-block-nombre").addClass('d-none');
+                        $("#view-block-apellido").addClass('d-none');
+                        $("#view-block-razon-social").removeClass('d-none');
+                        $("#view-razon-social").text(data.nombre || 'N/A');
+                    }
                     $("#view-tipo_cliente").text(tipoTexto);
                     $("#view-email").text(data.email || 'N/A');
                     $("#view-telefono").text(data.telefono || 'N/A');
