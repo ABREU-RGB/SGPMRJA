@@ -685,13 +685,14 @@ header#page-topbar,
 /* ── Header Operativo — gradiente teal oscuro ─────────────────── */
 /* Especificidad (0,2,1) supera al .table th genérico (0,1,1)      */
 .dt-transactional thead th {
-    background: linear-gradient(135deg, var(--op-dark) 0%, var(--op-mid) 100%) !important;
+    background: var(--op-dark) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     font-size: 12.5px !important;
     text-transform: uppercase;
     letter-spacing: 0.3px;
     border-color: var(--op-border) !important;
+    border-bottom: 3px solid var(--op-accent) !important;
 }
 
 /* ── Body — transición y separadores ─────────────────────────── */
