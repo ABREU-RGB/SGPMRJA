@@ -659,8 +659,8 @@ header#page-topbar,
     --op-mid:        #059669;              /* Emerald-600 — referencia         */
     --op-border:     #065f46;              /* Emerald-900 — bordes cabecera    */
     --op-accent:     #10b981;              /* Emerald-500 — exacto btn modal   */
-    --op-hover-bg:   rgba(16,185,129,0.12);/* Row hover — light mode           */
-    --op-even-bg:    rgba(16,185,129,0.055);/* Zebra even — light mode         */
+    --op-hover-bg:   rgba(16,185,129,0.18);/* Row hover — light mode           */
+    --op-even-bg:    rgba(16,185,129,0.10);/* Zebra even — light mode          */
     --op-row-border: rgba(16,185,129,0.08);/* Separadores de fila              */
 }
 
