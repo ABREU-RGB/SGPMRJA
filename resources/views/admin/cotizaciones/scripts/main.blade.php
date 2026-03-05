@@ -228,24 +228,25 @@
         });
         var table = $('#cotizaciones-table').DataTable({
             responsive: true,
+            autoWidth: false,
             dom: 'rtip', /* Ocultar buscador (f) y selector de longitud (l) para máxima limpieza */
             processing: true,
             serverSide: true,
             ajax: "{{ route('cotizaciones.data') }}",
             columns: [
-                { data: 'id', name: 'id', title: 'Nro.', width: '6%' },
-                { data: 'cliente_nombre', name: 'cliente_nombre', width: '25%' },
-                { data: 'fecha_cotizacion', name: 'fecha_cotizacion', width: '14%' },
+                { data: 'id', name: 'id', title: 'Nro.', width: '5%' },
+                { data: 'cliente_nombre', name: 'cliente_nombre', width: '32%' },
+                { data: 'fecha_cotizacion', name: 'fecha_cotizacion', width: '15%' },
                 {
                     data: 'total',
                     name: 'total',
-                    width: '14%',
+                    width: '15%',
                     render: $.fn.dataTable.render.number(',', '.', 2, '$')
                 },
                 {
                     data: 'estado',
                     name: 'estado',
-                    width: '12%',
+                    width: '16%',
                     className: 'text-center',
                     render: function (data, type, row) {
                         var estadoClasses = {
@@ -306,6 +307,8 @@
                     name: 'actions',
                     orderable: false,
                     searchable: false,
+                    width: '1%',
+                    className: 'text-center text-nowrap',
                     render: function (data, type, row) {
                         var isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
 

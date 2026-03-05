@@ -123,12 +123,14 @@ body:not(.swal2-toast-shown) div.swal2-container.swal2-backdrop-show {
   text-align: center;
 }
 
-/* Columna de Acciones - más ancha */
+/* Columna de Acciones — shrink-to-content
+   width: 1% fuerza el mínimo posible; el white-space: nowrap del contenido
+   evita que colapse por debajo del ancho real de los botones.
+   Aplica a todos los DataTables del sistema sin anchos fijos en px. */
 .table th:last-child,
 .table td:last-child {
-  width: 120px !important;
-  min-width: 120px !important;
-  white-space: nowrap;
+  width: 1% !important;
+  white-space: nowrap !important;
   text-align: center;
 }
 
@@ -667,13 +669,13 @@ header#page-topbar,
    ================================================================ */
 
 :root {
-    --op-dark:       #0a5d56;              /* Teal oscuro — header base        */
-    --op-mid:        #0e8b7e;              /* Teal medio — gradient end        */
-    --op-border:     #0c7a6e;              /* Borde cabecera                   */
-    --op-accent:     #00d9a5;              /* Cyan acento — ya en uso global   */
-    --op-hover-bg:   rgba(0,217,165,0.12); /* Row hover — light mode           */
-    --op-even-bg:    rgba(0,217,165,0.055);/* Zebra even — light mode          */
-    --op-row-border: rgba(10,93,86,0.07);  /* Separadores de fila              */
+    --op-dark:       #064e3b;              /* Emerald-950 — header base        */
+    --op-mid:        #059669;              /* Emerald-600 — referencia         */
+    --op-border:     #065f46;              /* Emerald-900 — bordes cabecera    */
+    --op-accent:     #10b981;              /* Emerald-500 — exacto btn modal   */
+    --op-hover-bg:   rgba(16,185,129,0.12);/* Row hover — light mode           */
+    --op-even-bg:    rgba(16,185,129,0.055);/* Zebra even — light mode         */
+    --op-row-border: rgba(16,185,129,0.08);/* Separadores de fila              */
 }
 
 /* ── Card accent — borde izquierdo teal en card de transacciones ── */
@@ -717,6 +719,18 @@ header#page-topbar,
 
 .dt-transactional.dataTable tbody tr:hover td {
     background-color: var(--op-hover-bg) !important;
+}
+
+/* ── Header — dark mode ───────────────────────────────────────── */
+/* Especificidad (0,3,2): .dt-transactional + .dataTable + thead th
+   supera al [data-bs-theme="dark"] .table thead th (0,2,2) del
+   <style> inline en app.blade.php que sobreescribiría el color.    */
+[data-bs-theme="dark"] .dt-transactional.dataTable thead th {
+    background-color: #065f46 !important;
+    background: #065f46 !important;
+    color: #ffffff !important;
+    border-color: #047857 !important;
+    border-bottom: 3px solid var(--op-accent) !important;
 }
 
 /* ── Zebra striping — dark mode ───────────────────────────────── */

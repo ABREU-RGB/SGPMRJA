@@ -39,13 +39,6 @@
             width: 100%;
         }
 
-        #cotizaciones-table th:last-child,
-        #cotizaciones-table td:last-child {
-            width: 260px;
-            min-width: 260px;
-            text-align: center;
-        }
-
         /* Prevent wrapping in phone/document columns */
         #cotizaciones-table td {
             white-space: nowrap;
