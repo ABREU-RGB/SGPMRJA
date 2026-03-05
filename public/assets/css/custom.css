@@ -82,9 +82,9 @@ body.swal2-shown {
   user-select: none !important;
 }
 
-/* Forzar backdrop semi-transparente con blur */
-body > div.swal2-container,
-div.swal2-container.swal2-backdrop-show {
+/* Forzar backdrop semi-transparente con blur — solo modales, nunca toasts */
+body:not(.swal2-toast-shown) > div.swal2-container,
+body:not(.swal2-toast-shown) div.swal2-container.swal2-backdrop-show {
   background: rgba(0, 0, 0, 0.5) !important;
   backdrop-filter: blur(2px) !important;
 }
@@ -115,20 +115,8 @@ div.swal2-container.swal2-backdrop-show {
   line-height: 1 !important;
 }
 
-/* Columna de Estado - compacta */
-.table th:nth-last-child(2),
-.table td:nth-last-child(2) {
-  width: 70px !important;
-  max-width: 80px !important;
-  text-align: center;
-}
-
-/* Columna de Acciones - más ancha */
-.table th:last-child,
+/* Botones de acción centrados en su celda */
 .table td:last-child {
-  width: 120px !important;
-  min-width: 120px !important;
-  white-space: nowrap;
   text-align: center;
 }
 
@@ -655,4 +643,96 @@ header#page-topbar,
   opacity: 0.7;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* ================================================================
+   DATATABLE — ESTÁNDAR OPERATIVO (Gestión de Transacciones)
+   Paleta: Teal Operativo — contrasta con Navy Institucional
+   Aplica a: Cotizaciones, Pedidos, Órdenes de Producción,
+             Movimiento de Inventario, y futuros módulos.
+   Uso: clase "dt-transactional" en el <table>
+        clase "card-transactional" en el <div class="card"> padre.
+   ================================================================ */
+
+:root {
+    --op-dark:       #064e3b;              /* Emerald-950 — header base        */
+    --op-mid:        #059669;              /* Emerald-600 — referencia         */
+    --op-border:     #065f46;              /* Emerald-900 — bordes cabecera    */
+    --op-accent:     #10b981;              /* Emerald-500 — exacto btn modal   */
+    --op-hover-bg:   rgba(16,185,129,0.12);/* Row hover — light mode           */
+    --op-even-bg:    rgba(16,185,129,0.055);/* Zebra even — light mode         */
+    --op-row-border: rgba(16,185,129,0.08);/* Separadores de fila              */
+}
+
+/* ── Card accent — borde izquierdo teal en card de transacciones ── */
+.card-transactional > .card-header {
+    border-left: 4px solid var(--op-accent);
+    padding-left: 16px;
+}
+
+/* ── Header Operativo — gradiente teal oscuro ─────────────────── */
+/* Especificidad (0,2,1) supera al .table th genérico (0,1,1)      */
+.dt-transactional thead th {
+    background: var(--op-dark) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 12.5px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-color: var(--op-border) !important;
+    border-bottom: 3px solid var(--op-accent) !important;
+}
+
+/* ── Body — transición y separadores ─────────────────────────── */
+.dt-transactional.dataTable tbody tr {
+    transition: background-color 0.16s ease;
+}
+
+.dt-transactional.dataTable tbody tr td {
+    border-top: 1px solid var(--op-row-border);
+    border-bottom: 1px solid rgba(255,255,255,0.7);
+    background-clip: padding-box;
+}
+
+/* ── Zebra striping — light mode ──────────────────────────────── */
+.dt-transactional.dataTable tbody tr.odd td {
+    background-color: #ffffff;
+}
+
+.dt-transactional.dataTable tbody tr.even td {
+    background-color: var(--op-even-bg);
+}
+
+.dt-transactional.dataTable tbody tr:hover td {
+    background-color: var(--op-hover-bg) !important;
+}
+
+/* ── Header — dark mode ───────────────────────────────────────── */
+/* Especificidad (0,3,2): .dt-transactional + .dataTable + thead th
+   supera al [data-bs-theme="dark"] .table thead th (0,2,2) del
+   <style> inline en app.blade.php que sobreescribiría el color.    */
+[data-bs-theme="dark"] .dt-transactional.dataTable thead th {
+    background-color: #065f46 !important;
+    background: #065f46 !important;
+    color: #ffffff !important;
+    border-color: #047857 !important;
+    border-bottom: 3px solid var(--op-accent) !important;
+}
+
+/* ── Zebra striping — dark mode ───────────────────────────────── */
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr td {
+    border-top: 1px solid rgba(0,217,165,0.08);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr.odd td {
+    background-color: rgba(255,255,255,0.015);
+}
+
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr.even td {
+    background-color: rgba(0,217,165,0.12);
+}
+
+[data-bs-theme="dark"] .dt-transactional.dataTable tbody tr:hover td {
+    background-color: rgba(0,217,165,0.22) !important;
 }

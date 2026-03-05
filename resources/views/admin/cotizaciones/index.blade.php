@@ -35,20 +35,37 @@
             overflow-x: auto;
         }
 
+        /* ── DataTable — Estándar Atlántico Operativo ── */
         #cotizaciones-table {
-            width: 100%;
+            width: 100% !important;
+            table-layout: fixed;
+            font-size: 13px;
         }
 
-        #cotizaciones-table th:last-child,
-        #cotizaciones-table td:last-child {
-            width: 260px;
-            min-width: 260px;
-            text-align: center;
-        }
-
-        /* Prevent wrapping in phone/document columns */
+        #cotizaciones-table th,
         #cotizaciones-table td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Anchos de columna (suman 100%) */
+        #cotizaciones-table th:nth-child(1) { width: 5%; }   /* Nro.     */
+        #cotizaciones-table th:nth-child(2) { width: 30%; }  /* Cliente  */
+        #cotizaciones-table th:nth-child(3) { width: 13%; }  /* Fecha    */
+        #cotizaciones-table th:nth-child(4) { width: 13%; }  /* Total    */
+        #cotizaciones-table th:nth-child(5) { width: 15%; text-align: center; } /* Estado */
+        #cotizaciones-table th:nth-child(6) { width: 24%; text-align: center; } /* Acciones */
+
+        /* Estado y Acciones: overflow visible para que dropdowns y botones
+           escapen la celda sin alterar el ancho (garantizado por table-layout:fixed) */
+        #cotizaciones-table td:nth-child(5),
+        #cotizaciones-table td:last-child {
+            overflow: visible;
+            text-overflow: clip;
+            text-align: center;
         }
 
         /* Backdrop más oscuro y difuminado para modal de cliente */
@@ -362,7 +379,7 @@
     </style>
     <div class="row">
         <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-transactional">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Cotizaciones</h5>
@@ -387,7 +404,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle">
+                    <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle dt-transactional">
                         <thead>
                             <tr>
                                 <th>Nro.</th>

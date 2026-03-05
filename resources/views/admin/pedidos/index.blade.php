@@ -3037,20 +3037,6 @@
                                     timer: 4000,
                                     timerProgressBar: true,
                                     backdrop: false,
-                                    didOpen: function (toast) {
-                                        var container = toast.parentElement;
-                                        // Mover fuera de cualquier stacking context
-                                        if (container && container.parentElement !== document.body) {
-                                            document.body.appendChild(container);
-                                        }
-                                        // Eliminar TODO efecto visual del container
-                                        container.style.zIndex = '99999';
-                                        container.style.background = 'transparent';
-                                        container.style.backdropFilter = 'none';
-                                        container.style.webkitBackdropFilter = 'none';
-                                        container.style.pointerEvents = 'none';
-                                        toast.style.pointerEvents = 'auto';
-                                    }
                                 });
                             });
                         },
