@@ -35,13 +35,33 @@
             overflow-x: auto;
         }
 
+        /* ── DataTable — Estándar Atlántico Operativo ── */
         #cotizaciones-table {
-            width: 100%;
+            width: 100% !important;
+            table-layout: fixed;
+            font-size: 13px;
         }
 
-        /* Prevent wrapping in phone/document columns */
+        #cotizaciones-table th,
         #cotizaciones-table td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Anchos de columna (suman 100%) */
+        #cotizaciones-table th:nth-child(1) { width: 5%; }   /* Nro.     */
+        #cotizaciones-table th:nth-child(2) { width: 30%; }  /* Cliente  */
+        #cotizaciones-table th:nth-child(3) { width: 13%; }  /* Fecha    */
+        #cotizaciones-table th:nth-child(4) { width: 13%; }  /* Total    */
+        #cotizaciones-table th:nth-child(5) { width: 15%; text-align: center; } /* Estado */
+        #cotizaciones-table th:nth-child(6) { width: 24%; text-align: center; } /* Acciones */
+
+        #cotizaciones-table td:last-child {
+            text-align: center;
+            overflow: visible;
         }
 
         /* Backdrop más oscuro y difuminado para modal de cliente */

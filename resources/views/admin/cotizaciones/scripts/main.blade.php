@@ -307,8 +307,7 @@
                     name: 'actions',
                     orderable: false,
                     searchable: false,
-                    width: '1%',
-                    className: 'text-center text-nowrap',
+                    className: 'text-center',
                     render: function (data, type, row) {
                         var isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
 

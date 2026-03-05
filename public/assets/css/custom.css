@@ -115,22 +115,8 @@ body:not(.swal2-toast-shown) div.swal2-container.swal2-backdrop-show {
   line-height: 1 !important;
 }
 
-/* Columna de Estado - compacta */
-.table th:nth-last-child(2),
-.table td:nth-last-child(2) {
-  width: 70px !important;
-  max-width: 80px !important;
-  text-align: center;
-}
-
-/* Columna de Acciones — shrink-to-content
-   width: 1% fuerza el mínimo posible; el white-space: nowrap del contenido
-   evita que colapse por debajo del ancho real de los botones.
-   Aplica a todos los DataTables del sistema sin anchos fijos en px. */
-.table th:last-child,
+/* Botones de acción centrados en su celda */
 .table td:last-child {
-  width: 1% !important;
-  white-space: nowrap !important;
   text-align: center;
 }
 
