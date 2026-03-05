@@ -59,9 +59,13 @@
         #cotizaciones-table th:nth-child(5) { width: 15%; text-align: center; } /* Estado */
         #cotizaciones-table th:nth-child(6) { width: 24%; text-align: center; } /* Acciones */
 
+        /* Estado y Acciones: overflow visible para que dropdowns y botones
+           escapen la celda sin alterar el ancho (garantizado por table-layout:fixed) */
+        #cotizaciones-table td:nth-child(5),
         #cotizaciones-table td:last-child {
-            text-align: center;
             overflow: visible;
+            text-overflow: clip;
+            text-align: center;
         }
 
         /* Backdrop más oscuro y difuminado para modal de cliente */
