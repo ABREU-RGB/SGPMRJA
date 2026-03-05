@@ -82,9 +82,9 @@ body.swal2-shown {
   user-select: none !important;
 }
 
-/* Forzar backdrop semi-transparente con blur */
-body > div.swal2-container,
-div.swal2-container.swal2-backdrop-show {
+/* Forzar backdrop semi-transparente con blur — solo modales, nunca toasts */
+body:not(.swal2-toast-shown) > div.swal2-container,
+body:not(.swal2-toast-shown) div.swal2-container.swal2-backdrop-show {
   background: rgba(0, 0, 0, 0.5) !important;
   backdrop-filter: blur(2px) !important;
 }
