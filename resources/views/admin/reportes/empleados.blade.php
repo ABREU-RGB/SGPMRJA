@@ -10,13 +10,13 @@
         .card-body { overflow-x: auto; }
         .dataTables_filter { display: none; }
 
-        #operariosTable {
+        #empleadosTable {
             width: 100% !important;
             table-layout: fixed;
             font-size: 13px;
         }
-        #operariosTable th,
-        #operariosTable td {
+        #empleadosTable th,
+        #empleadosTable td {
             padding: 0.4rem 0.6rem;
             vertical-align: middle;
             white-space: nowrap;
@@ -24,18 +24,18 @@
             text-overflow: ellipsis;
         }
         /* Anchos de columna (suman 100%) */
-        #operariosTable th:nth-child(1) { width: 28%; }                      /* Nombre           */
-        #operariosTable th:nth-child(2) { width: 12%; text-align: center; } /* Total Órdenes    */
-        #operariosTable th:nth-child(3) { width: 14%; text-align: center; } /* Total Producido  */
-        #operariosTable th:nth-child(4) { width: 14%; text-align: center; } /* Total Defectuoso */
-        #operariosTable th:nth-child(5) { width: 18%; text-align: center; } /* Eficiencia       */
-        #operariosTable th:nth-child(6) { width: 14%; text-align: center; } /* Promedio p/Orden */
+        #empleadosTable th:nth-child(1) { width: 28%; }                      /* Nombre           */
+        #empleadosTable th:nth-child(2) { width: 12%; text-align: center; } /* Total Órdenes    */
+        #empleadosTable th:nth-child(3) { width: 14%; text-align: center; } /* Total Producido  */
+        #empleadosTable th:nth-child(4) { width: 14%; text-align: center; } /* Total Defectuoso */
+        #empleadosTable th:nth-child(5) { width: 18%; text-align: center; } /* Eficiencia       */
+        #empleadosTable th:nth-child(6) { width: 14%; text-align: center; } /* Promedio p/Orden */
 
-        #operariosTable td:nth-child(2),
-        #operariosTable td:nth-child(3),
-        #operariosTable td:nth-child(4),
-        #operariosTable td:nth-child(5),
-        #operariosTable td:nth-child(6) {
+        #empleadosTable td:nth-child(2),
+        #empleadosTable td:nth-child(3),
+        #empleadosTable td:nth-child(4),
+        #empleadosTable td:nth-child(5),
+        #empleadosTable td:nth-child(6) {
             overflow: visible;
             text-overflow: clip;
             text-align: center;
@@ -81,7 +81,7 @@
                     <h4 class="card-title mb-0">Detalle de Rendimiento por Empleado</h4>
                 </div>
                 <div class="card-body">
-                        <table class="table table-bordered table-striped table-sm align-middle dt-reportes" id="operariosTable">
+                        <table class="table table-bordered table-striped table-sm align-middle dt-reportes" id="empleadosTable">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -93,23 +93,23 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($rendimientoOperarios as $operario)
+                                @foreach($rendimientoEmpleados as $empleado)
                                     <tr>
-                                        <td>{{ $operario['nombre'] }}</td>
-                                        <td>{{ $operario['total_ordenes'] }}</td>
-                                        <td>{{ $operario['total_producido'] }}</td>
-                                        <td>{{ $operario['total_defectuoso'] }}</td>
+                                        <td>{{ $empleado['nombre'] }}</td>
+                                        <td>{{ $empleado['total_ordenes'] }}</td>
+                                        <td>{{ $empleado['total_producido'] }}</td>
+                                        <td>{{ $empleado['total_defectuoso'] }}</td>
                                         <td>
                                             <div class="progress" style="height: 5px;">
-                                                <div class="progress-bar {{ $operario['eficiencia'] >= 90 ? 'bg-success' : ($operario['eficiencia'] >= 70 ? 'bg-warning' : 'bg-danger') }}"
-                                                    role="progressbar" style="width: {{ $operario['eficiencia'] }}%;"
-                                                    aria-valuenow="{{ $operario['eficiencia'] }}" aria-valuemin="0"
+                                                <div class="progress-bar {{ $empleado['eficiencia'] >= 90 ? 'bg-success' : ($empleado['eficiencia'] >= 70 ? 'bg-warning' : 'bg-danger') }}"
+                                                    role="progressbar" style="width: {{ $empleado['eficiencia'] }}%;"
+                                                    aria-valuenow="{{ $empleado['eficiencia'] }}" aria-valuemin="0"
                                                     aria-valuemax="100">
                                                 </div>
                                             </div>
-                                            <span>{{ $operario['eficiencia'] }}%</span>
+                                            <span>{{ $empleado['eficiencia'] }}%</span>
                                         </td>
-                                        <td>{{ $operario['total_ordenes'] > 0 ? round($operario['total_producido'] / $operario['total_ordenes']) : 0 }}
+                                        <td>{{ $empleado['total_ordenes'] > 0 ? round($empleado['total_producido'] / $empleado['total_ordenes']) : 0 }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -129,20 +129,20 @@
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            $('#operariosTable').DataTable({
+            $('#empleadosTable').DataTable({
                 autoWidth: false,
                 language: lenguajeData,
                 order: [[4, 'desc']]
             });
 
-            var operarios = [];
+            var empleados = [];
             var produccion = [];
             var eficiencias = [];
 
-            @foreach($rendimientoOperarios as $operario)
-                operarios.push('{{ $operario['nombre'] }}');
-                produccion.push({{ $operario['total_producido'] }});
-                eficiencias.push({{ $operario['eficiencia'] }});
+            @foreach($rendimientoEmpleados as $empleado)
+                empleados.push('{{ $empleado['nombre'] }}');
+                produccion.push({{ $empleado['total_producido'] }});
+                eficiencias.push({{ $empleado['eficiencia'] }});
             @endforeach
 
             var produccionPorOperarioOptions = {
@@ -164,7 +164,7 @@
                     enabled: false
                 },
                 xaxis: {
-                    categories: operarios,
+                    categories: empleados,
                 },
                 colors: ['#0ab39c'],
                 tooltip: {
@@ -215,7 +215,7 @@
                     }
                 },
                 xaxis: {
-                    categories: operarios,
+                    categories: empleados,
                 },
                 yaxis: {
                     title: {

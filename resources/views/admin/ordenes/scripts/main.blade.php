@@ -293,18 +293,17 @@
                     searchable: false,
                     className: 'align-middle text-center',
                     width: '16%',
-                    render: function (data) {
+                    render: function (data, type, row) {
+                        const estadoActivo = ['Pendiente', 'En Proceso'].includes(row.estado);
+                        const avanceBtn = estadoActivo
+                            ? `<button class="btn btn-sm btn-soft-warning avance-btn" data-id="${data}" title="Registrar Avance"><i class="ri-add-circle-line"></i></button>`
+                            : '';
                         return `
-                            <div class="d-flex gap-2 justify-content-center">
-                                <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
-                                    <i class="ri-eye-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
-                                    <i class="ri-pencil-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
-                                    <i class="ri-delete-bin-fill"></i>
-                                </button>
+                            <div class="d-flex gap-1 justify-content-center">
+                                ${avanceBtn}
+                                <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver"><i class="ri-eye-fill"></i></button>
+                                <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar"><i class="ri-pencil-fill"></i></button>
+                                <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
                             </div>
                         `;
                     }
@@ -378,6 +377,13 @@
         $('#ordenForm').on('submit', function (e) {
             e.preventDefault();
             let formData = new FormData(this);
+            // Los campos disabled no se incluyen en FormData — agregarlos manualmente
+            if ($('#producto-id-field').prop('disabled')) {
+                formData.append('producto_id', $('#producto-id-field').val());
+            }
+            if ($('#pedido-id-field').prop('disabled') && $('#pedido-id-hidden-field').val()) {
+                formData.append('pedido_id', $('#pedido-id-hidden-field').val());
+            }
             let url = $('#id-field').val() ?
                 "{{ route('ordenes.update', ':id') }}".replace(':id', $('#id-field').val()) :
                 "{{ route('ordenes.store') }}";
@@ -546,14 +552,12 @@
                 };
                 $('#view-created').text(formatDateTime(data.created_at));
 
-                // ── Avance de Producción ──────────────────────────────
-                $('#avance-orden-id').val(data.id);
+                // ── Avances (historial lectura) ───────────────────────
                 renderAvances(data.produccion_diaria || []);
 
-                // Mostrar botón de registrar avance solo si la orden puede avanzar
+                // Pestaña por defecto: Avances si activa, Detalles si finalizada
                 const estadoActivo = ['Pendiente', 'En Proceso'].includes(data.estado);
-                $('#btn-toggle-avance-form').toggle(estadoActivo);
-                $('#avance-form-container').hide();
+                new bootstrap.Tab(document.getElementById(estadoActivo ? 'tab-avances-btn' : 'tab-detalles-btn')).show();
 
                 $('#viewModal').modal('show');
             });
@@ -608,8 +612,8 @@
                 return;
             }
             avances.forEach(function (a) {
-                const operarioNombre = a.operario && a.operario.persona
-                    ? a.operario.persona.nombre_completo
+                const empleadoNombre = a.empleado && a.empleado.persona
+                    ? a.empleado.persona.nombre_completo
                     : 'N/A';
                 const fecha = a.created_at
                     ? new Date(a.created_at).toLocaleDateString('es-ES')
@@ -617,76 +621,44 @@
                 tbody.append(`
                     <tr>
                         <td class="text-nowrap">${fecha}</td>
-                        <td>${operarioNombre}</td>
+                        <td>${empleadoNombre}</td>
                         <td class="text-center fw-medium">${a.cantidad_producida}</td>
                         <td class="text-center ${a.cantidad_defectuosa > 0 ? 'text-danger fw-medium' : ''}">${a.cantidad_defectuosa}</td>
                         <td class="text-muted">${a.observaciones || '—'}</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-soft-danger btn-delete-avance" data-id="${a.id}" title="Eliminar">
-                                <i class="ri-delete-bin-fill"></i>
-                            </button>
-                        </td>
                     </tr>
                 `);
             });
         }
 
-        function reloadOrdenEnModal(ordenId) {
-            $.get("{{ route('ordenes.show', ':id') }}".replace(':id', ordenId), function (data) {
-                // Actualizar métricas
-                $('#view-cantidad-producida').text(data.cantidad_producida);
-                let pct = data.cantidad_solicitada > 0
-                    ? (data.cantidad_producida / data.cantidad_solicitada * 100).toFixed(1)
-                    : '0.0';
-                $('#view-progreso').css('width', pct + '%').attr('aria-valuenow', pct);
-                $('#view-progreso-pct').text(pct);
-
-                // Actualizar estado badge
-                let clases = {
-                    'Pendiente': 'status-pendiente badge-soft-warning',
-                    'En Proceso': 'status-procesando badge-soft-info',
-                    'Finalizado': 'status-finalizado badge-soft-success',
-                    'Cancelado':  'status-cancelado badge-soft-danger'
-                };
-                $('#view-estado').html(`<span class="badge badge-status ${clases[data.estado] || ''} rounded-pill">${data.estado}</span>`);
-
-                // Actualizar avances
-                renderAvances(data.produccion_diaria || []);
-
-                // Ocultar form si la orden ya se finalizó
-                const estadoActivo = ['Pendiente', 'En Proceso'].includes(data.estado);
-                $('#btn-toggle-avance-form').toggle(estadoActivo);
-                if (!estadoActivo) $('#avance-form-container').hide();
-
-                // Recargar la tabla principal
-                table.ajax.reload(null, false);
+        // Abrir modal de avance desde la tabla
+        $(document).on('click', '.avance-btn', function () {
+            const id = $(this).data('id');
+            $.get("{{ route('ordenes.show', ':id') }}".replace(':id', id), function (data) {
+                const restante = data.cantidad_solicitada - data.cantidad_producida;
+                $('#am-orden-id').val(data.id);
+                $('#am-restante').val(restante);
+                $('#am-orden-info').text(`${data.producto.nombre} · ${restante} piezas restantes`);
+                $('#am-restante-hint').text(`(máx. ${restante})`);
+                $('#am-cantidad-producida').attr('max', restante);
+                $('#avanceModal').modal('show');
             });
-        }
-
-        // Mostrar/ocultar formulario de avance
-        $('#btn-toggle-avance-form').on('click', function () {
-            $('#avance-form-container').slideToggle(150);
-            $('#avance-cantidad-producida').focus();
-        });
-
-        $('#btn-cancel-avance').on('click', function () {
-            $('#avance-form-container').slideUp(150);
-            $('#avance-operario-id').val('');
-            $('#avance-cantidad-producida').val('');
-            $('#avance-cantidad-defectuosa').val('0');
-            $('#avance-observaciones').val('');
         });
 
         // Guardar avance
-        $('#btn-save-avance').on('click', function () {
-            const ordenId      = $('#avance-orden-id').val();
-            const operarioId   = $('#avance-operario-id').val();
-            const producida    = $('#avance-cantidad-producida').val();
-            const defectuosa   = $('#avance-cantidad-defectuosa').val();
-            const observaciones = $('#avance-observaciones').val();
+        $('#am-btn-save').on('click', function () {
+            const ordenId       = $('#am-orden-id').val();
+            const empleadoId    = $('#am-empleado-id').val();
+            const producida     = $('#am-cantidad-producida').val();
+            const defectuosa    = $('#am-cantidad-defectuosa').val();
+            const observaciones = $('#am-observaciones').val();
+            const restante      = parseInt($('#am-restante').val()) || 0;
 
-            if (!operarioId || !producida || parseInt(producida) < 1) {
-                Swal.fire({ icon: 'warning', title: 'Datos incompletos', text: 'Selecciona el operario e ingresa una cantidad producida válida.', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+            if (!empleadoId || !producida || parseInt(producida) < 1) {
+                Swal.fire({ icon: 'warning', title: 'Datos incompletos', text: 'Selecciona el empleado e ingresa una cantidad producida válida.', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                return;
+            }
+            if (parseInt(producida) > restante) {
+                Swal.fire({ icon: 'warning', title: 'Cantidad excedida', text: `Solo quedan ${restante} piezas por producir en esta orden.`, toast: true, position: 'top-end', showConfirmButton: false, timer: 4000 });
                 return;
             }
 
@@ -696,19 +668,15 @@
                 data: {
                     _token: '{{ csrf_token() }}',
                     orden_id: ordenId,
-                    operario_id: operarioId,
+                    empleado_id: empleadoId,
                     cantidad_producida: producida,
                     cantidad_defectuosa: defectuosa || 0,
                     observaciones: observaciones
                 },
                 success: function () {
-                    $('#avance-form-container').slideUp(150);
-                    $('#avance-operario-id').val('');
-                    $('#avance-cantidad-producida').val('');
-                    $('#avance-cantidad-defectuosa').val('0');
-                    $('#avance-observaciones').val('');
+                    $('#avanceModal').modal('hide');
+                    table.ajax.reload(null, false);
                     Swal.fire({ icon: 'success', title: 'Avance registrado', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
-                    reloadOrdenEnModal(ordenId);
                 },
                 error: function (xhr) {
                     Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.error || 'No se pudo guardar el avance.' });
@@ -716,50 +684,21 @@
             });
         });
 
-        // Eliminar avance
-        $(document).on('click', '.btn-delete-avance', function () {
-            const avanceId = $(this).data('id');
-            const ordenId  = $('#avance-orden-id').val();
-            Swal.fire({
-                title: '¿Eliminar avance?',
-                text: 'Se revertirá la cantidad producida en la orden.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                customClass: { confirmButton: 'btn btn-primary w-xs me-2', cancelButton: 'btn btn-danger w-xs' },
-                buttonsStyling: false
-            }).then(result => {
-                if (!result.isConfirmed) return;
-                $.ajax({
-                    url: "{{ route('produccion.diaria.destroy', ':id') }}".replace(':id', avanceId),
-                    method: 'POST',
-                    data: { _token: '{{ csrf_token() }}', _method: 'DELETE' },
-                    success: function () {
-                        Swal.fire({ icon: 'success', title: 'Avance eliminado', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
-                        reloadOrdenEnModal(ordenId);
-                    },
-                    error: function (xhr) {
-                        Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.error || 'No se pudo eliminar el avance.' });
-                    }
-                });
-            });
+        // Reset al cerrar avanceModal
+        $('#avanceModal').on('hidden.bs.modal', function () {
+            $('#am-orden-id').val('');
+            $('#am-restante').val('');
+            $('#am-orden-info').text('');
+            $('#am-empleado-id').val('');
+            $('#am-cantidad-producida').val('');
+            $('#am-cantidad-defectuosa').val('0');
+            $('#am-observaciones').val('');
         });
 
-        // Limpiar y resetear al cerrar viewModal
+        // Reset al cerrar viewModal
         $('#viewModal').on('hidden.bs.modal', function () {
-            // Reset tab a Cronograma & Detalles
-            const tabDetalles = new bootstrap.Tab(document.getElementById('tab-detalles-btn'));
-            tabDetalles.show();
-
-            // Limpiar form avance
-            $('#avance-form-container').hide();
-            $('#avance-operario-id').val('');
-            $('#avance-cantidad-producida').val('');
-            $('#avance-cantidad-defectuosa').val('0');
-            $('#avance-observaciones').val('');
-            $('#view-avances').html('<tr id="avances-empty-row"><td colspan="6" class="text-center text-muted py-3 fs-12"><i class="ri-inbox-line me-1"></i>Sin registros de avance</td></tr>');
-            $('#btn-toggle-avance-form').hide();
+            new bootstrap.Tab(document.getElementById('tab-detalles-btn')).show();
+            $('#view-avances').html('<tr id="avances-empty-row"><td colspan="5" class="text-center text-muted py-3 fs-12"><i class="ri-inbox-line me-1"></i>Sin registros de avance</td></tr>');
         });
 
         // Reset form on modal close

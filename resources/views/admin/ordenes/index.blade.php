@@ -161,6 +161,7 @@
 
     @include('admin.ordenes.modals.create')
     @include('admin.ordenes.modals.view')
+    @include('admin.ordenes.modals.avance')
 @endsection
 
 @push('scripts')

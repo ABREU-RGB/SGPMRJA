@@ -14,13 +14,13 @@
                         foreach($ordenes as $orden) {
                             $ordenOptions[$orden->id] = '#' . $orden->id . ' - ' . ($orden->producto->nombre ?? 'N/A') . ' (' . $orden->cantidad_producida . '/' . $orden->cantidad_solicitada . ')';
                         }
-                        $operarioOptions = $operarios->pluck('name', 'id')->toArray();
+                        $empleadoOptions = $empleados->pluck('name', 'id')->toArray();
                     @endphp
                     <x-forms.select name="orden_id" label="Orden de Producción" required
                         :options="$ordenOptions" placeholder="Seleccione una orden..." />
 
-                    <x-forms.select name="operario_id" label="Empleado" required
-                        :options="$operarioOptions" placeholder="Seleccione un operario..." />
+                    <x-forms.select name="empleado_id" label="Empleado" required
+                        :options="$empleadoOptions" placeholder="Seleccione un empleado..." />
 
                     <div class="row">
                         <div class="col-md-6">

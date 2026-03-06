@@ -23,8 +23,7 @@ class OrdenProduccionController extends Controller
             ->with(['productos.producto'])
             ->orderBy('created_at', 'desc')
             ->get();
-        // Operarios de producción para el form de avance
-        $operarios = Empleado::with('persona')
+        $empleados = Empleado::with('persona')
             ->where('departamento', 'Produccion')
             ->where('estado', 1)
             ->get()
@@ -32,7 +31,7 @@ class OrdenProduccionController extends Controller
                 'id'   => $e->id,
                 'name' => $e->persona->nombre_completo ?? 'Sin nombre',
             ]);
-        return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos', 'operarios'));
+        return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos', 'empleados'));
     }
 
     public function getOrdenes()
@@ -112,7 +111,7 @@ class OrdenProduccionController extends Controller
                 'producto.tipoProducto',
                 'insumos',
                 'creadoPor:id,name',
-                'produccionDiaria.operario.persona',
+                'produccionDiaria.empleado.persona',
             ])->findOrFail($id);
 
         return response()->json($orden);

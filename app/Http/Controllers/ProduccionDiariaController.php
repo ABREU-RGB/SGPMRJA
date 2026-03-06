@@ -13,8 +13,7 @@ class ProduccionDiariaController extends Controller
 {
     public function index()
     {
-        // Obtener empleados del departamento de Producción para asignar como operarios
-        $operarios = \App\Models\Empleado::with('persona')
+        $empleados = \App\Models\Empleado::with('persona')
             ->where('departamento', 'Produccion')
             ->where('estado', 1)
             ->get()
@@ -28,12 +27,12 @@ class ProduccionDiariaController extends Controller
             ->where('cantidad_producida', '<', \DB::raw('cantidad_solicitada'))
             ->get();
 
-        return view('admin.produccion.diaria.index', compact('operarios', 'ordenes'));
+        return view('admin.produccion.diaria.index', compact('empleados', 'ordenes'));
     }
 
     public function getRegistros()
     {
-        $registros = ProduccionDiaria::with(['orden.producto', 'operario.persona'])
+        $registros = ProduccionDiaria::with(['orden.producto', 'empleado.persona'])
             ->select('produccion_diaria.*');
 
         return DataTables::of($registros)
@@ -41,8 +40,8 @@ class ProduccionDiariaController extends Controller
                 return $registro->orden && $registro->orden->producto ? $registro->orden->producto->nombre : 'N/A';
             })
             ->addColumn('operario_nombre', function ($registro) {
-                return $registro->operario && $registro->operario->persona
-                    ? $registro->operario->persona->nombre_completo
+                return $registro->empleado && $registro->empleado->persona
+                    ? $registro->empleado->persona->nombre_completo
                     : 'N/A';
             })
             ->addColumn('fecha', function ($registro) {
@@ -71,26 +70,42 @@ class ProduccionDiariaController extends Controller
     {
         $request->validate([
             'orden_id' => 'required|exists:orden_produccion,id',
-            'operario_id' => 'required|exists:empleado,id',
+            'empleado_id' => 'required|exists:empleado,id',
             'cantidad_producida' => 'required|numeric|min:1',
             'cantidad_defectuosa' => 'required|numeric|min:0',
             'observaciones' => 'nullable|string|max:500'
         ]);
 
+        $orden = OrdenProduccion::find($request->orden_id);
+
+        if (in_array($orden->estado, ['Finalizado', 'Cancelado'])) {
+            return response()->json([
+                'error' => "La orden ya está en estado \"{$orden->estado}\" y no puede recibir más avances."
+            ], 422);
+        }
+
+        $restante = $orden->cantidad_solicitada - $orden->cantidad_producida;
+        if ($request->cantidad_producida > $restante) {
+            return response()->json([
+                'error' => "La cantidad ingresada ({$request->cantidad_producida}) supera las {$restante} piezas restantes de la orden."
+            ], 422);
+        }
+
         try {
             $registro = ProduccionDiaria::create([
                 'orden_id' => $request->orden_id,
-                'operario_id' => $request->operario_id,
+                'empleado_id' => $request->empleado_id,
                 'cantidad_producida' => $request->cantidad_producida,
                 'cantidad_defectuosa' => $request->cantidad_defectuosa,
                 'observaciones' => $request->observaciones
             ]);
 
-            // Actualizar cantidad producida en la orden
-            $orden = OrdenProduccion::find($request->orden_id);
+            // Actualizar cantidad producida y estado de la orden
             $orden->cantidad_producida += $request->cantidad_producida;
             if ($orden->cantidad_producida >= $orden->cantidad_solicitada) {
                 $orden->estado = 'Finalizado';
+            } elseif ($orden->estado === 'Pendiente') {
+                $orden->estado = 'En Proceso';
             }
             $orden->save();
 
@@ -106,7 +121,7 @@ class ProduccionDiariaController extends Controller
 
     public function show($id)
     {
-        $registro = ProduccionDiaria::with(['orden.producto', 'operario.persona'])->findOrFail($id);
+        $registro = ProduccionDiaria::with(['orden.producto', 'empleado.persona'])->findOrFail($id);
         return response()->json($registro);
     }
 
