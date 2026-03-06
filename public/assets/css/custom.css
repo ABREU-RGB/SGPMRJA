@@ -811,7 +811,7 @@ header#page-topbar,
 
 /* ================================================================
    DATATABLE — ESTÁNDAR ANALÍTICO (Consultas y Reportes)
-   Paleta: Violet Analítico — diferencia la sección de análisis
+   Paleta: Sky Analítico — azul BI moderno (Tableau, Looker, Metabase)
    Aplica a: Producción, Eficiencia, Consumo de Insumos,
              Rendimiento de Empleados, y futuros reportes.
    Uso: clase "dt-reportes" en el <table>
@@ -819,15 +819,15 @@ header#page-topbar,
    ================================================================ */
 
 :root {
-    --rp-dark:       #2e1065;              /* Violet-950 — header base         */
-    --rp-border:     #4c1d95;              /* Violet-900 — bordes cabecera     */
-    --rp-accent:     #7c3aed;              /* Violet-600 — accent principal    */
-    --rp-hover-bg:   rgba(124,58,237,0.14);/* Row hover — light mode           */
-    --rp-even-bg:    rgba(124,58,237,0.07);/* Zebra even — light mode          */
-    --rp-row-border: rgba(124,58,237,0.07);/* Separadores de fila              */
+    --rp-dark:       #0c4a6e;              /* Sky-900  — header base           */
+    --rp-border:     #075985;              /* Sky-800  — bordes cabecera       */
+    --rp-accent:     #0ea5e9;              /* Sky-500  — accent principal      */
+    --rp-hover-bg:   rgba(14,165,233,0.14);/* Row hover — light mode           */
+    --rp-even-bg:    rgba(14,165,233,0.07);/* Zebra even — light mode          */
+    --rp-row-border: rgba(14,165,233,0.07);/* Separadores de fila              */
 }
 
-/* ── Card accent — borde izquierdo violet en card de reportes ── */
+/* ── Card accent — borde izquierdo sky en card de reportes ── */
 .card-reportes > .card-header {
     border-left: 4px solid var(--rp-accent);
     padding-left: 16px;
@@ -835,10 +835,10 @@ header#page-topbar,
 
 /* ── Dark mode — accent bar más claro para contraste ── */
 [data-bs-theme="dark"] .card-reportes > .card-header {
-    border-left-color: #c4b5fd;            /* Violet-300 */
+    border-left-color: #7dd3fc;            /* Sky-300 */
 }
 
-/* ── Header Analítico — violet oscuro ─────────────────────────── */
+/* ── Header Analítico — sky oscuro ────────────────────────────── */
 .dt-reportes thead th {
     background: var(--rp-dark) !important;
     color: #ffffff !important;
@@ -876,16 +876,16 @@ header#page-topbar,
 
 /* ── Header — dark mode ───────────────────────────────────────── */
 [data-bs-theme="dark"] .dt-reportes.dataTable thead th {
-    background-color: #3b0764 !important;
-    background: #3b0764 !important;
+    background-color: #0369a1 !important;  /* Sky-700 */
+    background: #0369a1 !important;
     color: #ffffff !important;
-    border-color: #4c1d95 !important;
+    border-color: #075985 !important;
     border-bottom: 3px solid var(--rp-accent) !important;
 }
 
 /* ── Zebra striping — dark mode ───────────────────────────────── */
 [data-bs-theme="dark"] .dt-reportes.dataTable tbody tr td {
-    border-top: 1px solid rgba(124,58,237,0.08);
+    border-top: 1px solid rgba(14,165,233,0.08);
     border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
@@ -894,9 +894,9 @@ header#page-topbar,
 }
 
 [data-bs-theme="dark"] .dt-reportes.dataTable tbody tr.even td {
-    background-color: rgba(124,58,237,0.12);
+    background-color: rgba(14,165,233,0.12);
 }
 
 [data-bs-theme="dark"] .dt-reportes.dataTable tbody tr:hover td {
-    background-color: rgba(124,58,237,0.22) !important;
+    background-color: rgba(14,165,233,0.22) !important;
 }
