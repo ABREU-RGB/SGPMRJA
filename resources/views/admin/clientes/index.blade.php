@@ -357,7 +357,7 @@
     </style>
     <div class="row">
         <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-maestros">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Clientes</h5>

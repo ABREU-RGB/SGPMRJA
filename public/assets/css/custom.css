@@ -699,6 +699,25 @@ header#page-topbar,
 }
 
 /* ================================================================
+   DATATABLE — ESTÁNDAR MAESTROS (Gestión General)
+   Paleta: Navy Institucional
+   Aplica a: Clientes, Empleados, Insumos, Productos, Proveedores,
+             Usuarios, y futuros módulos de catálogo.
+   Uso: clase "card-maestros" en el <div class="card"> padre.
+   ================================================================ */
+
+/* ── Card accent — borde izquierdo Navy en card de maestros ── */
+.card-maestros > .card-header {
+    border-left: 4px solid #1e3c72;
+    padding-left: 16px;
+}
+
+/* ── Dark mode — mantener accent bar visible ── */
+[data-bs-theme="dark"] .card-maestros > .card-header {
+    border-left-color: #4e7ac7;
+}
+
+/* ================================================================
    DATATABLE — ESTÁNDAR OPERATIVO (Gestión de Transacciones)
    Paleta: Teal Operativo — contrasta con Navy Institucional
    Aplica a: Cotizaciones, Pedidos, Órdenes de Producción,
