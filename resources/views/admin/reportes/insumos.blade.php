@@ -4,7 +4,42 @@
 @push('styles')
     <link href="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" /> 
+    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        .card-body { overflow-x: auto; }
+        .dataTables_filter { display: none; }
+
+        #insumosTable {
+            width: 100% !important;
+            table-layout: fixed;
+            font-size: 13px;
+        }
+        #insumosTable th,
+        #insumosTable td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Anchos de columna (suman 100%) */
+        #insumosTable th:nth-child(1) { width: 28%; }                      /* Nombre           */
+        #insumosTable th:nth-child(2) { width: 14%; text-align: center; } /* Tipo             */
+        #insumosTable th:nth-child(3) { width: 14%; text-align: center; } /* Unidad de Medida */
+        #insumosTable th:nth-child(4) { width: 15%; text-align: center; } /* Total Utilizado  */
+        #insumosTable th:nth-child(5) { width: 15%; text-align: center; } /* Total Órdenes    */
+        #insumosTable th:nth-child(6) { width: 14%; text-align: center; } /* Promedio p/Orden */
+
+        #insumosTable td:nth-child(2),
+        #insumosTable td:nth-child(3),
+        #insumosTable td:nth-child(4),
+        #insumosTable td:nth-child(5),
+        #insumosTable td:nth-child(6) {
+            overflow: visible;
+            text-overflow: clip;
+            text-align: center;
+        }
+    </style>
 @endpush
 @section('content')
 <div class="row">
@@ -17,7 +52,7 @@
 
 <div class="row">
     <div class="col-xl-6">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Consumo por Tipo de Insumo</h4>
             </div>
@@ -27,7 +62,7 @@
         </div>
     </div>
     <div class="col-xl-6">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Top 10 Insumos Más Utilizados</h4>
             </div>
@@ -40,14 +75,13 @@
 
 <div class="row">
     <div class="col-xl-12">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Detalle de Consumo de Insumos</h4>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-centered table-nowrap mb-0" id="insumosTable">
-                        <thead class="table-light">
+                    <table class="table table-bordered table-striped table-sm align-middle dt-reportes" id="insumosTable">
+                        <thead>
                             <tr>
                                 <th>Nombre</th>
                                 <th>Tipo</th>
@@ -70,7 +104,6 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
     </div>
@@ -86,6 +119,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         $('#insumosTable').DataTable({
+            autoWidth: false,
             language: lenguajeData,
             order: [[4, 'desc']]
         });

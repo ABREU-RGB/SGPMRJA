@@ -17,7 +17,7 @@
 
 <div class="row">
     <div class="col-xl-6">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Órdenes por Estado</h4>
             </div>
@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="col-xl-6">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Producción Mensual</h4>
             </div>
@@ -40,7 +40,7 @@
 
 <div class="row">
     <div class="col-xl-12">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Estadísticas de Producción</h4>
             </div>

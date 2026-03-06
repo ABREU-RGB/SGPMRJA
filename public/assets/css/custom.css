@@ -808,3 +808,95 @@ header#page-topbar,
 [data-bs-theme="dark"] .dt-transactional.dataTable tbody tr:hover td {
     background-color: rgba(0,217,165,0.22) !important;
 }
+
+/* ================================================================
+   DATATABLE — ESTÁNDAR ANALÍTICO (Consultas y Reportes)
+   Paleta: Violet Analítico — diferencia la sección de análisis
+   Aplica a: Producción, Eficiencia, Consumo de Insumos,
+             Rendimiento de Empleados, y futuros reportes.
+   Uso: clase "dt-reportes" en el <table>
+        clase "card-reportes" en el <div class="card"> padre.
+   ================================================================ */
+
+:root {
+    --rp-dark:       #2e1065;              /* Violet-950 — header base         */
+    --rp-border:     #4c1d95;              /* Violet-900 — bordes cabecera     */
+    --rp-accent:     #7c3aed;              /* Violet-600 — accent principal    */
+    --rp-hover-bg:   rgba(124,58,237,0.14);/* Row hover — light mode           */
+    --rp-even-bg:    rgba(124,58,237,0.07);/* Zebra even — light mode          */
+    --rp-row-border: rgba(124,58,237,0.07);/* Separadores de fila              */
+}
+
+/* ── Card accent — borde izquierdo violet en card de reportes ── */
+.card-reportes > .card-header {
+    border-left: 4px solid var(--rp-accent);
+    padding-left: 16px;
+}
+
+/* ── Dark mode — accent bar más claro para contraste ── */
+[data-bs-theme="dark"] .card-reportes > .card-header {
+    border-left-color: #c4b5fd;            /* Violet-300 */
+}
+
+/* ── Header Analítico — violet oscuro ─────────────────────────── */
+.dt-reportes thead th {
+    background: var(--rp-dark) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 12.5px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-color: var(--rp-border) !important;
+    border-bottom: 3px solid var(--rp-accent) !important;
+}
+
+/* ── Body — transición y separadores ─────────────────────────── */
+.dt-reportes.dataTable tbody tr {
+    transition: background-color 0.16s ease;
+}
+
+.dt-reportes.dataTable tbody tr td {
+    border-top: 1px solid var(--rp-row-border);
+    border-bottom: 1px solid rgba(255,255,255,0.7);
+    background-clip: padding-box;
+}
+
+/* ── Zebra striping — light mode ──────────────────────────────── */
+.dt-reportes.dataTable tbody tr.odd td {
+    background-color: #ffffff;
+}
+
+.dt-reportes.dataTable tbody tr.even td {
+    background-color: var(--rp-even-bg);
+}
+
+.dt-reportes.dataTable tbody tr:hover td {
+    background-color: var(--rp-hover-bg) !important;
+}
+
+/* ── Header — dark mode ───────────────────────────────────────── */
+[data-bs-theme="dark"] .dt-reportes.dataTable thead th {
+    background-color: #3b0764 !important;
+    background: #3b0764 !important;
+    color: #ffffff !important;
+    border-color: #4c1d95 !important;
+    border-bottom: 3px solid var(--rp-accent) !important;
+}
+
+/* ── Zebra striping — dark mode ───────────────────────────────── */
+[data-bs-theme="dark"] .dt-reportes.dataTable tbody tr td {
+    border-top: 1px solid rgba(124,58,237,0.08);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+
+[data-bs-theme="dark"] .dt-reportes.dataTable tbody tr.odd td {
+    background-color: rgba(255,255,255,0.015);
+}
+
+[data-bs-theme="dark"] .dt-reportes.dataTable tbody tr.even td {
+    background-color: rgba(124,58,237,0.12);
+}
+
+[data-bs-theme="dark"] .dt-reportes.dataTable tbody tr:hover td {
+    background-color: rgba(124,58,237,0.22) !important;
+}

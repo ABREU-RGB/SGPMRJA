@@ -4,7 +4,41 @@
 @push('styles')
     <link href="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" /> 
+    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        .card-body { overflow-x: auto; }
+        .dataTables_filter { display: none; }
+
+        #eficienciaTable {
+            width: 100% !important;
+            table-layout: fixed;
+            font-size: 13px;
+        }
+        #eficienciaTable th,
+        #eficienciaTable td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Anchos de columna (suman 100%) */
+        #eficienciaTable th:nth-child(1) { width: 35%; }                      /* Producto            */
+        #eficienciaTable th:nth-child(2) { width: 16%; text-align: center; } /* Cant. Solicitada    */
+        #eficienciaTable th:nth-child(3) { width: 16%; text-align: center; } /* Total Producido     */
+        #eficienciaTable th:nth-child(4) { width: 16%; text-align: center; } /* Total Defectuoso    */
+        #eficienciaTable th:nth-child(5) { width: 17%; text-align: center; } /* Eficiencia          */
+
+        /* Eficiencia: overflow visible para la barra de progreso */
+        #eficienciaTable td:nth-child(2),
+        #eficienciaTable td:nth-child(3),
+        #eficienciaTable td:nth-child(4),
+        #eficienciaTable td:nth-child(5) {
+            overflow: visible;
+            text-overflow: clip;
+            text-align: center;
+        }
+    </style>
 @endpush
 @section('content')
 <div class="row">
@@ -17,7 +51,7 @@
 
 <div class="row">
     <div class="col-xl-12">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Eficiencia por Orden de Producción</h4>
             </div>
@@ -30,14 +64,13 @@
 
 <div class="row">
     <div class="col-xl-12">
-        <div class="card">
+        <div class="card card-reportes">
             <div class="card-header">
                 <h4 class="card-title mb-0">Detalle de Eficiencia por Orden</h4>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-centered table-nowrap mb-0" id="eficienciaTable">
-                        <thead class="table-light">
+                    <table class="table table-bordered table-striped table-sm align-middle dt-reportes" id="eficienciaTable">
+                        <thead>
                             <tr>
                                 <th>Producto</th>
                                 <th>Cantidad Solicitada</th>
@@ -69,7 +102,6 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
     </div>
@@ -85,8 +117,9 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         $('#eficienciaTable').DataTable({
+            autoWidth: false,
             language: lenguajeData,
-            order: [[5, 'desc']]
+            order: [[4, 'desc']]
         });
 
         var ordenes = [];

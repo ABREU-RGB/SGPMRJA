@@ -6,6 +6,41 @@
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet"
         type="text/css" />
+    <style>
+        .card-body { overflow-x: auto; }
+        .dataTables_filter { display: none; }
+
+        #operariosTable {
+            width: 100% !important;
+            table-layout: fixed;
+            font-size: 13px;
+        }
+        #operariosTable th,
+        #operariosTable td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Anchos de columna (suman 100%) */
+        #operariosTable th:nth-child(1) { width: 28%; }                      /* Nombre           */
+        #operariosTable th:nth-child(2) { width: 12%; text-align: center; } /* Total Órdenes    */
+        #operariosTable th:nth-child(3) { width: 14%; text-align: center; } /* Total Producido  */
+        #operariosTable th:nth-child(4) { width: 14%; text-align: center; } /* Total Defectuoso */
+        #operariosTable th:nth-child(5) { width: 18%; text-align: center; } /* Eficiencia       */
+        #operariosTable th:nth-child(6) { width: 14%; text-align: center; } /* Promedio p/Orden */
+
+        #operariosTable td:nth-child(2),
+        #operariosTable td:nth-child(3),
+        #operariosTable td:nth-child(4),
+        #operariosTable td:nth-child(5),
+        #operariosTable td:nth-child(6) {
+            overflow: visible;
+            text-overflow: clip;
+            text-align: center;
+        }
+    </style>
 @endpush
 @section('content')
     <div class="row">
@@ -18,7 +53,7 @@
 
     <div class="row">
         <div class="col-xl-6">
-            <div class="card">
+            <div class="card card-reportes">
                 <div class="card-header">
                     <h4 class="card-title mb-0">Producción por Empleado</h4>
                 </div>
@@ -28,7 +63,7 @@
             </div>
         </div>
         <div class="col-xl-6">
-            <div class="card">
+            <div class="card card-reportes">
                 <div class="card-header">
                     <h4 class="card-title mb-0">Eficiencia por Empleado</h4>
                 </div>
@@ -41,14 +76,13 @@
 
     <div class="row">
         <div class="col-xl-12">
-            <div class="card">
+            <div class="card card-reportes">
                 <div class="card-header">
                     <h4 class="card-title mb-0">Detalle de Rendimiento por Empleado</h4>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-centered table-nowrap mb-0" id="operariosTable">
-                            <thead class="table-light">
+                        <table class="table table-bordered table-striped table-sm align-middle dt-reportes" id="operariosTable">
+                            <thead>
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Total Órdenes</th>
@@ -81,7 +115,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
                 </div>
             </div>
         </div>
@@ -97,8 +130,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             $('#operariosTable').DataTable({
+                autoWidth: false,
                 language: lenguajeData,
-                order: [[5, 'desc']]
+                order: [[4, 'desc']]
             });
 
             var operarios = [];
