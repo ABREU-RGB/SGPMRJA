@@ -54,6 +54,48 @@
         .search-box input {
             padding-left: 30px;
         }
+
+        /* ── DataTable — Estándar Atlántico Operativo ── */
+        .card-body {
+            overflow-x: auto;
+        }
+
+        /* Ocultar buscador por defecto de DataTables */
+        .dataTables_filter {
+            display: none;
+        }
+
+        #ordenes-table {
+            width: 100% !important;
+            table-layout: fixed;
+            font-size: 13px;
+        }
+
+        #ordenes-table th,
+        #ordenes-table td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Anchos de columna (suman 100%) */
+        #ordenes-table th:nth-child(1) { width: 8%;  text-align: center; } /* Nro. Orden         */
+        #ordenes-table th:nth-child(2) { width: 8%;  text-align: center; } /* Nro. Pedido        */
+        #ordenes-table th:nth-child(3) { width: 12%; text-align: center; } /* Cant. Solicitada   */
+        #ordenes-table th:nth-child(4) { width: 18%; }                      /* Progreso           */
+        #ordenes-table th:nth-child(5) { width: 15%; }                      /* Fecha Fin Estimada */
+        #ordenes-table th:nth-child(6) { width: 14%; text-align: center; } /* Estado             */
+        #ordenes-table th:nth-child(7) { width: 25%; text-align: center; } /* Acciones           */
+
+        /* Estado y Acciones: overflow visible para dropdowns y botones */
+        #ordenes-table td:nth-child(6),
+        #ordenes-table td:last-child {
+            overflow: visible;
+            text-overflow: clip;
+            text-align: center;
+        }
     </style>
 @endpush
 
@@ -76,7 +118,7 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-transactional">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Órdenes de Producción</h5>
@@ -97,23 +139,21 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="ordenes-table" class="table table-bordered table-striped align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Nro. Orden</th>
-                                    <th>Nro. Pedido</th>
-                                    <th>Cant. Solicitada</th>
-                                    <th>Progreso</th>
-                                    <th>Fecha Fin Estimada</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table id="ordenes-table" class="table table-bordered table-striped align-middle dt-transactional">
+                        <thead>
+                            <tr>
+                                <th>Nro. Orden</th>
+                                <th>Nro. Pedido</th>
+                                <th>Cant. Solicitada</th>
+                                <th>Progreso</th>
+                                <th>Fecha Fin Estimada</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
