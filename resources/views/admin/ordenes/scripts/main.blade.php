@@ -457,15 +457,22 @@
         $(document).on('click', '.view-btn', function () {
             let id = $(this).data('id');
             $.get("{{ route('ordenes.show', ':id') }}".replace(':id', id), function (data) {
+                const estadoClases = {
+                    'Pendiente':  'status-pendiente badge-soft-warning',
+                    'En Proceso': 'status-procesando badge-soft-info',
+                    'Finalizado': 'status-finalizado badge-soft-success',
+                    'Cancelado':  'status-cancelado badge-soft-danger'
+                };
+
                 $('#view-producto').text(data.producto.nombre);
                 $('#view-cantidad-solicitada').text(data.cantidad_solicitada);
                 $('#view-cantidad-producida').text(data.cantidad_producida);
 
-                let porcentaje = (data.cantidad_producida / data.cantidad_solicitada * 100).toFixed(2);
-                $('#view-progreso')
-                    .css('width', porcentaje + '%')
-                    .attr('aria-valuenow', porcentaje)
-                    .text(porcentaje + '%');
+                let porcentaje = data.cantidad_solicitada > 0
+                    ? (data.cantidad_producida / data.cantidad_solicitada * 100).toFixed(1)
+                    : '0.0';
+                $('#view-progreso').css('width', porcentaje + '%').attr('aria-valuenow', porcentaje);
+                $('#view-progreso-pct').text(porcentaje);
 
                 const formatDate = (dateString) => {
                     if (!dateString) return 'N/A';
@@ -479,24 +486,28 @@
 
                 $('#view-fecha-inicio').text(formatDate(data.fecha_inicio));
                 $('#view-fecha-fin-estimada').text(formatDate(data.fecha_fin_estimada));
-                $('#view-estado').html(`<span class="badge estado-${data.estado}">${data.estado}</span>`);
+                $('#view-estado').html(`<span class="badge badge-status ${estadoClases[data.estado] || 'badge-soft-secondary'} rounded-pill">${data.estado}</span>`);
                 $('#view-costo-estimado').text(
                     '$/ ' + Number(data.costo_estimado).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                 );
-                $('#view-creado-por').text(data.creadoPor ? data.creadoPor.name : 'N/A');
+                $('#view-creado-por').text(data.creado_por ? data.creado_por.name : 'Sin especificar');
+                $('#view-pedido-info').text(data.pedido_id ? 'Pedido #' + data.pedido_id : 'Orden Manual');
 
-                $('#view-logo').html(data.logo || 'N/A');
+                let logoHtml = data.logo
+                    ? `<div class="d-flex align-items-start gap-2"><i class="ri-image-line text-muted mt-1 flex-shrink-0"></i><span>${data.logo}</span></div>`
+                    : `<span class="text-muted fst-italic">Sin logo registrado</span>`;
                 if (data.pedido && data.pedido.productos) {
-                    let detallesLogo = '';
                     data.pedido.productos.forEach(function (detalle) {
                         if (detalle.lleva_bordado) {
-                            detallesLogo += `<div><b>Logo:</b> ${detalle.nombre_logo || 'N/A'}<br><b>Ubicación:</b> ${detalle.ubicacion_logo || 'N/A'}<br><b>Cantidad:</b> ${detalle.cantidad_logo || 'N/A'}</div><hr>`;
+                            logoHtml += `<div class="mt-2 pt-2 border-top">
+                                <div class="d-flex gap-1 mb-1"><span class="text-muted fs-11">Logo:</span><span class="fw-medium fs-12">${detalle.nombre_logo || 'N/A'}</span></div>
+                                <div class="d-flex gap-1 mb-1"><span class="text-muted fs-11">Ubicación:</span><span class="fw-medium fs-12">${detalle.ubicacion_logo || 'N/A'}</span></div>
+                                <div class="d-flex gap-1"><span class="text-muted fs-11">Cantidad:</span><span class="fw-medium fs-12">${detalle.cantidad_logo || 'N/A'}</span></div>
+                            </div>`;
                         }
                     });
-                    if (detallesLogo) {
-                        $('#view-logo').append('<br>' + detallesLogo);
-                    }
                 }
+                $('#view-logo').html(logoHtml);
 
                 // Insumos
                 $('#view-insumos').empty();
@@ -521,7 +532,7 @@
                     `);
                 });
 
-                $('#view-notas').text(data.notas || 'Sin notas');
+                $('#view-notas').text(data.notas || 'Sin notas adicionales.');
                 const formatDateTime = (dateString) => {
                     if (!dateString) return 'N/A';
                     const date = new Date(dateString);
@@ -534,6 +545,15 @@
                     });
                 };
                 $('#view-created').text(formatDateTime(data.created_at));
+
+                // ── Avance de Producción ──────────────────────────────
+                $('#avance-orden-id').val(data.id);
+                renderAvances(data.produccion_diaria || []);
+
+                // Mostrar botón de registrar avance solo si la orden puede avanzar
+                const estadoActivo = ['Pendiente', 'En Proceso'].includes(data.estado);
+                $('#btn-toggle-avance-form').toggle(estadoActivo);
+                $('#avance-form-container').hide();
 
                 $('#viewModal').modal('show');
             });
@@ -576,6 +596,170 @@
                     });
                 }
             });
+        });
+
+        // ── Avance de Producción — helpers y handlers ─────────────────
+
+        function renderAvances(avances) {
+            const tbody = $('#view-avances');
+            tbody.empty();
+            if (!avances.length) {
+                tbody.html('<tr id="avances-empty-row"><td colspan="6" class="text-center text-muted py-3"><i class="ri-inbox-line me-1"></i>Sin registros de avance</td></tr>');
+                return;
+            }
+            avances.forEach(function (a) {
+                const operarioNombre = a.operario && a.operario.persona
+                    ? a.operario.persona.nombre_completo
+                    : 'N/A';
+                const fecha = a.created_at
+                    ? new Date(a.created_at).toLocaleDateString('es-ES')
+                    : 'N/A';
+                tbody.append(`
+                    <tr>
+                        <td class="text-nowrap">${fecha}</td>
+                        <td>${operarioNombre}</td>
+                        <td class="text-center fw-medium">${a.cantidad_producida}</td>
+                        <td class="text-center ${a.cantidad_defectuosa > 0 ? 'text-danger fw-medium' : ''}">${a.cantidad_defectuosa}</td>
+                        <td class="text-muted">${a.observaciones || '—'}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-soft-danger btn-delete-avance" data-id="${a.id}" title="Eliminar">
+                                <i class="ri-delete-bin-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        function reloadOrdenEnModal(ordenId) {
+            $.get("{{ route('ordenes.show', ':id') }}".replace(':id', ordenId), function (data) {
+                // Actualizar métricas
+                $('#view-cantidad-producida').text(data.cantidad_producida);
+                let pct = data.cantidad_solicitada > 0
+                    ? (data.cantidad_producida / data.cantidad_solicitada * 100).toFixed(1)
+                    : '0.0';
+                $('#view-progreso').css('width', pct + '%').attr('aria-valuenow', pct);
+                $('#view-progreso-pct').text(pct);
+
+                // Actualizar estado badge
+                let clases = {
+                    'Pendiente': 'status-pendiente badge-soft-warning',
+                    'En Proceso': 'status-procesando badge-soft-info',
+                    'Finalizado': 'status-finalizado badge-soft-success',
+                    'Cancelado':  'status-cancelado badge-soft-danger'
+                };
+                $('#view-estado').html(`<span class="badge badge-status ${clases[data.estado] || ''} rounded-pill">${data.estado}</span>`);
+
+                // Actualizar avances
+                renderAvances(data.produccion_diaria || []);
+
+                // Ocultar form si la orden ya se finalizó
+                const estadoActivo = ['Pendiente', 'En Proceso'].includes(data.estado);
+                $('#btn-toggle-avance-form').toggle(estadoActivo);
+                if (!estadoActivo) $('#avance-form-container').hide();
+
+                // Recargar la tabla principal
+                table.ajax.reload(null, false);
+            });
+        }
+
+        // Mostrar/ocultar formulario de avance
+        $('#btn-toggle-avance-form').on('click', function () {
+            $('#avance-form-container').slideToggle(150);
+            $('#avance-cantidad-producida').focus();
+        });
+
+        $('#btn-cancel-avance').on('click', function () {
+            $('#avance-form-container').slideUp(150);
+            $('#avance-operario-id').val('');
+            $('#avance-cantidad-producida').val('');
+            $('#avance-cantidad-defectuosa').val('0');
+            $('#avance-observaciones').val('');
+        });
+
+        // Guardar avance
+        $('#btn-save-avance').on('click', function () {
+            const ordenId      = $('#avance-orden-id').val();
+            const operarioId   = $('#avance-operario-id').val();
+            const producida    = $('#avance-cantidad-producida').val();
+            const defectuosa   = $('#avance-cantidad-defectuosa').val();
+            const observaciones = $('#avance-observaciones').val();
+
+            if (!operarioId || !producida || parseInt(producida) < 1) {
+                Swal.fire({ icon: 'warning', title: 'Datos incompletos', text: 'Selecciona el operario e ingresa una cantidad producida válida.', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('produccion.diaria.store') }}",
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    orden_id: ordenId,
+                    operario_id: operarioId,
+                    cantidad_producida: producida,
+                    cantidad_defectuosa: defectuosa || 0,
+                    observaciones: observaciones
+                },
+                success: function () {
+                    $('#avance-form-container').slideUp(150);
+                    $('#avance-operario-id').val('');
+                    $('#avance-cantidad-producida').val('');
+                    $('#avance-cantidad-defectuosa').val('0');
+                    $('#avance-observaciones').val('');
+                    Swal.fire({ icon: 'success', title: 'Avance registrado', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
+                    reloadOrdenEnModal(ordenId);
+                },
+                error: function (xhr) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.error || 'No se pudo guardar el avance.' });
+                }
+            });
+        });
+
+        // Eliminar avance
+        $(document).on('click', '.btn-delete-avance', function () {
+            const avanceId = $(this).data('id');
+            const ordenId  = $('#avance-orden-id').val();
+            Swal.fire({
+                title: '¿Eliminar avance?',
+                text: 'Se revertirá la cantidad producida en la orden.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                customClass: { confirmButton: 'btn btn-primary w-xs me-2', cancelButton: 'btn btn-danger w-xs' },
+                buttonsStyling: false
+            }).then(result => {
+                if (!result.isConfirmed) return;
+                $.ajax({
+                    url: "{{ route('produccion.diaria.destroy', ':id') }}".replace(':id', avanceId),
+                    method: 'POST',
+                    data: { _token: '{{ csrf_token() }}', _method: 'DELETE' },
+                    success: function () {
+                        Swal.fire({ icon: 'success', title: 'Avance eliminado', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
+                        reloadOrdenEnModal(ordenId);
+                    },
+                    error: function (xhr) {
+                        Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.error || 'No se pudo eliminar el avance.' });
+                    }
+                });
+            });
+        });
+
+        // Limpiar y resetear al cerrar viewModal
+        $('#viewModal').on('hidden.bs.modal', function () {
+            // Reset tab a Cronograma & Detalles
+            const tabDetalles = new bootstrap.Tab(document.getElementById('tab-detalles-btn'));
+            tabDetalles.show();
+
+            // Limpiar form avance
+            $('#avance-form-container').hide();
+            $('#avance-operario-id').val('');
+            $('#avance-cantidad-producida').val('');
+            $('#avance-cantidad-defectuosa').val('0');
+            $('#avance-observaciones').val('');
+            $('#view-avances').html('<tr id="avances-empty-row"><td colspan="6" class="text-center text-muted py-3 fs-12"><i class="ri-inbox-line me-1"></i>Sin registros de avance</td></tr>');
+            $('#btn-toggle-avance-form').hide();
         });
 
         // Reset form on modal close
