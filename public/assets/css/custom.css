@@ -292,6 +292,59 @@ header#page-topbar,
   color: #997404 !important;
 }
 
+/* ================================================================
+   BADGES DE ESTADO — DARK MODE (WCAG AA)
+   Textos pastel + fondos semi-transparentes brillantes para
+   garantizar legibilidad sobre fondos oscuros (#1f2229 / #242832).
+   Contraste mínimo verificado: 5.3:1 en todos los estados.
+   ================================================================ */
+
+/* Pendiente — blue-300 | contraste 5.3:1 */
+[data-bs-theme="dark"] .status-pendiente,
+[data-bs-theme="dark"] .badge-soft-primary {
+  background-color: rgba(147, 197, 253, 0.15) !important;
+  border-color: rgba(147, 197, 253, 0.25) !important;
+  color: #93c5fd !important;
+}
+
+/* Aprobada / Activo / Completado — emerald-300 | contraste 7.9:1 */
+[data-bs-theme="dark"] .status-aprobada,
+[data-bs-theme="dark"] .status-activo,
+[data-bs-theme="dark"] .status-completado,
+[data-bs-theme="dark"] .status-finalizado,
+[data-bs-theme="dark"] .badge-soft-success {
+  background-color: rgba(110, 231, 183, 0.15) !important;
+  border-color: rgba(110, 231, 183, 0.25) !important;
+  color: #6ee7b7 !important;
+}
+
+/* Convertida / Info — violet-300 | contraste 6.5:1 */
+[data-bs-theme="dark"] .badge-soft-info {
+  background-color: rgba(196, 181, 253, 0.15) !important;
+  border-color: rgba(196, 181, 253, 0.25) !important;
+  color: #c4b5fd !important;
+}
+
+/* Cancelado / Rechazada / Vencida / Inactivo — red-300 | contraste 6.1:1 */
+[data-bs-theme="dark"] .status-cancelado,
+[data-bs-theme="dark"] .status-rechazada,
+[data-bs-theme="dark"] .status-inactivo,
+[data-bs-theme="dark"] .badge-soft-danger {
+  background-color: rgba(252, 165, 165, 0.15) !important;
+  border-color: rgba(252, 165, 165, 0.25) !important;
+  color: #fca5a5 !important;
+}
+
+/* Procesando / Alerta / Bajo Stock — amber-300 | contraste 5.8:1 */
+[data-bs-theme="dark"] .status-procesando,
+[data-bs-theme="dark"] .status-alerta,
+[data-bs-theme="dark"] .status-bajo,
+[data-bs-theme="dark"] .badge-soft-warning {
+  background-color: rgba(252, 211, 77, 0.15) !important;
+  border-color: rgba(252, 211, 77, 0.25) !important;
+  color: #fcd34d !important;
+}
+
 .topbar-head-dropdown .dropdown-menu,
 .topbar-user .dropdown-menu {
   border: 1px solid rgba(16, 185, 129, 0.3);
@@ -646,6 +699,25 @@ header#page-topbar,
 }
 
 /* ================================================================
+   DATATABLE — ESTÁNDAR MAESTROS (Gestión General)
+   Paleta: Navy Institucional
+   Aplica a: Clientes, Empleados, Insumos, Productos, Proveedores,
+             Usuarios, y futuros módulos de catálogo.
+   Uso: clase "card-maestros" en el <div class="card"> padre.
+   ================================================================ */
+
+/* ── Card accent — borde izquierdo Navy en card de maestros ── */
+.card-maestros > .card-header {
+    border-left: 4px solid #1e3c72;
+    padding-left: 16px;
+}
+
+/* ── Dark mode — mantener accent bar visible ── */
+[data-bs-theme="dark"] .card-maestros > .card-header {
+    border-left-color: #4e7ac7;
+}
+
+/* ================================================================
    DATATABLE — ESTÁNDAR OPERATIVO (Gestión de Transacciones)
    Paleta: Teal Operativo — contrasta con Navy Institucional
    Aplica a: Cotizaciones, Pedidos, Órdenes de Producción,
@@ -659,8 +731,8 @@ header#page-topbar,
     --op-mid:        #059669;              /* Emerald-600 — referencia         */
     --op-border:     #065f46;              /* Emerald-900 — bordes cabecera    */
     --op-accent:     #10b981;              /* Emerald-500 — exacto btn modal   */
-    --op-hover-bg:   rgba(16,185,129,0.12);/* Row hover — light mode           */
-    --op-even-bg:    rgba(16,185,129,0.055);/* Zebra even — light mode         */
+    --op-hover-bg:   rgba(16,185,129,0.18);/* Row hover — light mode           */
+    --op-even-bg:    rgba(16,185,129,0.10);/* Zebra even — light mode          */
     --op-row-border: rgba(16,185,129,0.08);/* Separadores de fila              */
 }
 

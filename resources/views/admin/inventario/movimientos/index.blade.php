@@ -15,6 +15,66 @@
             opacity: 0 !important;
             pointer-events: none !important;
         }
+
+        /* ── DataTable — Estándar Atlántico Operativo ── */
+        .card-body {
+            overflow-x: auto;
+        }
+
+        /* Ocultar buscador por defecto de DataTables */
+        .dataTables_filter {
+            display: none;
+        }
+
+        /* Estilo para buscador personalizado */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #878a99;
+        }
+
+        .search-box input {
+            padding-left: 30px;
+        }
+
+        #movimientos-table {
+            width: 100% !important;
+            table-layout: fixed;
+            font-size: 13px;
+        }
+
+        #movimientos-table th,
+        #movimientos-table td {
+            padding: 0.4rem 0.6rem;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Anchos de columna (suman 100%) */
+        #movimientos-table th:nth-child(1) { width: 30%; }                      /* Insumo          */
+        #movimientos-table th:nth-child(2) { width: 18%; text-align: center; } /* Tipo Movimiento */
+        #movimientos-table th:nth-child(3) { width: 12%; text-align: center; } /* Cantidad        */
+        #movimientos-table th:nth-child(4) { width: 12%; text-align: center; } /* Stock Nuevo     */
+        #movimientos-table th:nth-child(5) { width: 14%; }                      /* Fecha           */
+        #movimientos-table th:nth-child(6) { width: 14%; text-align: center; } /* Acciones        */
+
+        /* Tipo, Cantidad, Stock Nuevo y Acciones: overflow visible para badges y botones */
+        #movimientos-table td:nth-child(2),
+        #movimientos-table td:nth-child(3),
+        #movimientos-table td:nth-child(4),
+        #movimientos-table td:last-child {
+            overflow: visible;
+            text-overflow: clip;
+            text-align: center;
+        }
     </style>
 @endpush
 @section('content')
@@ -36,7 +96,7 @@
 
         <div class="row">
             <div class="col-lg-12">
-                <div class="card">
+                <div class="card card-transactional">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h5 class="card-title mb-0 flex-grow-1">Movimientos de Inventario</h5>
@@ -63,23 +123,21 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="movimientos-table" class="table table-bordered table-striped align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>Insumo</th>
-                                        <th>Tipo Movimiento</th>
-                                        <th>Cantidad</th>
-                                        <th>Stock Nuevo</th>
-                                        <th>Fecha</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- DataTables llenará esto -->
-                                </tbody>
-                            </table>
-                        </div>
+                        <table id="movimientos-table" class="table table-bordered table-striped align-middle dt-transactional">
+                            <thead>
+                                <tr>
+                                    <th>Insumo</th>
+                                    <th>Tipo Movimiento</th>
+                                    <th>Cantidad</th>
+                                    <th>Stock Nuevo</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- DataTables llenará esto -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

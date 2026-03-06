@@ -281,16 +281,23 @@
             padding: 0.6rem 0.8rem;
             vertical-align: middle;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Alinear encabezados centrados: Pedido, Estado, Acciones */
-        #pedidos-table th:nth-child(1),
-        #pedidos-table th:nth-child(5),
-        #pedidos-table th:last-child {
-            text-align: center;
-        }
+        /* Anchos de columna (suman 100%) */
+        #pedidos-table th:nth-child(1) { width: 8%;  text-align: center; } /* Pedido       */
+        #pedidos-table th:nth-child(2) { width: 30%; }                      /* Cliente      */
+        #pedidos-table th:nth-child(3) { width: 14%; }                      /* Fecha Entrega*/
+        #pedidos-table th:nth-child(4) { width: 12%; }                      /* Total        */
+        #pedidos-table th:nth-child(5) { width: 14%; text-align: center; } /* Estado       */
+        #pedidos-table th:nth-child(6) { width: 22%; text-align: center; } /* Acciones     */
 
+        /* Estado y Acciones: overflow visible para dropdowns y botones */
+        #pedidos-table td:nth-child(5),
         #pedidos-table td:last-child {
+            overflow: visible;
+            text-overflow: clip;
             text-align: center;
         }
 
@@ -533,7 +540,7 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-transactional">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Pedidos</h5>
@@ -560,22 +567,20 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Pedido</th>
-                                    <th>Cliente</th>
-                                    <th>Fecha Entrega</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle dt-transactional">
+                        <thead>
+                            <tr>
+                                <th>Pedido</th>
+                                <th>Cliente</th>
+                                <th>Fecha Entrega</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
