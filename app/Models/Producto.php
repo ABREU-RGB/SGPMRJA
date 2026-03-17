@@ -30,7 +30,7 @@ class Producto extends Model
     /**
      * Accessors que se incluyen en JSON automáticamente
      */
-    protected $appends = ['nombre_completo'];
+    protected $appends = ['nombre_completo', 'nombre'];
 
     /**
      * Relación con tipo de producto

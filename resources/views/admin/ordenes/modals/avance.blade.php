@@ -1,12 +1,12 @@
 <!-- Modal — Registrar Avance de Producción -->
-<div class="modal fade" id="avanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal" id="avanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" style="max-width:520px;">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
+            <div class="modal-header">
                 <div>
                     <h6 class="modal-title fw-semibold mb-0">Registrar Avance de Producción</h6>
-                    <p class="text-muted mb-0 fs-12" id="am-orden-info"></p>
+                    <p class="text-white-50 mb-0 fs-12" id="am-orden-info"></p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
