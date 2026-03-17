@@ -900,3 +900,115 @@ header#page-topbar,
 [data-bs-theme="dark"] .dt-reportes.dataTable tbody tr:hover td {
     background-color: rgba(14,165,233,0.22) !important;
 }
+
+/* ============================================
+   MODAL SELECCIONAR COTIZACIÓN — Pedidos
+   ============================================ */
+
+/* Padding-top evita que el transform: translateY(-1px) del hover
+   sea recortado por el overflow-y: auto del contenedor padre */
+#cotizaciones-container {
+    padding-top: 2px;
+}
+
+/* Light mode */
+.cotizacion-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.cotizacion-card:hover {
+    border-color: rgba(30, 60, 114, 0.25);
+    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.10);
+    transform: translateY(-1px);
+}
+
+.cotizacion-card.selected {
+    border-color: #1e3c72;
+    background: rgba(30, 60, 114, 0.04);
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.14);
+}
+
+.cotizacion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cotizacion-numero {
+    font-weight: 600;
+    color: #1e3c72;
+    font-size: 1.1rem;
+}
+
+.cotizacion-total {
+    font-weight: 700;
+    color: #059669;
+    font-size: 1.2rem;
+}
+
+.cotizacion-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.cotizacion-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cotizacion-info-item i {
+    color: #64748b;
+}
+
+.cotizacion-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    text-align: right;
+}
+
+/* Dark mode */
+[data-bs-theme="dark"] .cotizacion-card {
+    background: #1f2229;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+[data-bs-theme="dark"] .cotizacion-card:hover {
+    border-color: rgba(78, 122, 199, 0.45);
+    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.30);
+    background: rgba(78, 122, 199, 0.06);
+}
+
+[data-bs-theme="dark"] .cotizacion-card.selected {
+    border-color: #4e7ac7;
+    background: rgba(78, 122, 199, 0.10);
+    box-shadow: 0 2px 8px rgba(78, 122, 199, 0.25);
+}
+
+[data-bs-theme="dark"] .cotizacion-numero {
+    color: #93c5fd;   /* blue-300 — contraste WCAG AA sobre fondo oscuro */
+}
+
+[data-bs-theme="dark"] .cotizacion-total {
+    color: #6ee7b7;   /* emerald-300 — consistente con badges dark mode del sistema */
+}
+
+[data-bs-theme="dark"] .cotizacion-info-item i {
+    color: #94a3b8;   /* slate-400 */
+}
+
+[data-bs-theme="dark"] .cotizacion-footer {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
