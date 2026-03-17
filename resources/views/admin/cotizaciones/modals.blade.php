@@ -615,35 +615,15 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <!-- Header — Nivel 2: Modal utilitario de búsqueda -->
-            <div class="modal-header p-3" id="productosModalCotizacion-header"
-                style="background-color: #132649 !important;">
-                <h5 class="modal-title" style="color: #ffffff !important;" id="productosModalCotizacionLabel">
+            <div class="modal-header utility-modal-header p-3" id="productosModalCotizacion-header">
+                <h5 class="modal-title" id="productosModalCotizacionLabel">
                     <i class="ri-search-line me-2" style="opacity: 0.7;"></i>Buscar y Seleccionar Producto
                 </h5>
                 <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <!-- Estilos específicos para este modal -->
-                <style>
-                    #productosModalCotizacionTable thead tr th {
-                        background: #1e3c72 !important;
-                        /* Fallback */
-                        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
-                        color: white !important;
-                        border: none !important;
-                    }
-
-                    #productosModalCotizacionTable tbody tr:hover {
-                        background-color: #f1faff !important;
-                    }
-
-                    /* Asegurar que texto en tabla sea visible */
-                    #productosModalCotizacionTable tbody td {
-                        color: #333 !important;
-                        vertical-align: middle;
-                    }
-                </style>
+                {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO COTIZACIONES" --}}
 
                 <!-- Card de Filtros -->
                 <div class="card border-0 shadow-sm mb-3">
@@ -683,7 +663,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive" style="max-height: 350px;">
-                            <table class="table table-hover mb-0" id="productosModalCotizacionTable">
+                            <table class="table table-hover mb-0 table-seleccionable" id="productosModalCotizacionTable">
                                 <thead style="position: sticky; top: 0; z-index: 10;">
                                     <tr>
                                         <th style="width:8%;  border:none;" class="text-center"><i

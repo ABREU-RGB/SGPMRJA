@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle dt-transactional">
+                    <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle dt-transactional table-operativa">
                         <thead>
                             <tr>
                                 <th>Nro.</th>

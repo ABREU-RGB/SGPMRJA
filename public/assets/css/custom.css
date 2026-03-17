@@ -902,18 +902,62 @@ header#page-topbar,
 }
 
 /* ============================================
-   MÓDULO COTIZACIONES
+   UTILIDADES GLOBALES — Componentes Compartidos
+   Clases abstractas reutilizables entre módulos
+   (OOCSS — sin acoplamiento a IDs específicos)
    ============================================ */
 
-/* ── DataTable ───────────────────────────────────────────────── */
-#cotizaciones-table {
+/* ── .utility-modal-header ───────────────────────────────────────
+   Header Navy institucional para modales utilitarios/búsqueda.
+   Uso: agregar la clase al div.modal-header del modal en el blade.
+   Funciona en light y dark por igual (ya es un fondo oscuro).      */
+.utility-modal-header {
+    background-color: #132649 !important;
+    background-image: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.utility-modal-header .modal-title {
+    color: #ffffff !important;
+}
+
+/* ── .table-seleccionable ────────────────────────────────────────
+   Tabla interactiva para selección de ítems (productos, logos, etc.)
+   Uso: agregar la clase al <table> del modal de búsqueda.           */
+.table-seleccionable tbody tr {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.table-seleccionable tbody tr:hover {
+    background-color: #e3f2fd !important;
+}
+
+.table-seleccionable tbody tr.selected {
+    background-color: #bbdefb !important;
+}
+
+/* Dark mode: azul claro ilegible sobre fondo oscuro */
+[data-bs-theme="dark"] .table-seleccionable tbody tr:hover {
+    background-color: rgba(78, 122, 199, 0.10) !important;
+}
+
+[data-bs-theme="dark"] .table-seleccionable tbody tr.selected {
+    background-color: rgba(78, 122, 199, 0.20) !important;
+}
+
+/* ── .table-operativa ────────────────────────────────────────────
+   Base layout para todos los DataTables del sistema operativo.
+   Uso: agregar la clase al <table> junto a .dt-transactional.
+   Los anchos de columna (nth-child) se definen por ID en cada módulo. */
+.table-operativa {
     width: 100% !important;
     table-layout: fixed;
     font-size: 13px;
 }
 
-#cotizaciones-table th,
-#cotizaciones-table td {
+.table-operativa th,
+.table-operativa td {
     padding: 0.4rem 0.6rem;
     vertical-align: middle;
     white-space: nowrap;
@@ -921,61 +965,15 @@ header#page-topbar,
     text-overflow: ellipsis;
 }
 
-/* Anchos de columna (suman 100%) */
-#cotizaciones-table th:nth-child(1) { width: 5%; }
-#cotizaciones-table th:nth-child(2) { width: 30%; }
-#cotizaciones-table th:nth-child(3) { width: 13%; }
-#cotizaciones-table th:nth-child(4) { width: 13%; }
-#cotizaciones-table th:nth-child(5) { width: 15%; text-align: center; }
-#cotizaciones-table th:nth-child(6) { width: 24%; text-align: center; }
-
-/* Overflow visible para dropdowns y botones en Estado/Acciones */
-#cotizaciones-table td:nth-child(5),
-#cotizaciones-table td:last-child {
+/* La última columna (Acciones) siempre visible para dropdowns */
+.table-operativa td:last-child {
     overflow: visible;
     text-overflow: clip;
     text-align: center;
 }
 
-/* ── Backdrops difuminados para modales utilitarios ─────────────*/
-#modalAddCliente ~ .modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.7) !important;
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-}
-
-#modalAddCliente .modal-content {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-}
-
-#logoSearchModal ~ .modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.75) !important;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-}
-
-/* ── Headers de modales utilitarios — Navy institucional ─────── */
-#productosModalCotizacion .modal-header,
-#productosModalCotizacion-header,
-#colorCatalogoModal .modal-header,
-#tallaCatalogoModal .modal-header,
-#ubicacionCatalogoModal .modal-header,
-#logoSearchModal .modal-header,
-#logoSearchModal-header {
-    background-color: #132649 !important;
-    background-image: none !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-#productosModalCotizacion .modal-header .modal-title,
-#logoSearchModal .modal-header .modal-title,
-#colorCatalogoModal .modal-header .modal-title,
-#tallaCatalogoModal .modal-header .modal-title,
-#ubicacionCatalogoModal .modal-header .modal-title {
-    color: #ffffff !important;
-}
-
-/* ── Botón de cierre para modales utilitarios ───────────────── */
+/* ── .utility-modal-close ────────────────────────────────────────
+   Botón de cierre blanco puro via filter — para usar en headers oscuros. */
 .utility-modal-close {
     filter: brightness(0) invert(1) !important;
     opacity: 1 !important;
@@ -988,7 +986,8 @@ header#page-topbar,
     opacity: 1 !important;
 }
 
-/* ── Botón de marca Atlántico ───────────────────────────────── */
+/* ── .btn-atlantico-brand ────────────────────────────────────────
+   Botón de acción primaria de marca: Navy base → Cyan en hover. */
 .btn-atlantico-brand {
     background-color: #132649;
     border-color: #132649;
@@ -1009,13 +1008,120 @@ header#page-topbar,
     color: #ffffff !important;
 }
 
-/* ── Círculos de ícono en #viewModal ────────────────────────── */
+/* ── .producto-selector-btn ──────────────────────────────────────
+   Botón-selector que abre el modal de búsqueda de productos. */
+.producto-selector-btn {
+    cursor: pointer;
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 38px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.producto-selector-btn:hover {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.producto-selector-btn .producto-text {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.producto-selector-btn .placeholder-text {
+    color: #6c757d;
+}
+
+[data-bs-theme="dark"] .producto-selector-btn {
+    background: #1f2229;
+    border-color: #2d3139;
+    color: #c8cbd0;
+}
+
+[data-bs-theme="dark"] .producto-selector-btn:hover {
+    border-color: #4e7ac7;
+    box-shadow: 0 0 0 0.25rem rgba(78, 122, 199, 0.2);
+}
+
+/* ── .producto-img-thumb ─────────────────────────────────────────
+   Miniatura de imagen de producto en tablas de selección. */
+.producto-img-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* ── Círculos de ícono en #viewModal ─────────────────────────── */
 #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
     background: rgba(30, 60, 114, 0.12) !important;
 }
 
 #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
     color: #1e3c72 !important;
+}
+
+[data-bs-theme="dark"] #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
+    background: rgba(78, 122, 199, 0.15) !important;
+}
+
+[data-bs-theme="dark"] #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
+    color: #93c5fd !important;
+}
+
+/* ============================================
+   MÓDULO COTIZACIONES
+   ============================================ */
+
+/* ── DataTable — anchos de columna (base en .table-operativa) ── */
+#cotizaciones-table th:nth-child(1) { width: 5%; }
+#cotizaciones-table th:nth-child(2) { width: 30%; }
+#cotizaciones-table th:nth-child(3) { width: 13%; }
+#cotizaciones-table th:nth-child(4) { width: 13%; }
+#cotizaciones-table th:nth-child(5) { width: 15%; text-align: center; }
+#cotizaciones-table th:nth-child(6) { width: 24%; text-align: center; }
+
+#cotizaciones-table td:nth-child(5) {
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+}
+
+/* ── Header gradient para tabla de productos del modal ───────── */
+#productosModalCotizacionTable thead,
+#productosModalCotizacionTable thead tr {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+#productosModalCotizacionTable thead tr th {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* ── Backdrops difuminados ───────────────────────────────────── */
+#modalAddCliente ~ .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+#modalAddCliente .modal-content {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+#logoSearchModal ~ .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 /* ── Inputs de logos — foco Navy/Cyan ───────────────────────── */
@@ -1166,59 +1272,16 @@ header#page-topbar,
     outline: none;
 }
 
-/* ── Selector de productos ───────────────────────────────────── */
-.producto-selector-btn {
-    cursor: pointer;
-    background: #ffffff;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 38px;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.producto-selector-btn:hover {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-#productosModalCotizacionTable tbody tr {
-    cursor: pointer;
-    transition: background-color 0.15s;
-}
-
-#productosModalCotizacionTable tbody tr:hover {
-    background-color: #e3f2fd !important;
-}
-
-#productosModalCotizacionTable tbody tr.selected {
-    background-color: #bbdefb !important;
-}
-
-.producto-img-thumb {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
 /* ── Dark mode — Módulo Cotizaciones ────────────────────────── */
-
-/* Encabezados de grupo de colores: navy invisible en dark */
 [data-bs-theme="dark"] .color-grupo-header {
-    color: #93c5fd;                              /* blue-300 */
+    color: #93c5fd;
     border-bottom-color: rgba(147, 197, 253, 0.15);
 }
 
-/* Borde del círculo de color: negro invisible en dark */
 [data-bs-theme="dark"] .color-swatch-circle {
     border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Chips de talla: fondo blanco roto en dark */
 [data-bs-theme="dark"] .talla-chip-item {
     background: #1f2229;
     border-color: rgba(78, 122, 199, 0.35);
@@ -1231,39 +1294,303 @@ header#page-topbar,
     box-shadow: 0 3px 10px rgba(78, 122, 199, 0.2);
 }
 
-/* Selector de productos: fondo blanco roto en dark */
-[data-bs-theme="dark"] .producto-selector-btn {
-    background: #1f2229;
-    border-color: #2d3139;
-    color: #c8cbd0;
-}
-
-[data-bs-theme="dark"] .producto-selector-btn:hover {
-    border-color: #4e7ac7;
-    box-shadow: 0 0 0 0.25rem rgba(78, 122, 199, 0.2);
-}
-
-/* Tabla de productos: azul claro brillante ilegible en dark */
-[data-bs-theme="dark"] #productosModalCotizacionTable tbody tr:hover {
-    background-color: rgba(78, 122, 199, 0.10) !important;
-}
-
-[data-bs-theme="dark"] #productosModalCotizacionTable tbody tr.selected {
-    background-color: rgba(78, 122, 199, 0.20) !important;
-}
-
-/* Círculos de ícono en viewModal: navy casi invisible en dark */
-[data-bs-theme="dark"] #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
-    background: rgba(78, 122, 199, 0.15) !important;
-}
-
-[data-bs-theme="dark"] #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
-    color: #93c5fd !important;
-}
-
-/* Dot indicator: borde negro invisible en dark */
 [data-bs-theme="dark"] .color-dot-indicator {
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   MÓDULO PEDIDOS
+   ============================================ */
+
+/* ── DataTable — anchos de columna (base en .table-operativa) ── */
+#pedidos-table th:nth-child(1) { width: 8%;  text-align: center; }
+#pedidos-table th:nth-child(2) { width: 30%; }
+#pedidos-table th:nth-child(3) { width: 14%; }
+#pedidos-table th:nth-child(4) { width: 12%; }
+#pedidos-table th:nth-child(5) { width: 14%; text-align: center; }
+#pedidos-table th:nth-child(6) { width: 22%; text-align: center; }
+
+#pedidos-table td:nth-child(5) {
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+}
+
+/* ── Header gradient para tabla de productos del modal ───────── */
+#productosModalTable thead,
+#productosModalTable thead tr {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+#productosModalTable thead tr th {
+    background: transparent !important;
+    background-color: transparent !important;
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    --bs-table-hover-bg: transparent;
+    border: none !important;
+}
+
+/* ── Z-index fixes ───────────────────────────────────────────── */
+.select2-container--open {
+    z-index: 99999;
+}
+
+#productosModal {
+    z-index: 1060 !important;
+}
+
+#productos-container .card {
+    overflow: visible !important;
+}
+
+/* ── Altura fija para botones de insumos ─────────────────────── */
+.insumo-btn-height {
+    height: 39px !important;
+    line-height: 1.5;
+    padding: 0.375rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Toast de SweetAlert2 sobre modales Bootstrap ───────────── */
+.swal-toast-above-modal {
+    z-index: 99999 !important;
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-width: 400px !important;
+    pointer-events: none;
+}
+
+.swal-toast-above-modal .swal2-popup {
+    pointer-events: auto;
+}
+
+/* ── Autocorrección ──────────────────────────────────────────── */
+.autocorrect-suggestion {
+    position: absolute;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    z-index: 1060;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    max-width: 300px;
+}
+
+.autocorrect-suggestion .suggestion-text {
+    color: #856404;
+    margin-bottom: 5px;
+}
+
+.autocorrect-suggestion .suggestion-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.autocorrect-suggestion .btn-suggestion {
+    font-size: 11px;
+    padding: 2px 8px;
+}
+
+.field-with-suggestion {
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+}
+
+/* ── Autocompletado jQuery UI ────────────────────────────────── */
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1060 !important;
+}
+
+.ui-menu-item {
+    font-size: 14px;
+}
+
+.ui-menu-item .ui-menu-item-wrapper {
+    padding: 8px 12px;
+}
+
+.ui-menu-item .suggestion-meta {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* ── Colores utilitarios de Pedidos ──────────────────────────── */
+.bg-soft-primary  { background-color: rgba(30, 60, 114, 0.1) !important; }
+.bg-soft-success  { background-color: rgba(0, 217, 165, 0.1) !important; }
+.bg-soft-warning  { background-color: rgba(46, 204, 113, 0.2) !important; }
+.text-atlantico-dark { color: #1e3c72 !important; }
+.text-atlantico-cyan { color: #00d9a5 !important; }
+
+/* ── Pills de método de pago ─────────────────────────────────── */
+.metodo-pago-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.1;
+    border: 1px solid transparent;
+}
+
+.metodo-pago-pill i { font-size: 0.78rem; }
+
+.metodo-pago-pill--efectivo {
+    background: rgba(0, 217, 165, 0.16);
+    color: #006b52;
+    border-color: rgba(0, 217, 165, 0.38);
+}
+
+.metodo-pago-pill--transferencia {
+    background: rgba(30, 60, 114, 0.14);
+    color: #1e3c72;
+    border-color: rgba(30, 60, 114, 0.34);
+}
+
+.metodo-pago-pill--pago-movil {
+    background: rgba(42, 82, 152, 0.14);
+    color: #2a5298;
+    border-color: rgba(42, 82, 152, 0.34);
+}
+
+.metodo-pago-pill--none {
+    background: rgba(108, 117, 125, 0.12);
+    color: #5f6b76;
+    border-color: rgba(108, 117, 125, 0.3);
+}
+
+/* ── KPI box de pago ─────────────────────────────────────────── */
+.pago-kpi-box {
+    border: 1px solid rgba(30, 60, 114, 0.18);
+    border-radius: 8px;
+    background: rgba(30, 60, 114, 0.03);
+    padding: 0.55rem;
+}
+
+/* ── Toggle group de métodos de pago ─────────────────────────── */
+#view-metodo-pago { gap: 0.35rem !important; }
+
+.metodo-toggle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.metodo-toggle.form-check { margin: 0; padding: 0; }
+
+.metodo-toggle .form-check-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.metodo-toggle .form-check-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid rgba(30, 60, 114, 0.28);
+    background: rgba(30, 60, 114, 0.05);
+    color: #1e3c72;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.32rem 0.7rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+}
+
+.metodo-toggle .form-check-label i { font-size: 0.82rem; }
+
+.metodo-toggle .form-check-input:checked + .form-check-label {
+    background: rgba(0, 217, 165, 0.16);
+    border-color: rgba(0, 217, 165, 0.42);
+    color: #006b52;
+    box-shadow: 0 1px 6px rgba(0, 217, 165, 0.18);
+}
+
+/* ── Bloque de formulario de método ──────────────────────────── */
+.metodo-form-block {
+    background: rgba(30, 60, 114, 0.04);
+    border: 1px dashed rgba(30, 60, 114, 0.22);
+    border-radius: 8px;
+    padding: 0.6rem;
+}
+
+.metodo-form-title {
+    color: #1e3c72;
+    font-size: 0.86rem;
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* ── Dark mode — Módulo Pedidos ──────────────────────────────── */
+
+[data-bs-theme="dark"] .autocorrect-suggestion {
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.25);
+}
+
+[data-bs-theme="dark"] .autocorrect-suggestion .suggestion-text {
+    color: #fcd34d;
+}
+
+[data-bs-theme="dark"] .metodo-pago-pill--efectivo {
+    color: #6ee7b7;
+    background: rgba(110, 231, 183, 0.12);
+    border-color: rgba(110, 231, 183, 0.28);
+}
+
+[data-bs-theme="dark"] .metodo-pago-pill--transferencia {
+    color: #93c5fd;
+    background: rgba(147, 197, 253, 0.12);
+    border-color: rgba(147, 197, 253, 0.28);
+}
+
+[data-bs-theme="dark"] .metodo-pago-pill--pago-movil {
+    color: #93c5fd;
+    background: rgba(147, 197, 253, 0.10);
+    border-color: rgba(147, 197, 253, 0.24);
+}
+
+[data-bs-theme="dark"] .pago-kpi-box {
+    background: rgba(78, 122, 199, 0.06);
+    border-color: rgba(78, 122, 199, 0.25);
+}
+
+[data-bs-theme="dark"] .metodo-toggle .form-check-label {
+    background: rgba(78, 122, 199, 0.08);
+    border-color: rgba(78, 122, 199, 0.30);
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .metodo-toggle .form-check-input:checked + .form-check-label {
+    background: rgba(110, 231, 183, 0.12);
+    border-color: rgba(110, 231, 183, 0.35);
+    color: #6ee7b7;
+}
+
+[data-bs-theme="dark"] .metodo-form-block {
+    background: rgba(78, 122, 199, 0.05);
+    border-color: rgba(78, 122, 199, 0.25);
+}
+
+[data-bs-theme="dark"] .metodo-form-title {
+    color: #93c5fd;
 }
 
 /* ============================================
