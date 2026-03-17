@@ -2032,3 +2032,102 @@ header#page-topbar,
 
 #users-table td:last-child    { text-align: center; overflow: visible; }
 #users-table td:nth-child(2)  { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================================
+   MÓDULO INVENTARIO — MOVIMIENTOS DE INVENTARIO
+   ============================================================ */
+
+/* Modal solapado: visibilidad temporal suprimida */
+.modal-hidden-temp {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* z-index para modal de insumo rápido (apilado sobre createModal) */
+#modalAddInsumo { z-index: 1060; }
+
+/* ── Anchos de columna #movimientos-table ── */
+#movimientos-table th:nth-child(1) { width: 30%; }
+#movimientos-table th:nth-child(2) { width: 18%; text-align: center; }
+#movimientos-table th:nth-child(3) { width: 12%; text-align: center; }
+#movimientos-table th:nth-child(4) { width: 12%; text-align: center; }
+#movimientos-table th:nth-child(5) { width: 14%; }
+#movimientos-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#movimientos-table td:nth-child(2),
+#movimientos-table td:nth-child(3),
+#movimientos-table td:nth-child(4),
+#movimientos-table td:last-child {
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+}
+
+/* ── Modal Detalles (#viewModal) — Tarjetas de información ── */
+
+/* Cabecera de tarjeta: tono navy (Información del Insumo) */
+.inv-card-header-navy {
+    background: rgba(30, 60, 114, 0.08) !important;
+}
+.inv-card-header-navy h6 {
+    color: #1e3c72;
+}
+
+/* Cabecera de tarjeta: tono emerald (Cambio de Stock) */
+.inv-card-header-emerald {
+    background: rgba(16, 185, 129, 0.10) !important;
+}
+.inv-card-header-emerald h6 {
+    color: #059669;
+}
+
+/* Círculos de ícono (40×40) */
+.inv-icon-circle {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+.inv-icon-circle-navy    { background: rgba(30, 60, 114, 0.10); }
+.inv-icon-circle-emerald { background: rgba(16, 185, 129, 0.10); }
+.inv-icon-circle-teal    { background: rgba(0, 217, 165, 0.10); }
+.inv-icon-circle-blue    { background: rgba(13, 110, 253, 0.10); }
+.inv-icon-circle-green   { background: rgba(25, 135, 84, 0.10); }
+
+/* Indicadores de stock anterior / nuevo */
+.inv-stock-prev { background: rgba(220, 53, 69, 0.10); }
+.inv-stock-new  { background: rgba(25, 135, 84, 0.10); }
+
+/* Tarjeta de metadatos (registrado por / fecha) */
+.inv-meta-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ── Dark Mode — Modal Detalles ── */
+[data-bs-theme="dark"] .inv-card-header-navy {
+    background: rgba(78, 122, 199, 0.14) !important;
+}
+[data-bs-theme="dark"] .inv-card-header-navy h6 {
+    color: #93c5fd;
+}
+[data-bs-theme="dark"] .inv-card-header-emerald {
+    background: rgba(16, 185, 129, 0.12) !important;
+}
+[data-bs-theme="dark"] .inv-card-header-emerald h6 {
+    color: #6ee7b7;
+}
+[data-bs-theme="dark"] .inv-icon-circle-navy    { background: rgba(78, 122, 199, 0.15); }
+[data-bs-theme="dark"] .inv-icon-circle-emerald { background: rgba(16, 185, 129, 0.15); }
+[data-bs-theme="dark"] .inv-icon-circle-teal    { background: rgba(0, 217, 165, 0.12); }
+[data-bs-theme="dark"] .inv-icon-circle-blue    { background: rgba(99, 179, 237, 0.15); }
+[data-bs-theme="dark"] .inv-icon-circle-green   { background: rgba(110, 231, 183, 0.15); }
+[data-bs-theme="dark"] .inv-stock-prev          { background: rgba(220, 53, 69, 0.18); }
+[data-bs-theme="dark"] .inv-stock-new           { background: rgba(25, 135, 84, 0.18); }
+[data-bs-theme="dark"] .inv-meta-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 100%);
+}
+
+/* Colores de ícono dictados por el círculo contenedor */
+.inv-icon-circle-navy i    { color: #1e3c72; }
+.inv-icon-circle-teal i    { color: #00d9a5; }
+[data-bs-theme="dark"] .inv-icon-circle-navy i { color: #93c5fd; }
+[data-bs-theme="dark"] .inv-icon-circle-teal i { color: #6ee7b7; }
