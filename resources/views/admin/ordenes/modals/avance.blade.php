@@ -1,5 +1,5 @@
 <!-- Modal — Registrar Avance de Producción -->
-<div class="modal fade atlantico-modal" id="avanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal atlantico-modal--op" id="avanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" style="max-width:520px;">
         <div class="modal-content">

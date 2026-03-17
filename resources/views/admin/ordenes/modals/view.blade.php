@@ -1,15 +1,15 @@
 <!-- Modal — Detalles de Orden de Producción -->
 {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO ÓRDENES — Modal Detalles" --}}
 
-<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal atlantico-modal--op" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <!-- ══ CAPA 1: Encabezado estático ════════════════════════ -->
             <div class="modal-header view-plate py-2 px-4">
-                <h6 class="modal-title fw-semibold text-muted mb-0 orden-modal-title">
-                    <i class="ri-list-check-2 me-2 opacity-50"></i>Detalles de la Orden de Producción
+                <h6 class="modal-title fw-semibold mb-0 orden-modal-title">
+                    <i class="ri-list-check-2 me-2 opacity-75"></i>Detalles de la Orden de Producción
                 </h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

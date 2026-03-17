@@ -1772,7 +1772,7 @@ header#page-topbar,
 }
 
 .atlantico-modal .modal-header .modal-title {
-    color: #fff;
+    color: #fff !important;
     font-weight: 700;
 }
 
@@ -1795,6 +1795,16 @@ header#page-topbar,
 [data-bs-theme="dark"] .atlantico-modal .modal-footer {
     background: #1f2229 !important;
     border-top-color: #2d3139 !important;
+}
+
+/* ── .atlantico-modal--op ────────────────────────────────────────
+   Modificador Transacciones — sobreescribe el header navy del base
+   con el degradado Emerald del dominio Operativo (--op-*).
+   Uso: agregar junto a .atlantico-modal en modals de Transacciones
+   (Órdenes, Pedidos, etc.).                                        */
+.atlantico-modal--op .modal-header {
+    background: linear-gradient(135deg, var(--op-dark) 0%, var(--op-border) 100%) !important;
+    border-bottom: 2px solid var(--op-accent) !important;
 }
 
 /* ── .modal-form-section ─────────────────────────────────────────
