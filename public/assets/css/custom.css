@@ -1772,16 +1772,12 @@ header#page-topbar,
 }
 
 .atlantico-modal .modal-header .modal-title {
-    color: #fff !important;
-    font-weight: 700;
+    font-weight: 700; /* color: global .modal-header .modal-title ya aplica #fff */
 }
 
 .atlantico-modal .modal-header .btn-close {
-    filter: brightness(0) invert(1);
-    opacity: 0.85;
+    opacity: 0.85; /* filter: global .modal-header .btn-close ya invierte a blanco */
 }
-
-.atlantico-modal .modal-header .btn-close:hover { opacity: 1; }
 
 .atlantico-modal .modal-body   { padding: 1.2rem; }
 
@@ -1799,9 +1795,10 @@ header#page-topbar,
 
 /* ── .atlantico-modal--op ────────────────────────────────────────
    Modificador Transacciones — sobreescribe el header navy del base
-   con el degradado Emerald del dominio Operativo (--op-*).
+   con el gradiente institucional cyan (#10b981 → #0891b2 → #0d6efd).
    Uso: agregar junto a .atlantico-modal en modals de Transacciones
-   (Órdenes, Pedidos, etc.).                                        */
+   (Órdenes, Pedidos, etc.). Pendiente migrar: cotizaciones, pedidos,
+   produccion/diaria, ordenes/insumos.                               */
 .atlantico-modal--op .modal-header {
     background: linear-gradient(135deg, #10b981 0%, #0891b2 50%, #0d6efd 100%) !important;
     border-bottom: none !important;
