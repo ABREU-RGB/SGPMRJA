@@ -7,7 +7,7 @@
         <div class="modal-content">
 
             <!-- ══ CAPA 1: Encabezado estático ════════════════════════ -->
-            <div class="modal-header view-plate py-2 px-4">
+            <div class="modal-header">
                 <h6 class="modal-title fw-semibold mb-0 orden-modal-title">
                     <i class="ri-list-check-2 me-2 opacity-75"></i>Detalles de la Orden de Producción
                 </h6>

@@ -1803,8 +1803,8 @@ header#page-topbar,
    Uso: agregar junto a .atlantico-modal en modals de Transacciones
    (Órdenes, Pedidos, etc.).                                        */
 .atlantico-modal--op .modal-header {
-    background: linear-gradient(135deg, var(--op-dark) 0%, var(--op-border) 100%) !important;
-    border-bottom: 2px solid var(--op-accent) !important;
+    background: linear-gradient(135deg, #10b981 0%, #0891b2 50%, #0d6efd 100%) !important;
+    border-bottom: none !important;
 }
 
 /* ── .modal-form-section ─────────────────────────────────────────
