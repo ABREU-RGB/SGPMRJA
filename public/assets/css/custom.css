@@ -427,68 +427,6 @@ header#page-topbar,
 }
 
 /* ============================================
-   MODALES - Headers con Gradiente Verde-Azul
-   ============================================ */
-
-/* Todos los modal-header con gradiente */
-.modal-header {
-  background: linear-gradient(
-    135deg,
-    #10b981 0%,
-    #0891b2 50%,
-    #0d6efd 100%
-  ) !important;
-  border-bottom: none !important;
-  padding: 1rem 1.5rem !important;
-}
-
-/* Título del modal en blanco */
-.modal-header .modal-title,
-.modal-header h5,
-.modal-header h4,
-.modal-header .fs-15,
-.modal-header .fw-bold {
-  color: #ffffff !important;
-}
-
-/* Icono en el título */
-.modal-header .modal-title i,
-.modal-header h5 i {
-  color: #ffffff !important;
-  margin-right: 8px;
-}
-
-/* Botón de cerrar en blanco */
-.modal-header .btn-close {
-  filter: brightness(0) invert(1);
-  opacity: 0.8;
-}
-
-.modal-header .btn-close:hover {
-  opacity: 1;
-}
-
-/* Footer del modal con estilo sutil */
-.modal-footer {
-  border-top: 1px solid rgba(16, 185, 129, 0.2);
-  background: #f8f9fa;
-}
-
-/* Botones del modal */
-.modal-footer .btn-primary,
-.modal-footer .btn-success {
-  background: linear-gradient(135deg, #10b981 0%, #0891b2 100%) !important;
-  border: none !important;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
-}
-
-.modal-footer .btn-primary:hover,
-.modal-footer .btn-success:hover {
-  background: linear-gradient(135deg, #0d9668 0%, #067a99 100%) !important;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-}
-
-/* ============================================
    COLORES DE ESTADO GLOBALES
    ============================================ */
 

@@ -1,9 +1,9 @@
 ﻿<!-- Modal para ver detalles de Cotización -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal atlantico-modal--op" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
+            <div class="modal-header">
                 <h5 class="modal-title">Detalles de la Cotización</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -205,13 +205,13 @@
 </div>
 
 <!-- Modal para agregar/editar Cotización -->
-<div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal atlantico-modal--op" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
-            <div class="modal-header p-3" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                <h5 class="modal-title text-white" id="modalTitle">Agregar Cotización</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Agregar Cotización</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
             <form id="cotizacionForm" enctype="multipart/form-data">
@@ -443,11 +443,11 @@
 </div>
 
 <!-- Modal Agregar/Editar Cliente (reutilizado) -->
-<div class="modal fade" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal atlantico-modal--op" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

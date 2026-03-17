@@ -144,11 +144,11 @@
     </div>
 
     <!-- Modal para mostrar información de contacto del proveedor -->
-    <div class="modal fade" id="proveedorModal" tabindex="-1" aria-labelledby="proveedorModalLabel" aria-hidden="true"
+    <div class="modal fade atlantico-modal" id="proveedorModal" tabindex="-1" aria-labelledby="proveedorModalLabel" aria-hidden="true"
         data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-light p-3">
+                <div class="modal-header">
                     <h5 class="modal-title" id="proveedorModalLabel">Información de Contacto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

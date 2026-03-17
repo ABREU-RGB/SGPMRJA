@@ -1,8 +1,8 @@
 ﻿<!-- Modal para actualizar uso de insumo -->
-<div class="modal fade" id="updateModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade atlantico-modal atlantico-modal--op" id="updateModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
+            <div class="modal-header">
                 <h5 class="modal-title">Actualizar Uso de Insumo</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

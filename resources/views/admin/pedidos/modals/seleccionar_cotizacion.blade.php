@@ -1,8 +1,8 @@
-<div class="modal fade" id="seleccionarCotizacionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal atlantico-modal--op" id="seleccionarCotizacionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
+            <div class="modal-header">
                 <h5 class="modal-title">Seleccionar Cotización Aprobada</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
