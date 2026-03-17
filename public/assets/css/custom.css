@@ -1704,3 +1704,331 @@ header#page-topbar,
 [data-bs-theme="dark"] .cotizacion-footer {
     border-top-color: rgba(255, 255, 255, 0.08);
 }
+
+/* ============================================
+   UTILIDADES GLOBALES — Módulos Maestros
+   ============================================ */
+
+/* ── .table-maestro ──────────────────────────────────────────────
+   Header Navy + zebra Navy para DataTables de módulos Maestros.
+   Uso: agregar al <table> junto a .table-operativa.
+   El selector de especificidad alta evita que el inline dark mode
+   de app.blade.php ([data-bs-theme="dark"] .table thead th)
+   sobreescriba el header navy con #1f2229.                        */
+.table-maestro thead th {
+    background: #1e3c72 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-color: #2a5298 !important;
+}
+
+.table-maestro.dataTable tbody tr {
+    transition: background-color 0.16s ease;
+}
+
+.table-maestro.dataTable tbody tr td {
+    border-top: 1px solid rgba(30, 60, 114, 0.07);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+    background-clip: padding-box;
+}
+
+.table-maestro.dataTable tbody tr.odd td  { background-color: #ffffff; }
+.table-maestro.dataTable tbody tr.even td { background-color: rgba(30, 60, 114, 0.065); }
+.table-maestro.dataTable tbody tr:hover td { background-color: rgba(30, 60, 114, 0.14) !important; }
+
+/* Dark mode — especificidad (0,3,2) supera al inline (0,2,2) */
+[data-bs-theme="dark"] .table-maestro.dataTable thead th {
+    background-color: #1e3c72 !important;
+    background: #1e3c72 !important;
+    border-color: #2a5298 !important;
+}
+
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr td {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr.odd td  { background-color: rgba(255, 255, 255, 0.015); }
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr.even td { background-color: rgba(42, 82, 152, 0.20); }
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr:hover td { background-color: rgba(42, 82, 152, 0.34) !important; }
+
+/* ── .atlantico-modal ────────────────────────────────────────────
+   Modal CRUD institucional — header Navy degradado, footer sutil.
+   Uso: agregar clase al div.modal en cada modal de Maestros.      */
+.atlantico-modal .modal-content {
+    border: 1px solid rgba(30, 60, 114, 0.16);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+}
+
+.atlantico-modal .modal-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+    border-bottom: 0;
+    padding: 0.85rem 1rem !important;
+}
+
+.atlantico-modal .modal-header .modal-title {
+    color: #fff;
+    font-weight: 700;
+}
+
+.atlantico-modal .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
+}
+
+.atlantico-modal .modal-header .btn-close:hover { opacity: 1; }
+
+.atlantico-modal .modal-body   { padding: 1.2rem; }
+
+.atlantico-modal .modal-footer {
+    background: #f8f9fa;
+    border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+    padding: 0.75rem 1rem;
+}
+
+/* Dark mode: footer blanco ilegible en dark */
+[data-bs-theme="dark"] .atlantico-modal .modal-footer {
+    background: #1f2229 !important;
+    border-top-color: #2d3139 !important;
+}
+
+/* ── .modal-form-section ─────────────────────────────────────────
+   Sección agrupada dentro de un modal CRUD con borde navy sutil.  */
+.modal-form-section {
+    border: 1px solid rgba(30, 60, 114, 0.12);
+    border-radius: 0.65rem;
+    padding: 0.9rem;
+    background: rgba(30, 60, 114, 0.025);
+    margin-bottom: 0.9rem;
+}
+
+.modal-form-section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Dark mode: fondo y texto navy invisibles en dark */
+[data-bs-theme="dark"] .modal-form-section {
+    background: rgba(78, 122, 199, 0.06);
+    border-color: rgba(78, 122, 199, 0.20);
+}
+
+[data-bs-theme="dark"] .modal-form-section-title {
+    color: #93c5fd;   /* blue-300 */
+}
+
+/* ── .badge-tipo / .badge-status ─────────────────────────────────
+   Base visual para badges de clasificación y estado en Maestros.  */
+.badge-tipo,
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+/* ── .campo-protegido ────────────────────────────────────────────
+   Input de solo lectura en modo edición (clave primaria, etc.)    */
+.campo-protegido {
+    background-color: #f0f0f0 !important;
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.campo-protegido-wrapper { position: relative; }
+
+.campo-protegido-wrapper::after {
+    content: '\F1A4';
+    font-family: 'remixicon';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #878a99;
+    font-size: 14px;
+}
+
+[data-bs-theme="dark"] .campo-protegido {
+    background-color: #2d3139 !important;
+}
+
+/* ── .btn-purple ─────────────────────────────────────────────────
+   Botón violeta para acciones secundarias (importar, etc.)        */
+.btn-purple            { background-color: #6f42c1; border-color: #6f42c1; color: #fff; }
+.btn-purple:hover      { background-color: #5e35b1; border-color: #5e35b1; color: #fff; }
+
+/* ── .producto-info-item ─────────────────────────────────────────
+   Card de información de producto en el modal de detalle.         */
+.producto-info-item {
+    border: 1px solid rgba(30, 60, 114, 0.1);
+    border-radius: 0.6rem;
+    background: #fff;
+    padding: 0.6rem 0.7rem;
+    height: 100%;
+}
+
+[data-bs-theme="dark"] .producto-info-item {
+    background: #1f2229;
+    border-color: rgba(78, 122, 199, 0.18);
+}
+
+/* ============================================
+   MÓDULOS MAESTROS — Badges de Clasificación
+   ============================================ */
+
+/* Colores de tipo — persona/empresa */
+.badge-tipo-natural     { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+.badge-tipo-juridico    { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-tipo-gubernamental { background-color: rgba(247, 184, 75, 0.18); color: #e0a800; }
+
+/* Colores de departamento (Empleados) */
+.badge-depto-administracion { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-depto-produccion     { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+.badge-depto-otro           { background-color: rgba(0, 217, 165, 0.15);  color: #00d9a5; }
+
+/* Colores de tipo insumo */
+.badge-tipo-tela     { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-tipo-hilo     { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+.badge-tipo-boton    { background-color: rgba(247, 184, 75, 0.18); color: #e0a800; }
+.badge-tipo-cierre   { background-color: rgba(0, 217, 165, 0.15);  color: #00d9a5; }
+.badge-tipo-etiqueta { background-color: rgba(233, 30, 99, 0.15);  color: #e91e63; }
+
+/* Colores de tipo producto */
+.badge-tipo-producto  { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+
+/* Colores de rol (Users) */
+.badge-rol-admin      { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-rol-supervisor { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+
+/* Estado activo/inactivo — compartido por Empleados, Productos, Users */
+.badge-status-activo,
+.badge-status.status-activo   { background-color: rgba(25, 135, 84, 0.15);  color: #198754; }
+.badge-status-inactivo,
+.badge-status.status-inactivo { background-color: rgba(220, 53, 69, 0.15);  color: #dc3545; }
+
+/* Dark mode — verde oscuro #198754 ilegible sobre fondo dark */
+[data-bs-theme="dark"] .badge-status-activo,
+[data-bs-theme="dark"] .badge-status.status-activo {
+    background-color: rgba(110, 231, 183, 0.12);
+    color: #6ee7b7;    /* emerald-300 */
+}
+
+/* ── Indicadores de stock (Insumos) ─────────────────────────────*/
+.stock-bajo   { color: #dc3545; }
+.stock-medio  { color: #ffc107; }
+.stock-normal { color: #198754; }
+
+[data-bs-theme="dark"] .stock-normal { color: #6ee7b7; }
+
+/* ============================================
+   MÓDULO CLIENTES — Anchos de columna
+   ============================================ */
+#clientes-table th:nth-child(1) { width: 14%; }
+#clientes-table th:nth-child(2) { width: 25%; }
+#clientes-table th:nth-child(3) { width: 11%; }
+#clientes-table th:nth-child(4) { width: 14%; }
+#clientes-table th:nth-child(5) { width: 22%; }
+#clientes-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#clientes-table td:last-child   { text-align: center; overflow: visible; }
+#clientes-table td:nth-child(5) { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Secciones del modal de detalle (Clientes) ──────────────── */
+#showModal .modal-body                       { padding: 0.85rem; }
+#showModal .modal-form-section               { padding: 0.7rem 0.75rem; margin-bottom: 0.6rem; }
+#showModal .modal-form-section-title         { font-size: 0.78rem; margin-bottom: 0.45rem; }
+#showModal .section-header-compact           { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.4rem; }
+#showModal .section-header-compact .modal-form-section-title { margin-bottom: 0; }
+
+/* ============================================
+   MÓDULO EMPLEADOS — Anchos de columna
+   ============================================ */
+#empleados-table th:nth-child(1) { width: 13%; }
+#empleados-table th:nth-child(2) { width: 21%; }
+#empleados-table th:nth-child(3) { width: 14%; }
+#empleados-table th:nth-child(4) { width: 16%; }
+#empleados-table th:nth-child(5) { width: 14%; }
+#empleados-table th:nth-child(6) { width: 8%;  }
+#empleados-table th:nth-child(7) { width: 14%; text-align: center; }
+
+#empleados-table td:last-child { text-align: center; overflow: visible; }
+#empleados-table td:nth-child(2),
+#empleados-table td:nth-child(4),
+#empleados-table td:nth-child(5) { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* viewModal card headers (Empleados) */
+#viewModal .card-header    { background: rgba(30, 60, 114, 0.1) !important; }
+#viewModal .card-header h6 { color: #1e3c72 !important; }
+
+[data-bs-theme="dark"] #viewModal .card-header    { background: rgba(78, 122, 199, 0.10) !important; }
+[data-bs-theme="dark"] #viewModal .card-header h6 { color: #93c5fd !important; }
+
+/* ============================================
+   MÓDULO INSUMOS — Anchos de columna
+   ============================================ */
+#insumos-table th:nth-child(1) { width: 20%; }
+#insumos-table th:nth-child(2) { width: 13%; }
+#insumos-table th:nth-child(3) { width: 11%; }
+#insumos-table th:nth-child(4) { width: 14%; }
+#insumos-table th:nth-child(5) { width: 28%; min-width: 220px; }
+#insumos-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#insumos-table td:last-child { text-align: center; overflow: visible; }
+#insumos-table td:nth-child(1),
+#insumos-table td:nth-child(5) { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================
+   MÓDULO PRODUCTOS — Anchos de columna
+   ============================================ */
+#productos-table th:nth-child(1) { width: 10%; }
+#productos-table th:nth-child(2) { width: 12%; }
+#productos-table th:nth-child(3) { width: 16%; }
+#productos-table th:nth-child(4) { width: 24%; }
+#productos-table th:nth-child(5) { width: 12%; }
+#productos-table th:nth-child(6) { width: 12%; }
+#productos-table th:nth-child(7) { width: 14%; text-align: center; }
+
+#productos-table td:last-child    { text-align: center; overflow: visible; }
+#productos-table td:nth-child(2)  { overflow: visible; }
+#productos-table td:nth-child(4)  { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================
+   MÓDULO PROVEEDORES — Anchos de columna
+   ============================================ */
+#proveedores-table th:nth-child(1) { width: 14%; }
+#proveedores-table th:nth-child(2) { width: 26%; }
+#proveedores-table th:nth-child(3) { width: 12%; }
+#proveedores-table th:nth-child(4) { width: 14%; }
+#proveedores-table th:nth-child(5) { width: 20%; }
+#proveedores-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#proveedores-table td:last-child    { text-align: center; overflow: visible; }
+#proveedores-table td:nth-child(5)  { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================
+   MÓDULO USERS — Anchos de columna
+   ============================================ */
+#users-table th:nth-child(1) { width: 28%; }
+#users-table th:nth-child(2) { width: 30%; }
+#users-table th:nth-child(3) { width: 14%; }
+#users-table th:nth-child(4) { width: 14%; }
+#users-table th:nth-child(5) { width: 14%; text-align: center; }
+
+#users-table td:last-child    { text-align: center; overflow: visible; }
+#users-table td:nth-child(2)  { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
