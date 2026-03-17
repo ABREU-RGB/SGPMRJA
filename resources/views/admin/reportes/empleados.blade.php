@@ -6,41 +6,7 @@
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet"
         type="text/css" />
-    <style>
-        .card-body { overflow-x: auto; }
-        .dataTables_filter { display: none; }
-
-        #empleadosTable {
-            width: 100% !important;
-            table-layout: fixed;
-            font-size: 13px;
-        }
-        #empleadosTable th,
-        #empleadosTable td {
-            padding: 0.4rem 0.6rem;
-            vertical-align: middle;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        /* Anchos de columna (suman 100%) */
-        #empleadosTable th:nth-child(1) { width: 28%; }                      /* Nombre           */
-        #empleadosTable th:nth-child(2) { width: 12%; text-align: center; } /* Total Órdenes    */
-        #empleadosTable th:nth-child(3) { width: 14%; text-align: center; } /* Total Producido  */
-        #empleadosTable th:nth-child(4) { width: 14%; text-align: center; } /* Total Defectuoso */
-        #empleadosTable th:nth-child(5) { width: 18%; text-align: center; } /* Eficiencia       */
-        #empleadosTable th:nth-child(6) { width: 14%; text-align: center; } /* Promedio p/Orden */
-
-        #empleadosTable td:nth-child(2),
-        #empleadosTable td:nth-child(3),
-        #empleadosTable td:nth-child(4),
-        #empleadosTable td:nth-child(5),
-        #empleadosTable td:nth-child(6) {
-            overflow: visible;
-            text-overflow: clip;
-            text-align: center;
-        }
-    </style>
+    {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO REPORTES — Empleados" --}}
 @endpush
 @section('content')
     <div class="row">
@@ -100,7 +66,7 @@
                                         <td>{{ $empleado['total_producido'] }}</td>
                                         <td>{{ $empleado['total_defectuoso'] }}</td>
                                         <td>
-                                            <div class="progress" style="height: 5px;">
+                                            <div class="progress progress-sm">
                                                 <div class="progress-bar {{ $empleado['eficiencia'] >= 90 ? 'bg-success' : ($empleado['eficiencia'] >= 70 ? 'bg-warning' : 'bg-danger') }}"
                                                     role="progressbar" style="width: {{ $empleado['eficiencia'] }}%;"
                                                     aria-valuenow="{{ $empleado['eficiencia'] }}" aria-valuemin="0"

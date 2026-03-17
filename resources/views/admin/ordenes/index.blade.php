@@ -9,94 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
-    <style>
-        .progress {
-            height: 20px;
-        }
-
-        .estado-Pendiente {
-            background-color: #ffc107;
-        }
-
-        .estado-EnProceso {
-            background-color: #0dcaf0;
-        }
-
-        .estado-Finalizado {
-            background-color: #198754;
-        }
-
-        .estado-Cancelado {
-            background-color: #dc3545;
-        }
-
-        .select2-container {
-            width: 100% !important;
-        }
-
-        #insumos-container .row {
-            margin-bottom: 10px;
-        }
-
-        /* Estilo para buscador personalizado */
-        .search-box {
-            position: relative;
-        }
-
-        .search-box .search-icon {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            color: #878a99;
-        }
-
-        .search-box input {
-            padding-left: 30px;
-        }
-
-        /* ── DataTable — Estándar Atlántico Operativo ── */
-        .card-body {
-            overflow-x: auto;
-        }
-
-        /* Ocultar buscador por defecto de DataTables */
-        .dataTables_filter {
-            display: none;
-        }
-
-        #ordenes-table {
-            width: 100% !important;
-            table-layout: fixed;
-            font-size: 13px;
-        }
-
-        #ordenes-table th,
-        #ordenes-table td {
-            padding: 0.4rem 0.6rem;
-            vertical-align: middle;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Anchos de columna (suman 100%) */
-        #ordenes-table th:nth-child(1) { width: 8%;  text-align: center; } /* Nro. Orden         */
-        #ordenes-table th:nth-child(2) { width: 8%;  text-align: center; } /* Nro. Pedido        */
-        #ordenes-table th:nth-child(3) { width: 12%; text-align: center; } /* Cant. Solicitada   */
-        #ordenes-table th:nth-child(4) { width: 18%; }                      /* Progreso           */
-        #ordenes-table th:nth-child(5) { width: 15%; }                      /* Fecha Fin Estimada */
-        #ordenes-table th:nth-child(6) { width: 14%; text-align: center; } /* Estado             */
-        #ordenes-table th:nth-child(7) { width: 25%; text-align: center; } /* Acciones           */
-
-        /* Estado y Acciones: overflow visible para dropdowns y botones */
-        #ordenes-table td:nth-child(6),
-        #ordenes-table td:last-child {
-            overflow: visible;
-            text-overflow: clip;
-            text-align: center;
-        }
-    </style>
+    {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO ÓRDENES DE PRODUCCIÓN" --}}
 @endpush
 
 @section('content')
@@ -139,7 +52,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="ordenes-table" class="table table-bordered table-striped align-middle dt-transactional">
+                    <table id="ordenes-table" class="table table-bordered table-striped align-middle dt-transactional table-operativa">
                         <thead>
                             <tr>
                                 <th>Nro. Orden</th>

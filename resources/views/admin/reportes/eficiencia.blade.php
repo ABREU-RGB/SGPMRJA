@@ -5,40 +5,7 @@
     <link href="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    <style>
-        .card-body { overflow-x: auto; }
-        .dataTables_filter { display: none; }
-
-        #eficienciaTable {
-            width: 100% !important;
-            table-layout: fixed;
-            font-size: 13px;
-        }
-        #eficienciaTable th,
-        #eficienciaTable td {
-            padding: 0.4rem 0.6rem;
-            vertical-align: middle;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        /* Anchos de columna (suman 100%) */
-        #eficienciaTable th:nth-child(1) { width: 35%; }                      /* Producto            */
-        #eficienciaTable th:nth-child(2) { width: 16%; text-align: center; } /* Cant. Solicitada    */
-        #eficienciaTable th:nth-child(3) { width: 16%; text-align: center; } /* Total Producido     */
-        #eficienciaTable th:nth-child(4) { width: 16%; text-align: center; } /* Total Defectuoso    */
-        #eficienciaTable th:nth-child(5) { width: 17%; text-align: center; } /* Eficiencia          */
-
-        /* Eficiencia: overflow visible para la barra de progreso */
-        #eficienciaTable td:nth-child(2),
-        #eficienciaTable td:nth-child(3),
-        #eficienciaTable td:nth-child(4),
-        #eficienciaTable td:nth-child(5) {
-            overflow: visible;
-            text-overflow: clip;
-            text-align: center;
-        }
-    </style>
+    {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO REPORTES — Eficiencia" --}}
 @endpush
 @section('content')
 <div class="row">
@@ -56,7 +23,7 @@
                 <h4 class="card-title mb-0">Eficiencia por Orden de Producción</h4>
             </div>
             <div class="card-body">
-                <div id="eficienciaPorOrdenChart" class="apex-charts" dir="ltr" style="height: 350px;"></div>
+                <div id="eficienciaPorOrdenChart" class="apex-charts" dir="ltr"></div>
             </div>
         </div>
     </div>
@@ -87,7 +54,7 @@
                                 <td>{{ $item['total_producido'] }}</td>
                                 <td>{{ $item['total_defectuoso'] }}</td>
                                 <td>
-                                    <div class="progress" style="height: 5px;">
+                                    <div class="progress progress-sm">
                                         <div class="progress-bar {{ $item['eficiencia'] >= 90 ? 'bg-success' : ($item['eficiencia'] >= 70 ? 'bg-warning' : 'bg-danger') }}" 
                                             role="progressbar" 
                                             style="width: {{ $item['eficiencia'] }}%;" 
