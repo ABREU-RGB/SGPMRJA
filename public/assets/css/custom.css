@@ -1709,13 +1709,24 @@ header#page-topbar,
     padding: 0.85rem 1rem !important;
 }
 
-.atlantico-modal .modal-header .modal-title {
-    font-weight: 700; /* color: global .modal-header .modal-title ya aplica #fff */
+.atlantico-modal .modal-header .modal-title,
+.atlantico-modal .modal-header h5,
+.atlantico-modal .modal-header h4,
+.atlantico-modal .modal-header h6 {
+    color: #fff !important;
+    font-weight: 700;
 }
 
+.atlantico-modal .modal-header .modal-title i,
+.atlantico-modal .modal-header h5 i,
+.atlantico-modal .modal-header h6 i { color: #fff !important; }
+
 .atlantico-modal .modal-header .btn-close {
-    opacity: 0.85; /* filter: global .modal-header .btn-close ya invierte a blanco */
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
 }
+
+.atlantico-modal .modal-header .btn-close:hover { opacity: 1; }
 
 .atlantico-modal .modal-body   { padding: 1.2rem; }
 
