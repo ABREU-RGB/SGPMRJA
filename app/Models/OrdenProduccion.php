@@ -48,7 +48,7 @@ class OrdenProduccion extends Model
 
     public function produccionDiaria()
     {
-        return $this->hasMany(ProduccionDiaria::class);
+        return $this->hasMany(ProduccionDiaria::class, 'orden_id');
     }
 
     public function creadoPor()

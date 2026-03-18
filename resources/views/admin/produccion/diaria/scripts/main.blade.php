@@ -1,14 +1,14 @@
 <script>
     $(document).ready(function () {
         // Inicializar Select2 con dropdownParent para que funcione correctamente en modales
-        $('#field-orden_id, #field-operario_id').select2({
+        $('#field-orden_id, #field-empleado_id').select2({
             theme: 'bootstrap-5',
             width: '100%',
             dropdownParent: $('#showModal')
         });
 
         // Inicializar Select2 para el modal de edición
-        $('#edit_orden_id, #edit_operario_id').select2({
+        $('#edit_orden_id, #edit_empleado_id').select2({
             theme: 'bootstrap-5',
             width: '100%',
             dropdownParent: $('#editModal')
@@ -152,7 +152,7 @@
                 success: function (response) {
                     $('#view_orden_id').text(response.orden_id);
                     $('#view_producto').text(response.orden && response.orden.producto ? response.orden.producto.nombre : 'N/A');
-                    $('#view_operario').text(response.operario.name);
+                    $('#view_operario').text(response.empleado?.persona?.nombre_completo ?? 'N/A');
                     $('#view_fecha').text(moment(response.created_at).format('DD/MM/YYYY'));
                     $('#view_cantidad_producida').text(response.cantidad_producida);
                     $('#view_cantidad_defectuosa').text(response.cantidad_defectuosa);
@@ -190,7 +190,7 @@
                     $('#edit_id').val(response.id);
                     $('#edit_orden_id').text(response.orden_id);
                     $('#edit_producto').text(response.orden && response.orden.producto ? response.orden.producto.nombre : 'N/A');
-                    $('#edit_operario').text(response.operario.name);
+                    $('#edit_operario').text(response.empleado?.persona?.nombre_completo ?? 'N/A');
                     $('#edit_cantidad_producida').val(response.cantidad_producida);
                     $('#edit_cantidad_defectuosa').val(response.cantidad_defectuosa);
                     $('#edit_observaciones').val(response.observaciones);
@@ -268,7 +268,7 @@
         // Reset form on modal close
         $('#showModal').on('hidden.bs.modal', function () {
             $('#produccionForm')[0].reset();
-            $('#field-orden_id, #field-operario_id').val('').trigger('change');
+            $('#field-orden_id, #field-empleado_id').val('').trigger('change');
         });
     });
 </script>

@@ -81,21 +81,23 @@ class ReportesController extends Controller
 
     public function empleados()
     {
-        $rendimientoOperarios = ProduccionDiaria::select(
-            'operario_id',
+        $rendimientoEmpleados = ProduccionDiaria::select(
+            'empleado_id',
             DB::raw('COUNT(DISTINCT orden_id) as total_ordenes'),
             DB::raw('SUM(cantidad_producida) as total_producido'),
             DB::raw('SUM(cantidad_defectuosa) as total_defectuoso')
         )
-            ->with('operario:id,name')
-            ->groupBy('operario_id')
+            ->with('empleado.persona')
+            ->groupBy('empleado_id')
             ->get()
             ->map(function ($item) {
                 $eficiencia = $item->total_producido > 0 ?
                     ($item->total_producido - $item->total_defectuoso) / $item->total_producido * 100 : 0;
                 return [
-                    'operario_id' => $item->operario_id,
-                    'nombre' => $item->operario->name ?? 'N/A',
+                    'empleado_id' => $item->empleado_id,
+                    'nombre' => $item->empleado && $item->empleado->persona
+                        ? $item->empleado->persona->nombre_completo
+                        : 'N/A',
                     'total_ordenes' => $item->total_ordenes,
                     'total_producido' => $item->total_producido,
                     'total_defectuoso' => $item->total_defectuoso,
@@ -103,6 +105,6 @@ class ReportesController extends Controller
                 ];
             });
 
-        return view('admin.reportes.empleados', compact('rendimientoOperarios'));
+        return view('admin.reportes.empleados', compact('rendimientoEmpleados'));
     }
 }

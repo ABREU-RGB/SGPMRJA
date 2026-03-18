@@ -293,18 +293,17 @@
                     searchable: false,
                     className: 'align-middle text-center',
                     width: '16%',
-                    render: function (data) {
+                    render: function (data, type, row) {
+                        const estadoActivo = ['Pendiente', 'En Proceso'].includes(row.estado);
+                        const avanceBtn = estadoActivo
+                            ? `<button class="btn btn-sm btn-soft-warning avance-btn" data-id="${data}" title="Registrar Avance"><i class="ri-add-circle-line"></i></button>`
+                            : '';
                         return `
-                            <div class="d-flex gap-2 justify-content-center">
-                                <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver">
-                                    <i class="ri-eye-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
-                                    <i class="ri-pencil-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar">
-                                    <i class="ri-delete-bin-fill"></i>
-                                </button>
+                            <div class="d-flex gap-1 justify-content-center">
+                                ${avanceBtn}
+                                <button class="btn btn-sm btn-soft-info view-btn" data-id="${data}" title="Ver"><i class="ri-eye-fill"></i></button>
+                                <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar"><i class="ri-pencil-fill"></i></button>
+                                <button class="btn btn-sm btn-soft-danger remove-btn" data-id="${data}" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
                             </div>
                         `;
                     }
@@ -378,6 +377,13 @@
         $('#ordenForm').on('submit', function (e) {
             e.preventDefault();
             let formData = new FormData(this);
+            // Los campos disabled no se incluyen en FormData — agregarlos manualmente
+            if ($('#producto-id-field').prop('disabled')) {
+                formData.append('producto_id', $('#producto-id-field').val());
+            }
+            if ($('#pedido-id-field').prop('disabled') && $('#pedido-id-hidden-field').val()) {
+                formData.append('pedido_id', $('#pedido-id-hidden-field').val());
+            }
             let url = $('#id-field').val() ?
                 "{{ route('ordenes.update', ':id') }}".replace(':id', $('#id-field').val()) :
                 "{{ route('ordenes.store') }}";
@@ -457,15 +463,22 @@
         $(document).on('click', '.view-btn', function () {
             let id = $(this).data('id');
             $.get("{{ route('ordenes.show', ':id') }}".replace(':id', id), function (data) {
+                const estadoClases = {
+                    'Pendiente':  'status-pendiente badge-soft-warning',
+                    'En Proceso': 'status-procesando badge-soft-info',
+                    'Finalizado': 'status-finalizado badge-soft-success',
+                    'Cancelado':  'status-cancelado badge-soft-danger'
+                };
+
                 $('#view-producto').text(data.producto.nombre);
                 $('#view-cantidad-solicitada').text(data.cantidad_solicitada);
                 $('#view-cantidad-producida').text(data.cantidad_producida);
 
-                let porcentaje = (data.cantidad_producida / data.cantidad_solicitada * 100).toFixed(2);
-                $('#view-progreso')
-                    .css('width', porcentaje + '%')
-                    .attr('aria-valuenow', porcentaje)
-                    .text(porcentaje + '%');
+                let porcentaje = data.cantidad_solicitada > 0
+                    ? (data.cantidad_producida / data.cantidad_solicitada * 100).toFixed(1)
+                    : '0.0';
+                $('#view-progreso').css('width', porcentaje + '%').attr('aria-valuenow', porcentaje);
+                $('#view-progreso-pct').text(porcentaje);
 
                 const formatDate = (dateString) => {
                     if (!dateString) return 'N/A';
@@ -479,24 +492,28 @@
 
                 $('#view-fecha-inicio').text(formatDate(data.fecha_inicio));
                 $('#view-fecha-fin-estimada').text(formatDate(data.fecha_fin_estimada));
-                $('#view-estado').html(`<span class="badge estado-${data.estado}">${data.estado}</span>`);
+                $('#view-estado').html(`<span class="badge badge-status ${estadoClases[data.estado] || 'badge-soft-secondary'} rounded-pill">${data.estado}</span>`);
                 $('#view-costo-estimado').text(
                     '$/ ' + Number(data.costo_estimado).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                 );
-                $('#view-creado-por').text(data.creadoPor ? data.creadoPor.name : 'N/A');
+                $('#view-creado-por').text(data.creado_por ? data.creado_por.name : 'Sin especificar');
+                $('#view-pedido-info').text(data.pedido_id ? 'Pedido #' + data.pedido_id : 'Orden Manual');
 
-                $('#view-logo').html(data.logo || 'N/A');
+                let logoHtml = data.logo
+                    ? `<div class="d-flex align-items-start gap-2"><i class="ri-image-line text-muted mt-1 flex-shrink-0"></i><span>${data.logo}</span></div>`
+                    : `<span class="text-muted fst-italic">Sin logo registrado</span>`;
                 if (data.pedido && data.pedido.productos) {
-                    let detallesLogo = '';
                     data.pedido.productos.forEach(function (detalle) {
                         if (detalle.lleva_bordado) {
-                            detallesLogo += `<div><b>Logo:</b> ${detalle.nombre_logo || 'N/A'}<br><b>Ubicación:</b> ${detalle.ubicacion_logo || 'N/A'}<br><b>Cantidad:</b> ${detalle.cantidad_logo || 'N/A'}</div><hr>`;
+                            logoHtml += `<div class="mt-2 pt-2 border-top">
+                                <div class="d-flex gap-1 mb-1"><span class="text-muted fs-11">Logo:</span><span class="fw-medium fs-12">${detalle.nombre_logo || 'N/A'}</span></div>
+                                <div class="d-flex gap-1 mb-1"><span class="text-muted fs-11">Ubicación:</span><span class="fw-medium fs-12">${detalle.ubicacion_logo || 'N/A'}</span></div>
+                                <div class="d-flex gap-1"><span class="text-muted fs-11">Cantidad:</span><span class="fw-medium fs-12">${detalle.cantidad_logo || 'N/A'}</span></div>
+                            </div>`;
                         }
                     });
-                    if (detallesLogo) {
-                        $('#view-logo').append('<br>' + detallesLogo);
-                    }
                 }
+                $('#view-logo').html(logoHtml);
 
                 // Insumos
                 $('#view-insumos').empty();
@@ -521,7 +538,7 @@
                     `);
                 });
 
-                $('#view-notas').text(data.notas || 'Sin notas');
+                $('#view-notas').text(data.notas || 'Sin notas adicionales.');
                 const formatDateTime = (dateString) => {
                     if (!dateString) return 'N/A';
                     const date = new Date(dateString);
@@ -534,6 +551,13 @@
                     });
                 };
                 $('#view-created').text(formatDateTime(data.created_at));
+
+                // ── Avances (historial lectura) ───────────────────────
+                renderAvances(data.produccion_diaria || []);
+
+                // Pestaña por defecto: Avances si activa, Detalles si finalizada
+                const estadoActivo = ['Pendiente', 'En Proceso'].includes(data.estado);
+                new bootstrap.Tab(document.getElementById(estadoActivo ? 'tab-avances-btn' : 'tab-detalles-btn')).show();
 
                 $('#viewModal').modal('show');
             });
@@ -576,6 +600,105 @@
                     });
                 }
             });
+        });
+
+        // ── Avance de Producción — helpers y handlers ─────────────────
+
+        function renderAvances(avances) {
+            const tbody = $('#view-avances');
+            tbody.empty();
+            if (!avances.length) {
+                tbody.html('<tr id="avances-empty-row"><td colspan="6" class="text-center text-muted py-3"><i class="ri-inbox-line me-1"></i>Sin registros de avance</td></tr>');
+                return;
+            }
+            avances.forEach(function (a) {
+                const empleadoNombre = a.empleado && a.empleado.persona
+                    ? a.empleado.persona.nombre_completo
+                    : 'N/A';
+                const fecha = a.created_at
+                    ? new Date(a.created_at).toLocaleDateString('es-ES')
+                    : 'N/A';
+                tbody.append(`
+                    <tr>
+                        <td class="text-nowrap">${fecha}</td>
+                        <td>${empleadoNombre}</td>
+                        <td class="text-center fw-medium">${a.cantidad_producida}</td>
+                        <td class="text-center ${a.cantidad_defectuosa > 0 ? 'text-danger fw-medium' : ''}">${a.cantidad_defectuosa}</td>
+                        <td class="text-muted">${a.observaciones || '—'}</td>
+                    </tr>
+                `);
+            });
+        }
+
+        // Abrir modal de avance desde la tabla
+        $(document).on('click', '.avance-btn', function () {
+            const id = $(this).data('id');
+            $.get("{{ route('ordenes.show', ':id') }}".replace(':id', id), function (data) {
+                const restante = data.cantidad_solicitada - data.cantidad_producida;
+                $('#am-orden-id').val(data.id);
+                $('#am-restante').val(restante);
+                $('#am-orden-info').text(`${data.producto.nombre} · ${restante} piezas restantes`);
+                $('#am-restante-hint').text(`(máx. ${restante})`);
+                $('#am-cantidad-producida').attr('max', restante);
+                $('#avanceModal').modal('show');
+            });
+        });
+
+        // Guardar avance
+        $('#am-btn-save').on('click', function () {
+            const ordenId       = $('#am-orden-id').val();
+            const empleadoId    = $('#am-empleado-id').val();
+            const producida     = $('#am-cantidad-producida').val();
+            const defectuosa    = $('#am-cantidad-defectuosa').val();
+            const observaciones = $('#am-observaciones').val();
+            const restante      = parseInt($('#am-restante').val()) || 0;
+
+            if (!empleadoId || !producida || parseInt(producida) < 1) {
+                Swal.fire({ icon: 'warning', title: 'Datos incompletos', text: 'Selecciona el empleado e ingresa una cantidad producida válida.', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                return;
+            }
+            if (parseInt(producida) > restante) {
+                Swal.fire({ icon: 'warning', title: 'Cantidad excedida', text: `Solo quedan ${restante} piezas por producir en esta orden.`, toast: true, position: 'top-end', showConfirmButton: false, timer: 4000 });
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('produccion.diaria.store') }}",
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    orden_id: ordenId,
+                    empleado_id: empleadoId,
+                    cantidad_producida: producida,
+                    cantidad_defectuosa: defectuosa || 0,
+                    observaciones: observaciones
+                },
+                success: function () {
+                    $('#avanceModal').modal('hide');
+                    table.ajax.reload(null, false);
+                    Swal.fire({ icon: 'success', title: 'Avance registrado', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
+                },
+                error: function (xhr) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.error || 'No se pudo guardar el avance.' });
+                }
+            });
+        });
+
+        // Reset al cerrar avanceModal
+        $('#avanceModal').on('hidden.bs.modal', function () {
+            $('#am-orden-id').val('');
+            $('#am-restante').val('');
+            $('#am-orden-info').text('');
+            $('#am-empleado-id').val('');
+            $('#am-cantidad-producida').val('');
+            $('#am-cantidad-defectuosa').val('0');
+            $('#am-observaciones').val('');
+        });
+
+        // Reset al cerrar viewModal
+        $('#viewModal').on('hidden.bs.modal', function () {
+            new bootstrap.Tab(document.getElementById('tab-detalles-btn')).show();
+            $('#view-avances').html('<tr id="avances-empty-row"><td colspan="5" class="text-center text-muted py-3 fs-12"><i class="ri-inbox-line me-1"></i>Sin registros de avance</td></tr>');
         });
 
         // Reset form on modal close

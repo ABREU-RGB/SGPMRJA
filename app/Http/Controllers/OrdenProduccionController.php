@@ -6,6 +6,7 @@ use App\Models\OrdenProduccion;
 use App\Models\Producto;
 use App\Models\Insumo;
 use App\Models\Pedido;
+use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,15 @@ class OrdenProduccionController extends Controller
             ->with(['productos.producto'])
             ->orderBy('created_at', 'desc')
             ->get();
-        return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos'));
+        $empleados = Empleado::with('persona')
+            ->where('departamento', 'Produccion')
+            ->where('estado', 1)
+            ->get()
+            ->map(fn($e) => (object)[
+                'id'   => $e->id,
+                'name' => $e->persona->nombre_completo ?? 'Sin nombre',
+            ]);
+        return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos', 'empleados'));
     }
 
     public function getOrdenes()
@@ -98,8 +107,12 @@ class OrdenProduccionController extends Controller
 
     public function show($id)
     {
-        $orden = OrdenProduccion::with(['producto.tipoProducto', 'insumos', 'creadoPor:id,name'])
-            ->findOrFail($id);
+        $orden = OrdenProduccion::with([
+                'producto.tipoProducto',
+                'insumos',
+                'creadoPor:id,name',
+                'produccionDiaria.empleado.persona',
+            ])->findOrFail($id);
 
         return response()->json($orden);
     }

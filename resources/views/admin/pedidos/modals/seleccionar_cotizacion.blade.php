@@ -1,8 +1,8 @@
-<div class="modal fade" id="seleccionarCotizacionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<div class="modal fade atlantico-modal atlantico-modal--op" id="seleccionarCotizacionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
+            <div class="modal-header">
                 <h5 class="modal-title">Seleccionar Cotización Aprobada</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -48,69 +48,4 @@
     </div>
 </div>
 
-<style>
-    /* Estilos para las cards de cotizaciones */
-    .cotizacion-card {
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #ffffff;
-    }
-
-    .cotizacion-card:hover {
-        border-color: #00d9a5;
-        box-shadow: 0 4px 12px rgba(0, 217, 165, 0.15);
-        transform: translateY(-2px);
-    }
-
-    .cotizacion-card.selected {
-        border-color: #2ecc71;
-        background: rgba(46, 204, 113, 0.05);
-    }
-
-    .cotizacion-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-
-    .cotizacion-numero {
-        font-weight: 600;
-        color: #1e3c72;
-        font-size: 1.1rem;
-    }
-
-    .cotizacion-total {
-        font-weight: 700;
-        color: #2ecc71;
-        font-size: 1.2rem;
-    }
-
-    .cotizacion-info {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        font-size: 0.9rem;
-    }
-
-    .cotizacion-info-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .cotizacion-info-item i {
-        color: #64748b;
-    }
-
-    .cotizacion-footer {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #e2e8f0;
-        text-align: right;
-    }
-</style>
+{{-- Estilos en public/assets/css/custom.css — sección "MODAL SELECCIONAR COTIZACIÓN" --}}

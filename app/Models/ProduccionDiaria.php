@@ -14,7 +14,7 @@ class ProduccionDiaria extends Model
 
     protected $fillable = [
         'orden_id',
-        'operario_id',
+        'empleado_id',
         'cantidad_producida',
         'cantidad_defectuosa',
         'observaciones',
@@ -33,8 +33,8 @@ class ProduccionDiaria extends Model
         return $this->belongsTo(OrdenProduccion::class, 'orden_id');
     }
 
-    public function operario()
+    public function empleado()
     {
-        return $this->belongsTo(Empleado::class, 'operario_id');
+        return $this->belongsTo(Empleado::class, 'empleado_id');
     }
 }

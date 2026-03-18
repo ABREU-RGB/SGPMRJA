@@ -12,235 +12,7 @@
         rel="stylesheet" />
     <!-- Autocorrecci�n y Autocompletado -->
     <link href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
-    <style>
-        /* Toast de SweetAlert2 sobre modales de Bootstrap */
-        .swal-toast-above-modal {
-            z-index: 99999 !important;
-            position: fixed !important;
-            top: 20px !important;
-            right: 20px !important;
-            left: auto !important;
-            bottom: auto !important;
-            width: auto !important;
-            max-width: 400px !important;
-            pointer-events: none;
-        }
-
-        .swal-toast-above-modal .swal2-popup {
-            pointer-events: auto;
-        }
-
-        /* Estilos para sugerencias de autocorrecci�n */
-        .autocorrect-suggestion {
-            position: absolute;
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 12px;
-            z-index: 1060;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            max-width: 300px;
-        }
-
-        .autocorrect-suggestion .suggestion-text {
-            color: #856404;
-            margin-bottom: 5px;
-        }
-
-        .autocorrect-suggestion .suggestion-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .autocorrect-suggestion .btn-suggestion {
-            font-size: 11px;
-            padding: 2px 8px;
-        }
-
-        /* Estilos para campos con errores detectados */
-        .field-with-suggestion {
-            border-color: #ffc107 !important;
-            box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
-        }
-
-        /* Estilos para autocompletado mejorado */
-        .ui-autocomplete {
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1060 !important;
-        }
-
-        .ui-menu-item {
-            font-size: 14px;
-        }
-
-        .ui-menu-item .ui-menu-item-wrapper {
-            padding: 8px 12px;
-        }
-
-        .ui-menu-item .suggestion-meta {
-            color: #6c757d;
-            font-size: 12px;
-        }
-
-        /* Estilo para buscador personalizado */
-        .search-box {
-            position: relative;
-        }
-
-        .search-box .search-icon {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            color: #878a99;
-        }
-
-        .search-box input {
-            padding-left: 30px;
-        }
-
-        .bg-soft-primary {
-            background-color: rgba(30, 60, 114, 0.1) !important;
-        }
-
-        .bg-soft-success {
-            background-color: rgba(0, 217, 165, 0.1) !important;
-        }
-
-        .bg-soft-warning {
-            background-color: rgba(46, 204, 113, 0.2) !important;
-        }
-
-        .text-atlantico-dark {
-            color: #1e3c72 !important;
-        }
-
-        .text-atlantico-cyan {
-            color: #00d9a5 !important;
-        }
-
-        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
-            background: rgba(30, 60, 114, 0.12) !important;
-        }
-
-        #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
-            color: #1e3c72 !important;
-        }
-
-        #view-metodo-pago {
-            gap: 0.35rem !important;
-        }
-
-        .metodo-pago-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            border-radius: 999px;
-            padding: 0.2rem 0.55rem;
-            font-size: 0.76rem;
-            font-weight: 700;
-            line-height: 1.1;
-            border: 1px solid transparent;
-        }
-
-        .metodo-pago-pill i {
-            font-size: 0.78rem;
-        }
-
-        .metodo-pago-pill--efectivo {
-            background: rgba(0, 217, 165, 0.16);
-            color: #006b52;
-            border-color: rgba(0, 217, 165, 0.38);
-        }
-
-        .metodo-pago-pill--transferencia {
-            background: rgba(30, 60, 114, 0.14);
-            color: #1e3c72;
-            border-color: rgba(30, 60, 114, 0.34);
-        }
-
-        .metodo-pago-pill--pago-movil {
-            background: rgba(42, 82, 152, 0.14);
-            color: #2a5298;
-            border-color: rgba(42, 82, 152, 0.34);
-        }
-
-        .metodo-pago-pill--none {
-            background: rgba(108, 117, 125, 0.12);
-            color: #5f6b76;
-            border-color: rgba(108, 117, 125, 0.3);
-        }
-
-        .pago-kpi-box {
-            border: 1px solid rgba(30, 60, 114, 0.18);
-            border-radius: 8px;
-            background: rgba(30, 60, 114, 0.03);
-            padding: 0.55rem;
-        }
-
-        .metodo-toggle-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .metodo-toggle.form-check {
-            margin: 0;
-            padding: 0;
-        }
-
-        .metodo-toggle .form-check-input {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .metodo-toggle .form-check-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            border-radius: 999px;
-            border: 1px solid rgba(30, 60, 114, 0.28);
-            background: rgba(30, 60, 114, 0.05);
-            color: #1e3c72;
-            font-size: 0.78rem;
-            font-weight: 700;
-            padding: 0.32rem 0.7rem;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.15s ease;
-        }
-
-        .metodo-toggle .form-check-label i {
-            font-size: 0.82rem;
-        }
-
-        .metodo-toggle .form-check-input:checked+.form-check-label {
-            background: rgba(0, 217, 165, 0.16);
-            border-color: rgba(0, 217, 165, 0.42);
-            color: #006b52;
-            box-shadow: 0 1px 6px rgba(0, 217, 165, 0.18);
-        }
-
-        .metodo-form-block {
-            background: rgba(30, 60, 114, 0.04);
-            border: 1px dashed rgba(30, 60, 114, 0.22);
-            border-radius: 8px;
-            padding: 0.6rem;
-        }
-
-        .metodo-form-title {
-            color: #1e3c72;
-            font-size: 0.86rem;
-            font-weight: 700;
-            margin-bottom: 0.45rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-        }
-    </style>
+    {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO PEDIDOS" --}}
 @endpush
 
 @section('content')
@@ -260,195 +32,7 @@
         </div>
     </div>
 
-    <style>
-        .card-body {
-            overflow-x: auto;
-        }
-
-        #pedidos-table {
-            width: 100% !important;
-            table-layout: fixed;
-            font-size: 13px;
-        }
-
-        /* Ocultar buscador por defecto de DataTables */
-        .dataTables_filter {
-            display: none;
-        }
-
-        #pedidos-table th,
-        #pedidos-table td {
-            padding: 0.6rem 0.8rem;
-            vertical-align: middle;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Anchos de columna (suman 100%) */
-        #pedidos-table th:nth-child(1) { width: 8%;  text-align: center; } /* Pedido       */
-        #pedidos-table th:nth-child(2) { width: 30%; }                      /* Cliente      */
-        #pedidos-table th:nth-child(3) { width: 14%; }                      /* Fecha Entrega*/
-        #pedidos-table th:nth-child(4) { width: 12%; }                      /* Total        */
-        #pedidos-table th:nth-child(5) { width: 14%; text-align: center; } /* Estado       */
-        #pedidos-table th:nth-child(6) { width: 22%; text-align: center; } /* Acciones     */
-
-        /* Estado y Acciones: overflow visible para dropdowns y botones */
-        #pedidos-table td:nth-child(5),
-        #pedidos-table td:last-child {
-            overflow: visible;
-            text-overflow: clip;
-            text-align: center;
-        }
-
-        /* Soluci�n para el z-index de Select2 en modales */
-        .select2-container--open {
-            z-index: 99999;
-        }
-
-        /* Soluci�n para el recorte de Select2 en tarjetas de producto */
-        #productos-container .card {
-            overflow: visible !important;
-        }
-
-        .insumo-btn-height {
-            height: 39px !important;
-            /* Altura fijada a 39px */
-            line-height: 1.5;
-            padding: 0.375rem 0.75rem;
-            /* Ajustar padding si es necesario */
-            display: flex;
-            /* Usar flexbox para centrar contenido */
-            align-items: center;
-            /* Centrar verticalmente */
-            justify-content: center;
-            /* Centrar horizontalmente */
-        }
-
-        /* Estilos para modal de selecci�n de productos */
-        .producto-selector-btn {
-            cursor: pointer;
-            background: #fff;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            padding: 0.375rem 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 38px;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-
-        .producto-selector-btn:hover {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-
-        .producto-selector-btn .producto-text {
-            flex-grow: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .producto-selector-btn .placeholder-text {
-            color: #6c757d;
-        }
-
-        #productosModalTable tbody tr {
-            cursor: pointer;
-            transition: background-color 0.15s;
-        }
-
-        #productosModalTable tbody tr:hover {
-            background-color: #e3f2fd !important;
-        }
-
-        #productosModalTable tbody tr.selected {
-            background-color: #bbdefb !important;
-        }
-
-        .producto-img-thumb {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        /* Z-index para que el modal de productos aparezca sobre el modal principal */
-        #productosModal {
-            z-index: 1060 !important;
-        }
-
-        #productosModal .modal-backdrop {
-            z-index: 1055 !important;
-        }
-
-        /* ── Atlántico Brand Utility Theme — Clases compartidas ─────────────────
-                           Estas clases son las mismas que en cotizaciones/index.blade.php.
-                           Al definirlas aquí también, cualquier modal utilitario en esta página
-                           las hereda automáticamente sin necesidad de inline styles adicionales.
-                        ───────────────────────────────────────────────────────────────────────── */
-        #productosModal .modal-header,
-        #productosModal-header {
-            background-color: #132649 !important;
-            background-image: none !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        #productosModal .modal-header .modal-title {
-            color: #ffffff !important;
-        }
-
-        /* Row-level thead: Bootstrap no aplica sus variables CSS a <thead>/<tr> */
-        #productosModalTable thead,
-        #productosModalTable thead tr {
-            background: #132649;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        }
-
-        #productosModalTable thead tr th {
-            background: transparent !important;
-            background-color: transparent !important;
-            --bs-table-bg: transparent;
-            --bs-table-accent-bg: transparent;
-            --bs-table-hover-bg: transparent;
-            border: none !important;
-        }
-
-        /* Botón de selección: azul de marca → hover: cyan */
-        .btn-atlantico-brand {
-            background-color: #132649;
-            border-color: #132649;
-            color: #ffffff;
-            transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
-        }
-
-        .btn-atlantico-brand:hover,
-        .btn-atlantico-brand:focus {
-            background-color: #00d9a5;
-            border-color: #00c49a;
-            color: #ffffff;
-            transform: scale(1.08);
-            box-shadow: 0 2px 8px rgba(0, 217, 165, 0.4);
-        }
-
-        .btn-atlantico-brand i {
-            color: #ffffff !important;
-        }
-
-        /* Botón de cierre: SVG mask → blanco puro via filter */
-        .utility-modal-close {
-            filter: brightness(0) invert(1) !important;
-            opacity: 1 !important;
-            transition: transform 0.15s ease, filter 0.15s ease !important;
-        }
-
-        .utility-modal-close:hover {
-            transform: scale(1.15);
-            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 217, 165, 0.8)) !important;
-        }
-    </style>
+    {{-- Estilos en public/assets/css/custom.css — secciones "UTILIDADES GLOBALES" y "MÓDULO PEDIDOS" --}}
 
     <!-- Modal para seleccionar producto -->
     <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true"
@@ -456,8 +40,8 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <!-- Header — Nivel 2: Modal utilitario de búsqueda (Pedidos) -->
-                <div class="modal-header p-3" id="productosModal-header" style="background-color: #132649 !important;">
-                    <h5 class="modal-title" style="color: #ffffff !important;" id="productosModalLabel">
+                <div class="modal-header utility-modal-header p-3" id="productosModal-header">
+                    <h5 class="modal-title" id="productosModalLabel">
                         <i class="ri-search-line me-2" style="opacity:0.7;"></i>Buscar y Seleccionar Producto
                     </h5>
                     <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
@@ -502,7 +86,7 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive" style="max-height: 350px;">
-                                <table class="table table-hover mb-0" id="productosModalTable">
+                                <table class="table table-hover mb-0 table-seleccionable" id="productosModalTable">
                                     <thead style="position: sticky; top: 0; z-index: 10;">
                                         <tr>
                                             <th style="width:8%;  border:none;" class="text-white text-center"><i
@@ -567,7 +151,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle dt-transactional">
+                    <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle dt-transactional table-operativa">
                         <thead>
                             <tr>
                                 <th>Pedido</th>
@@ -589,11 +173,11 @@
     @include('admin.pedidos.modals.seleccionar_cotizacion')
     @include('admin.partials.catalog_modals')
     <!-- Modal para ver detalles del Pedido -->
-    <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal atlantico-modal--op" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-light p-3">
+                <div class="modal-header">
                     <h5 class="modal-title">Detalles del Pedido</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -876,13 +460,13 @@
     </div>
 
     <!-- Modal para agregar/editar -->
-    <div class="modal fade" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal atlantico-modal--op" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
-                <div class="modal-header p-3" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                    <h5 class="modal-title text-white" id="modalTitle">Agregar Pedido</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Agregar Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <form id="pedidoForm" enctype="multipart/form-data">
@@ -1187,11 +771,11 @@
     </div>
 
     <!-- Modal Agregar/Editar Cliente (reutilizado) -->
-    <div class="modal fade" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade atlantico-modal atlantico-modal--op" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-light p-3">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

@@ -1,132 +1,252 @@
-﻿<!-- Modal para ver detalles -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+<!-- Modal — Detalles de Orden de Producción -->
+{{-- Estilos en public/assets/css/custom.css — sección "MÓDULO ÓRDENES — Modal Detalles" --}}
+
+<div class="modal fade atlantico-modal atlantico-modal--op" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
-                <h5 class="modal-title">Detalles de la Orden de Producción</h5>
+
+            <!-- ══ CAPA 1: Encabezado estático ════════════════════════ -->
+            <div class="modal-header">
+                <h6 class="modal-title fw-semibold mb-0 orden-modal-title">
+                    <i class="ri-list-check-2 me-2 opacity-75"></i>Detalles de la Orden de Producción
+                </h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- Encabezado del Producto y Estado -->
-                <div class="d-flex justify-content-between align-items-start mb-4">
+
+            <!-- ══ CAPA 1: Zona de KPIs (placa blanca) ════════════════ -->
+            <div class="view-plate px-4 pt-3 pb-3">
+
+                <!-- Identidad: Producto + Estado + Metadata -->
+                <div class="d-flex align-items-start justify-content-between mb-3">
                     <div>
-                        <h5 class="min-w-fit mb-1" id="view-producto"></h5>
-                        <p class="text-muted mb-0">Creado por: <span id="view-creado-por" class="fw-medium"></span></p>
-                    </div>
-                    <div id="view-estado"></div>
-                </div>
-
-                <!-- Tarjetas de Métricas -->
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <div class="card bg-light border-0 shadow-none mb-0">
-                            <div class="card-body py-3">
-                                <h6 class="text-muted text-uppercase fs-11 mb-2">Cantidad Solicitada</h6>
-                                <h4 class="mb-0" id="view-cantidad-solicitada"></h4>
-                            </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                            <h5 class="fw-bold mb-0" id="view-producto"></h5>
+                            <div id="view-estado"></div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-light border-0 shadow-none mb-0">
-                            <div class="card-body py-3">
-                                <h6 class="text-muted text-uppercase fs-11 mb-2">Cantidad Producida</h6>
-                                <h4 class="mb-0" id="view-cantidad-producida"></h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-light border-0 shadow-none mb-0">
-                            <div class="card-body py-3">
-                                <h6 class="text-muted text-uppercase fs-11 mb-2">Costo Estimado</h6>
-                                <h4 class="mb-0" id="view-costo-estimado"></h4>
-                            </div>
-                        </div>
+                        <p class="text-muted mb-0 fs-12 d-flex align-items-center flex-wrap gap-1">
+                            <span id="view-pedido-info"></span>
+                            <span class="px-1 opacity-50">·</span>
+                            <i class="ri-user-line opacity-50"></i>
+                            <span id="view-creado-por"></span>
+                            <span class="px-1 opacity-50">·</span>
+                            <i class="ri-time-line opacity-50"></i>
+                            <span id="view-created"></span>
+                        </p>
                     </div>
                 </div>
 
-                <div class="row">
-                    <!-- Columna Izquierda: Detalles de Fechas y Progreso -->
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <h6 class="text-muted text-uppercase fs-12 mb-3">Progreso de Producción</h6>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="flex-grow-1">
-                                    <div class="progress animated-progress custom-progress progress-label">
-                                        <div id="view-progreso" class="progress-bar bg-success" role="progressbar"
-                                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                            <div class="label"></div>
+                <!-- KPI Strip — jerarquía tipográfica pura -->
+                <div class="row g-0 mb-3">
+                    <div class="col-4 kpi-sep pe-4">
+                        <p class="text-uppercase text-muted mb-1 kpi-label"
+                           >Solicitada</p>
+                        <p class="mb-0 fw-bold kpi-number"
+                           
+                            id="view-cantidad-solicitada"></p>
+                        <p class="text-muted mb-0 kpi-unit">unidades</p>
+                    </div>
+                    <div class="col-4 kpi-sep px-4">
+                        <p class="text-uppercase text-muted mb-1 kpi-label"
+                           >Producida</p>
+                        <p class="mb-0 fw-bold kpi-number"
+                           
+                            id="view-cantidad-producida"></p>
+                        <p class="text-muted mb-0 kpi-unit">unidades</p>
+                    </div>
+                    <div class="col-4 kpi-sep ps-4">
+                        <p class="text-uppercase text-muted mb-1 kpi-label"
+                           >Costo Estimado</p>
+                        <p class="mb-0 fw-bold kpi-number kpi-number-sm"
+                            id="view-costo-estimado"></p>
+                        <p class="text-muted mb-0 kpi-unit">estimado</p>
+                    </div>
+                </div>
+
+                <!-- Barra de progreso — único acento teal -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-uppercase text-muted kpi-label"
+                           >Progreso de producción</span>
+                        <span class="fw-semibold progress-pct-label">
+                            <span id="view-progreso-pct">0</span>% completado
+                        </span>
+                    </div>
+                    <div class="progress progress-orden">
+                        <div id="view-progreso" class="progress-bar progress-bar-orden" role="progressbar"
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ══ CAPA 0: Lienzo gris — Tab Nav + Content ═══════════ -->
+            <div class="modal-body p-3">
+
+                <!-- Tabs nav — pertenece al lienzo, no a la placa -->
+                <ul class="nav mb-3" id="viewModalTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-detalles-btn"
+                            data-bs-toggle="pill" data-bs-target="#tab-detalles" type="button" role="tab"
+                            aria-selected="true">
+                            <i class="ri-calendar-2-line me-1"></i>Cronograma & Detalles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-insumos-btn"
+                            data-bs-toggle="pill" data-bs-target="#tab-insumos" type="button" role="tab"
+                            aria-selected="false">
+                            <i class="ri-box-3-line me-1"></i>Insumos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-avances-btn"
+                            data-bs-toggle="pill" data-bs-target="#tab-avances" type="button" role="tab"
+                            aria-selected="false">
+                            <i class="ri-bar-chart-grouped-line me-1"></i>Avances
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="viewModalTabContent">
+
+                    <!-- ─ TAB 1: Cronograma & Detalles ─────────────── -->
+                    <div class="tab-pane fade show active" id="tab-detalles" role="tabpanel"
+                        aria-labelledby="tab-detalles-btn">
+                        <div class="row g-3">
+
+                            <!-- Timeline -->
+                            <div class="col-md-5">
+                                <div class="card border-0 shadow-sm h-100 mb-0">
+                                    <div class="card-body p-3">
+                                        <p class="text-uppercase text-muted mb-3 kpi-label"
+                                           >
+                                            <i class="ri-calendar-2-line me-1 text-op-accent"></i>Cronograma
+                                        </p>
+                                        <!-- Inicio -->
+                                        <div class="d-flex gap-3 mb-0">
+                                            <div class="d-flex flex-column align-items-center flex-shrink-0">
+                                                <div class="rounded-circle flex-shrink-0 timeline-dot timeline-dot-start"></div>
+                                                <div class="timeline-line"></div>
+                                            </div>
+                                            <div class="pb-3">
+                                                <p class="text-muted mb-0 timeline-date-label">Fecha de inicio</p>
+                                                <span id="view-fecha-inicio" class="fw-semibold timeline-date-value"></span>
+                                            </div>
+                                        </div>
+                                        <!-- Fin estimado -->
+                                        <div class="d-flex gap-3 mb-0">
+                                            <div class="d-flex flex-column align-items-center flex-shrink-0">
+                                                <div class="rounded-circle flex-shrink-0 timeline-dot timeline-dot-mid"></div>
+                                                <div class="timeline-line"></div>
+                                            </div>
+                                            <div class="pb-3">
+                                                <p class="text-muted mb-0 timeline-date-label">Fecha fin estimada</p>
+                                                <span id="view-fecha-fin-estimada" class="fw-semibold timeline-date-value"></span>
+                                            </div>
+                                        </div>
+                                        <!-- Fin real -->
+                                        <div class="d-flex gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="rounded-circle flex-shrink-0 timeline-dot timeline-dot-end"></div>
+                                            </div>
+                                            <div>
+                                                <p class="text-muted mb-0 fst-italic timeline-date-label">
+                                                    Fin de producción</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mb-4">
-                            <h6 class="text-muted text-uppercase fs-12 mb-3">Cronograma</h6>
-                            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                                <span class="text-muted">Fecha de Inicio:</span>
-                                <span id="view-fecha-inicio" class="fw-medium"></span>
+                            <!-- Diseño + Notas -->
+                            <div class="col-md-7 d-flex flex-column gap-3">
+                                <div class="card border-0 shadow-sm mb-0">
+                                    <div class="card-body p-3">
+                                        <p class="text-uppercase text-muted mb-2 kpi-label"
+                                           >
+                                            <i class="ri-paint-brush-line me-1 text-op-accent"></i>Diseño / Bordado
+                                        </p>
+                                        <div class="fs-13 view-content-area" id="view-logo"></div>
+                                    </div>
+                                </div>
+                                <div class="card border-0 shadow-sm mb-0">
+                                    <div class="card-body p-3">
+                                        <p class="text-uppercase text-muted mb-2 kpi-label"
+                                           >
+                                            <i class="ri-sticky-note-line me-1 text-op-accent"></i>Notas
+                                        </p>
+                                        <p class="text-muted mb-0 fs-13 view-content-area" id="view-notas"
+                                           ></p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                                <span class="text-muted">Fecha Fin Estimada:</span>
-                                <span id="view-fecha-fin-estimada" class="fw-medium"></span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted">Fecha de Creación:</span>
-                                <span id="view-created" class="fw-medium"></span>
+
+                        </div>
+                    </div>
+
+                    <!-- ─ TAB 2: Insumos ────────────────────────────── -->
+                    <div class="tab-pane fade" id="tab-insumos" role="tabpanel"
+                        aria-labelledby="tab-insumos-btn">
+                        <div class="card border-0 shadow-sm mb-0">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-nowrap table-sm align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Insumo</th>
+                                                <th class="text-center">Est.</th>
+                                                <th class="text-center">Utilizado</th>
+                                                <th>Progreso</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="view-insumos"></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Columna Derecha: Detalles Adicionales -->
-                    <div class="col-md-6">
-                        <div class="mb-4">
-                            <h6 class="text-muted text-uppercase fs-12 mb-3">Detalles de Diseño</h6>
-                            <div class="border rounded p-3">
-                                <p class="text-muted mb-1">Logo / Bordado:</p>
-                                <div id="view-logo"></div>
+                    <!-- ─ TAB 3: Avances ────────────────────────────── -->
+                    <div class="tab-pane fade" id="tab-avances" role="tabpanel"
+                        aria-labelledby="tab-avances-btn">
+
+                        <div class="card border-0 shadow-sm mb-0">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-nowrap table-sm align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Empleado</th>
+                                                <th class="text-center">Producido</th>
+                                                <th class="text-center">Defectuoso</th>
+                                                <th>Observaciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="view-avances">
+                                            <tr id="avances-empty-row">
+                                                <td colspan="5" class="text-center text-muted py-3 fs-12">
+                                                    <i class="ri-inbox-line me-1"></i>Sin registros de avance
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mb-4">
-                            <h6 class="text-muted text-uppercase fs-12 mb-3">Notas Adicionales</h6>
-                            <div class="alert alert-light border shadow-sm mb-0" role="alert">
-                                <p id="view-notas" class="mb-0 text-muted"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- Sección de Insumos -->
-                <div class="mt-4">
-                    <h6 class="text-muted text-uppercase fs-12 mb-3">Insumos Requeridos</h6>
-                    <div class="border rounded">
-                        <div class="table-responsive">
-                            <table class="table table-nowrap align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col" style="width: 35%;">Insumo</th>
-                                        <th scope="col" class="text-center" style="width: 20%;">Cant. Estimada</th>
-                                        <th scope="col" class="text-center" style="width: 20%;">Cant. Utilizada</th>
-                                        <th scope="col" style="width: 25%;">Progreso</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="view-insumos">
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
                 </div>
             </div>
 
-
-            <div class="modal-footer bg-light border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <!-- ══ Footer ════════════════════════════════════════════ -->
+            <div class="modal-footer view-plate py-2 px-4">
+                <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">
                     <i class="ri-close-line me-1"></i>Cerrar
                 </button>
             </div>
+
         </div>
     </div>
 </div>

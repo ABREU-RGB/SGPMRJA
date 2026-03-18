@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asignación de Tareas — SGPMRJA</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #1f2937;
+    background: #fff;
+    padding: 40px 52px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Cabecera del documento ── */
+  .doc-header {
+    text-align: center;
+    border-bottom: 4px solid #1e3c72;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  .doc-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1e3c72;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .doc-header h3 { font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  .doc-header p  { font-size: 12px; color: #6b7280; }
+  .badges { display: flex; justify-content: center; gap: 12px; margin-top: 12px; }
+  .badge-vanessa {
+    background: #9333ea; color: #fff;
+    padding: 5px 16px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+  }
+  .badge-santiago {
+    background: #16a34a; color: #fff;
+    padding: 5px 16px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+  }
+
+  /* ── Tipografía ── */
+  h1 { font-size: 21px; font-weight: 800; margin: 32px 0 10px; }
+  h2 { font-size: 17px; font-weight: 700; margin: 28px 0 8px; }
+  h3 { font-size: 14px; font-weight: 700; margin: 20px 0 6px; color: #374151; }
+  h4 { font-size: 13px; font-weight: 600; margin: 14px 0 4px; }
+  p  { margin-bottom: 8px; }
+  strong { font-weight: 700; }
+  em     { font-style: italic; }
+  a      { color: #1e3c72; text-decoration: none; }
+
+  /* ── Separador ── */
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+
+  /* ── Regla de Oro ── */
+  .regla-de-oro {
+    background: #fffbeb;
+    border-left: 5px solid #f59e0b;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+  }
+  .regla-de-oro p { margin: 0; font-size: 13px; font-weight: 600; color: #92400e; }
+  .regla-de-oro .label { font-size: 15px; font-weight: 800; color: #b45309; display: block; margin-bottom: 4px; }
+
+  /* ── Sección Git Flow ── */
+  .git-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 24px 0;
+  }
+  .git-section h2 { color: #1e3c72; margin-top: 0; font-size: 18px; }
+  .git-section h3 { color: #374151; font-size: 13px; margin-top: 16px; }
+
+  /* ── Bloques de código ── */
+  pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 11.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 10px 0 14px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  code {
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 11.5px;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 20px;
+    font-size: 12.5px;
+  }
+  thead tr { background: #1e3c72; color: #fff; }
+  thead th { padding: 9px 12px; text-align: left; font-weight: 700; font-size: 12px; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  tbody tr:hover { background: #eff6ff; }
+  td, th { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+
+  /* ── Filas coloreadas del índice ── */
+  tr.row-vanessa { background: #faf5ff !important; }
+  tr.row-vanessa td:first-child { color: #9333ea; font-weight: 700; }
+  tr.row-santiago { background: #f0fdf4 !important; }
+  tr.row-santiago td:first-child { color: #16a34a; font-weight: 700; }
+
+  /* ── Listas ── */
+  ul, ol { padding-left: 22px; margin: 8px 0 12px; }
+  li { margin-bottom: 4px; }
+  ul.checklist { list-style: none; padding-left: 4px; }
+  ul.checklist li::before { content: "☐ "; color: #9ca3af; font-size: 13px; }
+
+  /* ── Callouts / Alertas ── */
+  .callout {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 16px; border-radius: 8px; margin: 12px 0;
+    font-size: 12.5px;
+  }
+  .callout-warning { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
+  .callout-info    { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
+  .callout-block   { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout p { margin: 0; }
+
+  /* ── Prompt IA ── */
+  .prompt-ia {
+    background: #f0fdf4;
+    border: 1px dashed #86efac;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 12px;
+    color: #166534;
+  }
+  .prompt-ia .label { font-weight: 700; font-size: 12px; display: block; margin-bottom: 4px; }
+
+  /* ── Banner VANESSA ── */
+  .bloque-vanessa-banner {
+    background: linear-gradient(135deg, #9333ea, #c026d3);
+    color: #fff;
+    padding: 22px 28px;
+    border-radius: 12px;
+    margin: 36px 0 8px;
+  }
+  .bloque-vanessa-banner h1 { color: #fff; font-size: 22px; margin: 0 0 6px; }
+  .bloque-vanessa-banner p  { color: rgba(255,255,255,0.9); margin: 0; font-size: 13px; }
+  .bloque-vanessa-banner .orden { margin-top: 10px; font-size: 11.5px; color: rgba(255,255,255,0.85); }
+
+  /* ── Banner SANTIAGO ── */
+  .bloque-santiago-banner {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: #fff;
+    padding: 22px 28px;
+    border-radius: 12px;
+    margin: 36px 0 8px;
+  }
+  .bloque-santiago-banner h1 { color: #fff; font-size: 22px; margin: 0 0 6px; }
+  .bloque-santiago-banner p  { color: rgba(255,255,255,0.9); margin: 0; font-size: 13px; }
+  .bloque-santiago-banner .orden { margin-top: 10px; font-size: 11.5px; color: rgba(255,255,255,0.85); }
+
+  /* ── Tarjeta de tarea Vanessa ── */
+  .task-card-vanessa {
+    border: 1px solid #e9d5ff;
+    border-left: 5px solid #9333ea;
+    border-radius: 0 8px 8px 0;
+    padding: 0;
+    margin: 28px 0;
+    background: #fff;
+    page-break-inside: avoid;
+  }
+  .task-card-vanessa .task-header {
+    background: linear-gradient(to right, #faf5ff, #fff);
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid #e9d5ff;
+  }
+  .task-card-vanessa .task-header h2 {
+    color: #9333ea;
+    font-size: 15px;
+    margin: 0 0 4px;
+    font-weight: 800;
+  }
+  .task-card-vanessa .task-body { padding: 14px 20px; }
+
+  /* ── Tarjeta de tarea Santiago ── */
+  .task-card-santiago {
+    border: 1px solid #bbf7d0;
+    border-left: 5px solid #16a34a;
+    border-radius: 0 8px 8px 0;
+    padding: 0;
+    margin: 28px 0;
+    background: #fff;
+    page-break-inside: avoid;
+  }
+  .task-card-santiago .task-header {
+    background: linear-gradient(to right, #f0fdf4, #fff);
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid #bbf7d0;
+  }
+  .task-card-santiago .task-header h2 {
+    color: #16a34a;
+    font-size: 15px;
+    margin: 0 0 4px;
+    font-weight: 800;
+  }
+  .task-card-santiago .task-body { padding: 14px 20px; }
+
+  /* ── Meta de tarea ── */
+  .task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .meta-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pill-rama    { background: #e0e7ff; color: #3730a3; }
+  .pill-baja    { background: #dcfce7; color: #166534; }
+  .pill-media   { background: #fef9c3; color: #854d0e; }
+  .pill-alta    { background: #fee2e2; color: #991b1b; }
+  .pill-bloqueo { background: #fce7f3; color: #9d174d; }
+  .pill-libre   { background: #f1f5f9; color: #475569; }
+
+  /* ── Sub-headers de sección ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #6b7280;
+    margin: 16px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+
+  /* ── Tabla de specs ── */
+  .specs-table { font-size: 12px; }
+  .specs-table thead tr { background: #374151; }
+  .specs-table td:first-child { font-weight: 600; color: #374151; width: 38%; }
+
+  /* ── Interdependencia tree ── */
+  .dep-tree {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    margin: 12px 0;
+  }
+  .dep-tree .node-s  { color: #4ade80; font-weight: 700; }
+  .dep-tree .node-v  { color: #c084fc; font-weight: 700; }
+  .dep-tree .comment { color: #64748b; font-style: italic; }
+  .dep-tree .arrow   { color: #f59e0b; }
+
+  /* ── Checklist final ── */
+  .checklist-final {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px 26px;
+    margin-top: 28px;
+  }
+  .checklist-final h2 { color: #1e3c72; font-size: 17px; margin: 0 0 14px; }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 12.5px;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 16px; height: 16px; min-width: 16px;
+    border: 2px solid #94a3b8;
+    border-radius: 4px;
+    margin-top: 1px;
+  }
+
+  /* ── Pie de página ── */
+  .doc-footer {
+    text-align: center;
+    font-size: 11px;
+    color: #9ca3af;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+    margin-top: 40px;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 20px 32px; font-size: 12px; }
+    .task-card-vanessa, .task-card-santiago { page-break-inside: avoid; }
+    .bloque-vanessa-banner, .bloque-santiago-banner { page-break-before: always; }
+    pre { font-size: 10.5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  CABECERA                                             -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="doc-header">
+  <h1>📋 DOCUMENTO DE ASIGNACIÓN DE TAREAS — SGPMRJA</h1>
+  <h3>Sprint de Calidad y Funcionalidades Pendientes</h3>
+  <p><strong>Fecha:</strong> 15 de marzo de 2026 &nbsp;|&nbsp; <strong>Tech Lead:</strong> Emmanuel</p>
+  <div class="badges">
+    <span class="badge-vanessa">🟣 Vanessa — Frontend &amp; UI</span>
+    <span class="badge-santiago">🟢 Santiago — Backend &amp; Lógica</span>
+  </div>
+</div>
+
+<!-- ── Regla de Oro ── -->
+<div class="regla-de-oro">
+  <span class="label">⚠️ REGLA DE ORO</span>
+  <p>Antes de escribir una sola línea de código, debes pedirle a tu agente de IA que escanee y te explique los estándares globales del sistema (UI, CSS, DataTables, Reportes). Todo código nuevo debe ser 100% consistente con la arquitectura existente.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  GIT FLOW                                             -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="git-section">
+  <h2>🌳 Estrategia de Ramas (Git Flow)</h2>
+  <p>La rama de integración del sprint es <strong><code>enmanuel</code></strong>. Nadie hace push directo a <code>enmanuel</code> ni a <code>main</code>. Todo trabajo ocurre en ramas personales de feature.</p>
+
+  <h3>📐 Nomenclatura de Ramas</h3>
+  <pre>feat/&lt;tu-nombre&gt;/&lt;id-tarea&gt;-&lt;descripcion-corta&gt;
+
+# Ejemplos Vanessa
+feat/vanessa/v-01-paginacion-datatables
+feat/vanessa/v-04-badge-juridico-dark-mode
+feat/vanessa/v-10-fullscreen-persistence
+
+# Ejemplos Santiago
+feat/santiago/s-01-estandar-geografico
+feat/santiago/s-03-encoding-utf8-pedidos
+feat/santiago/s-08-abono-metodo-pago</pre>
+
+  <h3>🔄 Proceso de Trabajo Paso a Paso</h3>
+  <pre># 1. Crear rama a partir de enmanuel (SIEMPRE sincronizar primero)
+git checkout enmanuel
+git pull origin enmanuel
+git checkout -b feat/vanessa/v-04-badge-juridico-dark-mode
+
+# 2. Commits descriptivos con el ID de tarea
+git add public/assets/css/custom.css
+git commit -m "fix(V-04): agregar override dark mode para badge-tipo-juridico en custom.css"
+
+# 3. Push de la rama
+git push -u origin feat/vanessa/v-04-badge-juridico-dark-mode
+
+# 4. Crear PR hacia enmanuel (NO hacia main)
+gh pr create --base enmanuel \
+  --title "[V-04] Fix badge Jurídico en modo oscuro" \
+  --body "## Cambios\n- Override dark mode en custom.css\n\n## Probado\n- Modo claro ✅\n- Modo oscuro ✅"</pre>
+
+  <h3>⚡ Reglas del Git</h3>
+  <table>
+    <thead><tr><th>Regla</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td>🚫 <strong>Nunca push directo</strong></td><td>Jamás hacer <code>git push</code> a <code>enmanuel</code> o <code>main</code> directamente</td></tr>
+      <tr><td>🔄 <strong>Sincronizar antes de empezar</strong></td><td><code>git pull origin enmanuel</code> antes de crear cualquier rama</td></tr>
+      <tr><td>🎯 <strong>Una rama por tarea</strong></td><td>Cada ID de tarea = una rama = un PR</td></tr>
+      <tr><td>📝 <strong>Commits descriptivos</strong></td><td>Usar el formato <code>tipo(ID): descripción</code></td></tr>
+      <tr><td>✅ <strong>PR no se auto-aprueba</strong></td><td>El Tech Lead (Emmanuel) revisa y hace el merge</td></tr>
+      <tr><td>🔗 <strong>Respetar dependencias</strong></td><td>No crear PR de una tarea bloqueada hasta que el prerequisito esté en <code>enmanuel</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  ÍNDICE GENERAL                                       -->
+<!-- ══════════════════════════════════════════════════════ -->
+<h2>📊 Índice General de Tareas</h2>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Desarrollador</th><th>Módulo</th><th>Título</th><th>Complejidad</th></tr>
+  </thead>
+  <tbody>
+    <tr class="row-vanessa"><td>V-01</td><td>🟣 Vanessa</td><td>Global</td><td>Simplificación del Texto de Paginación</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-02</td><td>🟣 Vanessa</td><td>Dashboard/Nav</td><td>Homepage: Navbar + Timeout de Sesión</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-03</td><td>🟣 Vanessa</td><td>Dashboard</td><td>Refinamiento de Paleta de Colores</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-04</td><td>🟣 Vanessa</td><td>Clientes</td><td>Fix Badge "Jurídico" en Modo Oscuro</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-05</td><td>🟣 Vanessa</td><td>Productos</td><td>Imagen Opcional en Edición</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-06</td><td>🟣 Vanessa</td><td>Productos</td><td>Badges de Estado Activo/Inactivo</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-07</td><td>🟣 Vanessa</td><td>Productos</td><td>Reposición del Switch de Estatus</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-08</td><td>🟣 Vanessa</td><td>Cotizaciones</td><td>Reubicación del Botón "+ Agregar Producto"</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-09</td><td>🟣 Vanessa</td><td>Clientes</td><td>Fix Visual: Ficha de Detalles ⚠️ Espera S-01</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-10</td><td>🟣 Vanessa</td><td>Global</td><td>Persistencia de Pantalla Completa</td><td>🟡 Media</td></tr>
+    <tr><td colspan="5" style="background:#fff; padding:4px;"></td></tr>
+    <tr class="row-santiago"><td>S-01</td><td>🟢 Santiago</td><td>Clientes/Proveedores</td><td>⚠️ [PREREQUISITO] Estándar Geográfico</td><td>🟡 Media</td></tr>
+    <tr class="row-santiago"><td>S-02</td><td>🟢 Santiago</td><td>Pedidos</td><td>Eliminar Botón "Agregar Cliente"</td><td>🟢 Baja</td></tr>
+    <tr class="row-santiago"><td>S-03</td><td>🟢 Santiago</td><td>Pedidos</td><td>Corrección de Encoding UTF-8 en SweetAlert</td><td>🟢 Baja</td></tr>
+    <tr class="row-santiago"><td>S-04</td><td>🟢 Santiago</td><td>Empleados</td><td>Fix Bug: Modal de Edición + Error de Estatus</td><td>🟡 Media</td></tr>
+    <tr class="row-santiago"><td>S-05</td><td>🟢 Santiago</td><td>Proveedores</td><td>Unificación de Formulario ⚠️ Espera S-01</td><td>🟡 Media</td></tr>
+    <tr class="row-santiago"><td>S-06</td><td>🟢 Santiago</td><td>Global</td><td>SoftDeletes: Inhabilitación Lógica + Historial</td><td>🔴 Alta</td></tr>
+    <tr class="row-santiago"><td>S-07</td><td>🟢 Santiago</td><td>Clientes → Global</td><td>Filtros y Búsqueda Avanzada por Columna</td><td>🔴 Alta</td></tr>
+    <tr class="row-santiago"><td>S-08</td><td>🟢 Santiago</td><td>Pedidos</td><td>Lógica de Abono por Método de Pago ⚠️ Espera S-02, S-03</td><td>🔴 Alta</td></tr>
+    <tr class="row-santiago"><td>S-09</td><td>🟢 Santiago</td><td>Global</td><td>Estándar Empresarial de Reportes PDF</td><td>🔴 Alta</td></tr>
+  </tbody>
+</table>
+
+<!-- ── Mapa de Interdependencias ── -->
+<h2>🗺️ Mapa de Interdependencias</h2>
+<div class="dep-tree">
+<span class="node-s">S-01</span> — Estándar Geográfico  <span class="comment">(PREREQUISITO BLOQUEANTE)</span>
+  ├<span class="arrow">──→</span> <span class="node-v">V-09</span> — Fix Visual Clientes     <span class="comment">← Vanessa NO puede empezar hasta que S-01 esté en enmanuel</span>
+  └<span class="arrow">──→</span> <span class="node-s">S-05</span> — Unificación Proveedores <span class="comment">← Santiago NO puede empezar hasta que S-01 esté en enmanuel</span>
+
+<span class="node-s">S-02</span> — Eliminar Botón Cliente
+  └<span class="arrow">──→</span> <span class="node-s">S-03</span> — Encoding UTF-8
+        └<span class="arrow">──→</span> <span class="node-s">S-08</span> — Abono por Método de Pago  <span class="comment">← Tarea más compleja de Pedidos</span>
+
+<span class="comment">Tareas independientes (sin bloqueos):</span>
+  <span class="node-v">Vanessa →</span> V-01, V-02, V-03, V-04, V-05, V-06, V-07, V-08, V-10
+  <span class="node-s">Santiago →</span> S-04, S-06, S-07, S-09
+</div>
+
+<br><hr><br>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  BLOQUE 1 — VANESSA                                   -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="bloque-vanessa-banner">
+  <h1>🟣 BLOQUE 1 — VANESSA: Frontend &amp; UI/UX</h1>
+  <p>10 Tareas · Enfoque: Interfaz de usuario, experiencia visual, correcciones CSS/JS en el frontend.</p>
+  <p class="orden"><strong>Orden de ejecución:</strong> V-01 → V-02 → V-03 → V-04 → V-05 → V-06 → V-07 → V-08 → V-10 → V-09 (última, espera S-01)</p>
+</div>
+
+<!-- V-01 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-01 · Simplificación del Texto de Paginación en DataTables</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-01-paginacion-datatables</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado</div>
+    <p>Los DataTables generan automáticamente el texto verboso: <em>"Mostrando registros del 1 al 10 de un total de 47 registros (filtrados de 47 registros totales)"</em>. DataTables permite personalizar esto con la opción <code>language.info</code>.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Cambiar el texto de paginación en <strong>todos</strong> los DataTables del sistema al formato conciso: <em>"Mostrando 1–10 de 47 registros"</em>.</p>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li>Todos los archivos <code>*/scripts/main.blade.php</code> que inicializan DataTables.</li>
+      <li>Buscar configuración global: <code>grep -r "language:" resources/views/admin</code></li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>El texto en <strong>todos</strong> los módulos muestra: <code>"Mostrando X–Y de Z registros"</code></li>
+      <li>El texto de búsqueda vacía dice <code>"No se encontraron resultados"</code></li>
+      <li>La solución está centralizada — un objeto de idioma compartido, no duplicado por módulo</li>
+      <li>Ningún módulo quedó con el texto antiguo verboso</li>
+    </ul>
+
+    <div class="prompt-ia">
+      <span class="label">🤖 Prompt para tu agente de IA</span>
+      "Escanea todos los archivos en <code>resources/views/admin/</code> que inicializan DataTables buscando <code>DataTable({</code>. Identifica si existe una configuración de idioma centralizada. Propón la solución más limpia para cambiar <code>language.info</code> de todos los DataTables a <code>'Mostrando _START_–_END_ de _TOTAL_ registros'</code> sin duplicar código."
+    </div>
+  </div>
+</div>
+
+<!-- V-02 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-02 · Homepage: Correcciones de Navbar y Timeout de Sesión</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-02-navbar-session-timeout</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado</div>
+    <ul>
+      <li><strong>Timeout:</strong> <code>config/session.php</code> línea 34 → <code>'lifetime' =&gt; env('SESSION_LIFETIME', 120)</code> — <strong>120 min (2 horas)</strong>. Demasiado extenso.</li>
+      <li><strong>Navbar:</strong> el logo <code>atlantico-logo-wide.png</code> en <code>header.blade.php</code> líneas 9–14 colisiona visualmente con el botón "Inicio".</li>
+      <li><strong>Botón Cerrar Sesión:</strong> puede estar desproporcionado en el dropdown.</li>
+    </ul>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li>Cambiar <code>SESSION_LIFETIME=30</code> en el archivo <code>.env</code>.</li>
+      <li>Corregir el espaciado del navbar para eliminar la colisión logo/botón Inicio.</li>
+      <li>Ajustar tamaño del botón "Cerrar Sesión" si es desproporcional.</li>
+    </ol>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>.env</code> — variable <code>SESSION_LIFETIME</code></li>
+      <li><code>resources/views/admin/layouts/header.blade.php</code></li>
+      <li><code>resources/views/admin/layouts/sidebar.blade.php</code></li>
+      <li><code>public/assets/css/custom.css</code> — ajustes CSS (todos los cambios van aquí)</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>La sesión expira a los 30 minutos de inactividad y redirige al login</li>
+      <li>Logo y botón "Inicio" tienen separación visual adecuada en desktop y tablet</li>
+      <li>El botón "Cerrar Sesión" es proporcional al resto de controles del header</li>
+      <li>Layout correcto en modo claro y oscuro</li>
+    </ul>
+  </div>
+</div>
+
+<!-- V-03 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-03 · Refinamiento de Paleta de Colores del Dashboard</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-03-dashboard-paleta-colores</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado</div>
+    <p>Los widgets KPI del dashboard (<code>resources/views/dashboard.blade.php</code>) usan clases Bootstrap del tema (<code>bg-soft-primary</code>, <code>bg-soft-success</code>, <code>bg-soft-info</code>, <code>bg-soft-warning</code>). Estos colores pasteles no armonizan con el Azul Marino Institucional <code>#1e3c72</code>.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Oscurecer y armonizar los colores de las tarjetas KPI. Solo ajustar los que no armonizan; <strong>no rediseñar</strong> el dashboard completo.</p>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/dashboard.blade.php</code> — solo lectura para entender clases</li>
+      <li><code>public/assets/css/custom.css</code> — <strong>ÚNICO archivo donde van los overrides</strong></li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Las tarjetas KPI armonizan visualmente con <code>#1e3c72</code></li>
+      <li>Todos los cambios están en <code>custom.css</code>, no en el blade</li>
+      <li>Se ve correctamente en modo claro y oscuro</li>
+      <li>No se afecta ningún otro módulo</li>
+    </ul>
+  </div>
+</div>
+
+<!-- V-04 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-04 · Fix Badge "Jurídico" en Modo Oscuro</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-04-badge-juridico-dark-mode</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — Bug exacto localizado</div>
+    <p>En <code>resources/views/admin/clientes/index.blade.php</code>, <strong>líneas 193–200</strong>, el badge jurídico tiene:</p>
+    <pre>.badge-tipo-juridico {
+    background-color: rgba(111, 66, 193, 0.15);
+    color: #6f42c1;  /* ← Purple puro: casi invisible en dark mode */
+}</pre>
+    <p>El sistema ya tiene el patrón correcto para overrides de dark mode en <code>public/assets/css/custom.css</code>. Solo hay que seguirlo.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Agregar el override en <code>custom.css</code> usando el selector <code>[data-bs-theme="dark"] .badge-tipo-juridico</code>.<br>
+    <strong>Tono sugerido para dark mode:</strong> <code>#c4b5fd</code> (Violet-300 — el mismo que usa el sistema para <code>badge-soft-info</code>).</p>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>public/assets/css/custom.css</code> — <strong>ÚNICO archivo a modificar</strong></li>
+      <li><code>resources/views/admin/clientes/index.blade.php</code> líneas 188–201 — solo lectura</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>En modo oscuro: badge "Jurídico" es claramente legible</li>
+      <li>En modo claro: badge se ve igual que antes (sin regresión)</li>
+      <li>Selector: <code>[data-bs-theme="dark"] .badge-tipo-juridico</code> en <code>custom.css</code></li>
+      <li>También verificar y corregir <code>badge-tipo-natural</code> y <code>badge-tipo-gubernamental</code> en dark mode</li>
+    </ul>
+
+    <div class="prompt-ia">
+      <span class="label">🤖 Prompt para tu agente de IA</span>
+      "Lee el bloque <code>[data-bs-theme='dark']</code> en <code>public/assets/css/custom.css</code>. Ese es el patrón para overrides de badges en dark mode. Ahora lee las líneas 188–201 de <code>clientes/index.blade.php</code>. Siguiendo exactamente ese patrón, dime qué líneas agregar a <code>custom.css</code> para que el badge 'Jurídico' tenga buen contraste en dark mode usando Violet-300 (#c4b5fd)."
+    </div>
+  </div>
+</div>
+
+<!-- V-05 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-05 · Imagen Opcional en Edición de Producto</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-05-producto-imagen-opcional</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — Bug localizado en frontend</div>
+    <p>La auditoría de <code>ProductoController::update()</code> (<code>app/Http/Controllers/ProductoController.php</code>, línea 110) confirma que el <strong>backend ya es correcto</strong>:</p>
+    <pre>'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',</pre>
+    <p>El bug está en el <strong>frontend</strong>: el modal de edición probablemente tiene <code>&lt;input type="file" required&gt;</code> en el HTML.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li>Eliminar el atributo <code>required</code> del <code>input[type="file"]</code> en el modal de edición.</li>
+      <li>Mostrar una preview de la imagen actual junto al campo de subida.</li>
+      <li>Garantizar que el formulario guarda sin necesidad de subir nueva imagen.</li>
+    </ol>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/productos/index.blade.php</code> — contiene el modal de edición</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Editar producto sin cambiar imagen → guarda exitosamente sin errores</li>
+      <li>La imagen existente permanece tras editar sin subir nueva</li>
+      <li>El modal muestra una preview de la imagen actual</li>
+      <li>Al subir nueva imagen → reemplaza correctamente la anterior</li>
+    </ul>
+  </div>
+</div>
+
+<!-- V-06 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-06 · Badges de Estado Activo/Inactivo en Listado de Productos</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-06-producto-badges-estado</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado</div>
+    <p>El modelo <code>Producto</code> tiene el campo <code>estado</code> (boolean, <code>app/Models/Producto.php</code> línea 27). El DataTable de productos no tiene diferenciación visual de estado mediante badges, a diferencia de otros módulos.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ul>
+      <li><strong>Activo</strong> → Badge verde (estándar <code>status-aprobada</code>: <code>#6ee7b7</code> dark mode, verde suave light mode)</li>
+      <li><strong>Inactivo</strong> → Badge gris (estándar <code>status-cancelado</code>)</li>
+    </ul>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/productos/index.blade.php</code> — render de columna en DataTable</li>
+      <li><code>public/assets/css/custom.css</code> — reutilizar clases de badge existentes</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Columna estado muestra badge verde "Activo" o gris "Inactivo"</li>
+      <li>Los badges se ven correctamente en modo claro y oscuro</li>
+      <li>Se reutilizan las clases de badge del sistema (no crear nuevas clases)</li>
+    </ul>
+
+    <div class="prompt-ia">
+      <span class="label">🤖 Prompt para tu agente de IA</span>
+      "Lee el bloque de estilos de badges de estado en <code>public/assets/css/custom.css</code> (busca <code>status-aprobada</code>, <code>status-cancelado</code>). Luego léeme cómo se renderiza la columna de estado en el DataTable de otro módulo que ya tenga badges. Quiero aplicar el mismo patrón en <code>productos/index.blade.php</code> para el campo booleano <code>estado</code>."
+    </div>
+  </div>
+</div>
+
+<!-- V-07 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-07 · Reposición del Switch de Estatus al Final del Formulario</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-07-producto-switch-estatus</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado</div>
+    <p>En UX, el control "Estatus/Activar" debe estar al final del formulario. El usuario primero completa todos los datos y luego decide si activa el registro. En el formulario actual de Productos el switch puede estar en posición intermedia.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Mover el control de <strong>Estatus</strong> al final de los formularios de Creación y Edición de Productos, justo antes de los botones de acción Guardar/Cancelar.</p>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/productos/index.blade.php</code> — modales de Crear y Editar</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>El campo "Estatus" es el último campo antes de los botones Guardar/Cancelar</li>
+      <li>Aplica en el formulario de Crear y de Editar</li>
+      <li>La funcionalidad del switch no cambia, solo su posición</li>
+      <li>Documentar si el mismo problema existe en otros formularios del sistema</li>
+    </ul>
+  </div>
+</div>
+
+<!-- V-08 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-08 · Cotizaciones: Reubicación del Botón "+ Agregar Producto"</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-08-cotizaciones-boton-agregar</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — Ubicación exacta del bug</div>
+    <p>Auditoría de <code>resources/views/admin/cotizaciones/modals.blade.php</code>, <strong>línea 411</strong>:</p>
+    <pre>&lt;div class="card-header ... d-flex align-items-center justify-content-between"&gt;
+    &lt;h6&gt;2. Productos de la Cotización&lt;/h6&gt;
+    &lt;button type="button" class="btn btn-sm btn-success px-3" id="add-producto-item"&gt;
+        &lt;i class="ri-add-line me-1"&gt;&lt;/i&gt;Agregar Producto
+    &lt;/button&gt;
+&lt;/div&gt;</pre>
+    <p>Es anti-UX tener el botón "Agregar" antes de ver el área donde se agregan los ítems.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Mover el botón <code>#add-producto-item</code> del <code>card-header</code> al final del <code>card-body</code>, debajo del contenedor <code>#productos-container</code>. El comportamiento funcional no cambia.</p>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/cotizaciones/modals.blade.php</code> — líneas 401–422</li>
+      <li><code>resources/views/admin/cotizaciones/scripts/main.blade.php</code> — verificar que <code>$('#add-producto-item').on('click', ...)</code> usa ID (no posición DOM)</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>El botón "+ Agregar Producto" está al final del listado, no en el header</li>
+      <li>El botón sigue funcionando correctamente (agrega filas de producto)</li>
+      <li>El modal sigue el flujo lógico de datos</li>
+    </ul>
+  </div>
+</div>
+
+<!-- V-09 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-09 · Fix Visual Módulo Clientes: Ficha de Detalles</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-09-clientes-ficha-detalles</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-bloqueo">⚠️ Esperar S-01 mergeado</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="callout callout-block">
+      <span class="callout-icon">🔴</span>
+      <p><strong>BLOQUEADA.</strong> No iniciar hasta que la tarea <strong>S-01</strong> de Santiago esté completada y mergeada en <code>enmanuel</code>. Coordinar con Santiago antes de empezar.</p>
+    </div>
+
+    <div class="section-label">📋 Contexto auditado</div>
+    <ul>
+      <li>El <code>#viewModal</code> de Clientes muestra <code>id="view-ciudad"</code> con label incorrecto. El estándar de S-01 establece que debe decir "Municipio".</li>
+      <li>El badge de "Estatus" aparece tanto en el badge de color como en texto explícito — redundancia visual innecesaria.</li>
+    </ul>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li>Aplicar el estándar geográfico de S-01 en los labels del <code>#viewModal</code>.</li>
+      <li>Eliminar el texto redundante "Estatus" de la ficha (el badge de color es auto-descriptivo).</li>
+    </ol>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/clientes/index.blade.php</code> — sección del <code>#viewModal</code></li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>La ficha muestra el label "Municipio:" con el valor correcto del campo <code>ciudad</code></li>
+      <li>El texto redundante "Estatus" fue eliminado</li>
+      <li>Se ve correctamente en modo claro y oscuro</li>
+    </ul>
+  </div>
+</div>
+
+<!-- V-10 -->
+<div class="task-card-vanessa">
+  <div class="task-header">
+    <h2>🎨 Tarea V-10 · Persistencia de Pantalla Completa (Fullscreen)</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/vanessa/v-10-fullscreen-persistence</span>
+      <span class="meta-pill pill-media">🟡 Complejidad Media</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado</div>
+    <p>El header (<code>resources/views/admin/layouts/header.blade.php</code>, <strong>línea 200</strong>) tiene un botón de fullscreen con <code>data-toggle="fullscreen"</code>. El sistema YA persiste el tema oscuro/claro via <code>localStorage</code> en <code>app.blade.php</code> líneas 24–39. No existe un mecanismo equivalente para el estado fullscreen — al navegar entre módulos, el modo pantalla completa se pierde.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Implementar persistencia del estado fullscreen usando <code>localStorage</code>, siguiendo <strong>exactamente</strong> el mismo patrón que el sistema usa para el tema oscuro/claro.</p>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/layouts/header.blade.php</code> — botón en línea 200</li>
+      <li><code>resources/views/admin/layouts/app.blade.php</code> — <strong>patrón de localStorage a imitar</strong> (líneas 24–39)</li>
+      <li><code>public/assets/js/</code> — verificar si el toggle fullscreen del tema está aquí</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Activar fullscreen → navegar a otro módulo → el sistema permanece en fullscreen</li>
+      <li>Desactivar fullscreen → navegar → el sistema permanece en modo normal</li>
+      <li>El estado persiste al recargar la página (F5)</li>
+      <li>El ícono cambia correctamente entre <code>bx-fullscreen</code> y <code>bx-exit-fullscreen</code></li>
+      <li>No se rompe ningún otro componente del layout</li>
+    </ul>
+
+    <div class="prompt-ia">
+      <span class="label">🤖 Prompt para tu agente de IA</span>
+      "Lee las líneas 24–39 de <code>resources/views/admin/layouts/app.blade.php</code>. Ese es el código que persiste el tema oscuro usando <code>localStorage</code>. Ahora lee la línea 200 de <code>header.blade.php</code> para ver el botón de fullscreen. Siguiendo exactamente ese mismo patrón de <code>localStorage</code>, implementa la persistencia del estado fullscreen. No uses librerías externas."
+    </div>
+  </div>
+</div>
+
+<br><hr><br>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  BLOQUE 2 — SANTIAGO                                  -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="bloque-santiago-banner">
+  <h1>🟢 BLOQUE 2 — SANTIAGO: Backend &amp; Lógica</h1>
+  <p>9 Tareas · Enfoque: Lógica de negocio, corrección de bugs de backend, modelos, controladores y arquitectura de datos.</p>
+  <p class="orden"><strong>Orden de ejecución:</strong> S-01 → S-02 → S-03 → S-04 → S-05 (espera S-01) → S-06 → S-07 → S-08 (espera S-02, S-03) → S-09</p>
+</div>
+
+<!-- S-01 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-01 · [PREREQUISITO BLOQUEANTE] Estándar de Ubicación Geográfica</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-01-estandar-geografico</span>
+      <span class="meta-pill pill-media">🟡 Complejidad Media</span>
+      <span class="meta-pill pill-bloqueo">⚠️ Bloquea V-09 y S-05</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <p>Esta tarea bloquea a <strong>V-09 (Vanessa)</strong> y <strong>S-05 (Santiago)</strong>. Completarla y mergear a <code>enmanuel</code> lo antes posible para desbloquear al equipo.</p>
+    </div>
+
+    <div class="section-label">📋 Contexto auditado — Inconsistencia severa detectada</div>
+    <table class="specs-table">
+      <thead><tr><th>Ubicación en el código</th><th>Label mostrado</th><th>Campo en DB</th></tr></thead>
+      <tbody>
+        <tr><td><code>clientes/index.blade.php</code> línea 774 (form)</td><td><strong>"Municipio"</strong></td><td><code>ciudad</code></td></tr>
+        <tr><td><code>clientes/index.blade.php</code> línea 571 (modal ver)</td><td><strong>"Ciudad"</strong></td><td><code>ciudad</code></td></tr>
+        <tr><td><code>clientes/reporte_pdf.blade.php</code> línea 318</td><td><strong>"Ciudad"</strong></td><td><code>ciudad</code></td></tr>
+        <tr><td><code>app/Models/Direccion.php</code></td><td>campo: <code>ciudad</code></td><td><code>ciudad</code></td></tr>
+        <tr><td><code>Proveedor</code> jurídico</td><td>campo directo: <code>direccion</code></td><td>sin estado/ciudad</td></tr>
+      </tbody>
+    </table>
+    <p>La solución <strong>NO requiere migración de base de datos</strong>. Solo estandarizar los labels de la UI.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li>Campo <code>ciudad</code> en DB → label <strong>"Municipio"</strong> en toda la UI.</li>
+      <li>Campo <code>estado</code> → label <strong>"Estado"</strong> en toda la UI.</li>
+      <li>Unificar labels en formularios y vistas de detalle del módulo Clientes.</li>
+      <li>Actualizar header de columna en el PDF de Clientes (línea 318): "Ciudad" → "Municipio".</li>
+      <li>Agregar comentario de documentación en <code>public/assets/js/municipios-venezuela.js</code>.</li>
+    </ol>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/clientes/index.blade.php</code> — formularios y vistas</li>
+      <li><code>resources/views/admin/clientes/reporte_pdf.blade.php</code> — línea 318</li>
+      <li><code>public/assets/js/municipios-venezuela.js</code> — agregar comentario de documentación</li>
+      <li><code>app/Models/Direccion.php</code> — modelo de referencia (NO modificar)</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Formulario crear/editar Clientes: labels "Estado" y "Municipio" correctos</li>
+      <li>Modal de detalles: muestra "Estado:" y "Municipio:" (coordinar con Vanessa para V-09)</li>
+      <li>Reporte PDF de Clientes: columna dice "Municipio" (no "Ciudad")</li>
+      <li>El JS <code>municipios-venezuela.js</code> sigue funcionando (no cambiar lógica, solo documentar)</li>
+      <li>Ninguna funcionalidad se rompe</li>
+    </ul>
+  </div>
+</div>
+
+<!-- S-02 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-02 · Pedidos: Eliminar Botón "Agregar Cliente"</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-02-pedidos-eliminar-boton-cliente</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — Líneas exactas del bug</div>
+    <p>En <code>resources/views/admin/pedidos/index.blade.php</code>, <strong>líneas 916–919</strong>:</p>
+    <pre>&lt;button type="button" class="btn btn-outline-success"
+    id="open-add-cliente-modal" title="Agregar nuevo cliente"&gt;
+    &lt;i class="ri-user-add-line"&gt;&lt;/i&gt;
+&lt;/button&gt;</pre>
+    <p>JavaScript asociado en <strong>líneas 2673–2714</strong> del mismo archivo. Por flujo de negocio, los clientes solo se crean/seleccionan desde Cotizaciones.</p>
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <p><strong>Nota:</strong> Existen archivos residuales en el directorio que deben eliminarse: <code>index.blade.php.bak</code> y <code>index.blade.php.utf8</code>.</p>
+    </div>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li>Eliminar el botón <code>#open-add-cliente-modal</code> (líneas 916–919).</li>
+      <li>Eliminar el JavaScript asociado (líneas 2673–2714).</li>
+      <li>Eliminar los archivos residuales <code>.bak</code> y <code>.utf8</code>.</li>
+    </ol>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>El formulario de Pedidos ya no muestra el botón "Agregar Cliente"</li>
+      <li>El autocomplete de búsqueda de cliente sigue funcionando perfectamente</li>
+      <li>No queda código JavaScript huérfano del botón eliminado</li>
+      <li>Los archivos <code>.bak</code> y <code>.utf8</code> han sido eliminados</li>
+    </ul>
+  </div>
+</div>
+
+<!-- S-03 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-03 · Pedidos: Corrección de Encoding UTF-8 en SweetAlert</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-03-pedidos-encoding-utf8</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos — hacer antes de S-08</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — Bug exacto confirmado</div>
+    <p>En <code>resources/views/admin/pedidos/index.blade.php</code>, <strong>línea 2479</strong>:</p>
+    <pre>// ❌ Actualmente (caracteres corruptos):
+text: "¿No podrás revertir esto!",      // aparece: "?No podr?s revertir esto!"
+confirmButtonText: 'Sí, eliminarlo!',    // aparece: "S?, eliminarlo!"
+
+// ✅ Debe verse así:
+text: "¡No podrás revertir esto!",
+confirmButtonText: 'Sí, eliminarlo!',</pre>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Corregir todas las strings de SweetAlert con caracteres especiales del español. Localizar y reescribir directamente las strings afectadas.</p>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/pedidos/index.blade.php</code> — buscar con <code>grep -n "podr\|eliminarlo\|seguro"</code></li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>SweetAlert muestra correctamente: <code>¿Estás seguro?</code>, <code>¡No podrás revertir esto!</code>, <code>Sí, eliminarlo!</code></li>
+      <li>No hay símbolos <code>?</code> en rombo negro en ningún texto del módulo</li>
+      <li>El <code>&lt;meta charset="UTF-8"&gt;</code> sigue presente en el layout (ya está — no tocar)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- S-04 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-04 · Empleados: Fix del Modal de Edición + Error de Estatus</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-04-empleados-fix-modal-edicion</span>
+      <span class="meta-pill pill-media">🟡 Complejidad Media</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — Causa raíz del bug</div>
+    <p>La auditoría de <code>EmpleadoController::update()</code> (líneas 161–209) revela que los campos <code>documento_identidad</code>, <code>tipo_documento</code>, <code>cargo</code>, <code>departamento</code> y <code>estado</code> son <strong>todos <code>required</code></strong>. El error <em>"El documento de identidad es obligatorio (and 1 more error)"</em> ocurre porque el modal de edición <strong>no pre-llena</strong> estos campos al recibir el JSON del endpoint <code>edit()</code>.</p>
+    <p>El <code>EmpleadoController::edit()</code> (líneas 140–159) <strong>sí devuelve</strong> todos los datos correctamente. El bug está en el <strong>JavaScript del modal</strong> que no mapea los campos recibidos a los <code>id</code> de los inputs.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li>Identificar qué campos del JSON no se mapean al formulario de edición.</li>
+      <li>Corregir el JS para que <code>estado</code>, <code>documento_identidad</code>, <code>tipo_documento</code>, <code>cargo</code> y <code>departamento</code> se poblen correctamente.</li>
+      <li>Corregir el layout desalineado en la sección "Contacto y Ubicación" del modal de detalles.</li>
+    </ol>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/empleados/index.blade.php</code> — modal de edición + JS</li>
+      <li><code>app/Http/Controllers/EmpleadoController.php</code> — <code>edit()</code> líneas 140–159 y <code>update()</code> líneas 161–209</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Editar un empleado: todos los campos se pre-llenan correctamente</li>
+      <li>El formulario se envía sin errores de validación cuando los datos son válidos</li>
+      <li>El estatus del empleado se carga y muestra correctamente</li>
+      <li>La sección "Contacto y Ubicación" del modal de detalles está visualmente alineada</li>
+    </ul>
+
+    <div class="prompt-ia">
+      <span class="label">🤖 Prompt para tu agente de IA</span>
+      "Lee el método <code>edit()</code> del <code>EmpleadoController</code> (líneas 140–159) y el modal de edición en <code>empleados/index.blade.php</code>. Analiza el JS que toma la respuesta JSON y rellena el formulario. El error dice 'El documento de identidad es obligatorio'. Busca el campo con nombre <code>documento_identidad</code> en el formulario y verifica si su valor se setea en el callback AJAX. Identifica todos los campos del JSON que no se mapean correctamente."
+    </div>
+  </div>
+</div>
+
+<!-- S-05 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-05 · Proveedores: Unificación de Formulario y Campo Geográfico</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-05-proveedores-unificacion-form</span>
+      <span class="meta-pill pill-media">🟡 Complejidad Media</span>
+      <span class="meta-pill pill-bloqueo">⚠️ Esperar S-01 mergeado</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="callout callout-block">
+      <span class="callout-icon">🔴</span>
+      <p><strong>BLOQUEADA.</strong> No iniciar hasta que <strong>S-01</strong> esté mergeado en <code>enmanuel</code>.</p>
+    </div>
+
+    <div class="section-label">📋 Contexto auditado</div>
+    <p>El modelo <code>Proveedor</code> tiene dos tipos:</p>
+    <ul>
+      <li><strong>Natural:</strong> usa relación con <code>Persona</code> → datos normalizados (igual que Cliente).</li>
+      <li><strong>Jurídico:</strong> usa campos directos en tabla <code>proveedor</code> (<code>razon_social</code>, <code>rif</code>, <code>direccion</code>, <code>telefono</code>, <code>email</code>) → <strong>NO usa el modelo <code>Direccion</code></strong> → no tiene campos de estado territorial ni municipio.</li>
+    </ul>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li>Sección "Datos Personales" → <strong>"Datos del Proveedor"</strong>. Bloques: <strong>Identificación | Contacto | Ubicación</strong>.</li>
+      <li>Proveedores jurídicos: agregar campos <strong>Estado</strong> y <strong>Municipio</strong> en formulario y vista de detalles.</li>
+      <li>Aplicar el estándar geográfico de S-01.</li>
+    </ol>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/proveedores/index.blade.php</code></li>
+      <li><code>app/Models/Proveedor.php</code></li>
+      <li><code>app/Http/Controllers/ProveedorController.php</code></li>
+      <li><code>database/migrations/</code> — si se requiere: <code>php artisan make:migration add_ubicacion_to_proveedor_table</code></li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Formulario de Proveedores tiene los mismos bloques de sección que el de Clientes</li>
+      <li>Proveedores jurídicos tienen campos de Estado y Municipio en formulario y detalles</li>
+      <li>Nomenclatura idéntica a Clientes (Identificación / Contacto / Ubicación)</li>
+      <li>Si hay migración: correctamente versionada y ejecutada con <code>php artisan migrate</code></li>
+    </ul>
+  </div>
+</div>
+
+<!-- S-06 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-06 · SoftDeletes: Inhabilitación Lógica + Historial</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-06-softdeletes-inhabilitacion-ui</span>
+      <span class="meta-pill pill-alta">🔴 Complejidad Alta</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — SoftDeletes YA implementado en backend</div>
+    <table class="specs-table">
+      <thead><tr><th>Modelo</th><th>use SoftDeletes</th><th>Campo deleted_at</th></tr></thead>
+      <tbody>
+        <tr><td><code>Cliente</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+        <tr><td><code>Proveedor</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+        <tr><td><code>Producto</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+        <tr><td><code>Pedido</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+        <tr><td><code>Empleado</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+        <tr><td><code>Cotizacion</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+        <tr><td><code>OrdenProduccion</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Lo que NO existe (hay que construir):</strong> Interfaz para ver historial, semántica clara de "Inhabilitar" vs "Eliminar", protección en frontend.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <ol>
+      <li><strong>Renombrar el botón "Eliminar"</strong> a <strong>"Inhabilitar"</strong> en Clientes, Proveedores y Productos.</li>
+      <li>Al inhabilitar: el registro NO desaparece — su badge cambia a "Inactivo".</li>
+      <li><strong>Toggle de vista</strong>: "Solo Activos" (default) ↔ "Ver Historial (Inactivos)".</li>
+      <li>Registros en historial: <strong>solo lectura</strong> (sin botones Editar ni Inhabilitar, solo Ver).</li>
+    </ol>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/clientes/index.blade.php</code>, <code>proveedores/index.blade.php</code>, <code>productos/index.blade.php</code></li>
+      <li><code>app/Http/Controllers/ClienteController.php</code>, <code>ProveedorController.php</code>, <code>ProductoController.php</code></li>
+      <li><code>routes/web.php</code> — verificar rutas de destroy/restore</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>El botón "Eliminar" está renombrado a "Inhabilitar" en los 3 módulos</li>
+      <li>Al Inhabilitar un cliente, el registro muestra badge "Inactivo" en la tabla</li>
+      <li>Existe un control toggle "Activos / Historial" funcional</li>
+      <li>Los registros en historial no tienen botones de editar o inhabilitar (solo Ver)</li>
+      <li>El comportamiento es idéntico en Clientes, Proveedores y Productos</li>
+    </ul>
+  </div>
+</div>
+
+<!-- S-07 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-07 · Filtros y Búsqueda Avanzada por Columna</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-07-clientes-filtros-busqueda</span>
+      <span class="meta-pill pill-alta">🔴 Complejidad Alta</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado</div>
+    <p>Los módulos usan el buscador global de DataTables. No existe filtrado por columna específica. Esto impide al usuario encontrar registros eficientemente sin conocer el nombre exacto.</p>
+
+    <div class="section-label">🎯 Objetivo</div>
+    <p>Implementar filtros en el módulo de <strong>Clientes</strong> (primera iteración, luego se replica el patrón). Filtros requeridos:</p>
+    <ul>
+      <li><strong>Tipo de Cliente</strong> (Natural / Jurídico / Gubernamental) → <code>&lt;select&gt;</code></li>
+      <li><strong>Estatus</strong> (Activo / Inactivo) → <code>&lt;select&gt;</code></li>
+      <li><strong>Estado Territorial</strong> (Venezuela) → <code>&lt;select&gt;</code> desde <code>municipios-venezuela.js</code></li>
+      <li><strong>Cédula/RIF</strong> → campo de texto para búsqueda directa</li>
+    </ul>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/clientes/index.blade.php</code> — UI de filtros + DataTable</li>
+      <li><code>app/Http/Controllers/ClienteController.php</code> — evaluar filtrado server-side</li>
+      <li><code>public/assets/css/custom.css</code> — estilos de filtros (Estándar Maestros Navy <code>#1e3c72</code>)</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Los filtros están visualmente integrados encima de la tabla</li>
+      <li>Seleccionar "Jurídico" filtra solo clientes jurídicos</li>
+      <li>Seleccionar "Inactivo" filtra solo inactivos</li>
+      <li>Los filtros son combinables (Tipo AND Estatus simultáneamente)</li>
+      <li>Un botón "Limpiar filtros" restaura la tabla completa</li>
+      <li>El diseño sigue el Estándar Maestros Navy del sistema</li>
+    </ul>
+  </div>
+</div>
+
+<!-- S-08 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-08 · Pedidos: Lógica de Abono por Método de Pago</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-08-pedidos-abono-metodo-pago</span>
+      <span class="meta-pill pill-alta">🔴 Complejidad Alta</span>
+      <span class="meta-pill pill-bloqueo">⚠️ Esperar S-02 y S-03 mergeados</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="callout callout-block">
+      <span class="callout-icon">🔴</span>
+      <p><strong>BLOQUEADA.</strong> Esperar que <strong>S-02</strong> y <strong>S-03</strong> estén mergeados en <code>enmanuel</code> antes de iniciar.</p>
+    </div>
+
+    <div class="section-label">📋 Contexto auditado — El modelo YA está listo</div>
+    <p>La auditoría de <code>app/Models/Pedido.php</code> (líneas 22–33) confirma que el backend ya tiene la arquitectura completa:</p>
+    <pre>protected $fillable = [
+    'abono',                  // campo legado (mantener por compatibilidad)
+    'efectivo_pagado',        // abono específico en efectivo
+    'transferencia_pagado',   // abono específico en transferencia
+    'pago_movil_pagado',      // abono específico en pago móvil
+    'referencia_transferencia',
+    'referencia_pago_movil',
+    'banco_transferencia_id', // FK → tabla banco
+    'banco_pago_movil_id',    // FK → tabla banco
+];</pre>
+    <p>El problema es <strong>exclusivamente de frontend</strong>: el formulario solo muestra un campo <code>abono</code> general.</p>
+
+    <div class="section-label">🎯 Mockup del formulario a implementar</div>
+    <pre>┌─────────────────────────────────────────────────────┐
+│ 💵 [✓] Efectivo        │ Monto: [___________]       │
+│ 🏦 [✓] Transferencia   │ Banco: [select ▼]          │
+│                        │ Referencia: [___________]  │
+│                        │ Monto: [___________]       │
+│ 📱 [✓] Pago Móvil      │ Banco: [select ▼]          │
+│                        │ Referencia: [___________]  │
+│                        │ Monto: [___________]       │
+├─────────────────────────────────────────────────────┤
+│  Total abonado (calculado auto): Bs. X,XXX.XX       │
+└─────────────────────────────────────────────────────┘</pre>
+
+    <div class="section-label">📁 Archivos clave</div>
+    <ul>
+      <li><code>resources/views/admin/pedidos/index.blade.php</code> — formulario de completar/editar</li>
+      <li><code>app/Http/Controllers/PedidoController.php</code> — métodos <code>update()</code> y <code>store()</code></li>
+      <li><code>app/Models/Pedido.php</code> — referencia (NO modificar estructura)</li>
+      <li><code>app/Models/Banco.php</code> — para poblar los <code>&lt;select&gt;</code> de bancos</li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Formulario muestra secciones por método de pago (Efectivo / Transferencia / Pago Móvil)</li>
+      <li>Cada método puede activarse/desactivarse con checkbox o toggle</li>
+      <li>El total abonado se calcula automáticamente (JS) sumando los tres métodos</li>
+      <li>Al guardar: <code>efectivo_pagado</code>, <code>transferencia_pagado</code>, <code>pago_movil_pagado</code> persisten en BD</li>
+      <li>La vista de detalles muestra el desglose por método (pills de pago con monto)</li>
+      <li>Funciona con un solo método activo (los otros quedan en 0)</li>
+      <li>El campo <code>abono</code> legacy = suma de los tres (compatibilidad)</li>
+    </ul>
+
+    <div class="prompt-ia">
+      <span class="label">🤖 Prompt para tu agente de IA</span>
+      "Lee el modelo <code>Pedido.php</code> completo y el método <code>update()</code> del <code>PedidoController.php</code>. Luego busca en <code>pedidos/index.blade.php</code> el formulario de edición. El modelo YA tiene los campos <code>efectivo_pagado</code>, <code>transferencia_pagado</code>, <code>pago_movil_pagado</code>, <code>banco_transferencia_id</code>, <code>banco_pago_movil_id</code>. El problema es que el formulario solo tiene un campo <code>abono</code> general. Diseña los cambios en el HTML y en el controller. Verifica si el controller ya procesa esos campos en <code>update()</code> o hay que agregarlo."
+    </div>
+  </div>
+</div>
+
+<!-- S-09 -->
+<div class="task-card-santiago">
+  <div class="task-header">
+    <h2>⚙️ Tarea S-09 · Estándar Empresarial de Reportes PDF</h2>
+    <div class="task-meta">
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-09-estandar-reportes-pdf</span>
+      <span class="meta-pill pill-alta">🔴 Complejidad Alta</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos — puede ejecutarse en cualquier momento</span>
+    </div>
+  </div>
+  <div class="task-body">
+    <div class="section-label">📋 Contexto auditado — Estándar canónico definido</div>
+    <table class="specs-table">
+      <thead><tr><th>Propiedad</th><th>Valor exacto</th></tr></thead>
+      <tbody>
+        <tr><td>Fuente base</td><td><code>'DejaVu Sans', sans-serif</code></td></tr>
+        <tr><td>Tamaño base</td><td><code>10px</code></td></tr>
+        <tr><td>Color corporativo</td><td><code>#1e3c72</code> (Azul Marino Institucional)</td></tr>
+        <tr><td>Border del header</td><td><code>border-bottom: 3px solid #1e3c72</code></td></tr>
+        <tr><td>Nombre empresa</td><td><code>font-size: 16px; font-weight: bold; color: #1e3c72</code></td></tr>
+        <tr><td>Título reporte</td><td><code>font-size: 13px; bold; color: #1e3c72; uppercase; letter-spacing: 1px; text-align: center</code></td></tr>
+        <tr><td>Layout encabezado</td><td>Logo (izq.) + Info empresa (centro) + Metadata (der.)</td></tr>
+        <tr><td>Reset CSS</td><td><code>* { margin: 0; padding: 0; box-sizing: border-box; }</code></td></tr>
+      </tbody>
+    </table>
+    <p><strong>Referencia canónica (NO modificar):</strong> <code>resources/views/admin/clientes/reporte_pdf.blade.php</code></p>
+    <p><strong>Targets (6 archivos a migrar):</strong></p>
+    <ul>
+      <li><code>resources/views/admin/empleados/reporte_pdf.blade.php</code></li>
+      <li><code>resources/views/admin/insumos/reporte_pdf.blade.php</code></li>
+      <li><code>resources/views/admin/pedidos/reporte_pdf.blade.php</code></li>
+      <li><code>resources/views/admin/productos/reporte_pdf.blade.php</code></li>
+      <li><code>resources/views/admin/proveedores/reporte_pdf.blade.php</code></li>
+      <li><code>resources/views/admin/cotizaciones/reporte_pdf.blade.php</code></li>
+    </ul>
+
+    <div class="section-label">✅ Criterios de Aceptación</div>
+    <ul class="checklist">
+      <li>Todos los PDFs tienen el header de 3 columnas (logo / empresa / metadata)</li>
+      <li>Todos usan DejaVu Sans y la paleta <code>#1e3c72</code></li>
+      <li>Todos incluyen sección de resumen/estadísticas donde aplique</li>
+      <li>Los reportes se generan sin errores desde los controladores existentes</li>
+      <li>La coherencia visual es total al ver todos los PDFs juntos</li>
+    </ul>
+
+    <div class="prompt-ia">
+      <span class="label">🤖 Prompt para tu agente de IA</span>
+      "Lee completamente <code>resources/views/admin/clientes/reporte_pdf.blade.php</code>. Es el estándar canónico de reportes PDF del sistema. Ahora léeme <code>resources/views/admin/empleados/reporte_pdf.blade.php</code> y compara ambos estructura por estructura. Dame un plan de migración detallado para llevar el reporte de empleados al nuevo estándar conservando sus datos propios. Luego repetiremos el mismo proceso para cada módulo."
+    </div>
+  </div>
+</div>
+
+<br><hr><br>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  CHECKLIST FINAL                                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="checklist-final">
+  <h2>✅ Checklist de Entrega por Tarea</h2>
+  <p style="font-size:12px; color:#6b7280; margin-bottom:14px;">Confirmar todos los puntos antes de abrir el Pull Request.</p>
+  <div class="checklist-item"><div class="check-box"></div><div>🤖 <strong>Código revisado por el agente de IA</strong> antes del primer commit.</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div>🧪 <strong>Prueba manual documentada:</strong> descripción paso a paso del flujo probado.</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div>🌙 <strong>Modo oscuro verificado</strong> para cualquier tarea que toque la UI.</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div>🔗 <strong>Sin regresiones:</strong> los módulos adyacentes no se rompieron.</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div>📝 <strong>Commits con formato correcto:</strong> <code>tipo(ID): descripción en español</code>.</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div>🔀 <strong>PR apuntando a <code>enmanuel</code></strong> (NO a <code>main</code>) con el ID de tarea en el título.</div></div>
+  <div class="checklist-item"><div class="check-box"></div><div>🚫 <strong>Sin archivos de debug, <code>.bak</code>, <code>.log</code> o credenciales</strong> incluidos en el commit.</div></div>
+</div>
+
+<div class="doc-footer">
+  Documento generado mediante auditoría automatizada del codebase SGPMRJA · rama <code>enmanuel</code> · 15/03/2026
+</div>
+
+</body>
+</html>

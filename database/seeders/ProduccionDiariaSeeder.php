@@ -13,7 +13,7 @@ class ProduccionDiariaSeeder extends Seeder
     {
         \App\Models\ProduccionDiaria::create([
             'orden_id' => 1,
-            'operario_id' => 2, // ID del Supervisor
+            'empleado_id' => 2, // ID del Supervisor
             'cantidad_producida' => 30,
             'cantidad_defectuosa' => 2,
             'observaciones' => 'Producción normal'
@@ -21,7 +21,7 @@ class ProduccionDiariaSeeder extends Seeder
 
         \App\Models\ProduccionDiaria::create([
             'orden_id' => 1,
-            'operario_id' => 2, // ID del Supervisor
+            'empleado_id' => 2, // ID del Supervisor
             'cantidad_producida' => 20,
             'cantidad_defectuosa' => 1,
             'observaciones' => 'Retraso por mantenimiento de máquinas'

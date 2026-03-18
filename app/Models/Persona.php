@@ -23,6 +23,8 @@ class Persona extends Model
         'genero'
     ];
 
+    protected $appends = ['nombre_completo'];
+
     protected $casts = [
         'fecha_nacimiento' => 'date'
     ];

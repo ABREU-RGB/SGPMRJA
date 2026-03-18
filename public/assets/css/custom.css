@@ -427,68 +427,6 @@ header#page-topbar,
 }
 
 /* ============================================
-   MODALES - Headers con Gradiente Verde-Azul
-   ============================================ */
-
-/* Todos los modal-header con gradiente */
-.modal-header {
-  background: linear-gradient(
-    135deg,
-    #10b981 0%,
-    #0891b2 50%,
-    #0d6efd 100%
-  ) !important;
-  border-bottom: none !important;
-  padding: 1rem 1.5rem !important;
-}
-
-/* Título del modal en blanco */
-.modal-header .modal-title,
-.modal-header h5,
-.modal-header h4,
-.modal-header .fs-15,
-.modal-header .fw-bold {
-  color: #ffffff !important;
-}
-
-/* Icono en el título */
-.modal-header .modal-title i,
-.modal-header h5 i {
-  color: #ffffff !important;
-  margin-right: 8px;
-}
-
-/* Botón de cerrar en blanco */
-.modal-header .btn-close {
-  filter: brightness(0) invert(1);
-  opacity: 0.8;
-}
-
-.modal-header .btn-close:hover {
-  opacity: 1;
-}
-
-/* Footer del modal con estilo sutil */
-.modal-footer {
-  border-top: 1px solid rgba(16, 185, 129, 0.2);
-  background: #f8f9fa;
-}
-
-/* Botones del modal */
-.modal-footer .btn-primary,
-.modal-footer .btn-success {
-  background: linear-gradient(135deg, #10b981 0%, #0891b2 100%) !important;
-  border: none !important;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
-}
-
-.modal-footer .btn-primary:hover,
-.modal-footer .btn-success:hover {
-  background: linear-gradient(135deg, #0d9668 0%, #067a99 100%) !important;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-}
-
-/* ============================================
    COLORES DE ESTADO GLOBALES
    ============================================ */
 
@@ -900,3 +838,1629 @@ header#page-topbar,
 [data-bs-theme="dark"] .dt-reportes.dataTable tbody tr:hover td {
     background-color: rgba(14,165,233,0.22) !important;
 }
+
+/* ============================================
+   UTILIDADES GLOBALES — Componentes Compartidos
+   Clases abstractas reutilizables entre módulos
+   (OOCSS — sin acoplamiento a IDs específicos)
+   ============================================ */
+
+/* ── .utility-modal-header ───────────────────────────────────────
+   Header Navy institucional para modales utilitarios/búsqueda.
+   Uso: agregar la clase al div.modal-header del modal en el blade.
+   Funciona en light y dark por igual (ya es un fondo oscuro).      */
+.utility-modal-header {
+    background-color: #132649 !important;
+    background-image: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.utility-modal-header .modal-title {
+    color: #ffffff !important;
+}
+
+/* ── .table-seleccionable ────────────────────────────────────────
+   Tabla interactiva para selección de ítems (productos, logos, etc.)
+   Uso: agregar la clase al <table> del modal de búsqueda.           */
+.table-seleccionable tbody tr {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.table-seleccionable tbody tr:hover {
+    background-color: #e3f2fd !important;
+}
+
+.table-seleccionable tbody tr.selected {
+    background-color: #bbdefb !important;
+}
+
+/* Dark mode: azul claro ilegible sobre fondo oscuro */
+[data-bs-theme="dark"] .table-seleccionable tbody tr:hover {
+    background-color: rgba(78, 122, 199, 0.10) !important;
+}
+
+[data-bs-theme="dark"] .table-seleccionable tbody tr.selected {
+    background-color: rgba(78, 122, 199, 0.20) !important;
+}
+
+/* ── .table-operativa ────────────────────────────────────────────
+   Base layout para todos los DataTables del sistema operativo.
+   Uso: agregar la clase al <table> junto a .dt-transactional.
+   Los anchos de columna (nth-child) se definen por ID en cada módulo. */
+.table-operativa {
+    width: 100% !important;
+    table-layout: fixed;
+    font-size: 13px;
+}
+
+.table-operativa th,
+.table-operativa td {
+    padding: 0.4rem 0.6rem;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* La última columna (Acciones) siempre visible para dropdowns */
+.table-operativa td:last-child {
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+}
+
+/* ── .utility-modal-close ────────────────────────────────────────
+   Botón de cierre blanco puro via filter — para usar en headers oscuros. */
+.utility-modal-close {
+    filter: brightness(0) invert(1) !important;
+    opacity: 1 !important;
+    transition: transform 0.15s ease, filter 0.15s ease !important;
+}
+
+.utility-modal-close:hover {
+    transform: scale(1.15);
+    filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 217, 165, 0.8)) !important;
+    opacity: 1 !important;
+}
+
+/* ── .btn-atlantico-brand ────────────────────────────────────────
+   Botón de acción primaria de marca: Navy base → Cyan en hover. */
+.btn-atlantico-brand {
+    background-color: #132649;
+    border-color: #132649;
+    color: #ffffff;
+    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+
+.btn-atlantico-brand:hover,
+.btn-atlantico-brand:focus {
+    background-color: #00d9a5;
+    border-color: #00c49a;
+    color: #ffffff;
+    transform: scale(1.08);
+    box-shadow: 0 2px 8px rgba(0, 217, 165, 0.4);
+}
+
+.btn-atlantico-brand i {
+    color: #ffffff !important;
+}
+
+/* ── .producto-selector-btn ──────────────────────────────────────
+   Botón-selector que abre el modal de búsqueda de productos. */
+.producto-selector-btn {
+    cursor: pointer;
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 38px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.producto-selector-btn:hover {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.producto-selector-btn .producto-text {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.producto-selector-btn .placeholder-text {
+    color: #6c757d;
+}
+
+[data-bs-theme="dark"] .producto-selector-btn {
+    background: #1f2229;
+    border-color: #2d3139;
+    color: #c8cbd0;
+}
+
+[data-bs-theme="dark"] .producto-selector-btn:hover {
+    border-color: #4e7ac7;
+    box-shadow: 0 0 0 0.25rem rgba(78, 122, 199, 0.2);
+}
+
+/* ── .producto-img-thumb ─────────────────────────────────────────
+   Miniatura de imagen de producto en tablas de selección. */
+.producto-img-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* ── Círculos de ícono en #viewModal ─────────────────────────── */
+#viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
+    background: rgba(30, 60, 114, 0.12) !important;
+}
+
+#viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
+    color: #1e3c72 !important;
+}
+
+[data-bs-theme="dark"] #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center {
+    background: rgba(78, 122, 199, 0.15) !important;
+}
+
+[data-bs-theme="dark"] #viewModal .rounded-circle.me-2.d-flex.align-items-center.justify-content-center i {
+    color: #93c5fd !important;
+}
+
+/* ============================================
+   MÓDULO COTIZACIONES
+   ============================================ */
+
+/* ── DataTable — anchos de columna (base en .table-operativa) ── */
+#cotizaciones-table th:nth-child(1) { width: 5%; }
+#cotizaciones-table th:nth-child(2) { width: 30%; }
+#cotizaciones-table th:nth-child(3) { width: 13%; }
+#cotizaciones-table th:nth-child(4) { width: 13%; }
+#cotizaciones-table th:nth-child(5) { width: 15%; text-align: center; }
+#cotizaciones-table th:nth-child(6) { width: 24%; text-align: center; }
+
+#cotizaciones-table td:nth-child(5) {
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+}
+
+/* ── Header gradient para tabla de productos del modal ───────── */
+#productosModalCotizacionTable thead,
+#productosModalCotizacionTable thead tr {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+#productosModalCotizacionTable thead tr th {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* ── Backdrops difuminados ───────────────────────────────────── */
+#modalAddCliente ~ .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+#modalAddCliente .modal-content {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+#logoSearchModal ~ .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* ── Inputs de logos — foco Navy/Cyan ───────────────────────── */
+.nombre-logo-input:focus,
+.ubicacion-logo-input:focus,
+.cantidad-logo-input:focus {
+    border-color: #132649 !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 217, 165, 0.25) !important;
+    outline: none !important;
+}
+
+.nombre-logo-input:focus + .buscar-logo-trigger {
+    border-color: #00d9a5 !important;
+}
+
+.ubicacion-logo-input:focus + .configurar-bordados-trigger {
+    border-color: #00d9a5 !important;
+}
+
+/* ── Swatch Grid de colores ──────────────────────────────────── */
+.color-grupo-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #1e3c72;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 0 4px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(30, 60, 114, 0.1);
+}
+
+.color-swatch-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+    font-size: 0.82rem;
+    user-select: none;
+}
+
+.color-swatch-item:hover {
+    background-color: rgba(0, 217, 165, 0.08);
+    transform: translateX(2px);
+}
+
+.color-swatch-circle {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.color-swatch-item:hover .color-swatch-circle {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3px rgba(0, 217, 165, 0.3);
+}
+
+/* ── Chips de talla ──────────────────────────────────────────── */
+.talla-chip-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    padding: 7px 12px;
+    margin: 0 8px 8px 0;
+    border-radius: 8px;
+    border: 1px solid rgba(30, 60, 114, 0.25);
+    background: #ffffff;
+    color: #1e3c72;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease,
+                transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.talla-chip-item:hover {
+    background: rgba(0, 217, 165, 0.12);
+    border-color: #00d9a5;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0, 217, 165, 0.18);
+}
+
+/* ── Dot indicator de color ──────────────────────────────────── */
+.color-dot-indicator {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0, 0, 0, 0.15);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* ── Chevron collapsible ─────────────────────────────────────── */
+[aria-expanded="true"] .notas-chevron {
+    transform: rotate(180deg);
+}
+
+/* ── Modal de búsqueda de logos — deep shadow ───────────────── */
+#logoSearchModal .modal-content {
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.55),
+        0 8px 24px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(30, 60, 114, 0.22);
+    border-top: 3px solid #00d9a5;
+}
+
+#logoSearchModalTable tbody tr {
+    cursor: pointer;
+    transition: background-color 0.18s ease, transform 0.1s ease;
+}
+
+#logoSearchModalTable tbody tr:hover {
+    background-color: rgba(0, 217, 165, 0.08) !important;
+}
+
+#logoSearchModalTable tbody tr:hover .logo-row-icon {
+    color: #00d9a5 !important;
+    transform: scale(1.15);
+    transition: color 0.15s, transform 0.15s;
+}
+
+.logo-row-icon {
+    color: #adb5bd;
+    font-size: 1rem;
+    transition: color 0.15s, transform 0.15s;
+    display: inline-block;
+}
+
+/* ── Buscador de logos — foco premium ───────────────────────── */
+#buscarLogoModal {
+    border-color: #a8c4e8;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#buscarLogoModal:focus {
+    border-color: #1e3c72 !important;
+    box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.15), 0 2px 6px rgba(30, 60, 114, 0.1) !important;
+    outline: none;
+}
+
+/* ── Dark mode — Módulo Cotizaciones ────────────────────────── */
+[data-bs-theme="dark"] .color-grupo-header {
+    color: #93c5fd;
+    border-bottom-color: rgba(147, 197, 253, 0.15);
+}
+
+[data-bs-theme="dark"] .color-swatch-circle {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+[data-bs-theme="dark"] .talla-chip-item {
+    background: #1f2229;
+    border-color: rgba(78, 122, 199, 0.35);
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .talla-chip-item:hover {
+    background: rgba(78, 122, 199, 0.12);
+    border-color: #4e7ac7;
+    box-shadow: 0 3px 10px rgba(78, 122, 199, 0.2);
+}
+
+[data-bs-theme="dark"] .color-dot-indicator {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   MÓDULO PEDIDOS
+   ============================================ */
+
+/* ── DataTable — anchos de columna (base en .table-operativa) ── */
+#pedidos-table th:nth-child(1) { width: 8%;  text-align: center; }
+#pedidos-table th:nth-child(2) { width: 30%; }
+#pedidos-table th:nth-child(3) { width: 14%; }
+#pedidos-table th:nth-child(4) { width: 12%; }
+#pedidos-table th:nth-child(5) { width: 14%; text-align: center; }
+#pedidos-table th:nth-child(6) { width: 22%; text-align: center; }
+
+#pedidos-table td:nth-child(5) {
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+}
+
+/* ── Header gradient para tabla de productos del modal ───────── */
+#productosModalTable thead,
+#productosModalTable thead tr {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+#productosModalTable thead tr th {
+    background: transparent !important;
+    background-color: transparent !important;
+    --bs-table-bg: transparent;
+    --bs-table-accent-bg: transparent;
+    --bs-table-hover-bg: transparent;
+    border: none !important;
+}
+
+/* ── Z-index fixes ───────────────────────────────────────────── */
+.select2-container--open {
+    z-index: 99999;
+}
+
+#productosModal {
+    z-index: 1060 !important;
+}
+
+#productos-container .card {
+    overflow: visible !important;
+}
+
+/* ── Altura fija para botones de insumos ─────────────────────── */
+.insumo-btn-height {
+    height: 39px !important;
+    line-height: 1.5;
+    padding: 0.375rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Toast de SweetAlert2 sobre modales Bootstrap ───────────── */
+.swal-toast-above-modal {
+    z-index: 99999 !important;
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-width: 400px !important;
+    pointer-events: none;
+}
+
+.swal-toast-above-modal .swal2-popup {
+    pointer-events: auto;
+}
+
+/* ── Autocorrección ──────────────────────────────────────────── */
+.autocorrect-suggestion {
+    position: absolute;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    z-index: 1060;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    max-width: 300px;
+}
+
+.autocorrect-suggestion .suggestion-text {
+    color: #856404;
+    margin-bottom: 5px;
+}
+
+.autocorrect-suggestion .suggestion-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.autocorrect-suggestion .btn-suggestion {
+    font-size: 11px;
+    padding: 2px 8px;
+}
+
+.field-with-suggestion {
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+}
+
+/* ── Autocompletado jQuery UI ────────────────────────────────── */
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1060 !important;
+}
+
+.ui-menu-item {
+    font-size: 14px;
+}
+
+.ui-menu-item .ui-menu-item-wrapper {
+    padding: 8px 12px;
+}
+
+.ui-menu-item .suggestion-meta {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* ── Colores utilitarios de Pedidos ──────────────────────────── */
+.bg-soft-primary  { background-color: rgba(30, 60, 114, 0.1) !important; }
+.bg-soft-success  { background-color: rgba(0, 217, 165, 0.1) !important; }
+.bg-soft-warning  { background-color: rgba(46, 204, 113, 0.2) !important; }
+.text-atlantico-dark { color: #1e3c72 !important; }
+.text-atlantico-cyan { color: #00d9a5 !important; }
+
+/* ── Pills de método de pago ─────────────────────────────────── */
+.metodo-pago-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.1;
+    border: 1px solid transparent;
+}
+
+.metodo-pago-pill i { font-size: 0.78rem; }
+
+.metodo-pago-pill--efectivo {
+    background: rgba(0, 217, 165, 0.16);
+    color: #006b52;
+    border-color: rgba(0, 217, 165, 0.38);
+}
+
+.metodo-pago-pill--transferencia {
+    background: rgba(30, 60, 114, 0.14);
+    color: #1e3c72;
+    border-color: rgba(30, 60, 114, 0.34);
+}
+
+.metodo-pago-pill--pago-movil {
+    background: rgba(42, 82, 152, 0.14);
+    color: #2a5298;
+    border-color: rgba(42, 82, 152, 0.34);
+}
+
+.metodo-pago-pill--none {
+    background: rgba(108, 117, 125, 0.12);
+    color: #5f6b76;
+    border-color: rgba(108, 117, 125, 0.3);
+}
+
+/* ── KPI box de pago ─────────────────────────────────────────── */
+.pago-kpi-box {
+    border: 1px solid rgba(30, 60, 114, 0.18);
+    border-radius: 8px;
+    background: rgba(30, 60, 114, 0.03);
+    padding: 0.55rem;
+}
+
+/* ── Toggle group de métodos de pago ─────────────────────────── */
+#view-metodo-pago { gap: 0.35rem !important; }
+
+.metodo-toggle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.metodo-toggle.form-check { margin: 0; padding: 0; }
+
+.metodo-toggle .form-check-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.metodo-toggle .form-check-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid rgba(30, 60, 114, 0.28);
+    background: rgba(30, 60, 114, 0.05);
+    color: #1e3c72;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.32rem 0.7rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+}
+
+.metodo-toggle .form-check-label i { font-size: 0.82rem; }
+
+.metodo-toggle .form-check-input:checked + .form-check-label {
+    background: rgba(0, 217, 165, 0.16);
+    border-color: rgba(0, 217, 165, 0.42);
+    color: #006b52;
+    box-shadow: 0 1px 6px rgba(0, 217, 165, 0.18);
+}
+
+/* ── Bloque de formulario de método ──────────────────────────── */
+.metodo-form-block {
+    background: rgba(30, 60, 114, 0.04);
+    border: 1px dashed rgba(30, 60, 114, 0.22);
+    border-radius: 8px;
+    padding: 0.6rem;
+}
+
+.metodo-form-title {
+    color: #1e3c72;
+    font-size: 0.86rem;
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* ── Dark mode — Módulo Pedidos ──────────────────────────────── */
+
+[data-bs-theme="dark"] .autocorrect-suggestion {
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.25);
+}
+
+[data-bs-theme="dark"] .autocorrect-suggestion .suggestion-text {
+    color: #fcd34d;
+}
+
+[data-bs-theme="dark"] .metodo-pago-pill--efectivo {
+    color: #6ee7b7;
+    background: rgba(110, 231, 183, 0.12);
+    border-color: rgba(110, 231, 183, 0.28);
+}
+
+[data-bs-theme="dark"] .metodo-pago-pill--transferencia {
+    color: #93c5fd;
+    background: rgba(147, 197, 253, 0.12);
+    border-color: rgba(147, 197, 253, 0.28);
+}
+
+[data-bs-theme="dark"] .metodo-pago-pill--pago-movil {
+    color: #93c5fd;
+    background: rgba(147, 197, 253, 0.10);
+    border-color: rgba(147, 197, 253, 0.24);
+}
+
+[data-bs-theme="dark"] .pago-kpi-box {
+    background: rgba(78, 122, 199, 0.06);
+    border-color: rgba(78, 122, 199, 0.25);
+}
+
+[data-bs-theme="dark"] .metodo-toggle .form-check-label {
+    background: rgba(78, 122, 199, 0.08);
+    border-color: rgba(78, 122, 199, 0.30);
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .metodo-toggle .form-check-input:checked + .form-check-label {
+    background: rgba(110, 231, 183, 0.12);
+    border-color: rgba(110, 231, 183, 0.35);
+    color: #6ee7b7;
+}
+
+[data-bs-theme="dark"] .metodo-form-block {
+    background: rgba(78, 122, 199, 0.05);
+    border-color: rgba(78, 122, 199, 0.25);
+}
+
+[data-bs-theme="dark"] .metodo-form-title {
+    color: #93c5fd;
+}
+
+/* ============================================
+   MODAL SELECCIONAR COTIZACIÓN — Pedidos
+   ============================================ */
+
+/* Padding-top evita que el transform: translateY(-1px) del hover
+   sea recortado por el overflow-y: auto del contenedor padre */
+#cotizaciones-container {
+    padding-top: 2px;
+}
+
+/* Light mode */
+.cotizacion-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.cotizacion-card:hover {
+    border-color: rgba(30, 60, 114, 0.25);
+    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.10);
+    transform: translateY(-1px);
+}
+
+.cotizacion-card.selected {
+    border-color: #1e3c72;
+    background: rgba(30, 60, 114, 0.04);
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.14);
+}
+
+.cotizacion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cotizacion-numero {
+    font-weight: 600;
+    color: #1e3c72;
+    font-size: 1.1rem;
+}
+
+.cotizacion-total {
+    font-weight: 700;
+    color: #059669;
+    font-size: 1.2rem;
+}
+
+.cotizacion-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.cotizacion-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cotizacion-info-item i {
+    color: #64748b;
+}
+
+.cotizacion-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    text-align: right;
+}
+
+/* Dark mode */
+[data-bs-theme="dark"] .cotizacion-card {
+    background: #1f2229;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
+}
+
+[data-bs-theme="dark"] .cotizacion-card:hover {
+    border-color: rgba(78, 122, 199, 0.45);
+    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.30);
+    background: rgba(78, 122, 199, 0.06);
+}
+
+[data-bs-theme="dark"] .cotizacion-card.selected {
+    border-color: #4e7ac7;
+    background: rgba(78, 122, 199, 0.10);
+    box-shadow: 0 2px 8px rgba(78, 122, 199, 0.25);
+}
+
+[data-bs-theme="dark"] .cotizacion-numero {
+    color: #93c5fd;   /* blue-300 — contraste WCAG AA sobre fondo oscuro */
+}
+
+[data-bs-theme="dark"] .cotizacion-total {
+    color: #6ee7b7;   /* emerald-300 — consistente con badges dark mode del sistema */
+}
+
+[data-bs-theme="dark"] .cotizacion-info-item i {
+    color: #94a3b8;   /* slate-400 */
+}
+
+[data-bs-theme="dark"] .cotizacion-footer {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   UTILIDADES GLOBALES — Módulos Maestros
+   ============================================ */
+
+/* ── .table-maestro ──────────────────────────────────────────────
+   Header Navy + zebra Navy para DataTables de módulos Maestros.
+   Uso: agregar al <table> junto a .table-operativa.
+   El selector de especificidad alta evita que el inline dark mode
+   de app.blade.php ([data-bs-theme="dark"] .table thead th)
+   sobreescriba el header navy con #1f2229.                        */
+.table-maestro thead th {
+    background: #1e3c72 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-color: #2a5298 !important;
+}
+
+.table-maestro.dataTable tbody tr {
+    transition: background-color 0.16s ease;
+}
+
+.table-maestro.dataTable tbody tr td {
+    border-top: 1px solid rgba(30, 60, 114, 0.07);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+    background-clip: padding-box;
+}
+
+.table-maestro.dataTable tbody tr.odd td  { background-color: #ffffff; }
+.table-maestro.dataTable tbody tr.even td { background-color: rgba(30, 60, 114, 0.065); }
+.table-maestro.dataTable tbody tr:hover td { background-color: rgba(30, 60, 114, 0.14) !important; }
+
+/* Dark mode — especificidad (0,3,2) supera al inline (0,2,2) */
+[data-bs-theme="dark"] .table-maestro.dataTable thead th {
+    background-color: #1e3c72 !important;
+    background: #1e3c72 !important;
+    border-color: #2a5298 !important;
+}
+
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr td {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr.odd td  { background-color: rgba(255, 255, 255, 0.015); }
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr.even td { background-color: rgba(42, 82, 152, 0.20); }
+[data-bs-theme="dark"] .table-maestro.dataTable tbody tr:hover td { background-color: rgba(42, 82, 152, 0.34) !important; }
+
+/* ── .atlantico-modal ────────────────────────────────────────────
+   Modal CRUD institucional — header Navy degradado, footer sutil.
+   Uso: agregar clase al div.modal en cada modal de Maestros.      */
+.atlantico-modal .modal-content {
+    border: 1px solid rgba(30, 60, 114, 0.16);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 14px 34px rgba(15, 35, 70, 0.16);
+}
+
+.atlantico-modal .modal-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+    border-bottom: 0;
+    padding: 0.85rem 1rem !important;
+}
+
+.atlantico-modal .modal-header .modal-title,
+.atlantico-modal .modal-header h5,
+.atlantico-modal .modal-header h4,
+.atlantico-modal .modal-header h6 {
+    color: #fff !important;
+    font-weight: 700;
+}
+
+.atlantico-modal .modal-header .modal-title i,
+.atlantico-modal .modal-header h5 i,
+.atlantico-modal .modal-header h6 i { color: #fff !important; }
+
+.atlantico-modal .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
+}
+
+.atlantico-modal .modal-header .btn-close:hover { opacity: 1; }
+
+.atlantico-modal .modal-body   { padding: 1.2rem; }
+
+.atlantico-modal .modal-footer {
+    background: #f8f9fa;
+    border-top: 1px solid rgba(30, 60, 114, 0.08) !important;
+    padding: 0.75rem 1rem;
+}
+
+/* Dark mode: footer blanco ilegible en dark */
+[data-bs-theme="dark"] .atlantico-modal .modal-footer {
+    background: #1f2229 !important;
+    border-top-color: #2d3139 !important;
+}
+
+/* Dark mode: preservar gradiente del header — especificidad (0,3,0) supera la regla
+   global [data-bs-theme="dark"] .modal-header (0,2,0) definida en app.blade.php */
+[data-bs-theme="dark"] .atlantico-modal .modal-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+}
+
+/* ── .atlantico-modal--op ────────────────────────────────────────
+   Modificador Transacciones — sobreescribe el header navy del base
+   con el gradiente institucional cyan (#10b981 → #0891b2 → #0d6efd).
+   Uso: agregar junto a .atlantico-modal en modals de Transacciones
+   (Órdenes, Pedidos, etc.).                                        */
+.atlantico-modal--op .modal-header {
+    background: linear-gradient(135deg, #10b981 0%, #0891b2 50%, #0d6efd 100%) !important;
+    border-bottom: none !important;
+}
+
+[data-bs-theme="dark"] .atlantico-modal--op .modal-header {
+    background: linear-gradient(135deg, #10b981 0%, #0891b2 50%, #0d6efd 100%) !important;
+}
+
+/* ── .modal-form-section ─────────────────────────────────────────
+   Sección agrupada dentro de un modal CRUD con borde navy sutil.  */
+.modal-form-section {
+    border: 1px solid rgba(30, 60, 114, 0.12);
+    border-radius: 0.65rem;
+    padding: 0.9rem;
+    background: rgba(30, 60, 114, 0.025);
+    margin-bottom: 0.9rem;
+}
+
+.modal-form-section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Dark mode: fondo y texto navy invisibles en dark */
+[data-bs-theme="dark"] .modal-form-section {
+    background: rgba(78, 122, 199, 0.06);
+    border-color: rgba(78, 122, 199, 0.20);
+}
+
+[data-bs-theme="dark"] .modal-form-section-title {
+    color: #93c5fd;   /* blue-300 */
+}
+
+/* ── .badge-tipo / .badge-status ─────────────────────────────────
+   Base visual para badges de clasificación y estado en Maestros.  */
+.badge-tipo,
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+/* ── .campo-protegido ────────────────────────────────────────────
+   Input de solo lectura en modo edición (clave primaria, etc.)    */
+.campo-protegido {
+    background-color: #f0f0f0 !important;
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.campo-protegido-wrapper { position: relative; }
+
+.campo-protegido-wrapper::after {
+    content: '\F1A4';
+    font-family: 'remixicon';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #878a99;
+    font-size: 14px;
+}
+
+[data-bs-theme="dark"] .campo-protegido {
+    background-color: #2d3139 !important;
+}
+
+/* ── .btn-purple ─────────────────────────────────────────────────
+   Botón violeta para acciones secundarias (importar, etc.)        */
+.btn-purple            { background-color: #6f42c1; border-color: #6f42c1; color: #fff; }
+.btn-purple:hover      { background-color: #5e35b1; border-color: #5e35b1; color: #fff; }
+
+/* ── .producto-info-item ─────────────────────────────────────────
+   Card de información de producto en el modal de detalle.         */
+.producto-info-item {
+    border: 1px solid rgba(30, 60, 114, 0.1);
+    border-radius: 0.6rem;
+    background: #fff;
+    padding: 0.6rem 0.7rem;
+    height: 100%;
+}
+
+[data-bs-theme="dark"] .producto-info-item {
+    background: #1f2229;
+    border-color: rgba(78, 122, 199, 0.18);
+}
+
+/* ============================================
+   MÓDULOS MAESTROS — Badges de Clasificación
+   ============================================ */
+
+/* Colores de tipo — persona/empresa */
+.badge-tipo-natural     { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+.badge-tipo-juridico    { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-tipo-gubernamental { background-color: rgba(247, 184, 75, 0.18); color: #e0a800; }
+
+/* Colores de departamento (Empleados) */
+.badge-depto-administracion { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-depto-produccion     { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+.badge-depto-otro           { background-color: rgba(0, 217, 165, 0.15);  color: #00d9a5; }
+
+/* Colores de tipo insumo */
+.badge-tipo-tela     { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-tipo-hilo     { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+.badge-tipo-boton    { background-color: rgba(247, 184, 75, 0.18); color: #e0a800; }
+.badge-tipo-cierre   { background-color: rgba(0, 217, 165, 0.15);  color: #00d9a5; }
+.badge-tipo-etiqueta { background-color: rgba(233, 30, 99, 0.15);  color: #e91e63; }
+
+/* Colores de tipo producto */
+.badge-tipo-producto  { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+
+/* Colores de rol (Users) */
+.badge-rol-admin      { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
+.badge-rol-supervisor { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
+
+/* Estado activo/inactivo — compartido por Empleados, Productos, Users */
+.badge-status-activo,
+.badge-status.status-activo   { background-color: rgba(25, 135, 84, 0.15);  color: #198754; }
+.badge-status-inactivo,
+.badge-status.status-inactivo { background-color: rgba(220, 53, 69, 0.15);  color: #dc3545; }
+
+/* Dark mode — verde oscuro #198754 ilegible sobre fondo dark */
+[data-bs-theme="dark"] .badge-status-activo,
+[data-bs-theme="dark"] .badge-status.status-activo {
+    background-color: rgba(110, 231, 183, 0.12);
+    color: #6ee7b7;    /* emerald-300 */
+}
+
+/* ── Indicadores de stock (Insumos) ─────────────────────────────*/
+.stock-bajo   { color: #dc3545; }
+.stock-medio  { color: #ffc107; }
+.stock-normal { color: #198754; }
+
+[data-bs-theme="dark"] .stock-normal { color: #6ee7b7; }
+
+/* ============================================
+   MÓDULO CLIENTES — Anchos de columna
+   ============================================ */
+#clientes-table th:nth-child(1) { width: 14%; }
+#clientes-table th:nth-child(2) { width: 25%; }
+#clientes-table th:nth-child(3) { width: 11%; }
+#clientes-table th:nth-child(4) { width: 14%; }
+#clientes-table th:nth-child(5) { width: 22%; }
+#clientes-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#clientes-table td:last-child   { text-align: center; overflow: visible; }
+#clientes-table td:nth-child(5) { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Secciones del modal de detalle (Clientes) ──────────────── */
+#showModal .modal-body                       { padding: 0.85rem; }
+#showModal .modal-form-section               { padding: 0.7rem 0.75rem; margin-bottom: 0.6rem; }
+#showModal .modal-form-section-title         { font-size: 0.78rem; margin-bottom: 0.45rem; }
+#showModal .section-header-compact           { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.4rem; }
+#showModal .section-header-compact .modal-form-section-title { margin-bottom: 0; }
+
+/* ============================================
+   MÓDULO EMPLEADOS — Anchos de columna
+   ============================================ */
+#empleados-table th:nth-child(1) { width: 13%; }
+#empleados-table th:nth-child(2) { width: 21%; }
+#empleados-table th:nth-child(3) { width: 14%; }
+#empleados-table th:nth-child(4) { width: 16%; }
+#empleados-table th:nth-child(5) { width: 14%; }
+#empleados-table th:nth-child(6) { width: 8%;  }
+#empleados-table th:nth-child(7) { width: 14%; text-align: center; }
+
+#empleados-table td:last-child { text-align: center; overflow: visible; }
+#empleados-table td:nth-child(2),
+#empleados-table td:nth-child(4),
+#empleados-table td:nth-child(5) { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* viewModal card headers (Empleados) */
+#viewModal .card-header    { background: rgba(30, 60, 114, 0.1) !important; }
+#viewModal .card-header h6 { color: #1e3c72 !important; }
+
+[data-bs-theme="dark"] #viewModal .card-header    { background: rgba(78, 122, 199, 0.10) !important; }
+[data-bs-theme="dark"] #viewModal .card-header h6 { color: #93c5fd !important; }
+
+/* ============================================
+   MÓDULO INSUMOS — Anchos de columna
+   ============================================ */
+#insumos-table th:nth-child(1) { width: 20%; }
+#insumos-table th:nth-child(2) { width: 13%; }
+#insumos-table th:nth-child(3) { width: 11%; }
+#insumos-table th:nth-child(4) { width: 14%; }
+#insumos-table th:nth-child(5) { width: 28%; min-width: 220px; }
+#insumos-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#insumos-table td:last-child { text-align: center; overflow: visible; }
+#insumos-table td:nth-child(1),
+#insumos-table td:nth-child(5) { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================
+   MÓDULO PRODUCTOS — Anchos de columna
+   ============================================ */
+#productos-table th:nth-child(1) { width: 10%; }
+#productos-table th:nth-child(2) { width: 12%; }
+#productos-table th:nth-child(3) { width: 16%; }
+#productos-table th:nth-child(4) { width: 24%; }
+#productos-table th:nth-child(5) { width: 12%; }
+#productos-table th:nth-child(6) { width: 12%; }
+#productos-table th:nth-child(7) { width: 14%; text-align: center; }
+
+#productos-table td:last-child    { text-align: center; overflow: visible; }
+#productos-table td:nth-child(2)  { overflow: visible; }
+#productos-table td:nth-child(4)  { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================
+   MÓDULO PROVEEDORES — Anchos de columna
+   ============================================ */
+#proveedores-table th:nth-child(1) { width: 14%; }
+#proveedores-table th:nth-child(2) { width: 26%; }
+#proveedores-table th:nth-child(3) { width: 12%; }
+#proveedores-table th:nth-child(4) { width: 14%; }
+#proveedores-table th:nth-child(5) { width: 20%; }
+#proveedores-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#proveedores-table td:last-child    { text-align: center; overflow: visible; }
+#proveedores-table td:nth-child(5)  { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================
+   MÓDULO USERS — Anchos de columna
+   ============================================ */
+#users-table th:nth-child(1) { width: 28%; }
+#users-table th:nth-child(2) { width: 30%; }
+#users-table th:nth-child(3) { width: 14%; }
+#users-table th:nth-child(4) { width: 14%; }
+#users-table th:nth-child(5) { width: 14%; text-align: center; }
+
+#users-table td:last-child    { text-align: center; overflow: visible; }
+#users-table td:nth-child(2)  { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ============================================================
+   MÓDULO INVENTARIO — MOVIMIENTOS DE INVENTARIO
+   ============================================================ */
+
+/* Modal solapado: visibilidad temporal suprimida */
+.modal-hidden-temp {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* z-index para modal de insumo rápido (apilado sobre createModal) */
+#modalAddInsumo { z-index: 1060; }
+
+/* ── Anchos de columna #movimientos-table ── */
+#movimientos-table th:nth-child(1) { width: 30%; }
+#movimientos-table th:nth-child(2) { width: 18%; text-align: center; }
+#movimientos-table th:nth-child(3) { width: 12%; text-align: center; }
+#movimientos-table th:nth-child(4) { width: 12%; text-align: center; }
+#movimientos-table th:nth-child(5) { width: 14%; }
+#movimientos-table th:nth-child(6) { width: 14%; text-align: center; }
+
+#movimientos-table td:nth-child(2),
+#movimientos-table td:nth-child(3),
+#movimientos-table td:nth-child(4),
+#movimientos-table td:last-child {
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+}
+
+/* ── Modal Detalles (#viewModal) — Tarjetas de información ── */
+
+/* Cabecera de tarjeta: tono navy (Información del Insumo) */
+.inv-card-header-navy {
+    background: rgba(30, 60, 114, 0.08) !important;
+}
+.inv-card-header-navy h6 {
+    color: #1e3c72;
+}
+
+/* Cabecera de tarjeta: tono emerald (Cambio de Stock) */
+.inv-card-header-emerald {
+    background: rgba(16, 185, 129, 0.10) !important;
+}
+.inv-card-header-emerald h6 {
+    color: #059669;
+}
+
+/* Círculos de ícono (40×40) */
+.inv-icon-circle {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+.inv-icon-circle-navy    { background: rgba(30, 60, 114, 0.10); }
+.inv-icon-circle-emerald { background: rgba(16, 185, 129, 0.10); }
+.inv-icon-circle-teal    { background: rgba(0, 217, 165, 0.10); }
+.inv-icon-circle-blue    { background: rgba(13, 110, 253, 0.10); }
+.inv-icon-circle-green   { background: rgba(25, 135, 84, 0.10); }
+
+/* Indicadores de stock anterior / nuevo */
+.inv-stock-prev { background: rgba(220, 53, 69, 0.10); }
+.inv-stock-new  { background: rgba(25, 135, 84, 0.10); }
+
+/* Tarjeta de metadatos (registrado por / fecha) */
+.inv-meta-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ── Dark Mode — Modal Detalles ── */
+[data-bs-theme="dark"] .inv-card-header-navy {
+    background: rgba(78, 122, 199, 0.14) !important;
+}
+[data-bs-theme="dark"] .inv-card-header-navy h6 {
+    color: #93c5fd;
+}
+[data-bs-theme="dark"] .inv-card-header-emerald {
+    background: rgba(16, 185, 129, 0.12) !important;
+}
+[data-bs-theme="dark"] .inv-card-header-emerald h6 {
+    color: #6ee7b7;
+}
+[data-bs-theme="dark"] .inv-icon-circle-navy    { background: rgba(78, 122, 199, 0.15); }
+[data-bs-theme="dark"] .inv-icon-circle-emerald { background: rgba(16, 185, 129, 0.15); }
+[data-bs-theme="dark"] .inv-icon-circle-teal    { background: rgba(0, 217, 165, 0.12); }
+[data-bs-theme="dark"] .inv-icon-circle-blue    { background: rgba(99, 179, 237, 0.15); }
+[data-bs-theme="dark"] .inv-icon-circle-green   { background: rgba(110, 231, 183, 0.15); }
+[data-bs-theme="dark"] .inv-stock-prev          { background: rgba(220, 53, 69, 0.18); }
+[data-bs-theme="dark"] .inv-stock-new           { background: rgba(25, 135, 84, 0.18); }
+[data-bs-theme="dark"] .inv-meta-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 100%);
+}
+
+/* Colores de ícono dictados por el círculo contenedor */
+.inv-icon-circle-navy i    { color: #1e3c72; }
+.inv-icon-circle-teal i    { color: #00d9a5; }
+[data-bs-theme="dark"] .inv-icon-circle-navy i { color: #93c5fd; }
+[data-bs-theme="dark"] .inv-icon-circle-teal i { color: #6ee7b7; }
+
+/* ============================================================
+   MÓDULO ÓRDENES DE PRODUCCIÓN — INDEX
+   ============================================================ */
+
+/* Select2 full-width (formularios con select2) */
+.select2-container { width: 100% !important; }
+
+/* Espaciado del contenedor de insumos en create modal */
+#insumos-container .row { margin-bottom: 10px; }
+
+/* Progress bars en columna de tabla */
+#ordenes-table .progress { height: 20px; }
+
+/* Colores de estado → progress bar fill */
+.estado-Pendiente  { background-color: #ffc107; }
+.estado-EnProceso  { background-color: #0dcaf0; }
+.estado-Finalizado { background-color: #198754; }
+.estado-Cancelado  { background-color: #dc3545; }
+
+/* Anchos de columna #ordenes-table */
+#ordenes-table th:nth-child(1) { width: 8%;  text-align: center; }
+#ordenes-table th:nth-child(2) { width: 8%;  text-align: center; }
+#ordenes-table th:nth-child(3) { width: 12%; text-align: center; }
+#ordenes-table th:nth-child(4) { width: 18%; }
+#ordenes-table th:nth-child(5) { width: 15%; }
+#ordenes-table th:nth-child(6) { width: 14%; text-align: center; }
+#ordenes-table th:nth-child(7) { width: 25%; text-align: center; }
+
+#ordenes-table td:nth-child(6),
+#ordenes-table td:last-child { overflow: visible; text-overflow: clip; text-align: center; }
+
+/* ============================================================
+   MÓDULO ÓRDENES DE PRODUCCIÓN — MODAL DETALLES (#viewModal)
+   ============================================================ */
+
+/* ── Estructura del modal ── */
+#viewModal .modal-dialog  { max-width: 900px; }
+#viewModal .modal-content,
+#viewModal .modal-body    { background: #f6f7f9; }
+
+/* Placa blanca: header, KPI zone y footer */
+.view-plate { background: #fff; border-bottom: 1px solid #e9ecef; }
+#viewModal .modal-footer.view-plate { border-top: 1px solid #e9ecef; border-bottom: 0; }
+
+/* ── Tipografía del encabezado ── */
+.orden-modal-title { font-size: 13px; letter-spacing: .2px; }
+#view-producto     { font-size: 16px; }
+
+/* ── KPI Strip — jerarquía tipográfica ── */
+.kpi-sep { border-right: 1px solid #e9ecef; }
+
+.kpi-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .7px;
+}
+
+.kpi-number    { font-size: 26px; line-height: 1; color: #212529; }
+.kpi-number-sm { font-size: 22px; line-height: 1; color: #212529; }
+.kpi-unit      { font-size: 11px; }
+
+/* ── Barra de progreso de producción (modal KPI) ── */
+.progress-pct-label { font-size: 12px; color: #10b981; }
+
+.progress-orden {
+    height: 6px;
+    border-radius: 4px;
+    background: #eef0f2;
+}
+
+.progress-bar-orden {
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 4px;
+}
+
+/* ── Barra de progreso compacta (reportes) ── */
+.progress-sm { height: 5px; }
+
+/* ── Acento visual emerald (iconos de sección) ── */
+.text-op-accent { color: #10b981; }
+
+/* ── Content areas con altura mínima garantizada ── */
+.view-content-area { min-height: 32px; }
+
+/* ── Tabs underline (Cronograma | Insumos | Avances) ── */
+#viewModalTabs {
+    border-bottom: 2px solid #e9ecef;
+    gap: 0 !important;
+    flex-wrap: nowrap;
+}
+#viewModalTabs .nav-link {
+    border-radius: 0;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: transparent !important;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .15s, border-color .15s;
+}
+#viewModalTabs .nav-link.active            { color: #10b981; border-bottom-color: #10b981; font-weight: 600; }
+#viewModalTabs .nav-link:not(.active)      { color: #6c757d; }
+#viewModalTabs .nav-link:not(.active):hover {
+    color: #10b981;
+    border-bottom-color: rgba(16, 185, 129, 0.35);
+}
+
+/* ── Timeline ── */
+.timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+.timeline-dot-start { background: #10b981; }
+.timeline-dot-mid   { background: #f7b84b; }
+.timeline-dot-end   { background: transparent; border: 1px solid #dee2e6; }
+
+.timeline-line {
+    width: 1px;
+    flex: 1;
+    background: #dee2e6;
+    margin: 4px 0;
+    min-height: 30px;
+}
+
+.timeline-date-label { font-size: 10px; }
+.timeline-date-value { font-size: 13px; }
+
+/* ── Anchos tablas internas del modal ── */
+#tab-insumos table th:nth-child(1) { width: 38%; }
+#tab-insumos table th:nth-child(2),
+#tab-insumos table th:nth-child(3) { width: 20%; }
+#tab-insumos table th:nth-child(4) { width: 22%; }
+
+#tab-avances table th:nth-child(1) { width: 15%; }
+#tab-avances table th:nth-child(2) { width: 28%; }
+#tab-avances table th:nth-child(3),
+#tab-avances table th:nth-child(4) { width: 15%; }
+#tab-avances table th:nth-child(5) { width: 27%; }
+
+/* ── Dark mode — Modal Detalles ── */
+[data-bs-theme="dark"] #viewModal .modal-content,
+[data-bs-theme="dark"] #viewModal .modal-body    { background-color: var(--vz-body-bg)  !important; }
+[data-bs-theme="dark"] .view-plate               { background-color: var(--vz-card-bg)  !important; border-color: var(--vz-border-color) !important; }
+[data-bs-theme="dark"] .kpi-sep                  { border-right-color: var(--vz-border-color); }
+[data-bs-theme="dark"] .kpi-number,
+[data-bs-theme="dark"] .kpi-number-sm            { color: var(--vz-body-color) !important; }
+[data-bs-theme="dark"] .progress-orden           { background: rgba(255, 255, 255, 0.08); }
+[data-bs-theme="dark"] .timeline-line            { background: var(--vz-border-color); }
+[data-bs-theme="dark"] .timeline-dot-end         { border-color: var(--vz-border-color); }
+[data-bs-theme="dark"] #viewModalTabs            { border-bottom-color: var(--vz-border-color); }
+[data-bs-theme="dark"] #viewModalTabs .nav-link:not(.active) { color: #adb5bd; }
+
+/* ============================================================
+   MÓDULO REPORTES — Anchos de columna por tabla
+   ============================================================ */
+
+/* Gráfico de eficiencia — altura del contenedor ApexCharts */
+#eficienciaPorOrdenChart { height: 350px; }
+
+/* Anchos #eficienciaTable */
+#eficienciaTable th:nth-child(1) { width: 35%; }
+#eficienciaTable th:nth-child(2),
+#eficienciaTable th:nth-child(3),
+#eficienciaTable th:nth-child(4) { width: 16%; text-align: center; }
+#eficienciaTable th:nth-child(5) { width: 17%; text-align: center; }
+
+#eficienciaTable td:nth-child(2),
+#eficienciaTable td:nth-child(3),
+#eficienciaTable td:nth-child(4),
+#eficienciaTable td:nth-child(5) { overflow: visible; text-overflow: clip; text-align: center; }
+
+/* Anchos #insumosTable */
+#insumosTable th:nth-child(1) { width: 28%; }
+#insumosTable th:nth-child(2),
+#insumosTable th:nth-child(3) { width: 14%; text-align: center; }
+#insumosTable th:nth-child(4),
+#insumosTable th:nth-child(5) { width: 15%; text-align: center; }
+#insumosTable th:nth-child(6) { width: 14%; text-align: center; }
+
+#insumosTable td:nth-child(2),
+#insumosTable td:nth-child(3),
+#insumosTable td:nth-child(4),
+#insumosTable td:nth-child(5),
+#insumosTable td:nth-child(6) { overflow: visible; text-overflow: clip; text-align: center; }
+
+/* Anchos #empleadosTable (reporte) */
+#empleadosTable th:nth-child(1) { width: 28%; }
+#empleadosTable th:nth-child(2) { width: 12%; text-align: center; }
+#empleadosTable th:nth-child(3),
+#empleadosTable th:nth-child(4) { width: 14%; text-align: center; }
+#empleadosTable th:nth-child(5) { width: 18%; text-align: center; }
+#empleadosTable th:nth-child(6) { width: 14%; text-align: center; }
+
+#empleadosTable td:nth-child(2),
+#empleadosTable td:nth-child(3),
+#empleadosTable td:nth-child(4),
+#empleadosTable td:nth-child(5),
+#empleadosTable td:nth-child(6) { overflow: visible; text-overflow: clip; text-align: center; }
+
+/* ============================================================
+   SWEETALERT2 — ESTÁNDAR ATLÁNTICO
+   Centralizadas aquí para evitar inline <style> en layouts.
+   Z-index 1200 garantiza visibilidad sobre todo modal del sistema
+   (máximo actual: catalog_modals z-index 1110).
+   ============================================================ */
+
+/* Z-index: siempre por encima de todos los modals del sistema */
+.swal2-container { z-index: 1200 !important; }
+
+/* ── Botón Confirmar — gradiente Navy institucional ── */
+.swal2-confirm.swal2-styled,
+.swal2-styled.swal2-confirm,
+.swal2-actions .btn-primary {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 6px rgba(30, 60, 114, 0.3) !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-confirm.swal2-styled:hover,
+.swal2-styled.swal2-confirm:hover,
+.swal2-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%) !important;
+    box-shadow: 0 6px 12px rgba(30, 60, 114, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ── Botón Peligro (Eliminar / acción destructiva) ── */
+.swal2-cancel.swal2-styled,
+.swal2-styled.swal2-cancel,
+.swal2-actions .btn-danger {
+    background: linear-gradient(135deg, #8b3a3a 0%, #a04545 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 6px rgba(139, 58, 58, 0.3) !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-cancel.swal2-styled:hover,
+.swal2-styled.swal2-cancel:hover,
+.swal2-actions .btn-danger:hover {
+    background: linear-gradient(135deg, #a04545 0%, #8b3a3a 100%) !important;
+    box-shadow: 0 6px 12px rgba(139, 58, 58, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ── Botones Secundarios (Cancelar, Quedarme aquí) ── */
+.swal2-actions .btn-secondary,
+.swal2-actions .btn-light,
+.swal2-actions .btn-outline-secondary,
+.swal2-deny.swal2-styled {
+    background: #f0f2f5 !important;
+    border: 1px solid #d1d5db !important;
+    color: #3d4852 !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-actions .btn-secondary:hover,
+.swal2-actions .btn-light:hover,
+.swal2-actions .btn-outline-secondary:hover,
+.swal2-deny.swal2-styled:hover {
+    background: #e2e6ea !important;
+    border-color: #bfc4cc !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ── Íconos — Light mode ── */
+.swal2-icon.swal2-warning              { border-color: #e8a838 !important; color: #e8a838 !important; }
+.swal2-icon.swal2-warning .swal2-icon-content { color: #e8a838 !important; }
+.swal2-icon.swal2-question             { border-color: #1e3c72 !important; color: #1e3c72 !important; }
+.swal2-icon.swal2-question .swal2-icon-content { color: #1e3c72 !important; }
+.swal2-icon.swal2-success              { border-color: #28a745 !important; }
+.swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: #28a745 !important; }
+.swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(40, 167, 69, 0.3) !important; }
+
+/* ── Botón cerrar ── */
+.swal2-close       { color: #6c757d !important; font-size: 28px !important; }
+.swal2-close:hover { color: #495057 !important; }
+
+/* ── Toasts — transparentes, sin backdrop ni blur ── */
+.swal2-container.swal2-top-end,
+.swal2-container.swal2-top-right,
+.swal2-container.swal2-top,
+.swal2-container.swal2-bottom-end,
+.swal2-container.swal2-bottom-right,
+.swal2-container.swal2-noanimation {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    pointer-events: none !important;
+}
+
+.swal2-container.swal2-top-end .swal2-popup,
+.swal2-container.swal2-top-right .swal2-popup,
+.swal2-container.swal2-top .swal2-popup,
+.swal2-container.swal2-bottom-end .swal2-popup,
+.swal2-container.swal2-bottom-right .swal2-popup { pointer-events: auto !important; }
+
+/* ── Dark mode — popup base ── */
+[data-bs-theme="dark"] .swal2-popup {
+    background-color: #242832 !important;
+    color: #e4e7eb !important;
+    border: 1px solid #2d3139 !important;
+}
+[data-bs-theme="dark"] .swal2-title              { color: #e4e7eb !important; }
+[data-bs-theme="dark"] .swal2-html-container,
+[data-bs-theme="dark"] .swal2-content            { color: #c8cbd0 !important; }
+[data-bs-theme="dark"] .swal2-close              { color: #8b92a7 !important; }
+[data-bs-theme="dark"] .swal2-close:hover        { color: #e4e7eb !important; }
+[data-bs-theme="dark"] .swal2-footer             { border-top-color: #2d3139 !important; color: #8b92a7 !important; }
+[data-bs-theme="dark"] .swal2-validation-message { background-color: #1f2229 !important; color: #e74c3c !important; }
+[data-bs-theme="dark"] .swal2-timer-progress-bar { background: rgba(96, 165, 250, 0.5) !important; }
+[data-bs-theme="dark"] .swal2-container          { background: rgba(0, 0, 0, 0.6) !important; }
+
+/* ── Dark mode — botones secundarios ── */
+[data-bs-theme="dark"] .swal2-actions .btn-secondary,
+[data-bs-theme="dark"] .swal2-actions .btn-light,
+[data-bs-theme="dark"] .swal2-actions .btn-outline-secondary,
+[data-bs-theme="dark"] .swal2-deny.swal2-styled {
+    background: #2d3139 !important;
+    border: 1px solid #3d4452 !important;
+    color: #c8cbd0 !important;
+}
+
+[data-bs-theme="dark"] .swal2-actions .btn-secondary:hover,
+[data-bs-theme="dark"] .swal2-actions .btn-light:hover,
+[data-bs-theme="dark"] .swal2-actions .btn-outline-secondary:hover,
+[data-bs-theme="dark"] .swal2-deny.swal2-styled:hover {
+    background: #3d4452 !important;
+    border-color: #4d5566 !important;
+}
+
+/* ── Dark mode — inputs ── */
+[data-bs-theme="dark"] .swal2-input,
+[data-bs-theme="dark"] .swal2-textarea,
+[data-bs-theme="dark"] .swal2-select {
+    background-color: #1f2229 !important;
+    border-color: #2d3139 !important;
+    color: #c8cbd0 !important;
+}
+[data-bs-theme="dark"] .swal2-input:focus,
+[data-bs-theme="dark"] .swal2-textarea:focus {
+    border-color: #60a5fa !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15) !important;
+}
+
+/* ── Dark mode — íconos ── */
+[data-bs-theme="dark"] .swal2-icon.swal2-warning  { border-color: #f0ad4e !important; color: #f0ad4e !important; }
+[data-bs-theme="dark"] .swal2-icon.swal2-error     { border-color: #e74c3c !important; }
+[data-bs-theme="dark"] .swal2-icon.swal2-error [class^='swal2-x-mark-line'] { background-color: #e74c3c !important; }
+[data-bs-theme="dark"] .swal2-icon.swal2-success   { border-color: #2ecc71 !important; }
+[data-bs-theme="dark"] .swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: #2ecc71 !important; }
+[data-bs-theme="dark"] .swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(46, 204, 113, 0.3) !important; }
+[data-bs-theme="dark"] .swal2-icon.swal2-info      { border-color: #60a5fa !important; color: #60a5fa !important; }

@@ -68,7 +68,7 @@ class User extends Authenticatable
 
     public function produccionDiaria()
     {
-        return $this->hasMany(ProduccionDiaria::class, 'operario_id');
+        return $this->hasMany(ProduccionDiaria::class, 'empleado_id');
     }
 
     public function movimientosRegistrados()

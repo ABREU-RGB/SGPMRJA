@@ -9,73 +9,7 @@
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" rel="stylesheet"
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
-    <style>
-        /* Ocultar modal temporalmente cuando hay otro modal encima */
-        .modal-hidden-temp {
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        /* ── DataTable — Estándar Atlántico Operativo ── */
-        .card-body {
-            overflow-x: auto;
-        }
-
-        /* Ocultar buscador por defecto de DataTables */
-        .dataTables_filter {
-            display: none;
-        }
-
-        /* Estilo para buscador personalizado */
-        .search-box {
-            position: relative;
-        }
-
-        .search-box .search-icon {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            color: #878a99;
-        }
-
-        .search-box input {
-            padding-left: 30px;
-        }
-
-        #movimientos-table {
-            width: 100% !important;
-            table-layout: fixed;
-            font-size: 13px;
-        }
-
-        #movimientos-table th,
-        #movimientos-table td {
-            padding: 0.4rem 0.6rem;
-            vertical-align: middle;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Anchos de columna (suman 100%) */
-        #movimientos-table th:nth-child(1) { width: 30%; }                      /* Insumo          */
-        #movimientos-table th:nth-child(2) { width: 18%; text-align: center; } /* Tipo Movimiento */
-        #movimientos-table th:nth-child(3) { width: 12%; text-align: center; } /* Cantidad        */
-        #movimientos-table th:nth-child(4) { width: 12%; text-align: center; } /* Stock Nuevo     */
-        #movimientos-table th:nth-child(5) { width: 14%; }                      /* Fecha           */
-        #movimientos-table th:nth-child(6) { width: 14%; text-align: center; } /* Acciones        */
-
-        /* Tipo, Cantidad, Stock Nuevo y Acciones: overflow visible para badges y botones */
-        #movimientos-table td:nth-child(2),
-        #movimientos-table td:nth-child(3),
-        #movimientos-table td:nth-child(4),
-        #movimientos-table td:last-child {
-            overflow: visible;
-            text-overflow: clip;
-            text-align: center;
-        }
-    </style>
+    {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO INVENTARIO — MOVIMIENTOS" --}}
 @endpush
 @section('content')
     <div class="container-fluid">
@@ -123,7 +57,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="movimientos-table" class="table table-bordered table-striped align-middle dt-transactional">
+                        <table id="movimientos-table" class="table table-bordered table-striped align-middle dt-transactional table-operativa">
                             <thead>
                                 <tr>
                                     <th>Insumo</th>

@@ -1,8 +1,8 @@
-﻿<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true"
+﻿<div class="modal fade atlantico-modal" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-light p-3">
+            <div class="modal-header p-3">
                 <h5 class="modal-title" id="createModalLabel">Registrar Movimiento de Inventario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
