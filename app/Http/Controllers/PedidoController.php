@@ -127,9 +127,7 @@ class PedidoController extends Controller
             'user:id,name',
             'productos.producto.tipoProducto',
             'productos.bordados',
-            'banco:id,nombre',
-            'bancoTransferencia:id,nombre',
-            'bancoPagoMovil:id,nombre',
+            'pagos.banco:id,nombre',
             'cliente.persona.telefonos',
             'cliente.persona.direcciones'
         ])->findOrFail($id);

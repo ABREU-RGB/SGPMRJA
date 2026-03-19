@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Pedido;
+use App\Models\PagoPedido;
 use App\Models\Producto;
 use App\Models\DetallePedido;
 use App\Models\DetallePedidoBordado;
@@ -35,17 +36,11 @@ class PedidoService
                 'estado' => 'Pendiente',
                 'total' => $total_pedido,
                 'user_id' => Auth::id(),
-                'abono' => $data['abono'],
-                'efectivo_pagado' => $data['efectivo_pagado'] ?? false,
-                'transferencia_pagado' => $data['transferencia_pagado'] ?? false,
-                'pago_movil_pagado' => $data['pago_movil_pagado'] ?? false,
-                'referencia_transferencia' => $data['referencia_transferencia'] ?? null,
-                'referencia_pago_movil' => $data['referencia_pago_movil'] ?? null,
-                'banco_transferencia_id' => $data['banco_transferencia_id'] ?? null,
-                'banco_pago_movil_id' => $data['banco_pago_movil_id'] ?? null,
+                'abono' => 0,
                 'prioridad' => $data['prioridad'],
             ]);
 
+            $this->syncPagos($pedido, $data['pagos'] ?? []);
             $this->crearDetalles($pedido, $data['productos']);
 
             if ($cotizacion) {
@@ -83,17 +78,10 @@ class PedidoService
                 'fecha_entrega_estimada' => $data['fecha_entrega_estimada'] ?? null,
                 'estado' => $data['estado'],
                 'total' => $total_pedido,
-                'abono' => $data['abono'],
-                'efectivo_pagado' => $data['efectivo_pagado'] ?? false,
-                'transferencia_pagado' => $data['transferencia_pagado'] ?? false,
-                'pago_movil_pagado' => $data['pago_movil_pagado'] ?? false,
-                'referencia_transferencia' => $data['referencia_transferencia'] ?? null,
-                'referencia_pago_movil' => $data['referencia_pago_movil'] ?? null,
-                'banco_transferencia_id' => $data['banco_transferencia_id'] ?? null,
-                'banco_pago_movil_id' => $data['banco_pago_movil_id'] ?? null,
                 'prioridad' => $data['prioridad'],
             ]);
 
+            $this->syncPagos($pedido, $data['pagos'] ?? []);
             $this->crearDetalles($pedido, $data['productos']);
         });
 
@@ -168,6 +156,27 @@ class PedidoService
                 ]);
             }
         }
+    }
+
+    /**
+     * Sincronizar pagos del pedido: elimina los anteriores y crea los nuevos.
+     * Recalcula el abono como suma de montos.
+     */
+    private function syncPagos(Pedido $pedido, array $pagos): void
+    {
+        $pedido->pagos()->delete();
+
+        foreach ($pagos as $pago) {
+            PagoPedido::create([
+                'pedido_id'  => $pedido->id,
+                'metodo'     => $pago['metodo'],
+                'monto'      => $pago['monto'],
+                'banco_id'   => $pago['banco_id'] ?? null,
+                'referencia' => $pago['referencia'] ?? null,
+            ]);
+        }
+
+        $pedido->recalcularAbono();
     }
 
     private function validarCotizacionParaCrearPedido(?int $cotizacionId): ?Cotizacion
