@@ -152,8 +152,8 @@ class PedidoService
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
                 'nombre_logo' => $this->bordadoPricingService->resolverNombreLogoDetalle($item, $bordados),
-                'color' => $item['color'] ?? null,
-                'talla' => $item['talla'] ?? null,
+                'color_id' => $item['color_id'] ?? null,
+                'talla_id' => $item['talla_id'] ?? null,
                 'precio_unitario' => $precioUnitarioFinal,
             ]);
 

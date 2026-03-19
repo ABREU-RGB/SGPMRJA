@@ -46,13 +46,8 @@ class StorePedidoRequest extends FormRequest
             'productos.*.bordados.*.es_personalizada' => 'nullable|boolean',
             'productos.*.bordados.*.precio_aplicado' => 'required|numeric|min:0',
             'productos.*.bordados.*.cantidad' => 'nullable|integer|min:1',
-            'productos.*.color' => 'nullable|string|max:50',
-            'productos.*.talla' => [
-                'nullable',
-                Rule::exists('tallas', 'nombre')->where(function ($query) {
-                    $query->where('activo', true);
-                }),
-            ],
+            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('colores', 'id')],
+            'productos.*.talla_id' => ['nullable', 'integer', Rule::exists('tallas', 'id')],
         ];
     }
 }

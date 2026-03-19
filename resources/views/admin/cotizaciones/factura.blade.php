@@ -150,7 +150,7 @@
                         <td>{{ $detalle->cantidad }}</td>
                         <td>{{ $detalle->producto->nombre ?? '-' }}</td>
                         <td class="text-left">{{ $detalle->descripcion ?? '-' }}</td>
-                        <td>{{ $detalle->talla ?? '-' }}</td>
+                        <td>{{ $detalle->talla?->etiqueta ?? '-' }}</td>
                         <td>{{ $detalle->lleva_bordado ? ($logosTexto ?: ($detalle->nombre_logo ?: '-')) : '-' }}</td>
                         <td>{{ $detalle->lleva_bordado ? ($ubicacionesTexto ?: '-') : '-' }}</td>
                         <td>{{ $detalle->lleva_bordado ? ($cantidadBordados ?: '-') : '-' }}</td>

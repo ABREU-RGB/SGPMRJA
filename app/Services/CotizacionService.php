@@ -137,8 +137,8 @@ class CotizacionService
                     'descripcion' => $detalle->descripcion,
                     'lleva_bordado' => $detalle->lleva_bordado ?? false,
                     'nombre_logo' => $detalle->nombre_logo,
-                    'color' => $detalle->color,
-                    'talla' => $detalle->talla,
+                    'color_id' => $detalle->color_id,
+                    'talla_id' => $detalle->talla_id,
                 ]);
 
                 foreach ($detalle->bordados as $index => $bordado) {
@@ -210,8 +210,8 @@ class CotizacionService
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
                 'nombre_logo' => $this->bordadoPricingService->resolverNombreLogoDetalle($item, $bordados),
-                'color' => $item['color'] ?? null,
-                'talla' => $item['talla'] ?? null,
+                'color_id' => $item['color_id'] ?? null,
+                'talla_id' => $item['talla_id'] ?? null,
                 'precio_unitario' => $precioUnitarioFinal,
             ]);
 
