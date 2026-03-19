@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="proveedor_id" label="Proveedor" required
-                                        :options="$proveedores->pluck('razon_social', 'id')->toArray()" />
+                                        :options="$proveedores->mapWithKeys(fn($p) => [$p->id => $p->nombre_completo])->toArray()" />
                                 </div>
                             </div>
                         </div>
@@ -316,7 +316,7 @@
                     },
                     {
                         data: 'proveedor_nombre',
-                        name: 'proveedor.razon_social',
+                        name: 'proveedor_nombre',
                         width: '28%',
                         render: function (data) {
                             return renderEllipsis(data);
@@ -352,7 +352,7 @@
                     $("#view-stock-actual").text(data.stock_actual);
                     $("#view-stock-minimo").text(data.stock_minimo);
                     $("#view-costo-unitario").text('$/ ' + parseFloat(data.costo_unitario).toFixed(2));
-                    $("#view-proveedor").text(data.proveedor ? data.proveedor.razon_social : 'Sin proveedor');
+                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor');
                     $("#view-created").text(data.created_at);
                     $("#viewModal").modal('show');
                 });

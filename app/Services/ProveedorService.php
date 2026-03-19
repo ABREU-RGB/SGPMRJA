@@ -24,22 +24,10 @@ class ProveedorService
                 'email' => $data['email'],
             ]);
 
-            Telefono::create([
-                'persona_id' => $persona->id,
-                'numero' => $data['telefono'],
-                'tipo' => 'movil',
-                'es_principal' => true,
-            ]);
+            $this->crearTelefono($persona->id, $data['telefono']);
 
             if (!empty($data['direccion'])) {
-                Direccion::create([
-                    'persona_id' => $persona->id,
-                    'direccion' => $data['direccion'],
-                    'ciudad' => $data['ciudad'] ?? null,
-                    'estado' => $data['estado_territorial'] ?? null,
-                    'tipo' => 'trabajo',
-                    'es_principal' => true,
-                ]);
+                $this->crearDireccion($persona->id, $data);
             }
 
             return Proveedor::create([
@@ -51,21 +39,47 @@ class ProveedorService
     }
 
     /**
-     * Crear un proveedor jurídico (empresa).
+     * Crear un proveedor jurídico (empresa) — normalizado al sistema Persona.
      */
     public function crearJuridico(array $data): Proveedor
     {
-        return Proveedor::create([
-            'tipo_proveedor' => 'juridico',
-            'razon_social' => $data['razon_social'],
-            'rif' => $data['rif'],
-            'direccion' => $data['direccion'],
-            'telefono' => $data['telefono'],
-            'email' => $data['email'],
-            'contacto' => $data['contacto'] ?? null,
-            'telefono_contacto' => $data['telefono_contacto'] ?? null,
-            'estado' => $data['estado'] ?? true,
-        ]);
+        return DB::transaction(function () use ($data) {
+            // Parsear RIF: 'J-1231321' → tipo_documento='J-', documento_identidad='1231321'
+            $rif = $data['rif'];
+            $tipoDoc = 'J-';
+            $docId = $rif;
+            if (preg_match('/^(V-|J-|E-|G-)(.+)$/', $rif, $matches)) {
+                $tipoDoc = $matches[1];
+                $docId = $matches[2];
+            }
+
+            $persona = Persona::create([
+                'nombre' => $data['razon_social'],
+                'apellido' => '',
+                'tipo_documento' => $tipoDoc,
+                'documento_identidad' => $docId,
+                'email' => $data['email'],
+            ]);
+
+            $this->crearTelefono($persona->id, $data['telefono']);
+
+            if (!empty($data['direccion'])) {
+                Direccion::create([
+                    'persona_id' => $persona->id,
+                    'direccion' => $data['direccion'],
+                    'tipo' => 'trabajo',
+                    'es_principal' => true,
+                ]);
+            }
+
+            return Proveedor::create([
+                'tipo_proveedor' => 'juridico',
+                'persona_id' => $persona->id,
+                'contacto' => $data['contacto'] ?? null,
+                'telefono_contacto' => $data['telefono_contacto'] ?? null,
+                'estado' => $data['estado'] ?? true,
+            ]);
+        });
     }
 
     /**
@@ -75,7 +89,6 @@ class ProveedorService
     {
         DB::transaction(function () use ($proveedor, $data) {
             if ($proveedor->persona_id && $proveedor->persona) {
-                // Actualizar persona existente
                 $proveedor->persona->update([
                     'nombre' => $data['nombre'],
                     'apellido' => $data['apellido'],
@@ -96,22 +109,10 @@ class ProveedorService
                     'email' => $data['email'],
                 ]);
 
-                Telefono::create([
-                    'persona_id' => $persona->id,
-                    'numero' => $data['telefono'],
-                    'tipo' => 'movil',
-                    'es_principal' => true,
-                ]);
+                $this->crearTelefono($persona->id, $data['telefono']);
 
                 if (!empty($data['direccion'])) {
-                    Direccion::create([
-                        'persona_id' => $persona->id,
-                        'direccion' => $data['direccion'],
-                        'ciudad' => $data['ciudad'] ?? null,
-                        'estado' => $data['estado_territorial'] ?? null,
-                        'tipo' => 'trabajo',
-                        'es_principal' => true,
-                    ]);
+                    $this->crearDireccion($persona->id, $data);
                 }
 
                 $proveedor->persona_id = $persona->id;
@@ -124,20 +125,50 @@ class ProveedorService
     }
 
     /**
-     * Actualizar un proveedor jurídico existente.
+     * Actualizar un proveedor jurídico existente — a través de Persona.
      */
     public function actualizarJuridico(Proveedor $proveedor, array $data): void
     {
-        $proveedor->update([
-            'tipo_proveedor' => 'juridico',
-            'razon_social' => $data['razon_social'],
-            'rif' => $data['rif'],
+        DB::transaction(function () use ($proveedor, $data) {
+            $persona = $proveedor->persona;
+
+            if ($persona) {
+                $persona->update([
+                    'nombre' => $data['razon_social'],
+                    'email' => $data['email'],
+                ]);
+
+                $this->actualizarTelefono($persona, $data['telefono']);
+                $this->actualizarDireccion($persona, $data);
+            }
+
+            $proveedor->update([
+                'contacto' => $data['contacto'] ?? null,
+                'telefono_contacto' => $data['telefono_contacto'] ?? null,
+                'estado' => $data['estado'] ?? true,
+            ]);
+        });
+    }
+
+    private function crearTelefono(int $personaId, string $numero): void
+    {
+        Telefono::create([
+            'persona_id' => $personaId,
+            'numero' => $numero,
+            'tipo' => 'movil',
+            'es_principal' => true,
+        ]);
+    }
+
+    private function crearDireccion(int $personaId, array $data): void
+    {
+        Direccion::create([
+            'persona_id' => $personaId,
             'direccion' => $data['direccion'],
-            'telefono' => $data['telefono'],
-            'email' => $data['email'],
-            'contacto' => $data['contacto'] ?? null,
-            'telefono_contacto' => $data['telefono_contacto'] ?? null,
-            'estado' => $data['estado'] ?? true,
+            'ciudad' => $data['ciudad'] ?? null,
+            'estado' => $data['estado_territorial'] ?? null,
+            'tipo' => 'trabajo',
+            'es_principal' => true,
         ]);
     }
 

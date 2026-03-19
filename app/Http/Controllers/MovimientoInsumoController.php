@@ -14,7 +14,7 @@ class MovimientoInsumoController extends Controller
     public function index()
     {
         $insumos = Insumo::where('estado', true)->get();
-        $proveedores = \App\Models\Proveedor::where('estado', true)->get();
+        $proveedores = \App\Models\Proveedor::with('persona')->where('estado', true)->get();
         return view('admin.inventario.movimientos.index', compact('insumos', 'proveedores'));
     }
 
@@ -112,7 +112,7 @@ class MovimientoInsumoController extends Controller
 
     public function reporteExistencia()
     {
-        $insumos = Insumo::with('proveedor')->where('estado', true)->get();
+        $insumos = Insumo::with('proveedor.persona')->where('estado', true)->get();
         return view('admin.inventario.reporte.index', compact('insumos'));
     }
 
@@ -131,7 +131,7 @@ class MovimientoInsumoController extends Controller
     {
         $insumosConBajoStock = Insumo::where('estado', true)
             ->whereRaw('stock_actual <= stock_minimo')
-            ->with('proveedor')
+            ->with('proveedor.persona.telefonos', 'proveedor.persona.direcciones')
             ->get();
 
         return view('admin.inventario.alertas.index', compact('insumosConBajoStock'));

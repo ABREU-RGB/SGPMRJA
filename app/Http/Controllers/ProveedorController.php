@@ -45,7 +45,6 @@ class ProveedorController extends Controller
         $tipoProveedor = $request->input('tipo_proveedor', 'juridico');
 
         if ($tipoProveedor === 'natural') {
-            // Validación para proveedor natural (persona)
             $request->validate([
                 'tipo_proveedor' => 'required|in:natural,juridico',
                 'nombre' => 'required|string|max:100',
@@ -62,14 +61,13 @@ class ProveedorController extends Controller
             $this->proveedorService->crearNatural($request->all());
             return response()->json(['success' => 'Proveedor natural creado exitosamente.']);
         } else {
-            // Validación para proveedor jurídico (empresa)
             $request->validate([
                 'tipo_proveedor' => 'required|in:natural,juridico',
                 'razon_social' => 'required|string|max:100',
-                'rif' => 'required|string|max:15|unique:proveedor',
+                'rif' => 'required|string|max:15|unique:persona,documento_identidad,NULL,id,tipo_documento,' . $this->parseRifPrefix($request->rif),
                 'direccion' => 'required|string|max:200',
                 'telefono' => 'required|string|max:20',
-                'email' => 'required|email|max:100',
+                'email' => 'required|email|max:100|unique:persona,email',
                 'contacto' => 'nullable|string|max:100',
                 'telefono_contacto' => 'nullable|string|max:20',
                 'estado' => 'nullable|boolean',
@@ -83,52 +81,40 @@ class ProveedorController extends Controller
     public function show($id)
     {
         $proveedor = Proveedor::with('persona.telefonos', 'persona.direcciones')->findOrFail($id);
+        $persona = $proveedor->persona;
+        $telefonoPrincipal = $persona ? $persona->telefonos->where('es_principal', true)->first() : null;
+        $direccionPrincipal = $persona ? $persona->direcciones->where('es_principal', true)->first() : null;
 
-        if ($proveedor->esNatural() && $proveedor->persona) {
-            $persona = $proveedor->persona;
-            $telefonoPrincipal = $persona->telefonos->where('es_principal', true)->first();
-            $direccionPrincipal = $persona->direcciones->where('es_principal', true)->first();
+        $data = [
+            'id' => $proveedor->id,
+            'tipo_proveedor' => $proveedor->tipo_proveedor,
+            'persona_id' => $proveedor->persona_id,
+            'telefono' => $telefonoPrincipal ? $telefonoPrincipal->numero : null,
+            'email' => $persona ? $persona->email : null,
+            'direccion' => $direccionPrincipal ? $direccionPrincipal->direccion : null,
+            'contacto' => $proveedor->contacto,
+            'telefono_contacto' => $proveedor->telefono_contacto,
+            'nombre_display' => $proveedor->nombre_completo,
+            'documento_display' => $proveedor->documento,
+            'estado' => $proveedor->estado,
+            'created_at' => $proveedor->created_at->format('d/m/Y H:i:s'),
+            'updated_at' => $proveedor->updated_at->format('d/m/Y H:i:s'),
+        ];
 
-            return response()->json([
-                'id' => $proveedor->id,
-                'tipo_proveedor' => $proveedor->tipo_proveedor,
-                'persona_id' => $proveedor->persona_id,
-                // Datos de persona
-                'nombre' => $persona->nombre,
-                'apellido' => $persona->apellido,
-                'tipo_documento' => $persona->tipo_documento,
-                'documento_identidad' => $persona->documento_identidad,
-                'email' => $persona->email,
-                'telefono' => $telefonoPrincipal ? $telefonoPrincipal->numero : null,
-                'direccion' => $direccionPrincipal ? $direccionPrincipal->direccion : null,
-                'ciudad' => $direccionPrincipal ? $direccionPrincipal->ciudad : null,
-                'estado_territorial' => $direccionPrincipal ? $direccionPrincipal->estado : null,
-                // Unificados para display
-                'nombre_display' => $proveedor->nombre_completo,
-                'documento_display' => $proveedor->documento,
-                'estado' => $proveedor->estado,
-                'created_at' => $proveedor->created_at->format('d/m/Y H:i:s'),
-                'updated_at' => $proveedor->updated_at->format('d/m/Y H:i:s'),
-            ]);
+        if ($proveedor->esNatural() && $persona) {
+            $data['nombre'] = $persona->nombre;
+            $data['apellido'] = $persona->apellido;
+            $data['tipo_documento'] = $persona->tipo_documento;
+            $data['documento_identidad'] = $persona->documento_identidad;
+            $data['ciudad'] = $direccionPrincipal ? $direccionPrincipal->ciudad : null;
+            $data['estado_territorial'] = $direccionPrincipal ? $direccionPrincipal->estado : null;
         } else {
-            return response()->json([
-                'id' => $proveedor->id,
-                'tipo_proveedor' => $proveedor->tipo_proveedor ?? 'juridico',
-                'razon_social' => $proveedor->razon_social,
-                'rif' => $proveedor->rif,
-                'direccion' => $proveedor->direccion,
-                'telefono' => $proveedor->telefono,
-                'email' => $proveedor->email,
-                'contacto' => $proveedor->contacto,
-                'telefono_contacto' => $proveedor->telefono_contacto,
-                // Unificados para display
-                'nombre_display' => $proveedor->nombre_completo,
-                'documento_display' => $proveedor->documento,
-                'estado' => $proveedor->estado,
-                'created_at' => $proveedor->created_at->format('d/m/Y H:i:s'),
-                'updated_at' => $proveedor->updated_at->format('d/m/Y H:i:s'),
-            ]);
+            // Para jurídico: reconstruir campos para compatibilidad con la vista
+            $data['razon_social'] = $persona ? $persona->nombre : null;
+            $data['rif'] = $persona ? $persona->tipo_documento . $persona->documento_identidad : null;
         }
+
+        return response()->json($data);
     }
 
     public function update(Request $request, $id)
@@ -152,10 +138,10 @@ class ProveedorController extends Controller
         } else {
             $request->validate([
                 'razon_social' => 'required|string|max:100',
-                'rif' => 'required|string|max:15|unique:proveedor,rif,' . $id,
+                'rif' => 'required|string|max:15',
                 'direccion' => 'required|string|max:200',
                 'telefono' => 'required|string|max:20',
-                'email' => 'required|email|max:100',
+                'email' => 'required|email|max:100|unique:persona,email,' . ($proveedor->persona_id ?? 0),
                 'contacto' => 'nullable|string|max:100',
                 'telefono_contacto' => 'nullable|string|max:20',
                 'estado' => 'nullable|boolean',
@@ -175,7 +161,7 @@ class ProveedorController extends Controller
 
     public function reportePdf()
     {
-        $proveedores = Proveedor::with('persona')->get();
+        $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
         $pdf = \PDF::loadView('admin.proveedores.reporte_pdf', compact('proveedores'))
             ->setPaper('a4', 'landscape');
         return $pdf->download('proveedores_' . now()->format('Y-m-d_H-i-s') . '.pdf');
@@ -186,7 +172,18 @@ class ProveedorController extends Controller
         $rif = $request->input('rif');
         if (!$rif)
             return response()->json(['exists' => false]);
-        $exists = Proveedor::where('rif', $rif)->exists();
+
+        // Parsear RIF y buscar en persona
+        $tipoDoc = 'J-';
+        $docId = $rif;
+        if (preg_match('/^(V-|J-|E-|G-)(.+)$/', $rif, $matches)) {
+            $tipoDoc = $matches[1];
+            $docId = $matches[2];
+        }
+
+        $exists = Persona::where('tipo_documento', $tipoDoc)
+            ->where('documento_identidad', $docId)
+            ->exists();
         return response()->json(['exists' => $exists]);
     }
 
@@ -204,10 +201,19 @@ class ProveedorController extends Controller
         $email = $request->input('email');
         if (!$email)
             return response()->json(['exists' => false]);
-        // Verificar en proveedores (juridicos) y personas (naturales)
-        $existsProveedor = Proveedor::where('email', $email)->exists();
-        $existsPersona = Persona::where('email', $email)->exists();
 
-        return response()->json(['exists' => $existsProveedor || $existsPersona]);
+        $exists = Persona::where('email', $email)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
+    /**
+     * Extraer prefijo del RIF para validación unique compuesta.
+     */
+    private function parseRifPrefix(string $rif): string
+    {
+        if (preg_match('/^(V-|J-|E-|G-)/', $rif, $matches)) {
+            return $matches[1];
+        }
+        return 'J-';
     }
 }
