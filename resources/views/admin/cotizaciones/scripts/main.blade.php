@@ -253,14 +253,14 @@
                             'Pendiente': 'status-pendiente',
                             'Aprobada': 'status-aprobada',
                             'Convertida': 'badge-soft-info',
-                            'Cancelado': 'status-cancelado',
+                            'Cancelada': 'status-cancelado',
                             'Vencida': 'status-cancelado'
                         };
                         var estadoIcons = {
                             'Pendiente': 'ri-time-line',
                             'Aprobada': 'ri-check-double-line',
                             'Convertida': 'ri-exchange-line',
-                            'Cancelado': 'ri-close-circle-line',
+                            'Cancelada': 'ri-close-circle-line',
                             'Vencida': 'ri-alarm-warning-line'
                         };
                         var badgeClass = estadoClasses[data] || '';
@@ -280,11 +280,11 @@
 
                         if (data === 'Pendiente') {
                             opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Aprobada"><i class="ri-check-double-line text-success me-2"></i>Aprobar</a></li>';
-                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelado"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
+                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelada"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
                         } else if (data === 'Aprobada') {
                             opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Pendiente"><i class="ri-time-line text-warning me-2"></i>Volver a Pendiente</a></li>';
-                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelado"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
-                        } else if (data === 'Cancelado' || data === 'Vencida') {
+                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelada"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
+                        } else if (data === 'Cancelada' || data === 'Vencida') {
                             opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Pendiente"><i class="ri-time-line text-warning me-2"></i>Reactivar (Pendiente)</a></li>';
                         }
 
@@ -321,9 +321,9 @@
                             `;
                         }
 
-                        // Botones Editar y Eliminar (solo si NO está Convertida ni Cancelado)
+                        // Botones Editar y Eliminar (solo si NO está Convertida ni Cancelada)
                         var editDelete = '';
-                        if (isAdmin && row.estado !== 'Convertida' && row.estado !== 'Cancelado' && row.estado !== 'Vencida') {
+                        if (isAdmin && row.estado !== 'Convertida' && row.estado !== 'Cancelada' && row.estado !== 'Vencida') {
                             editDelete = `
                             <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
                                 <i class="ri-pencil-fill"></i>
@@ -2149,14 +2149,14 @@
                         'Pendiente': 'status-pendiente',
                         'Aprobada': 'status-aprobada',
                         'Convertida': 'badge-soft-info',
-                        'Cancelado': 'status-cancelado',
+                        'Cancelada': 'status-cancelado',
                         'Vencida': 'status-cancelado'
                     };
                     var estadoIcons = {
                         'Pendiente': 'ri-time-line',
                         'Aprobada': 'ri-check-double-line',
                         'Convertida': 'ri-exchange-line',
-                        'Cancelado': 'ri-close-circle-line',
+                        'Cancelada': 'ri-close-circle-line',
                         'Vencida': 'ri-alarm-warning-line'
                     };
                     var badgeClass = estadoClasses[data.estado] || '';

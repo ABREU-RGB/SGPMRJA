@@ -129,13 +129,13 @@ class CotizacionController extends Controller
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100',
-            'productos.*.talla_id' => ['required', 'integer', Rule::exists('tallas', 'id')],
-            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('colores', 'id')],
+            'productos.*.talla_id' => ['required', 'integer', Rule::exists('talla', 'id')],
+            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('color', 'id')],
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
             'productos.*.bordados' => 'nullable|array|required_if:productos.*.lleva_bordado,true|min:1',
-            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicaciones,id',
+            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicacion,id',
             'productos.*.bordados.*.nombre_aplicado' => 'required|string|max:120',
             'productos.*.bordados.*.nombre_logo' => 'required|string|max:120',
             'productos.*.bordados.*.es_personalizada' => 'nullable|boolean',
@@ -220,7 +220,7 @@ class CotizacionController extends Controller
             'cliente_id' => 'required|exists:cliente,id',
             'fecha_cotizacion' => 'required|date',
             'fecha_validez' => 'nullable|date|after_or_equal:fecha_cotizacion',
-            'estado' => 'required|in:Pendiente,Aprobada,Cancelado,Convertida,Vencida',
+            'estado' => 'required|in:Pendiente,Aprobada,Cancelada,Convertida,Vencida',
             'notas' => 'nullable|string|max:2000',
             'productos' => 'required|array|min:1',
             'productos.*.producto_id' => 'required|exists:producto,id',
@@ -228,13 +228,13 @@ class CotizacionController extends Controller
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100',
-            'productos.*.talla_id' => ['required', 'integer', Rule::exists('tallas', 'id')],
-            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('colores', 'id')],
+            'productos.*.talla_id' => ['required', 'integer', Rule::exists('talla', 'id')],
+            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('color', 'id')],
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
             'productos.*.bordados' => 'nullable|array|required_if:productos.*.lleva_bordado,true|min:1',
-            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicaciones,id',
+            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicacion,id',
             'productos.*.bordados.*.nombre_aplicado' => 'required|string|max:120',
             'productos.*.bordados.*.nombre_logo' => 'required|string|max:120',
             'productos.*.bordados.*.es_personalizada' => 'nullable|boolean',
@@ -357,7 +357,7 @@ class CotizacionController extends Controller
     public function updateEstado(Request $request, $id)
     {
         $request->validate([
-            'estado' => 'required|in:Pendiente,Aprobada,Cancelado,Convertida,Vencida'
+            'estado' => 'required|in:Pendiente,Aprobada,Cancelada,Convertida,Vencida'
         ]);
 
         $cotizacion = Cotizacion::findOrFail($id);

@@ -35,14 +35,14 @@ class UpdatePedidoRequest extends FormRequest
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100',
             'productos.*.bordados' => 'nullable|array|required_if:productos.*.lleva_bordado,true|min:1',
-            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicaciones,id',
+            'productos.*.bordados.*.ubicacion_bordado_id' => 'nullable|exists:bordado_ubicacion,id',
             'productos.*.bordados.*.nombre_aplicado' => 'required|string|max:120',
             'productos.*.bordados.*.nombre_logo' => 'required|string|max:120',
             'productos.*.bordados.*.es_personalizada' => 'nullable|boolean',
             'productos.*.bordados.*.precio_aplicado' => 'required|numeric|min:0',
             'productos.*.bordados.*.cantidad' => 'nullable|integer|min:1',
-            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('colores', 'id')],
-            'productos.*.talla_id' => ['nullable', 'integer', Rule::exists('tallas', 'id')],
+            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('color', 'id')],
+            'productos.*.talla_id' => ['nullable', 'integer', Rule::exists('talla', 'id')],
         ];
     }
 }
