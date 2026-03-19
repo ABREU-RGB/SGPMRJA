@@ -108,6 +108,7 @@ class ProduccionDiariaController extends Controller
             $orden->cantidad_producida += $request->cantidad_producida;
             if ($orden->cantidad_producida >= $orden->cantidad_solicitada) {
                 $orden->estado = 'Finalizado';
+                $orden->fecha_fin_real = now()->toDateString();
             } elseif ($orden->estado === 'Pendiente') {
                 $orden->estado = 'En Proceso';
             }
@@ -157,8 +158,12 @@ class ProduccionDiariaController extends Controller
             $orden->cantidad_producida += $request->cantidad_producida;
             if ($orden->cantidad_producida >= $orden->cantidad_solicitada) {
                 $orden->estado = 'Finalizado';
+                if (is_null($orden->fecha_fin_real)) {
+                    $orden->fecha_fin_real = now()->toDateString();
+                }
             } else {
                 $orden->estado = 'En Proceso';
+                $orden->fecha_fin_real = null;
             }
             $orden->save();
 

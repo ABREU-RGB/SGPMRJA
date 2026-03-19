@@ -141,12 +141,20 @@ class OrdenProduccionController extends Controller
 
         $orden = OrdenProduccion::findOrFail($id);
 
+        $fechaFinReal = $orden->fecha_fin_real;
+        if ($request->estado === 'Finalizado' && is_null($fechaFinReal)) {
+            $fechaFinReal = now()->toDateString();
+        } elseif ($request->estado !== 'Finalizado') {
+            $fechaFinReal = null;
+        }
+
         $orden->update([
             'producto_id' => $request->producto_id,
             'cantidad_solicitada' => $request->cantidad_solicitada,
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_fin_estimada' => $request->fecha_fin_estimada,
             'estado' => $request->estado,
+            'fecha_fin_real' => $fechaFinReal,
             'costo_estimado' => $request->costo_estimado,
             'logo' => $request->logo,
             'notas' => $request->notas

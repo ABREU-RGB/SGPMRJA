@@ -19,6 +19,7 @@ class OrdenProduccion extends Model
         'cantidad_producida',
         'fecha_inicio',
         'fecha_fin_estimada',
+        'fecha_fin_real',
         'estado',
         'costo_estimado',
         'logo',
@@ -29,6 +30,7 @@ class OrdenProduccion extends Model
     protected $casts = [
         'fecha_inicio' => 'date',
         'fecha_fin_estimada' => 'date',
+        'fecha_fin_real' => 'date',
         'costo_estimado' => 'decimal:2',
         'cantidad_solicitada' => 'integer',
         'cantidad_producida' => 'integer',
