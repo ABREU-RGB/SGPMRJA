@@ -83,7 +83,7 @@
                                                     {{ number_format($insumo->stock_actual - $insumo->stock_minimo, 2) }}
                                                     {{ $insumo->unidad_medida }}
                                                 </td>
-                                                <td>{{ $insumo->proveedor ? $insumo->proveedor->razon_social : 'No asignado' }}</td>
+                                                <td>{{ $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'No asignado' }}</td>
                                                 <td>
                                                     <div class="dropdown d-inline-block">
                                                         <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
@@ -108,9 +108,9 @@
                                                             @if($insumo->proveedor)
                                                                 <li>
                                                                     <a href="#" class="dropdown-item contact-provider"
-                                                                        data-proveedor="{{ $insumo->proveedor->razon_social }}"
-                                                                        data-telefono="{{ $insumo->proveedor->telefono }}"
-                                                                        data-email="{{ $insumo->proveedor->email }}">
+                                                                        data-proveedor="{{ $insumo->proveedor->nombre_completo }}"
+                                                                        data-telefono="{{ $insumo->proveedor->telefono_unificado }}"
+                                                                        data-email="{{ $insumo->proveedor->email_unificado }}">
                                                                         <i class="ri-phone-line align-bottom me-2 text-muted"></i>
                                                                         Contactar Proveedor
                                                                     </a>

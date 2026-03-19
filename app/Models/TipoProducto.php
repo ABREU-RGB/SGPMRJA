@@ -15,7 +15,6 @@ class TipoProducto extends Model
         'nombre',
         'codigo_prefijo',
         'descripcion',
-        'contador',
     ];
 
     /**

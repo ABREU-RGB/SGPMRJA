@@ -29,7 +29,6 @@ class StorePedidoRequest extends FormRequest
             'pago_movil_pagado' => 'boolean',
             'referencia_transferencia' => 'nullable|string|max:255|required_if:transferencia_pagado,true',
             'referencia_pago_movil' => 'nullable|string|max:255|required_if:pago_movil_pagado,true',
-            'banco_id' => 'nullable|exists:banco,id',
             'banco_transferencia_id' => 'nullable|exists:banco,id|required_if:transferencia_pagado,true',
             'banco_pago_movil_id' => 'nullable|exists:banco,id|required_if:pago_movil_pagado,true',
             'prioridad' => 'required|in:Normal,Alta,Urgente',
@@ -46,13 +45,8 @@ class StorePedidoRequest extends FormRequest
             'productos.*.bordados.*.es_personalizada' => 'nullable|boolean',
             'productos.*.bordados.*.precio_aplicado' => 'required|numeric|min:0',
             'productos.*.bordados.*.cantidad' => 'nullable|integer|min:1',
-            'productos.*.color' => 'nullable|string|max:50',
-            'productos.*.talla' => [
-                'nullable',
-                Rule::exists('tallas', 'nombre')->where(function ($query) {
-                    $query->where('activo', true);
-                }),
-            ],
+            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('colores', 'id')],
+            'productos.*.talla_id' => ['nullable', 'integer', Rule::exists('tallas', 'id')],
         ];
     }
 }

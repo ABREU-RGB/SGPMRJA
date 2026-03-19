@@ -10,6 +10,7 @@ use App\Models\MovimientoInsumo;
 use App\Models\Banco;
 use App\Models\Cotizacion;
 use App\Models\Talla;
+use App\Models\Color;
 use App\Http\Requests\StorePedidoRequest;
 use App\Http\Requests\UpdatePedidoRequest;
 use Illuminate\Support\Facades\Log;
@@ -34,8 +35,9 @@ class PedidoController extends Controller
         $productos = Producto::with('tipoProducto')->where('estado', true)->get();
         $insumos = Insumo::all();
         $bancos = Banco::all();
-        $tallas = Talla::activo()->orderBy('orden')->orderBy('nombre')->get(['nombre', 'etiqueta']);
-        return view('admin.pedidos.index', compact('productos', 'insumos', 'bancos', 'tallas'));
+        $tallas = Talla::activo()->orderBy('orden')->orderBy('nombre')->get(['id', 'nombre', 'etiqueta']);
+        $colores = Color::activo()->orderBy('grupo')->orderBy('nombre')->get(['id', 'nombre', 'hex_referencial']);
+        return view('admin.pedidos.index', compact('productos', 'insumos', 'bancos', 'tallas', 'colores'));
     }
 
     public function getPedidos()

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Color;
+use App\Models\Talla;
 
 class DetallePedido extends Model
 {
@@ -18,8 +20,8 @@ class DetallePedido extends Model
         'descripcion',
         'lleva_bordado',
         'nombre_logo',
-        'color',
-        'talla',
+        'color_id',
+        'talla_id',
         'precio_unitario',
     ];
 
@@ -33,6 +35,16 @@ class DetallePedido extends Model
         'ubicacion_logo',
         'cantidad_logo',
     ];
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
+
+    public function talla()
+    {
+        return $this->belongsTo(Talla::class);
+    }
 
     public function pedido()
     {

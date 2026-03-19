@@ -15,12 +15,14 @@ class ProduccionDiaria extends Model
     protected $fillable = [
         'orden_id',
         'empleado_id',
+        'fecha_produccion',
         'cantidad_producida',
         'cantidad_defectuosa',
         'observaciones',
     ];
 
     protected $casts = [
+        'fecha_produccion' => 'date:Y-m-d',
         'cantidad_producida' => 'integer',
         'cantidad_defectuosa' => 'integer',
         'created_at' => 'datetime',

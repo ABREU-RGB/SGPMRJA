@@ -22,7 +22,7 @@ class EmpleadoService
                 'documento_identidad' => $data['documento_identidad'],
                 'tipo_documento' => $data['tipo_documento'],
                 'email' => $data['email'] ?? null,
-                'estado_persona' => $data['estado_persona'] ?? null,
+                'estado_geografico' => $data['estado_geografico'] ?? null,
                 'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
                 'genero' => $data['genero'] ?? null,
             ]);
@@ -65,7 +65,7 @@ class EmpleadoService
                 'documento_identidad' => $data['documento_identidad'],
                 'tipo_documento' => $data['tipo_documento'],
                 'email' => $data['email'] ?? null,
-                'estado_persona' => $data['estado_persona'] ?? null,
+                'estado_geografico' => $data['estado_geografico'] ?? null,
                 'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
                 'genero' => $data['genero'] ?? null,
             ]);

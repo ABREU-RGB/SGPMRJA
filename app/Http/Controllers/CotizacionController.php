@@ -129,12 +129,8 @@ class CotizacionController extends Controller
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100',
-            'productos.*.talla' => [
-                'required',
-                Rule::exists('tallas', 'nombre')->where(function ($query) {
-                    $query->where('activo', true);
-                }),
-            ],
+            'productos.*.talla_id' => ['required', 'integer', Rule::exists('tallas', 'id')],
+            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('colores', 'id')],
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
@@ -170,8 +166,9 @@ class CotizacionController extends Controller
             'productos.*.bordados.*.precio_aplicado.numeric' => 'El precio aplicado de cada bordado debe ser numérico.',
             'productos.*.bordados.*.precio_aplicado.min' => 'El precio aplicado de cada bordado no puede ser negativo.',
             'productos.*.bordados.*.cantidad.min' => 'La cantidad de cada bordado debe ser al menos 1.',
-            'productos.*.talla.required' => 'La talla es obligatoria.',
-            'productos.*.talla.exists' => 'La talla seleccionada no es válida.',
+            'productos.*.talla_id.required' => 'La talla es obligatoria.',
+            'productos.*.talla_id.exists' => 'La talla seleccionada no es válida.',
+            'productos.*.color_id.exists' => 'El color seleccionado no es válido.',
             'productos.*.insumos.*.id.required' => 'Debe seleccionar un insumo.',
             'productos.*.insumos.*.id.exists' => 'El insumo seleccionado no existe.',
             'productos.*.insumos.*.cantidad_estimada.required' => 'La cantidad estimada del insumo es obligatoria.',
@@ -231,12 +228,8 @@ class CotizacionController extends Controller
             'productos.*.descripcion' => 'nullable|string|max:500',
             'productos.*.lleva_bordado' => 'nullable|boolean',
             'productos.*.nombre_logo' => 'nullable|string|max:100',
-            'productos.*.talla' => [
-                'required',
-                Rule::exists('tallas', 'nombre')->where(function ($query) {
-                    $query->where('activo', true);
-                }),
-            ],
+            'productos.*.talla_id' => ['required', 'integer', Rule::exists('tallas', 'id')],
+            'productos.*.color_id' => ['nullable', 'integer', Rule::exists('colores', 'id')],
             'productos.*.insumos' => 'nullable|array',
             'productos.*.insumos.*.id' => 'required|exists:insumo,id',
             'productos.*.insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
@@ -274,8 +267,9 @@ class CotizacionController extends Controller
             'productos.*.bordados.*.precio_aplicado.numeric' => 'El precio aplicado de cada bordado debe ser numérico.',
             'productos.*.bordados.*.precio_aplicado.min' => 'El precio aplicado de cada bordado no puede ser negativo.',
             'productos.*.bordados.*.cantidad.min' => 'La cantidad de cada bordado debe ser al menos 1.',
-            'productos.*.talla.required' => 'La talla es obligatoria.',
-            'productos.*.talla.exists' => 'La talla seleccionada no es válida.',
+            'productos.*.talla_id.required' => 'La talla es obligatoria.',
+            'productos.*.talla_id.exists' => 'La talla seleccionada no es válida.',
+            'productos.*.color_id.exists' => 'El color seleccionado no es válido.',
             'productos.*.insumos.*.id.required' => 'Debe seleccionar un insumo.',
             'productos.*.insumos.*.id.exists' => 'El insumo seleccionado no existe.',
             'productos.*.insumos.*.cantidad_estimada.required' => 'La cantidad estimada del insumo es obligatoria.',
@@ -441,7 +435,8 @@ class CotizacionController extends Controller
                     'recargo_bordado_unitario' => $recargoUnitario,
                     'ubicacion_logo' => $ubicacionLegacy ?: null,
                     'cantidad_logo' => $cantidadLegacy ?: null,
-                    'talla' => $detalle->talla,
+                    'talla_id' => $detalle->talla_id,
+                    'color_id' => $detalle->color_id,
                     'precio_unitario' => $detalle->precio_unitario,
                 ];
             }),

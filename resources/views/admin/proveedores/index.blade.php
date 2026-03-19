@@ -690,7 +690,7 @@
                         $("#view-documento").text(data.rif || 'N/A');
                     }
 
-                    $("#view-telefono").text(data.telefono);
+                    $("#view-telefono").text(data.telefono || 'No especificado');
                     $("#view-email").text(data.email || 'No especificado');
                     $("#view-direccion").text(data.direccion || 'No especificada');
                     $("#view-estatus").html(data.estado == 1 ?

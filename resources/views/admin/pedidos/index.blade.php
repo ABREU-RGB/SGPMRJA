@@ -1317,18 +1317,27 @@
 
             window.products = @json($productos);
             var tallasCatalogo = @json($tallas->mapWithKeys(function ($talla) {
-                return [$talla->nombre => ($talla->etiqueta ?: $talla->nombre)];
+                return [$talla->id => ($talla->etiqueta ?: $talla->nombre)];
+            }));
+            var coloresCatalogo = @json($colores->mapWithKeys(function ($color) {
+                return [$color->id => ['nombre' => $color->nombre, 'hex' => $color->hex_referencial]];
             }));
 
-            function getTallaLabel(talla) {
-                if (!talla) return 'N/A';
-                return tallasCatalogo[talla] || talla;
+            function getTallaLabel(tallaId) {
+                if (!tallaId) return 'N/A';
+                return tallasCatalogo[tallaId] || 'N/A';
+            }
+
+            function getColorNombre(colorId) {
+                return (colorId && coloresCatalogo[colorId]) ? coloresCatalogo[colorId].nombre : '';
             }
 
             window.productItemIndex = 0;
             var productItemIndex = window.productItemIndex;
 
-            window.addProductItem = function addProductDisplayCard(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', productInsumos = [], ubicacionLogo = '', cantidadLogo = '', bordados = []) {
+            window.addProductItem = function addProductDisplayCard(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', colorId = null, tallaId = null, productInsumos = [], ubicacionLogo = '', cantidadLogo = '', bordados = []) {
+                var color = getColorNombre(colorId);
+                var talla = getTallaLabel(tallaId);
                 // Obtener nombre del producto seleccionado
                 var productoText = 'Producto sin nombre';
                 if (productoId) {
@@ -1508,8 +1517,8 @@
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][producto_id]" class="producto-id-input" value="${productoId}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][cantidad]" class="cantidad-input" value="${cantidad}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][precio_unitario]" class="precio-unitario-input" value="${precioFinalUnitario}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][color]" value="${color}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][talla]" value="${talla}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][color_id]" value="${colorId || ''}" />
+                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][talla_id]" value="${tallaId || ''}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][descripcion]" value="${descripcion}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="${llevaBordado ? 1 : 0}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" value="${nombreLogo}" />
@@ -1737,7 +1746,6 @@
                         $('#pago-movil-pagado-field').prop('checked', data.pago_movil_pagado);
                         $('#referencia-transferencia-field').val(data.referencia_transferencia || '');
                         $('#referencia-pago-movil-field').val(data.referencia_pago_movil || '');
-                        $('#banco-id-field').val(data.banco_id).trigger('change'); // Usar .val() y trigger('change') para Select2
                         $('#prioridad-field').val(data.prioridad);
 
                         currentPedidoTotal = parseFloat(data.total); // Cargar el total del backend
@@ -1763,8 +1771,8 @@
                                     item.descripcion,
                                     item.lleva_bordado,
                                     item.nombre_logo,
-                                    item.color,
-                                    item.talla,
+                                    item.color_id || null,
+                                    item.talla_id || null,
                                     insumosTransformados,
                                     item.ubicacion_logo || '',
                                     item.cantidad_logo || 1,
@@ -1893,12 +1901,12 @@
                         if (data.productos && data.productos.length > 0) {
                             data.productos.forEach(function (item, index) {
                                 var subtotal = item.cantidad * item.precio_unitario;
-                                var colorDisplay = String(item.color || item.color_nombre || item.color_aplicado || '').trim();
+                                var colorDisplay = getColorNombre(item.color_id);
                                 var colorHtml = colorDisplay
                                     ? `<span class="fw-semibold" style="font-size: 0.85rem;">${colorDisplay}</span>`
                                     : `<span class="badge bg-soft-warning text-atlantico-dark" style="font-size:0.68rem;">Sin color</span>`;
-                                var tallaLabel = getTallaLabel(item.talla);
-                                var tallaHtml = (item.talla && tallaLabel !== 'N/A')
+                                var tallaLabel = getTallaLabel(item.talla_id);
+                                var tallaHtml = (item.talla_id && tallaLabel !== 'N/A')
                                     ? `<span class="fw-semibold" style="font-size: 0.85rem;">${tallaLabel}</span>`
                                     : `<span class="badge bg-soft-primary text-atlantico-dark" style="font-size:0.68rem;">Sin talla</span>`;
                                 productosBody.append(`
@@ -2151,7 +2159,6 @@
                 $('#pago-movil-pagado-field').prop('checked', false);
                 $('#referencia-transferencia-field').val('');
                 $('#referencia-pago-movil-field').val('');
-                $('#banco-id-field').val('');
                 $('#prioridad-field').val('Normal'); // Valor por defecto
                 currentPedidoTotal = 0; // Resetear total
                 calculateProductTotals(); // Recalcular el total inicial (que ser� 0)
@@ -2556,9 +2563,6 @@
                             $('#pago-movil-pagado-field').prop('checked', data.pago_movil_pagado);
                             $('#referencia-transferencia-field').val(data.referencia_transferencia || '');
                             $('#referencia-pago-movil-field').val(data.referencia_pago_movil || '');
-                            if (data.banco_id) {
-                                $('#banco-id-field').val(data.banco_id).trigger('change');
-                            }
                             $('#prioridad-field').val(data.prioridad || 'Normal');
 
                             if (typeof currentPedidoTotal !== 'undefined') {
@@ -2585,8 +2589,8 @@
                                         item.descripcion || '',
                                         item.lleva_bordado || false,
                                         item.nombre_logo || '',
-                                        item.color || '',
-                                        item.talla || '',
+                                        item.color_id || null,
+                                        item.talla_id || null,
                                         insumosTransformados,
                                         item.ubicacion_logo || '',
                                         item.cantidad_logo || 1,

@@ -75,7 +75,12 @@
                         </div>
                         <div class="col-md-6">
                             <label for="logo-field" class="form-label">Logo</label>
-                            <input type="text" id="logo-field" name="logo" class="form-control"/>
+                            <select id="logo-field" name="logo_id" class="form-select">
+                                <option value="">Sin logo</option>
+                                @foreach($logos as $logo)
+                                    <option value="{{ $logo->id }}">{{ $logo->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-6" id="estado-container" style="display: none;">
                             <label for="estado-field" class="form-label">Estado</label>

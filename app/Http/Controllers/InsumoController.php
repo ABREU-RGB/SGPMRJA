@@ -11,16 +11,16 @@ class InsumoController extends Controller
 {
     public function index()
     {
-        $proveedores = Proveedor::where('estado', true)->get();
+        $proveedores = Proveedor::with('persona')->where('estado', true)->get();
         return view('admin.insumos.index', compact('proveedores'));
     }
 
     public function getInsumos()
     {
-        $insumos = Insumo::with('proveedor:id,razon_social');
+        $insumos = Insumo::with('proveedor.persona');
         return DataTables::of($insumos)
             ->addColumn('proveedor_nombre', function ($insumo) {
-                return $insumo->proveedor ? $insumo->proveedor->razon_social : 'Sin proveedor';
+                return $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'Sin proveedor';
             })
             ->addColumn('stock_status', function ($insumo) {
                 if ($insumo->stock_actual <= $insumo->stock_minimo) {
@@ -38,7 +38,7 @@ class InsumoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'tipo' => 'required|in:Tela,Hilo,Botón,Cierre,Etiqueta',
+            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta,Otro',
             'unidad_medida' => 'required|string|max:20',
             'costo_unitario' => 'required|numeric|min:0',
             'stock_actual' => 'required|numeric|min:0',
@@ -63,7 +63,7 @@ class InsumoController extends Controller
 
     public function show($id)
     {
-        $insumo = Insumo::with('proveedor:id,razon_social')->findOrFail($id);
+        $insumo = Insumo::with('proveedor.persona')->findOrFail($id);
         return response()->json($insumo);
     }
 
@@ -71,7 +71,7 @@ class InsumoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'tipo' => 'required|in:Tela,Hilo,Botón,Cierre,Etiqueta',
+            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta,Otro',
             'unidad_medida' => 'required|string|max:20',
             'costo_unitario' => 'required|numeric|min:0',
             'stock_actual' => 'required|numeric|min:0',
@@ -104,7 +104,7 @@ class InsumoController extends Controller
 
     public function reportePdf()
     {
-        $insumos = Insumo::with('proveedor')->get();
+        $insumos = Insumo::with('proveedor.persona')->get();
         $pdf = \PDF::loadView('admin.insumos.reporte_pdf', compact('insumos'))
             ->setPaper('a4', 'landscape');
         return $pdf->download('insumos_' . now()->format('Y-m-d_H-i-s') . '.pdf');

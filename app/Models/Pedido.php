@@ -26,7 +26,6 @@ class Pedido extends Model
         'pago_movil_pagado',
         'referencia_transferencia',
         'referencia_pago_movil',
-        'banco_id', // Legacy support
         'banco_transferencia_id',
         'banco_pago_movil_id',
         'prioridad',
@@ -44,14 +43,6 @@ class Pedido extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Relación con el banco para transferencias (Legacy o general)
-     */
-    public function banco()
-    {
-        return $this->belongsTo(Banco::class);
     }
 
     /**

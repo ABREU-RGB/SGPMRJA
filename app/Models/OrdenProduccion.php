@@ -19,9 +19,10 @@ class OrdenProduccion extends Model
         'cantidad_producida',
         'fecha_inicio',
         'fecha_fin_estimada',
+        'fecha_fin_real',
         'estado',
         'costo_estimado',
-        'logo',
+        'logo_id',
         'notas',
         'created_by',
     ];
@@ -29,6 +30,7 @@ class OrdenProduccion extends Model
     protected $casts = [
         'fecha_inicio' => 'date',
         'fecha_fin_estimada' => 'date',
+        'fecha_fin_real' => 'date',
         'costo_estimado' => 'decimal:2',
         'cantidad_solicitada' => 'integer',
         'cantidad_producida' => 'integer',
@@ -44,6 +46,11 @@ class OrdenProduccion extends Model
         return $this->belongsToMany(Insumo::class, 'detalle_orden_insumo')
             ->withPivot(['cantidad_estimada', 'cantidad_utilizada'])
             ->withTimestamps();
+    }
+
+    public function logo()
+    {
+        return $this->belongsTo(Logo::class);
     }
 
     public function produccionDiaria()

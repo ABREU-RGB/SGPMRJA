@@ -746,7 +746,7 @@
                         ? 'border: 2px solid #ddd;'
                         : 'border: 2px solid rgba(0,0,0,0.12);';
                     grid.append(
-                        '<div class="color-swatch-item select-color-btn" data-color-nombre="' + c.nombre + '" data-color-hex="' + c.hex_referencial + '">' +
+                        '<div class="color-swatch-item select-color-btn" data-color-id="' + c.id + '" data-color-nombre="' + c.nombre + '" data-color-hex="' + c.hex_referencial + '">' +
                         '  <span class="color-swatch-circle" style="background-color:' + c.hex_referencial + '; ' + borderStyle + '"></span>' +
                         '  <span class="fw-medium">' + c.nombre + '</span>' +
                         '</div>'
@@ -780,24 +780,28 @@
         // Abrir modal de colores desde la fila del producto
         $('#productos-container').on('click', '.buscar-color-trigger', function (e) {
             e.preventDefault();
-            currentColorInput = $(this).closest('.input-group').find('.color-input');
+            currentColorInput = $(this).closest('.input-group').find('.color-display');
             if (colorModal) colorModal.show();
         });
 
         // Seleccionar color por clic en swatch
         $(document).on('click', '.select-color-btn', function (e) {
             e.preventDefault();
+            var id = $(this).data('color-id');
             var nombre = $(this).data('color-nombre');
             var hex = $(this).data('color-hex');
-            seleccionarColor(nombre, hex);
+            seleccionarColor(id, nombre, hex);
         });
 
         // Función central de selección de color
-        function seleccionarColor(nombre, hex) {
+        function seleccionarColor(id, nombre, hex) {
             if (!nombre || !currentColorInput) return;
 
-            // Llenar el input con el nombre del color
+            // Llenar el input display con el nombre del color
             currentColorInput.val(nombre);
+
+            // Actualizar hidden input con el ID
+            currentColorInput.closest('.input-group').find('.color-id-input').val(id);
 
             // Actualizar el dot indicador con el hex del color
             var dotSpan = currentColorInput.closest('.input-group').find('.color-dot-indicator');
@@ -925,17 +929,14 @@
         // Cargar tallas via AJAX al iniciar (patrón análogo a colores)
         cargarTallasCatalogo();
 
-        function getTallaLabel(tallaValue) {
-            if (!tallaValue) return '';
-            var tallaItem = tallasArray.find(function (t) { return t.nombre === tallaValue; });
-            if (tallaItem) return tallaItem.etiqueta || tallaItem.nombre;
-            return tallaValue === 'Talla Unica' ? 'Única' : tallaValue;
+        function getTallaLabel(tallaId) {
+            if (!tallaId) return '';
+            var tallaItem = tallasArray.find(function (t) { return t.id == tallaId; });
+            return tallaItem ? (tallaItem.etiqueta || tallaItem.nombre) : '';
         }
 
-        function getTallaGroup(tallaValue) {
-            if (tallaValue === 'Talla Unica') return 'Única';
-            if (/^\d+$/.test(tallaValue)) return 'Numéricas';
-            return 'Letras';
+        function getColorById(colorId) {
+            return coloresArray.find(function (c) { return c.id == colorId; }) || null;
         }
 
         function renderizarTallasModal(filtro) {
@@ -951,9 +952,9 @@
                 var valueLc = String(value).toLowerCase();
                 if (filtro && labelLc.indexOf(filtro) === -1 && valueLc.indexOf(filtro) === -1) return;
 
-                var groupName = item.grupo || getTallaGroup(value);
+                var groupName = item.grupo || 'Letras';
                 if (!grupos[groupName]) grupos[groupName] = [];
-                grupos[groupName].push({ value: value, label: label });
+                grupos[groupName].push({ id: item.id, value: value, label: label });
             });
 
             var groupOrder = ['Única', 'Numéricas', 'Letras'];
@@ -969,7 +970,7 @@
 
                 items.forEach(function (t) {
                     chipsContainer.append(
-                        '<button type="button" class="talla-chip-item select-talla-btn" data-talla-value="' + t.value + '">' + t.label + '</button>'
+                        '<button type="button" class="talla-chip-item select-talla-btn" data-talla-id="' + t.id + '" data-talla-value="' + t.value + '">' + t.label + '</button>'
                     );
                 });
 
@@ -1021,14 +1022,14 @@
 
         $(document).on('click', '.select-talla-btn', function (e) {
             e.preventDefault();
-            seleccionarTalla($(this).data('talla-value'));
+            seleccionarTalla($(this).data('talla-id'));
         });
 
-        function seleccionarTalla(tallaValue) {
-            if (!tallaValue || !currentTallaInput || !currentTallaValueInput) return;
+        function seleccionarTalla(tallaId) {
+            if (!tallaId || !currentTallaInput || !currentTallaValueInput) return;
 
-            currentTallaInput.val(getTallaLabel(tallaValue));
-            currentTallaValueInput.val(tallaValue).trigger('change');
+            currentTallaInput.val(getTallaLabel(tallaId));
+            currentTallaValueInput.val(tallaId).trigger('change');
 
             if (tallaModal) tallaModal.hide();
 
@@ -1560,13 +1561,16 @@
         // === FIN LÓGICA MODAL DE UBICACIÓN DE BORDADO ===
         // ============================================================
 
-        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', color = '', talla = '', bordados = []) {
+        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', colorId = null, tallaId = null, bordados = []) {
             var productoDisplay = 'Clic para buscar producto...';
             var textClass = 'text-muted';
             var cardVariant = productItemIndex % 2;
             var cardBorderColor = cardVariant === 0 ? 'var(--atlantico-cyan)' : 'var(--atlantico-dark-blue)';
             var cardHeaderBg = cardVariant === 0 ? '#f0f4f8' : '#edf2f9';
-            var tallaLabel = getTallaLabel(talla);
+            var colorObj = getColorById(colorId);
+            var colorNombreInit = colorObj ? colorObj.nombre : '';
+            var colorHexInit = colorObj ? colorObj.hex_referencial : null;
+            var tallaLabel = getTallaLabel(tallaId);
             var llevaBordadoActivo = (llevaBordado === true || llevaBordado === 1 || llevaBordado === '1');
 
             if (productoId) {
@@ -1628,13 +1632,15 @@
                                 <span class="input-group-text color-dot-display"
                                     style="background: #fff; padding: 0 6px;">
                                     <span class="color-dot-indicator"
-                                        style="background-color: ${color ? '#ccc' : 'transparent'}; ${!color ? 'border:1.5px dashed #ccc;' : ''}"></span>
+                                        style="background-color: ${colorHexInit || 'transparent'}; ${!colorHexInit ? 'border:1.5px dashed #ccc;' : 'border:1.5px solid rgba(0,0,0,0.15);'}"></span>
                                 </span>
-                                <input type="text" name="productos[${productItemIndex}][color]"
-                                    class="form-control form-control-sm color-input"
-                                    placeholder="Seleccionar color..." value="${color}" required
+                                <input type="text"
+                                    class="form-control form-control-sm color-display"
+                                    placeholder="Seleccionar color..." value="${colorNombreInit}"
                                     readonly autocomplete="off"
                                     style="background-color: #fff !important;" />
+                                <input type="hidden" name="productos[${productItemIndex}][color_id]"
+                                    class="color-id-input" value="${colorId || ''}" />
                                 <button type="button"
                                     class="btn btn-sm btn-atlantico-brand buscar-color-trigger"
                                     data-bs-toggle="tooltip" data-bs-placement="top"
@@ -1652,8 +1658,8 @@
                                     placeholder="Seleccionar..."
                                     required readonly autocomplete="off"
                                     style="background-color: #fff !important; cursor:text;" />
-                                <input type="hidden" name="productos[${productItemIndex}][talla]"
-                                    class="talla-input-value" value="${talla}" />
+                                <input type="hidden" name="productos[${productItemIndex}][talla_id]"
+                                    class="talla-input-value" value="${tallaId || ''}" />
                                 <button type="button"
                                     class="btn btn-sm btn-atlantico-brand buscar-talla-trigger px-2"
                                     data-bs-toggle="tooltip" data-bs-placement="top"
@@ -2031,8 +2037,8 @@
                                 detalle.descripcion,
                                 detalle.lleva_bordado,
                                 detalle.nombre_logo,
-                                detalle.color || '',
-                                detalle.talla,
+                                detalle.color_id || null,
+                                detalle.talla_id || null,
                                 detalle.bordados || []
                             );
                         });
@@ -2205,7 +2211,7 @@
                                                     </div>
                                                     <div>
                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Talla</small>
-                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${item.talla || 'N/A'}</span>
+                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${getTallaLabel(item.talla_id) || 'N/A'}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2217,7 +2223,7 @@
                                                     </div>
                                                     <div>
                                                         <small class="text-muted d-block" style="font-size: 0.7rem;">Color</small>
-                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${item.color || 'N/A'}</span>
+                                                        <span class="fw-semibold" style="font-size: 0.85rem;">${(getColorById(item.color_id) || {}).nombre || 'N/A'}</span>
                                                     </div>
                                                 </div>
                                             </div>

@@ -45,7 +45,7 @@
                     <div class="row">
                         <div class="col-12">
                             <x-forms.select name="proveedor_id" label="Proveedor" required id="proveedor-id-field-insumo"
-                                :options="$proveedores->pluck('razon_social', 'id')->toArray()"
+                                :options="$proveedores->mapWithKeys(fn($p) => [$p->id => $p->nombre_completo])->toArray()"
                                 placeholder="Seleccione proveedor..." />
                         </div>
                     </div>

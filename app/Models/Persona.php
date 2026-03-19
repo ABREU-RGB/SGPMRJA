@@ -18,7 +18,7 @@ class Persona extends Model
         'documento_identidad',
         'tipo_documento',
         'email',
-        'estado_persona',
+        'estado_geografico',
         'fecha_nacimiento',
         'genero'
     ];
