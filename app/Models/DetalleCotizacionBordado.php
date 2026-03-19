@@ -14,6 +14,7 @@ class DetalleCotizacionBordado extends Model
     protected $fillable = [
         'detalle_cotizacion_id',
         'ubicacion_bordado_id',
+        'logo_id',
         'nombre_aplicado',
         'nombre_logo_aplicado',
         'es_personalizada',
@@ -37,5 +38,10 @@ class DetalleCotizacionBordado extends Model
     public function ubicacionBordado()
     {
         return $this->belongsTo(BordadoUbicacion::class, 'ubicacion_bordado_id');
+    }
+
+    public function logo()
+    {
+        return $this->belongsTo(Logo::class);
     }
 }

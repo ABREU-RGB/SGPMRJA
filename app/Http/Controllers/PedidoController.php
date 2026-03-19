@@ -20,6 +20,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Models\Logo;
 use App\Rules\CiRifFormat;
 use PDF;
 
@@ -37,7 +38,8 @@ class PedidoController extends Controller
         $bancos = Banco::all();
         $tallas = Talla::activo()->orderBy('orden')->orderBy('nombre')->get(['id', 'nombre', 'etiqueta']);
         $colores = Color::activo()->orderBy('grupo')->orderBy('nombre')->get(['id', 'nombre', 'hex_referencial']);
-        return view('admin.pedidos.index', compact('productos', 'insumos', 'bancos', 'tallas', 'colores'));
+        $logos = Logo::orderBy('name')->get(['id', 'name']);
+        return view('admin.pedidos.index', compact('productos', 'insumos', 'bancos', 'tallas', 'colores', 'logos'));
     }
 
     public function getPedidos()
@@ -126,7 +128,7 @@ class PedidoController extends Controller
         $pedido = Pedido::with([
             'user:id,name',
             'productos.producto.tipoProducto',
-            'productos.bordados',
+            'productos.bordados.logo:id,name',
             'pagos.banco:id,nombre',
             'cliente.persona.telefonos',
             'cliente.persona.direcciones'
@@ -201,7 +203,7 @@ class PedidoController extends Controller
     public function pedidoPdf(Pedido $pedido)
     {
         // Cargar relaciones necesarias
-        $pedido->load(['user:id,name', 'productos.producto', 'productos.bordados', 'cliente', 'cliente.persona']);
+        $pedido->load(['user:id,name', 'productos.producto', 'productos.bordados.logo:id,name', 'cliente', 'cliente.persona']);
 
         // Cálculos financieros
         $ivaTasa = 0.16; // 16 %

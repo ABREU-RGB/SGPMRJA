@@ -2,6 +2,7 @@
 
 use App\Models\Cliente;
 use App\Models\Cotizacion;
+use App\Models\Logo;
 use App\Models\Producto;
 use App\Models\User;
 use App\Services\CotizacionService;
@@ -29,9 +30,10 @@ try {
     $user = User::first();
     $cliente = Cliente::first();
     $producto = Producto::where('estado', 1)->first();
+    $logos = Logo::take(3)->get();
 
-    if (!$user || !$cliente || !$producto) {
-        fail('Precondiciones insuficientes (usuario/cliente/producto).');
+    if (!$user || !$cliente || !$producto || $logos->count() < 3) {
+        fail('Precondiciones insuficientes (usuario/cliente/producto/logos).');
     }
 
     Auth::loginUsingId($user->id);
@@ -48,13 +50,12 @@ try {
             'cantidad' => 4,
             'descripcion' => 'QA producto',
             'lleva_bordado' => 1,
-            'nombre_logo' => 'Logo QA',
             'precio_unitario' => $base,
             'bordados' => [
                 [
                     'ubicacion_bordado_id' => 1,
                     'nombre_aplicado' => 'Frontal Izquierdo',
-                    'nombre_logo' => 'Logo QA A',
+                    'logo_id' => $logos[0]->id,
                     'es_personalizada' => false,
                     'precio_aplicado' => 3,
                     'cantidad' => 1,
@@ -62,7 +63,7 @@ try {
                 [
                     'ubicacion_bordado_id' => 5,
                     'nombre_aplicado' => 'Espaldar',
-                    'nombre_logo' => 'Logo QA B',
+                    'logo_id' => $logos[1]->id,
                     'es_personalizada' => false,
                     'precio_aplicado' => 5,
                     'cantidad' => 1,
@@ -70,7 +71,7 @@ try {
                 [
                     'ubicacion_bordado_id' => null,
                     'nombre_aplicado' => 'Cuello Especial',
-                    'nombre_logo' => 'Logo QA C',
+                    'logo_id' => $logos[2]->id,
                     'es_personalizada' => true,
                     'precio_aplicado' => 2,
                     'cantidad' => 2,
@@ -98,13 +99,12 @@ try {
             'cantidad' => 3,
             'descripcion' => 'QA producto update',
             'lleva_bordado' => 1,
-            'nombre_logo' => 'Logo QA2',
             'precio_unitario' => $base,
             'bordados' => [
                 [
                     'ubicacion_bordado_id' => 2,
                     'nombre_aplicado' => 'Frontal Derecho',
-                    'nombre_logo' => 'Logo QA A2',
+                    'logo_id' => $logos[0]->id,
                     'es_personalizada' => false,
                     'precio_aplicado' => 2.5,
                     'cantidad' => 1,
@@ -112,7 +112,7 @@ try {
                 [
                     'ubicacion_bordado_id' => 5,
                     'nombre_aplicado' => 'Espaldar',
-                    'nombre_logo' => 'Logo QA B2',
+                    'logo_id' => $logos[1]->id,
                     'es_personalizada' => false,
                     'precio_aplicado' => 4.5,
                     'cantidad' => 2,
@@ -142,7 +142,7 @@ try {
     $totalPagar = round($subtotal - $descuento + $iva, 2);
 
     $cotPdf = PDF::loadView('admin.cotizaciones.factura', [
-        'cotizacion' => $cot->fresh()->load(['user:id,name', 'productos.producto', 'productos.bordados', 'cliente', 'cliente.persona']),
+        'cotizacion' => $cot->fresh()->load(['user:id,name', 'productos.producto', 'productos.bordados.logo:id,name', 'cliente', 'cliente.persona']),
         'subtotal' => $subtotal,
         'descuento' => $descuento,
         'iva' => $iva,
@@ -150,7 +150,7 @@ try {
     ])->setPaper('a4', 'portrait')->output();
 
     $pedPdf = PDF::loadView('admin.pedidos.factura', [
-        'pedido' => $pedido->fresh()->load(['user:id,name', 'productos.producto', 'productos.bordados', 'cliente', 'cliente.persona']),
+        'pedido' => $pedido->fresh()->load(['user:id,name', 'productos.producto', 'productos.bordados.logo:id,name', 'cliente', 'cliente.persona']),
         'subtotal' => $pedido->total,
         'descuento' => 0,
         'iva' => round($pedido->total * 0.16, 2),

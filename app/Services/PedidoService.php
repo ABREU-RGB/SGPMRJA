@@ -137,18 +137,19 @@ class PedidoService
                 'cantidad' => $item['cantidad'],
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                'nombre_logo' => $this->bordadoPricingService->resolverNombreLogoDetalle($item, $bordados),
                 'color_id' => $item['color_id'] ?? null,
                 'talla_id' => $item['talla_id'] ?? null,
                 'precio_unitario' => $precioUnitarioFinal,
             ]);
 
             foreach ($bordados as $bordado) {
+                $logoId = $bordado['logo_id'] ?? null;
                 DetallePedidoBordado::create([
                     'detalle_pedido_id' => $detalle->id,
                     'ubicacion_bordado_id' => $bordado['ubicacion_bordado_id'] ?? null,
+                    'logo_id' => $logoId,
                     'nombre_aplicado' => trim((string) ($bordado['nombre_aplicado'] ?? '')),
-                    'nombre_logo_aplicado' => trim((string) ($bordado['nombre_logo'] ?? $item['nombre_logo'] ?? '')),
+                    'nombre_logo_aplicado' => $this->bordadoPricingService->resolverNombreLogoSnapshot($logoId),
                     'es_personalizada' => (bool) ($bordado['es_personalizada'] ?? false),
                     'cantidad' => max(1, (int) ($bordado['cantidad'] ?? 1)),
                     'precio_aplicado' => (float) ($bordado['precio_aplicado'] ?? 0),

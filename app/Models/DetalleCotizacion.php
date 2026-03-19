@@ -19,7 +19,6 @@ class DetalleCotizacion extends Model
         'cantidad',
         'descripcion',
         'lleva_bordado',
-        'nombre_logo',
         'color_id',
         'talla_id',
         'precio_unitario',
@@ -83,22 +82,18 @@ class DetalleCotizacion extends Model
         return $cantidad ?: null;
     }
 
-    public function getNombreLogoAttribute($value)
+    public function getNombreLogoAttribute()
     {
-        $logos = $this->relationLoaded('bordados')
-            ? $this->bordados->pluck('nombre_logo_aplicado')
-            : $this->bordados()->pluck('nombre_logo_aplicado');
+        $bordados = $this->relationLoaded('bordados')
+            ? $this->bordados
+            : $this->bordados()->with('logo:id,name')->get();
 
-        $logos = collect($logos)
-            ->map(fn($logo) => trim((string) $logo))
-            ->filter()
-            ->unique()
-            ->values();
+        $logos = $bordados->map(function ($b) {
+            return $b->relationLoaded('logo') && $b->logo
+                ? $b->logo->name
+                : ($b->nombre_logo_aplicado ?: null);
+        })->filter()->unique()->values();
 
-        if ($logos->isNotEmpty()) {
-            return $logos->implode(', ');
-        }
-
-        return $value;
+        return $logos->isNotEmpty() ? $logos->implode(', ') : null;
     }
 }
