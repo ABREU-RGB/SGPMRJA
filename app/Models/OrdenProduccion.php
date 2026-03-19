@@ -22,7 +22,7 @@ class OrdenProduccion extends Model
         'fecha_fin_real',
         'estado',
         'costo_estimado',
-        'logo',
+        'logo_id',
         'notas',
         'created_by',
     ];
@@ -46,6 +46,11 @@ class OrdenProduccion extends Model
         return $this->belongsToMany(Insumo::class, 'detalle_orden_insumo')
             ->withPivot(['cantidad_estimada', 'cantidad_utilizada'])
             ->withTimestamps();
+    }
+
+    public function logo()
+    {
+        return $this->belongsTo(Logo::class);
     }
 
     public function produccionDiaria()

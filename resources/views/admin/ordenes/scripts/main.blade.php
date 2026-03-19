@@ -438,7 +438,7 @@
                 $('#fecha-fin-estimada-field').val(formatDateForInput(data.fecha_fin_estimada));
                 $('#costo-estimado-field').val(data.costo_estimado);
                 $('#estado-field').val(data.estado);
-                $('#logo-field').val(data.logo);
+                $('#logo-field').val(data.logo_id || '');
                 $('#notas-field').val(data.notas);
 
                 // Limpiar y agregar insumos
@@ -499,8 +499,9 @@
                 $('#view-creado-por').text(data.creado_por ? data.creado_por.name : 'Sin especificar');
                 $('#view-pedido-info').text(data.pedido_id ? 'Pedido #' + data.pedido_id : 'Orden Manual');
 
-                let logoHtml = data.logo
-                    ? `<div class="d-flex align-items-start gap-2"><i class="ri-image-line text-muted mt-1 flex-shrink-0"></i><span>${data.logo}</span></div>`
+                let logoName = data.logo ? data.logo.name : null;
+                let logoHtml = logoName
+                    ? `<div class="d-flex align-items-start gap-2"><i class="ri-image-line text-muted mt-1 flex-shrink-0"></i><span>${logoName}</span></div>`
                     : `<span class="text-muted fst-italic">Sin logo registrado</span>`;
                 if (data.pedido && data.pedido.productos) {
                     data.pedido.productos.forEach(function (detalle) {
