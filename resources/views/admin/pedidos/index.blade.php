@@ -1746,7 +1746,6 @@
                         $('#pago-movil-pagado-field').prop('checked', data.pago_movil_pagado);
                         $('#referencia-transferencia-field').val(data.referencia_transferencia || '');
                         $('#referencia-pago-movil-field').val(data.referencia_pago_movil || '');
-                        $('#banco-id-field').val(data.banco_id).trigger('change'); // Usar .val() y trigger('change') para Select2
                         $('#prioridad-field').val(data.prioridad);
 
                         currentPedidoTotal = parseFloat(data.total); // Cargar el total del backend
@@ -2160,7 +2159,6 @@
                 $('#pago-movil-pagado-field').prop('checked', false);
                 $('#referencia-transferencia-field').val('');
                 $('#referencia-pago-movil-field').val('');
-                $('#banco-id-field').val('');
                 $('#prioridad-field').val('Normal'); // Valor por defecto
                 currentPedidoTotal = 0; // Resetear total
                 calculateProductTotals(); // Recalcular el total inicial (que ser� 0)
@@ -2565,9 +2563,6 @@
                             $('#pago-movil-pagado-field').prop('checked', data.pago_movil_pagado);
                             $('#referencia-transferencia-field').val(data.referencia_transferencia || '');
                             $('#referencia-pago-movil-field').val(data.referencia_pago_movil || '');
-                            if (data.banco_id) {
-                                $('#banco-id-field').val(data.banco_id).trigger('change');
-                            }
                             $('#prioridad-field').val(data.prioridad || 'Normal');
 
                             if (typeof currentPedidoTotal !== 'undefined') {

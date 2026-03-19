@@ -778,7 +778,7 @@
                                             <tr>
                                                 <td>${tipo.nombre}</td>
                                                 <td><span class="badge bg-secondary">${tipo.codigo_prefijo}</span></td>
-                                                <td><span class="badge bg-info">${tipo.contador}</span></td>
+                                                <td><span class="badge bg-info">${tipo.productos_count}</span></td>
                                                 <td>
                                                     <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
                                                         data-id="${tipo.id}" 

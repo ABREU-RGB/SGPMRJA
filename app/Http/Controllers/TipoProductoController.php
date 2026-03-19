@@ -13,7 +13,7 @@ class TipoProductoController extends Controller
      */
     public function index(): JsonResponse
     {
-        $tipos = TipoProducto::orderBy('nombre')->get();
+        $tipos = TipoProducto::withCount('productos')->orderBy('nombre')->get();
         return response()->json($tipos);
     }
 
@@ -39,7 +39,6 @@ class TipoProductoController extends Controller
             'nombre' => $request->nombre,
             'codigo_prefijo' => strtoupper($request->codigo_prefijo),
             'descripcion' => $request->descripcion,
-            'contador' => 0,
         ]);
 
         return response()->json([
