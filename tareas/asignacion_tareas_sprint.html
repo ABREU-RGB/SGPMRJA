@@ -337,10 +337,10 @@
 <div class="doc-header">
   <h1>📋 DOCUMENTO DE ASIGNACIÓN DE TAREAS — SGPMRJA</h1>
   <h3>Sprint de Calidad y Funcionalidades Pendientes</h3>
-  <p><strong>Fecha:</strong> 15 de marzo de 2026 &nbsp;|&nbsp; <strong>Tech Lead:</strong> Emmanuel</p>
+  <p><strong>Fecha:</strong> 20 de marzo de 2026 (v2 — post auditoría DB) &nbsp;|&nbsp; <strong>Tech Lead:</strong> Emmanuel</p>
   <div class="badges">
-    <span class="badge-vanessa">🟣 Vanessa — Frontend &amp; UI</span>
-    <span class="badge-santiago">🟢 Santiago — Backend &amp; Lógica</span>
+    <span class="badge-vanessa">🟣 Vanessa — Frontend &amp; UI (9 tareas)</span>
+    <span class="badge-santiago">🟢 Santiago — Backend &amp; Lógica (7 tareas)</span>
   </div>
 </div>
 
@@ -348,6 +348,12 @@
 <div class="regla-de-oro">
   <span class="label">⚠️ REGLA DE ORO</span>
   <p>Antes de escribir una sola línea de código, debes pedirle a tu agente de IA que escanee y te explique los estándares globales del sistema (UI, CSS, DataTables, Reportes). Todo código nuevo debe ser 100% consistente con la arquitectura existente.</p>
+</div>
+
+<!-- ── Aviso Auditoría Completa ── -->
+<div class="callout callout-info">
+  <span class="callout-icon">✅</span>
+  <p><strong>AUDITORÍA DE BASE DE DATOS — COMPLETADA (20/03/2026).</strong> Todas las migraciones, correcciones de FK, normalización de pagos (<code>pago_pedido</code>), refactorización de logos (<code>logo_id</code> FK), SoftDeletes en catálogos y limpieza de esquema ya fueron ejecutadas por el Tech Lead. <strong>Ninguna tarea de este documento requiere crear ni modificar migraciones.</strong> El enfoque es 100% Backend (Modelos, Controllers, Services, Validaciones) y Frontend (Blade, JS, CSS).</p>
 </div>
 
 <!-- ══════════════════════════════════════════════════════ -->
@@ -416,8 +422,7 @@ gh pr create --base enmanuel \
     <tr class="row-vanessa"><td>V-03</td><td>🟣 Vanessa</td><td>Dashboard</td><td>Refinamiento de Paleta de Colores</td><td>🟢 Baja</td></tr>
     <tr class="row-vanessa"><td>V-04</td><td>🟣 Vanessa</td><td>Clientes</td><td>Fix Badge "Jurídico" en Modo Oscuro</td><td>🟢 Baja</td></tr>
     <tr class="row-vanessa"><td>V-05</td><td>🟣 Vanessa</td><td>Productos</td><td>Imagen Opcional en Edición</td><td>🟢 Baja</td></tr>
-    <tr class="row-vanessa"><td>V-06</td><td>🟣 Vanessa</td><td>Productos</td><td>Badges de Estado Activo/Inactivo</td><td>🟢 Baja</td></tr>
-    <tr class="row-vanessa"><td>V-07</td><td>🟣 Vanessa</td><td>Productos</td><td>Reposición del Switch de Estatus</td><td>🟢 Baja</td></tr>
+    <tr class="row-vanessa"><td>V-07</td><td>🟣 Vanessa</td><td>Productos</td><td>Cambiar Select de Estado a Switch Toggle</td><td>🟢 Baja</td></tr>
     <tr class="row-vanessa"><td>V-08</td><td>🟣 Vanessa</td><td>Cotizaciones</td><td>Reubicación del Botón "+ Agregar Producto"</td><td>🟢 Baja</td></tr>
     <tr class="row-vanessa"><td>V-09</td><td>🟣 Vanessa</td><td>Clientes</td><td>Fix Visual: Ficha de Detalles ⚠️ Espera S-01</td><td>🟢 Baja</td></tr>
     <tr class="row-vanessa"><td>V-10</td><td>🟣 Vanessa</td><td>Global</td><td>Persistencia de Pantalla Completa</td><td>🟡 Media</td></tr>
@@ -425,11 +430,9 @@ gh pr create --base enmanuel \
     <tr class="row-santiago"><td>S-01</td><td>🟢 Santiago</td><td>Clientes/Proveedores</td><td>⚠️ [PREREQUISITO] Estándar Geográfico</td><td>🟡 Media</td></tr>
     <tr class="row-santiago"><td>S-02</td><td>🟢 Santiago</td><td>Pedidos</td><td>Eliminar Botón "Agregar Cliente"</td><td>🟢 Baja</td></tr>
     <tr class="row-santiago"><td>S-03</td><td>🟢 Santiago</td><td>Pedidos</td><td>Corrección de Encoding UTF-8 en SweetAlert</td><td>🟢 Baja</td></tr>
-    <tr class="row-santiago"><td>S-04</td><td>🟢 Santiago</td><td>Empleados</td><td>Fix Bug: Modal de Edición + Error de Estatus</td><td>🟡 Media</td></tr>
-    <tr class="row-santiago"><td>S-05</td><td>🟢 Santiago</td><td>Proveedores</td><td>Unificación de Formulario ⚠️ Espera S-01</td><td>🟡 Media</td></tr>
-    <tr class="row-santiago"><td>S-06</td><td>🟢 Santiago</td><td>Global</td><td>SoftDeletes: Inhabilitación Lógica + Historial</td><td>🔴 Alta</td></tr>
+    <tr class="row-santiago"><td>S-05</td><td>🟢 Santiago</td><td>Proveedores</td><td>Frontend: Estado/Municipio en formulario jurídico ⚠️ Espera S-01</td><td>🟢 Baja</td></tr>
+    <tr class="row-santiago"><td>S-06</td><td>🟢 Santiago</td><td>Global</td><td>SoftDeletes: UI Inhabilitación Lógica + Historial (DB lista)</td><td>🟡 Media</td></tr>
     <tr class="row-santiago"><td>S-07</td><td>🟢 Santiago</td><td>Clientes → Global</td><td>Filtros y Búsqueda Avanzada por Columna</td><td>🔴 Alta</td></tr>
-    <tr class="row-santiago"><td>S-08</td><td>🟢 Santiago</td><td>Pedidos</td><td>Lógica de Abono por Método de Pago ⚠️ Espera S-02, S-03</td><td>🔴 Alta</td></tr>
     <tr class="row-santiago"><td>S-09</td><td>🟢 Santiago</td><td>Global</td><td>Estándar Empresarial de Reportes PDF</td><td>🔴 Alta</td></tr>
   </tbody>
 </table>
@@ -439,15 +442,19 @@ gh pr create --base enmanuel \
 <div class="dep-tree">
 <span class="node-s">S-01</span> — Estándar Geográfico  <span class="comment">(PREREQUISITO BLOQUEANTE)</span>
   ├<span class="arrow">──→</span> <span class="node-v">V-09</span> — Fix Visual Clientes     <span class="comment">← Vanessa NO puede empezar hasta que S-01 esté en enmanuel</span>
-  └<span class="arrow">──→</span> <span class="node-s">S-05</span> — Unificación Proveedores <span class="comment">← Santiago NO puede empezar hasta que S-01 esté en enmanuel</span>
+  └<span class="arrow">──→</span> <span class="node-s">S-05</span> — Estado/Municipio Proveedores <span class="comment">← Santiago NO puede empezar hasta que S-01 esté en enmanuel</span>
 
 <span class="node-s">S-02</span> — Eliminar Botón Cliente
   └<span class="arrow">──→</span> <span class="node-s">S-03</span> — Encoding UTF-8
-        └<span class="arrow">──→</span> <span class="node-s">S-08</span> — Abono por Método de Pago  <span class="comment">← Tarea más compleja de Pedidos</span>
 
 <span class="comment">Tareas independientes (sin bloqueos):</span>
-  <span class="node-v">Vanessa →</span> V-01, V-02, V-03, V-04, V-05, V-06, V-07, V-08, V-10
-  <span class="node-s">Santiago →</span> S-04, S-06, S-07, S-09
+  <span class="node-v">Vanessa →</span> V-01, V-02, V-03, V-04, V-05, V-07, V-08, V-10
+  <span class="node-s">Santiago →</span> S-06, S-07, S-09
+
+<span class="comment">Tareas eliminadas (completadas en auditoría por el Tech Lead):</span>
+  <span class="comment">  V-06 — Badges Estado Activo/Inactivo en Productos (ya implementados)</span>
+  <span class="comment">  S-04 — Fix Modal Edición Empleados (ya funciona correctamente)</span>
+  <span class="comment">  S-08 — Pagos Múltiples (UI + backend + DB 100% operativo)</span>
 </div>
 
 <br><hr><br>
@@ -457,8 +464,8 @@ gh pr create --base enmanuel \
 <!-- ══════════════════════════════════════════════════════ -->
 <div class="bloque-vanessa-banner">
   <h1>🟣 BLOQUE 1 — VANESSA: Frontend &amp; UI/UX</h1>
-  <p>10 Tareas · Enfoque: Interfaz de usuario, experiencia visual, correcciones CSS/JS en el frontend.</p>
-  <p class="orden"><strong>Orden de ejecución:</strong> V-01 → V-02 → V-03 → V-04 → V-05 → V-06 → V-07 → V-08 → V-10 → V-09 (última, espera S-01)</p>
+  <p>9 Tareas · Enfoque: Interfaz de usuario, experiencia visual, correcciones CSS/JS en el frontend. <em>(V-06 fue completada durante la auditoría por el Tech Lead.)</em></p>
+  <p class="orden"><strong>Orden de ejecución:</strong> V-01 → V-02 → V-03 → V-04 → V-05 → V-07 → V-08 → V-10 → V-09 (última, espera S-01)</p>
 </div>
 
 <!-- V-01 -->
@@ -512,32 +519,25 @@ gh pr create --base enmanuel \
   <div class="task-body">
     <div class="section-label">📋 Contexto auditado</div>
     <ul>
-      <li><strong>Timeout:</strong> <code>config/session.php</code> línea 34 → <code>'lifetime' =&gt; env('SESSION_LIFETIME', 120)</code> — <strong>120 min (2 horas)</strong>. Demasiado extenso.</li>
-      <li><strong>Navbar:</strong> el logo <code>atlantico-logo-wide.png</code> en <code>header.blade.php</code> líneas 9–14 colisiona visualmente con el botón "Inicio".</li>
-      <li><strong>Botón Cerrar Sesión:</strong> puede estar desproporcionado en el dropdown.</li>
+      <li><strong>Timeout:</strong> <code>config/session.php</code> línea 34 → <code>'lifetime' =&gt; env('SESSION_LIFETIME', 120)</code> — <strong>120 min (2 horas)</strong>. Demasiado extenso para un sistema administrativo.</li>
     </ul>
+    <div class="callout callout-info">
+      <span class="callout-icon">✅</span>
+      <p><strong>Auditoría visual:</strong> El logo, botón "Inicio" y botón "Cerrar Sesión" fueron verificados y <strong>no presentan problemas</strong> de colisión ni proporción. Solo queda el ajuste de timeout.</p>
+    </div>
 
     <div class="section-label">🎯 Objetivo</div>
-    <ol>
-      <li>Cambiar <code>SESSION_LIFETIME=30</code> en el archivo <code>.env</code>.</li>
-      <li>Corregir el espaciado del navbar para eliminar la colisión logo/botón Inicio.</li>
-      <li>Ajustar tamaño del botón "Cerrar Sesión" si es desproporcional.</li>
-    </ol>
+    <p>Cambiar <code>SESSION_LIFETIME=30</code> en el archivo <code>.env</code> para que la sesión expire a los 30 minutos de inactividad.</p>
 
     <div class="section-label">📁 Archivos clave</div>
     <ul>
-      <li><code>.env</code> — variable <code>SESSION_LIFETIME</code></li>
-      <li><code>resources/views/admin/layouts/header.blade.php</code></li>
-      <li><code>resources/views/admin/layouts/sidebar.blade.php</code></li>
-      <li><code>public/assets/css/custom.css</code> — ajustes CSS (todos los cambios van aquí)</li>
+      <li><code>.env</code> — variable <code>SESSION_LIFETIME</code> (línea 23)</li>
     </ul>
 
     <div class="section-label">✅ Criterios de Aceptación</div>
     <ul class="checklist">
       <li>La sesión expira a los 30 minutos de inactividad y redirige al login</li>
-      <li>Logo y botón "Inicio" tienen separación visual adecuada en desktop y tablet</li>
-      <li>El botón "Cerrar Sesión" es proporcional al resto de controles del header</li>
-      <li>Layout correcto en modo claro y oscuro</li>
+      <li>El valor en <code>.env</code> es <code>SESSION_LIFETIME=30</code></li>
     </ul>
   </div>
 </div>
@@ -631,76 +631,31 @@ gh pr create --base enmanuel \
   </div>
   <div class="task-body">
     <div class="section-label">📋 Contexto auditado — Bug localizado en frontend</div>
-    <p>La auditoría de <code>ProductoController::update()</code> (<code>app/Http/Controllers/ProductoController.php</code>, línea 110) confirma que el <strong>backend ya es correcto</strong>:</p>
-    <pre>'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',</pre>
-    <p>El bug está en el <strong>frontend</strong>: el modal de edición probablemente tiene <code>&lt;input type="file" required&gt;</code> en el HTML.</p>
+    <p>El <strong>backend ya es correcto</strong> — la validación usa <code>'imagen' => 'nullable|image|...'</code>. La preview de imagen <strong>ya funciona</strong> (líneas 257-260 y 589-592). El único problema es:</p>
+    <pre>&lt;!-- Línea 255-256 actual — el required bloquea la edición sin imagen nueva --&gt;
+&lt;input type="file" id="imagen-field" name="imagen" class="form-control" accept="image/*" required /&gt;</pre>
 
     <div class="section-label">🎯 Objetivo</div>
-    <ol>
-      <li>Eliminar el atributo <code>required</code> del <code>input[type="file"]</code> en el modal de edición.</li>
-      <li>Mostrar una preview de la imagen actual junto al campo de subida.</li>
-      <li>Garantizar que el formulario guarda sin necesidad de subir nueva imagen.</li>
-    </ol>
+    <p>Eliminar el atributo <code>required</code> del <code>input[type="file"]</code> (línea 256 de <code>productos/index.blade.php</code>). Opcionalmente, hacerlo condicional: <code>required</code> solo al crear, no al editar.</p>
 
     <div class="section-label">📁 Archivos clave</div>
     <ul>
-      <li><code>resources/views/admin/productos/index.blade.php</code> — contiene el modal de edición</li>
+      <li><code>resources/views/admin/productos/index.blade.php</code> — línea 256</li>
     </ul>
 
     <div class="section-label">✅ Criterios de Aceptación</div>
     <ul class="checklist">
       <li>Editar producto sin cambiar imagen → guarda exitosamente sin errores</li>
       <li>La imagen existente permanece tras editar sin subir nueva</li>
-      <li>El modal muestra una preview de la imagen actual</li>
       <li>Al subir nueva imagen → reemplaza correctamente la anterior</li>
     </ul>
-  </div>
-</div>
-
-<!-- V-06 -->
-<div class="task-card-vanessa">
-  <div class="task-header">
-    <h2>🎨 Tarea V-06 · Badges de Estado Activo/Inactivo en Listado de Productos</h2>
-    <div class="task-meta">
-      <span class="meta-pill pill-rama">📌 feat/vanessa/v-06-producto-badges-estado</span>
-      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
-      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
-    </div>
-  </div>
-  <div class="task-body">
-    <div class="section-label">📋 Contexto auditado</div>
-    <p>El modelo <code>Producto</code> tiene el campo <code>estado</code> (boolean, <code>app/Models/Producto.php</code> línea 27). El DataTable de productos no tiene diferenciación visual de estado mediante badges, a diferencia de otros módulos.</p>
-
-    <div class="section-label">🎯 Objetivo</div>
-    <ul>
-      <li><strong>Activo</strong> → Badge verde (estándar <code>status-aprobada</code>: <code>#6ee7b7</code> dark mode, verde suave light mode)</li>
-      <li><strong>Inactivo</strong> → Badge gris (estándar <code>status-cancelado</code>)</li>
-    </ul>
-
-    <div class="section-label">📁 Archivos clave</div>
-    <ul>
-      <li><code>resources/views/admin/productos/index.blade.php</code> — render de columna en DataTable</li>
-      <li><code>public/assets/css/custom.css</code> — reutilizar clases de badge existentes</li>
-    </ul>
-
-    <div class="section-label">✅ Criterios de Aceptación</div>
-    <ul class="checklist">
-      <li>Columna estado muestra badge verde "Activo" o gris "Inactivo"</li>
-      <li>Los badges se ven correctamente en modo claro y oscuro</li>
-      <li>Se reutilizan las clases de badge del sistema (no crear nuevas clases)</li>
-    </ul>
-
-    <div class="prompt-ia">
-      <span class="label">🤖 Prompt para tu agente de IA</span>
-      "Lee el bloque de estilos de badges de estado en <code>public/assets/css/custom.css</code> (busca <code>status-aprobada</code>, <code>status-cancelado</code>). Luego léeme cómo se renderiza la columna de estado en el DataTable de otro módulo que ya tenga badges. Quiero aplicar el mismo patrón en <code>productos/index.blade.php</code> para el campo booleano <code>estado</code>."
-    </div>
   </div>
 </div>
 
 <!-- V-07 -->
 <div class="task-card-vanessa">
   <div class="task-header">
-    <h2>🎨 Tarea V-07 · Reposición del Switch de Estatus al Final del Formulario</h2>
+    <h2>🎨 Tarea V-07 · Cambiar Select de Estado a Switch Toggle en Productos</h2>
     <div class="task-meta">
       <span class="meta-pill pill-rama">📌 feat/vanessa/v-07-producto-switch-estatus</span>
       <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
@@ -709,22 +664,26 @@ gh pr create --base enmanuel \
   </div>
   <div class="task-body">
     <div class="section-label">📋 Contexto auditado</div>
-    <p>En UX, el control "Estatus/Activar" debe estar al final del formulario. El usuario primero completa todos los datos y luego decide si activa el registro. En el formulario actual de Productos el switch puede estar en posición intermedia.</p>
+    <p>El campo "Estado" en el formulario de Productos (<code>productos/index.blade.php</code>, línea 263) usa un <code>&lt;select&gt;</code> con opciones "Activo" / "Inactivo". La posición ya es correcta (al final del formulario, antes de los botones). Sin embargo, un <strong>switch toggle</strong> es más intuitivo para campos booleanos de activación.</p>
 
     <div class="section-label">🎯 Objetivo</div>
-    <p>Mover el control de <strong>Estatus</strong> al final de los formularios de Creación y Edición de Productos, justo antes de los botones de acción Guardar/Cancelar.</p>
+    <ol>
+      <li>Reemplazar el <code>&lt;x-forms.select&gt;</code> de Estado por un <strong>switch toggle</strong> (<code>form-check form-switch</code>) con label "Activo".</li>
+      <li>Asegurar que el JS de edición setea correctamente el estado del switch (<code>.prop('checked', data.estado)</code>).</li>
+      <li>Mantener el hidden input <code>name="estado"</code> sincronizado con el switch.</li>
+    </ol>
 
     <div class="section-label">📁 Archivos clave</div>
     <ul>
-      <li><code>resources/views/admin/productos/index.blade.php</code> — modales de Crear y Editar</li>
+      <li><code>resources/views/admin/productos/index.blade.php</code> — línea 263 (select actual) y línea 587 (JS edición)</li>
     </ul>
 
     <div class="section-label">✅ Criterios de Aceptación</div>
     <ul class="checklist">
-      <li>El campo "Estatus" es el último campo antes de los botones Guardar/Cancelar</li>
-      <li>Aplica en el formulario de Crear y de Editar</li>
-      <li>La funcionalidad del switch no cambia, solo su posición</li>
-      <li>Documentar si el mismo problema existe en otros formularios del sistema</li>
+      <li>El campo Estado usa un switch toggle en vez de select</li>
+      <li>El switch refleja correctamente el estado al editar un producto existente</li>
+      <li>Al crear, el switch inicia en "Activo" (checked por defecto)</li>
+      <li>Se ve correctamente en modo claro y oscuro</li>
     </ul>
   </div>
 </div>
@@ -857,8 +816,8 @@ gh pr create --base enmanuel \
 <!-- ══════════════════════════════════════════════════════ -->
 <div class="bloque-santiago-banner">
   <h1>🟢 BLOQUE 2 — SANTIAGO: Backend &amp; Lógica</h1>
-  <p>9 Tareas · Enfoque: Lógica de negocio, corrección de bugs de backend, modelos, controladores y arquitectura de datos.</p>
-  <p class="orden"><strong>Orden de ejecución:</strong> S-01 → S-02 → S-03 → S-04 → S-05 (espera S-01) → S-06 → S-07 → S-08 (espera S-02, S-03) → S-09</p>
+  <p>7 Tareas · Enfoque: Lógica de negocio, UI/UX de funcionalidades existentes, estandarización de reportes. <em>(S-04 y S-08 fueron completadas durante la auditoría DB por el Tech Lead.)</em></p>
+  <p class="orden"><strong>Orden de ejecución:</strong> S-01 → S-02 → S-03 → S-05 (espera S-01) → S-06 → S-07 → S-09</p>
 </div>
 
 <!-- S-01 -->
@@ -965,7 +924,7 @@ gh pr create --base enmanuel \
     <div class="task-meta">
       <span class="meta-pill pill-rama">📌 feat/santiago/s-03-pedidos-encoding-utf8</span>
       <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
-      <span class="meta-pill pill-libre">✅ Sin bloqueos — hacer antes de S-08</span>
+      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
     </div>
   </div>
   <div class="task-body">
@@ -996,56 +955,13 @@ confirmButtonText: 'Sí, eliminarlo!',</pre>
   </div>
 </div>
 
-<!-- S-04 -->
-<div class="task-card-santiago">
-  <div class="task-header">
-    <h2>⚙️ Tarea S-04 · Empleados: Fix del Modal de Edición + Error de Estatus</h2>
-    <div class="task-meta">
-      <span class="meta-pill pill-rama">📌 feat/santiago/s-04-empleados-fix-modal-edicion</span>
-      <span class="meta-pill pill-media">🟡 Complejidad Media</span>
-      <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
-    </div>
-  </div>
-  <div class="task-body">
-    <div class="section-label">📋 Contexto auditado — Causa raíz del bug</div>
-    <p>La auditoría de <code>EmpleadoController::update()</code> (líneas 161–209) revela que los campos <code>documento_identidad</code>, <code>tipo_documento</code>, <code>cargo</code>, <code>departamento</code> y <code>estado</code> son <strong>todos <code>required</code></strong>. El error <em>"El documento de identidad es obligatorio (and 1 more error)"</em> ocurre porque el modal de edición <strong>no pre-llena</strong> estos campos al recibir el JSON del endpoint <code>edit()</code>.</p>
-    <p>El <code>EmpleadoController::edit()</code> (líneas 140–159) <strong>sí devuelve</strong> todos los datos correctamente. El bug está en el <strong>JavaScript del modal</strong> que no mapea los campos recibidos a los <code>id</code> de los inputs.</p>
-
-    <div class="section-label">🎯 Objetivo</div>
-    <ol>
-      <li>Identificar qué campos del JSON no se mapean al formulario de edición.</li>
-      <li>Corregir el JS para que <code>estado</code>, <code>documento_identidad</code>, <code>tipo_documento</code>, <code>cargo</code> y <code>departamento</code> se poblen correctamente.</li>
-      <li>Corregir el layout desalineado en la sección "Contacto y Ubicación" del modal de detalles.</li>
-    </ol>
-
-    <div class="section-label">📁 Archivos clave</div>
-    <ul>
-      <li><code>resources/views/admin/empleados/index.blade.php</code> — modal de edición + JS</li>
-      <li><code>app/Http/Controllers/EmpleadoController.php</code> — <code>edit()</code> líneas 140–159 y <code>update()</code> líneas 161–209</li>
-    </ul>
-
-    <div class="section-label">✅ Criterios de Aceptación</div>
-    <ul class="checklist">
-      <li>Editar un empleado: todos los campos se pre-llenan correctamente</li>
-      <li>El formulario se envía sin errores de validación cuando los datos son válidos</li>
-      <li>El estatus del empleado se carga y muestra correctamente</li>
-      <li>La sección "Contacto y Ubicación" del modal de detalles está visualmente alineada</li>
-    </ul>
-
-    <div class="prompt-ia">
-      <span class="label">🤖 Prompt para tu agente de IA</span>
-      "Lee el método <code>edit()</code> del <code>EmpleadoController</code> (líneas 140–159) y el modal de edición en <code>empleados/index.blade.php</code>. Analiza el JS que toma la respuesta JSON y rellena el formulario. El error dice 'El documento de identidad es obligatorio'. Busca el campo con nombre <code>documento_identidad</code> en el formulario y verifica si su valor se setea en el callback AJAX. Identifica todos los campos del JSON que no se mapean correctamente."
-    </div>
-  </div>
-</div>
-
 <!-- S-05 -->
 <div class="task-card-santiago">
   <div class="task-header">
-    <h2>⚙️ Tarea S-05 · Proveedores: Unificación de Formulario y Campo Geográfico</h2>
+    <h2>⚙️ Tarea S-05 · Proveedores Jurídicos: Agregar Estado/Municipio al Formulario</h2>
     <div class="task-meta">
-      <span class="meta-pill pill-rama">📌 feat/santiago/s-05-proveedores-unificacion-form</span>
-      <span class="meta-pill pill-media">🟡 Complejidad Media</span>
+      <span class="meta-pill pill-rama">📌 feat/santiago/s-05-proveedores-ubicacion-juridico</span>
+      <span class="meta-pill pill-baja">🟢 Complejidad Baja</span>
       <span class="meta-pill pill-bloqueo">⚠️ Esperar S-01 mergeado</span>
     </div>
   </div>
@@ -1055,34 +971,40 @@ confirmButtonText: 'Sí, eliminarlo!',</pre>
       <p><strong>BLOQUEADA.</strong> No iniciar hasta que <strong>S-01</strong> esté mergeado en <code>enmanuel</code>.</p>
     </div>
 
-    <div class="section-label">📋 Contexto auditado</div>
-    <p>El modelo <code>Proveedor</code> tiene dos tipos:</p>
-    <ul>
-      <li><strong>Natural:</strong> usa relación con <code>Persona</code> → datos normalizados (igual que Cliente).</li>
-      <li><strong>Jurídico:</strong> usa campos directos en tabla <code>proveedor</code> (<code>razon_social</code>, <code>rif</code>, <code>direccion</code>, <code>telefono</code>, <code>email</code>) → <strong>NO usa el modelo <code>Direccion</code></strong> → no tiene campos de estado territorial ni municipio.</li>
-    </ul>
+    <div class="section-label">📋 Contexto — Lo que ya está listo (auditoría DB)</div>
+    <div class="callout callout-info">
+      <span class="callout-icon">✅</span>
+      <p>La migración CR-02 ya normalizó proveedores jurídicos al sistema <code>Persona</code>. El Modelo (<code>Proveedor.php</code>), Service (<code>ProveedorService.php</code>) y Controller ya trabajan con <code>Persona</code> → <code>Direccion</code> → <code>Telefono</code> para ambos tipos. <strong>La DB, Modelo, Service y Controller están listos.</strong></p>
+    </div>
+
+    <div class="section-label">📋 Lo que falta (solo Frontend)</div>
+    <p>El formulario de proveedores <strong>naturales</strong> ya tiene los dropdowns de Estado y Municipio. El formulario de proveedores <strong>jurídicos</strong> solo tiene un campo "Dirección" de texto libre — <strong>le faltan los dropdowns de Estado y Municipio</strong>.</p>
 
     <div class="section-label">🎯 Objetivo</div>
     <ol>
-      <li>Sección "Datos Personales" → <strong>"Datos del Proveedor"</strong>. Bloques: <strong>Identificación | Contacto | Ubicación</strong>.</li>
-      <li>Proveedores jurídicos: agregar campos <strong>Estado</strong> y <strong>Municipio</strong> en formulario y vista de detalles.</li>
-      <li>Aplicar el estándar geográfico de S-01.</li>
+      <li>Agregar los dropdowns <strong>Estado</strong> y <strong>Municipio</strong> al formulario de proveedores jurídicos (sección <code>#campos-juridico</code>), copiando el patrón de los naturales.</li>
+      <li>Asegurar que el JS de <code>municipios-venezuela.js</code> funcione en la sección jurídica igual que en la natural.</li>
+      <li>Ajustar <code>ProveedorService::crearJuridico()</code> y <code>actualizarJuridico()</code> para que guarden <code>ciudad</code> y <code>estado</code> en la tabla <code>direccion</code>.</li>
+      <li>Aplicar el estándar geográfico de S-01 (labels "Estado" y "Municipio").</li>
     </ol>
 
     <div class="section-label">📁 Archivos clave</div>
     <ul>
-      <li><code>resources/views/admin/proveedores/index.blade.php</code></li>
-      <li><code>app/Models/Proveedor.php</code></li>
-      <li><code>app/Http/Controllers/ProveedorController.php</code></li>
-      <li><code>database/migrations/</code> — si se requiere: <code>php artisan make:migration add_ubicacion_to_proveedor_table</code></li>
+      <li><code>resources/views/admin/proveedores/index.blade.php</code> — agregar dropdowns en <code>#campos-juridico</code></li>
+      <li><code>app/Services/ProveedorService.php</code> — ajuste menor en <code>crearJuridico()</code>/<code>actualizarJuridico()</code></li>
     </ul>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <p><strong>NO crear migraciones ni modificar Modelos.</strong> La tabla <code>direccion</code> ya tiene los campos <code>ciudad</code> y <code>estado</code>. Solo falta conectarlos en el formulario jurídico y en el Service.</p>
+    </div>
 
     <div class="section-label">✅ Criterios de Aceptación</div>
     <ul class="checklist">
-      <li>Formulario de Proveedores tiene los mismos bloques de sección que el de Clientes</li>
-      <li>Proveedores jurídicos tienen campos de Estado y Municipio en formulario y detalles</li>
-      <li>Nomenclatura idéntica a Clientes (Identificación / Contacto / Ubicación)</li>
-      <li>Si hay migración: correctamente versionada y ejecutada con <code>php artisan migrate</code></li>
+      <li>Formulario jurídico muestra dropdowns Estado y Municipio (dependientes)</li>
+      <li>Al guardar: <code>ciudad</code> y <code>estado</code> persisten en tabla <code>direccion</code></li>
+      <li>Al editar: los valores guardados se cargan correctamente en los dropdowns</li>
+      <li>Labels consistentes con S-01: "Estado" y "Municipio"</li>
     </ul>
   </div>
 </div>
@@ -1090,15 +1012,15 @@ confirmButtonText: 'Sí, eliminarlo!',</pre>
 <!-- S-06 -->
 <div class="task-card-santiago">
   <div class="task-header">
-    <h2>⚙️ Tarea S-06 · SoftDeletes: Inhabilitación Lógica + Historial</h2>
+    <h2>⚙️ Tarea S-06 · SoftDeletes: UI de Inhabilitación Lógica + Historial</h2>
     <div class="task-meta">
       <span class="meta-pill pill-rama">📌 feat/santiago/s-06-softdeletes-inhabilitacion-ui</span>
-      <span class="meta-pill pill-alta">🔴 Complejidad Alta</span>
+      <span class="meta-pill pill-media">🟡 Complejidad Media</span>
       <span class="meta-pill pill-libre">✅ Sin bloqueos</span>
     </div>
   </div>
   <div class="task-body">
-    <div class="section-label">📋 Contexto auditado — SoftDeletes YA implementado en backend</div>
+    <div class="section-label">📋 Contexto auditado — SoftDeletes YA implementado en DB y Modelos</div>
     <table class="specs-table">
       <thead><tr><th>Modelo</th><th>use SoftDeletes</th><th>Campo deleted_at</th></tr></thead>
       <tbody>
@@ -1109,8 +1031,18 @@ confirmButtonText: 'Sí, eliminarlo!',</pre>
         <tr><td><code>Empleado</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
         <tr><td><code>Cotizacion</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
         <tr><td><code>OrdenProduccion</code></td><td>✅ SÍ</td><td>✅ SÍ</td></tr>
+        <tr><td><code>Banco</code></td><td>✅ SÍ</td><td>✅ SÍ (BA-02)</td></tr>
+        <tr><td><code>Color</code></td><td>✅ SÍ</td><td>✅ SÍ (BA-02)</td></tr>
+        <tr><td><code>Talla</code></td><td>✅ SÍ</td><td>✅ SÍ (BA-02)</td></tr>
+        <tr><td><code>TipoProducto</code></td><td>✅ SÍ</td><td>✅ SÍ (BA-02)</td></tr>
+        <tr><td><code>Logo</code></td><td>✅ SÍ</td><td>✅ SÍ (BA-02)</td></tr>
+        <tr><td><code>BordadoUbicacion</code></td><td>✅ SÍ</td><td>✅ SÍ (BA-02)</td></tr>
       </tbody>
     </table>
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <p><strong>NO crear migraciones.</strong> La migración BA-02 ya agregó <code>deleted_at</code> y <code>use SoftDeletes</code> a todos los catálogos maestros. La tarea es 100% de UI/UX.</p>
+    </div>
     <p><strong>Lo que NO existe (hay que construir):</strong> Interfaz para ver historial, semántica clara de "Inhabilitar" vs "Eliminar", protección en frontend.</p>
 
     <div class="section-label">🎯 Objetivo</div>
@@ -1178,75 +1110,6 @@ confirmButtonText: 'Sí, eliminarlo!',</pre>
       <li>Un botón "Limpiar filtros" restaura la tabla completa</li>
       <li>El diseño sigue el Estándar Maestros Navy del sistema</li>
     </ul>
-  </div>
-</div>
-
-<!-- S-08 -->
-<div class="task-card-santiago">
-  <div class="task-header">
-    <h2>⚙️ Tarea S-08 · Pedidos: Lógica de Abono por Método de Pago</h2>
-    <div class="task-meta">
-      <span class="meta-pill pill-rama">📌 feat/santiago/s-08-pedidos-abono-metodo-pago</span>
-      <span class="meta-pill pill-alta">🔴 Complejidad Alta</span>
-      <span class="meta-pill pill-bloqueo">⚠️ Esperar S-02 y S-03 mergeados</span>
-    </div>
-  </div>
-  <div class="task-body">
-    <div class="callout callout-block">
-      <span class="callout-icon">🔴</span>
-      <p><strong>BLOQUEADA.</strong> Esperar que <strong>S-02</strong> y <strong>S-03</strong> estén mergeados en <code>enmanuel</code> antes de iniciar.</p>
-    </div>
-
-    <div class="section-label">📋 Contexto auditado — El modelo YA está listo</div>
-    <p>La auditoría de <code>app/Models/Pedido.php</code> (líneas 22–33) confirma que el backend ya tiene la arquitectura completa:</p>
-    <pre>protected $fillable = [
-    'abono',                  // campo legado (mantener por compatibilidad)
-    'efectivo_pagado',        // abono específico en efectivo
-    'transferencia_pagado',   // abono específico en transferencia
-    'pago_movil_pagado',      // abono específico en pago móvil
-    'referencia_transferencia',
-    'referencia_pago_movil',
-    'banco_transferencia_id', // FK → tabla banco
-    'banco_pago_movil_id',    // FK → tabla banco
-];</pre>
-    <p>El problema es <strong>exclusivamente de frontend</strong>: el formulario solo muestra un campo <code>abono</code> general.</p>
-
-    <div class="section-label">🎯 Mockup del formulario a implementar</div>
-    <pre>┌─────────────────────────────────────────────────────┐
-│ 💵 [✓] Efectivo        │ Monto: [___________]       │
-│ 🏦 [✓] Transferencia   │ Banco: [select ▼]          │
-│                        │ Referencia: [___________]  │
-│                        │ Monto: [___________]       │
-│ 📱 [✓] Pago Móvil      │ Banco: [select ▼]          │
-│                        │ Referencia: [___________]  │
-│                        │ Monto: [___________]       │
-├─────────────────────────────────────────────────────┤
-│  Total abonado (calculado auto): Bs. X,XXX.XX       │
-└─────────────────────────────────────────────────────┘</pre>
-
-    <div class="section-label">📁 Archivos clave</div>
-    <ul>
-      <li><code>resources/views/admin/pedidos/index.blade.php</code> — formulario de completar/editar</li>
-      <li><code>app/Http/Controllers/PedidoController.php</code> — métodos <code>update()</code> y <code>store()</code></li>
-      <li><code>app/Models/Pedido.php</code> — referencia (NO modificar estructura)</li>
-      <li><code>app/Models/Banco.php</code> — para poblar los <code>&lt;select&gt;</code> de bancos</li>
-    </ul>
-
-    <div class="section-label">✅ Criterios de Aceptación</div>
-    <ul class="checklist">
-      <li>Formulario muestra secciones por método de pago (Efectivo / Transferencia / Pago Móvil)</li>
-      <li>Cada método puede activarse/desactivarse con checkbox o toggle</li>
-      <li>El total abonado se calcula automáticamente (JS) sumando los tres métodos</li>
-      <li>Al guardar: <code>efectivo_pagado</code>, <code>transferencia_pagado</code>, <code>pago_movil_pagado</code> persisten en BD</li>
-      <li>La vista de detalles muestra el desglose por método (pills de pago con monto)</li>
-      <li>Funciona con un solo método activo (los otros quedan en 0)</li>
-      <li>El campo <code>abono</code> legacy = suma de los tres (compatibilidad)</li>
-    </ul>
-
-    <div class="prompt-ia">
-      <span class="label">🤖 Prompt para tu agente de IA</span>
-      "Lee el modelo <code>Pedido.php</code> completo y el método <code>update()</code> del <code>PedidoController.php</code>. Luego busca en <code>pedidos/index.blade.php</code> el formulario de edición. El modelo YA tiene los campos <code>efectivo_pagado</code>, <code>transferencia_pagado</code>, <code>pago_movil_pagado</code>, <code>banco_transferencia_id</code>, <code>banco_pago_movil_id</code>. El problema es que el formulario solo tiene un campo <code>abono</code> general. Diseña los cambios en el HTML y en el controller. Verifica si el controller ya procesa esos campos en <code>update()</code> o hay que agregarlo."
-    </div>
   </div>
 </div>
 
@@ -1320,7 +1183,7 @@ confirmButtonText: 'Sí, eliminarlo!',</pre>
 </div>
 
 <div class="doc-footer">
-  Documento generado mediante auditoría automatizada del codebase SGPMRJA · rama <code>enmanuel</code> · 15/03/2026
+  Documento generado mediante auditoría automatizada del codebase SGPMRJA · rama <code>enmanuel</code> · v2 20/03/2026 (post auditoría DB)
 </div>
 
 </body>
