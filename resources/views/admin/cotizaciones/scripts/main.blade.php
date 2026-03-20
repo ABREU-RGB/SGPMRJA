@@ -253,14 +253,14 @@
                             'Pendiente': 'status-pendiente',
                             'Aprobada': 'status-aprobada',
                             'Convertida': 'badge-soft-info',
-                            'Cancelado': 'status-cancelado',
+                            'Cancelada': 'status-cancelado',
                             'Vencida': 'status-cancelado'
                         };
                         var estadoIcons = {
                             'Pendiente': 'ri-time-line',
                             'Aprobada': 'ri-check-double-line',
                             'Convertida': 'ri-exchange-line',
-                            'Cancelado': 'ri-close-circle-line',
+                            'Cancelada': 'ri-close-circle-line',
                             'Vencida': 'ri-alarm-warning-line'
                         };
                         var badgeClass = estadoClasses[data] || '';
@@ -280,11 +280,11 @@
 
                         if (data === 'Pendiente') {
                             opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Aprobada"><i class="ri-check-double-line text-success me-2"></i>Aprobar</a></li>';
-                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelado"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
+                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelada"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
                         } else if (data === 'Aprobada') {
                             opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Pendiente"><i class="ri-time-line text-warning me-2"></i>Volver a Pendiente</a></li>';
-                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelado"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
-                        } else if (data === 'Cancelado' || data === 'Vencida') {
+                            opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Cancelada"><i class="ri-close-circle-line text-danger me-2"></i>Cancelar</a></li>';
+                        } else if (data === 'Cancelada' || data === 'Vencida') {
                             opciones += '<li><a class="dropdown-item change-status-btn" href="#" data-id="' + row.id + '" data-status="Pendiente"><i class="ri-time-line text-warning me-2"></i>Reactivar (Pendiente)</a></li>';
                         }
 
@@ -321,9 +321,9 @@
                             `;
                         }
 
-                        // Botones Editar y Eliminar (solo si NO está Convertida ni Cancelado)
+                        // Botones Editar y Eliminar (solo si NO está Convertida ni Cancelada)
                         var editDelete = '';
-                        if (isAdmin && row.estado !== 'Convertida' && row.estado !== 'Cancelado' && row.estado !== 'Vencida') {
+                        if (isAdmin && row.estado !== 'Convertida' && row.estado !== 'Cancelada' && row.estado !== 'Vencida') {
                             editDelete = `
                             <button class="btn btn-sm btn-soft-success edit-btn" data-id="${data}" title="Editar">
                                 <i class="ri-pencil-fill"></i>
@@ -653,22 +653,24 @@
         // Seleccionar logo por clic en botón ✓
         $(document).on('click', '.select-logo-btn', function (e) {
             e.preventDefault();
+            var logoId = $(this).data('logo-id');
             var logoName = $(this).data('logo-name');
-            seleccionarLogo(logoName);
+            seleccionarLogo(logoId, logoName);
         });
 
         // Seleccionar logo por doble clic en fila
         $(document).on('dblclick', '#logoSearchModalTable tbody tr', function (e) {
             e.preventDefault();
+            var logoId = $(this).data('logo-id');
             var logoName = $(this).data('logo-name');
-            if (logoName) seleccionarLogo(logoName);
+            if (logoId && logoName) seleccionarLogo(logoId, logoName);
         });
 
         // Función central de selección de logo
-        function seleccionarLogo(logoName) {
-            if (!logoName || !currentLogoInput) return;
+        function seleccionarLogo(logoId, logoName) {
+            if (!logoId || !logoName || !currentLogoInput) return;
 
-            currentLogoInput.val(logoName);
+            currentLogoInput.val(logoName).data('logo-id', logoId);
 
             var ubicacionRow = currentLogoInput.closest('.ubicacion-std-row, .ubicacion-personalizada-row');
             if (ubicacionRow && ubicacionRow.length) {
@@ -1080,7 +1082,8 @@
                 return {
                     ubicacion_bordado_id: item.ubicacion_bordado_id || null,
                     nombre_aplicado: item.nombre_aplicado || '',
-                    nombre_logo: item.nombre_logo || item.nombre_logo_aplicado || '',
+                    logo_id: item.logo_id || null,
+                    nombre_logo_aplicado: item.nombre_logo_aplicado || (item.logo ? item.logo.name : '') || '',
                     es_personalizada: !!item.es_personalizada,
                     precio_aplicado: parseFloat(item.precio_aplicado || 0),
                     cantidad: Math.max(1, parseInt(item.cantidad || 1, 10))
@@ -1104,17 +1107,11 @@
             container.empty();
 
             var bordados = getCardBordados($card);
-            var logosUnicos = [];
             bordados.forEach(function (item, idx) {
-                var logoNombre = String(item.nombre_logo || '').trim();
-                if (logoNombre && logosUnicos.indexOf(logoNombre) === -1) {
-                    logosUnicos.push(logoNombre);
-                }
-
                 var fields = [
                     { key: 'ubicacion_bordado_id', value: item.ubicacion_bordado_id || '' },
                     { key: 'nombre_aplicado', value: item.nombre_aplicado || '' },
-                    { key: 'nombre_logo', value: logoNombre },
+                    { key: 'logo_id', value: item.logo_id || '' },
                     { key: 'es_personalizada', value: item.es_personalizada ? 1 : 0 },
                     { key: 'precio_aplicado', value: parseFloat(item.precio_aplicado || 0).toFixed(2) },
                     { key: 'cantidad', value: Math.max(1, parseInt(item.cantidad || 1, 10)) }
@@ -1122,12 +1119,10 @@
 
                 fields.forEach(function (field) {
                     container.append(
-                        '<input type="hidden" name="productos[' + $card.data('product-index') + '][bordados][' + idx + '][' + field.key + ']" value="' + field.value + '">' 
+                        '<input type="hidden" name="productos[' + $card.data('product-index') + '][bordados][' + idx + '][' + field.key + ']" value="' + field.value + '">'
                     );
                 });
             });
-
-            $card.find('.nombre-logo-legacy-input').val(logosUnicos.join(', '));
         }
 
         function actualizarResumenBordadosEnCard($card) {
@@ -1140,7 +1135,7 @@
                 var resumenItems = bordados.map(function (item) {
                     var cantidad = Math.max(1, parseInt(item.cantidad || 1, 10));
                     var precio = formatMoney(parseFloat(item.precio_aplicado || 0));
-                    var logo = String(item.nombre_logo || '').trim();
+                    var logo = String(item.nombre_logo_aplicado || '').trim();
                     var logoTexto = logo ? (logo + ' → ') : '';
                     return logoTexto + item.nombre_aplicado + ' x' + cantidad + ' (' + precio + ')';
                 });
@@ -1224,7 +1219,8 @@
                     var checked = !!found;
                     var precio = found ? parseFloat(found.precio_aplicado || item.precio_base || 0) : parseFloat(item.precio_base || 0);
                     var cantidad = found ? Math.max(1, parseInt(found.cantidad || 1, 10)) : 1;
-                    var logoNombre = found ? String(found.nombre_logo || '').trim() : '';
+                    var logoId = found ? (found.logo_id || '') : '';
+                    var logoNombre = found ? String(found.nombre_logo_aplicado || '').trim() : '';
 
                     grid.append(
                         '<div class="mb-2 border rounded px-2 py-2 ubicacion-std-row" style="border-color:rgba(30,60,114,0.18)!important;">' +
@@ -1247,7 +1243,7 @@
                         '    </div>' +
                         '  </div>' +
                         '  <div class="input-group input-group-sm mt-2">' +
-                        '    <input type="text" class="form-control bordado-logo-input ubicacion-std-logo" placeholder="Logo para esta ubicación" value="' + logoNombre + '" readonly autocomplete="off" style="background-color:#fff;cursor:default;" ' + (checked ? '' : 'disabled') + '>' +
+                        '    <input type="text" class="form-control bordado-logo-input ubicacion-std-logo" placeholder="Logo para esta ubicación" value="' + logoNombre + '" data-logo-id="' + logoId + '" readonly autocomplete="off" style="background-color:#fff;cursor:default;" ' + (checked ? '' : 'disabled') + '>' +
                         '    <button type="button" class="btn btn-sm btn-atlantico-brand bordado-logo-picker" ' + (checked ? '' : 'disabled') + '>' +
                         '      <i class="ri-search-line" style="color:#fff;"></i>' +
                         '    </button>' +
@@ -1278,13 +1274,13 @@
             }
 
             customItems.forEach(function (item) {
-                container.append(crearFilaUbicacionPersonalizada(item.nombre_aplicado, item.precio_aplicado, item.cantidad, item.nombre_logo));
+                container.append(crearFilaUbicacionPersonalizada(item.nombre_aplicado, item.precio_aplicado, item.cantidad, item.logo_id, item.nombre_logo_aplicado));
             });
 
             actualizarEstadosUbicacionesModal();
         }
 
-        function crearFilaUbicacionPersonalizada(nombre, precio, cantidad, logoNombre) {
+        function crearFilaUbicacionPersonalizada(nombre, precio, cantidad, logoId, logoNombre) {
             return '<div class="d-flex flex-column gap-2 ubicacion-personalizada-row border rounded p-2" style="border-color:rgba(30,60,114,0.18)!important;">' +
                 '  <div class="d-flex align-items-center justify-content-between">' +
                 '    <small class="text-muted fw-semibold">Ubicación personalizada</small>' +
@@ -1297,7 +1293,7 @@
                 '    <button type="button" class="btn btn-sm btn-outline-danger eliminar-ubicacion-personalizada-btn"><i class="ri-delete-bin-line"></i></button>' +
                 '  </div>' +
                 '  <div class="input-group input-group-sm">' +
-                '    <input type="text" class="form-control form-control-sm bordado-logo-input ubicacion-personalizada-logo" placeholder="Logo para esta ubicación" value="' + (logoNombre || '') + '" readonly autocomplete="off" style="background-color:#fff;cursor:default;">' +
+                '    <input type="text" class="form-control form-control-sm bordado-logo-input ubicacion-personalizada-logo" placeholder="Logo para esta ubicación" value="' + (logoNombre || '') + '" data-logo-id="' + (logoId || '') + '" readonly autocomplete="off" style="background-color:#fff;cursor:default;">' +
                 '    <button type="button" class="btn btn-sm btn-atlantico-brand bordado-logo-picker"><i class="ri-search-line" style="color:#fff;"></i></button>' +
                 '  </div>' +
                 '  <small class="text-muted ubicacion-estado-ayuda"></small>' +
@@ -1414,9 +1410,11 @@
                 var nombre = $(this).data('nombre');
                 var precio = parseFloat(row.find('.ubicacion-std-precio').val()) || 0;
                 var cantidad = Math.max(1, parseInt(row.find('.ubicacion-std-cantidad').val() || 1, 10));
-                var logo = String(row.find('.ubicacion-std-logo').val() || '').trim();
+                var $logoInput = row.find('.ubicacion-std-logo');
+                var logoId = $logoInput.data('logo-id') || null;
+                var logoNombre = String($logoInput.val() || '').trim();
 
-                if (!logo) {
+                if (!logoId || !logoNombre) {
                     erroresLogo.push('Asigna un logo para: ' + nombre);
                     return;
                 }
@@ -1424,7 +1422,8 @@
                 bordados.push({
                     ubicacion_bordado_id: ubicacionId,
                     nombre_aplicado: nombre,
-                    nombre_logo: logo,
+                    logo_id: logoId,
+                    nombre_logo_aplicado: logoNombre,
                     es_personalizada: false,
                     precio_aplicado: precio,
                     cantidad: cantidad
@@ -1436,9 +1435,11 @@
                 if (!nombre) return;
                 var precio = parseFloat($(this).find('.ubicacion-personalizada-precio').val()) || 0;
                 var cantidad = Math.max(1, parseInt($(this).find('.ubicacion-personalizada-cantidad').val() || 1, 10));
-                var logo = String($(this).find('.ubicacion-personalizada-logo').val() || '').trim();
+                var $logoInput = $(this).find('.ubicacion-personalizada-logo');
+                var logoId = $logoInput.data('logo-id') || null;
+                var logoNombre = String($logoInput.val() || '').trim();
 
-                if (!logo) {
+                if (!logoId || !logoNombre) {
                     erroresLogo.push('Asigna un logo para ubicación personalizada: ' + nombre);
                     return;
                 }
@@ -1446,7 +1447,8 @@
                 bordados.push({
                     ubicacion_bordado_id: null,
                     nombre_aplicado: nombre,
-                    nombre_logo: logo,
+                    logo_id: logoId,
+                    nombre_logo_aplicado: logoNombre,
                     es_personalizada: true,
                     precio_aplicado: precio,
                     cantidad: cantidad
@@ -1541,7 +1543,7 @@
         $('#agregarUbicacionPersonalizadaBtn').on('click', function () {
             var container = $('#ubicacionesPersonalizadasContainer');
             if (container.find('small.text-muted').length) container.empty();
-            container.append(crearFilaUbicacionPersonalizada('', 0, 1, ''));
+            container.append(crearFilaUbicacionPersonalizada('', 0, 1, null, ''));
             actualizarEstadosUbicacionesModal();
         });
 
@@ -1561,7 +1563,7 @@
         // === FIN LÓGICA MODAL DE UBICACIÓN DE BORDADO ===
         // ============================================================
 
-        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, nombreLogo = '', colorId = null, tallaId = null, bordados = []) {
+        function addProductItem(productoId = '', cantidad = '', precioUnitario = '', descripcion = '', llevaBordado = false, _unused = '', colorId = null, tallaId = null, bordados = []) {
             var productoDisplay = 'Clic para buscar producto...';
             var textClass = 'text-muted';
             var cardVariant = productItemIndex % 2;
@@ -1733,7 +1735,6 @@
                                     <i class="ri-settings-3-line" style="color:#fff;"></i>
                                 </button>
                             </div>
-                            <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" class="nombre-logo-legacy-input" value="${nombreLogo || ''}" />
                             <div class="bordados-hidden-fields"></div>
                             <small class="text-muted">Define logos, ubicaciones, cantidades y tarifas del servicio de bordado.</small>
                             <div class="bordado-resumen-box p-2 mt-2">
@@ -1847,7 +1848,6 @@
                 container.show();
             } else {
                 container.hide();
-                container.find('.nombre-logo-legacy-input').val('');
                 setCardBordados($card, []);
                 actualizarResumenBordadosEnCard($card);
                 $card.find('.lleva-bordado-value').val(0);
@@ -2036,7 +2036,7 @@
                                 precioBase,
                                 detalle.descripcion,
                                 detalle.lleva_bordado,
-                                detalle.nombre_logo,
+                                '',
                                 detalle.color_id || null,
                                 detalle.talla_id || null,
                                 detalle.bordados || []
@@ -2149,14 +2149,14 @@
                         'Pendiente': 'status-pendiente',
                         'Aprobada': 'status-aprobada',
                         'Convertida': 'badge-soft-info',
-                        'Cancelado': 'status-cancelado',
+                        'Cancelada': 'status-cancelado',
                         'Vencida': 'status-cancelado'
                     };
                     var estadoIcons = {
                         'Pendiente': 'ri-time-line',
                         'Aprobada': 'ri-check-double-line',
                         'Convertida': 'ri-exchange-line',
-                        'Cancelado': 'ri-close-circle-line',
+                        'Cancelada': 'ri-close-circle-line',
                         'Vencida': 'ri-alarm-warning-line'
                     };
                     var badgeClass = estadoClasses[data.estado] || '';
@@ -2267,19 +2267,13 @@
                                                         ? item.bordados.map(function (b) {
                                                             return '<div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">' +
                                                                 '<span class="fw-semibold">' +
-                                                                    (b.nombre_logo || b.nombre_logo_aplicado || 'Logo') +
+                                                                    ((b.logo ? b.logo.name : null) || b.nombre_logo_aplicado || 'Logo') +
                                                                     ' → ' + (b.nombre_aplicado || 'Ubicación') +
                                                                     ' x' + (b.cantidad || 1) +
                                                                 '</span>' +
                                                                 '</div>';
                                                         }).join('')
-                                                        : '<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">' +
-                                                            '<span class="fw-semibold">' +
-                                                                (item.nombre_logo || 'Sin logo') +
-                                                                ' → ' + (item.ubicacion_logo || 'Sin ubicación') +
-                                                                ' x' + (item.cantidad_logo || 1) +
-                                                            '</span>' +
-                                                            '</div>'
+                                                        : '<span class="text-muted">Sin bordados configurados</span>'
                                                     }</div>
                                                 </div>
                                             </div>

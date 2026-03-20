@@ -634,26 +634,25 @@
                                         </div>
 
                                         <div class="mt-3">
-                                            <label class="form-label small fw-semibold mb-1">Método de Pago</label>
+                                            <label class="form-label small fw-semibold mb-1">Métodos de Pago</label>
                                             <div class="metodo-toggle-group mt-1">
                                                 <div class="form-check metodo-toggle">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="efectivo-pagado-field" name="efectivo_pagado" value="1">
+                                                    <input class="form-check-input metodo-pago-check" type="checkbox"
+                                                        id="efectivo-pagado-field" data-metodo="efectivo">
                                                     <label class="form-check-label" for="efectivo-pagado-field">
                                                         <i class="ri-money-dollar-circle-line"></i>Efectivo
                                                     </label>
                                                 </div>
                                                 <div class="form-check metodo-toggle">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="transferencia-pagado-field" name="transferencia_pagado"
-                                                        value="1">
+                                                    <input class="form-check-input metodo-pago-check" type="checkbox"
+                                                        id="transferencia-pagado-field" data-metodo="transferencia">
                                                     <label class="form-check-label" for="transferencia-pagado-field">
                                                         <i class="ri-bank-card-line"></i>Transferencia
                                                     </label>
                                                 </div>
                                                 <div class="form-check metodo-toggle">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="pago-movil-pagado-field" name="pago_movil_pagado" value="1">
+                                                    <input class="form-check-input metodo-pago-check" type="checkbox"
+                                                        id="pago-movil-pagado-field" data-metodo="pago_movil">
                                                     <label class="form-check-label" for="pago-movil-pagado-field">
                                                         <i class="ri-smartphone-line"></i>Pago Móvil
                                                     </label>
@@ -661,65 +660,78 @@
                                             </div>
                                         </div>
 
-                                        <div class="mt-2" id="referencia-transferencia-container">
-                                            <div class="metodo-form-block">
-                                                <div class="metodo-form-title"><i
-                                                        class="ri-bank-card-line"></i>Transferencia</div>
-                                                <div class="row g-2">
-                                                    <div class="col-md-6">
-                                                        <label for="banco-transferencia-id-field"
-                                                            class="form-label small fw-semibold mb-1"><i
-                                                                class="ri-bank-line align-bottom me-1"></i>Banco
-                                                            Transferencia</label>
-                                                        <select id="banco-transferencia-id-field"
-                                                            name="banco_transferencia_id"
-                                                            class="form-select form-select-sm">
-                                                            <option value="">Seleccione un banco</option>
-                                                            @foreach($bancos as $banco)
-                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="referencia-transferencia-field"
-                                                            class="form-label small fw-semibold mb-1"><i
-                                                                class="ri-numbers-line align-bottom me-1"></i>Referencia
-                                                            Transferencia</label>
-                                                        <input type="text" id="referencia-transferencia-field"
-                                                            name="referencia_transferencia"
-                                                            class="form-control form-control-sm"
-                                                            placeholder="Número de referencia" />
+                                        {{-- Contenedor dinámico de campos por método --}}
+                                        <div id="pagos-fields-container">
+                                            {{-- Efectivo --}}
+                                            <div class="mt-2 pago-detail-block" id="pago-efectivo-container" style="display:none;">
+                                                <div class="metodo-form-block">
+                                                    <div class="metodo-form-title"><i class="ri-money-dollar-circle-line"></i>Efectivo</div>
+                                                    <div class="row g-2">
+                                                        <div class="col-12">
+                                                            <label class="form-label small fw-semibold mb-1"><i class="ri-money-dollar-box-line align-bottom me-1"></i>Monto</label>
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-text">$</span>
+                                                                <input type="number" step="0.01" min="0" id="pago-efectivo-monto" class="form-control pago-monto-input" placeholder="0.00" />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="mt-2" id="referencia-pago-movil-container">
-                                            <div class="metodo-form-block">
-                                                <div class="metodo-form-title"><i class="ri-smartphone-line"></i>Pago Móvil
-                                                </div>
-                                                <div class="row g-2">
-                                                    <div class="col-md-6">
-                                                        <label for="banco-pago-movil-id-field"
-                                                            class="form-label small fw-semibold mb-1"><i
-                                                                class="ri-bank-line align-bottom me-1"></i>Banco
-                                                            Pago Móvil</label>
-                                                        <select id="banco-pago-movil-id-field" name="banco_pago_movil_id"
-                                                            class="form-select form-select-sm">
-                                                            <option value="">Seleccione un banco</option>
-                                                            @foreach($bancos as $banco)
-                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
-                                                            @endforeach
-                                                        </select>
+
+                                            {{-- Transferencia --}}
+                                            <div class="mt-2 pago-detail-block" id="pago-transferencia-container" style="display:none;">
+                                                <div class="metodo-form-block">
+                                                    <div class="metodo-form-title"><i class="ri-bank-card-line"></i>Transferencia</div>
+                                                    <div class="row g-2">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label small fw-semibold mb-1"><i class="ri-money-dollar-box-line align-bottom me-1"></i>Monto</label>
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-text">$</span>
+                                                                <input type="number" step="0.01" min="0" id="pago-transferencia-monto" class="form-control pago-monto-input" placeholder="0.00" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label small fw-semibold mb-1"><i class="ri-bank-line align-bottom me-1"></i>Banco</label>
+                                                            <select id="pago-transferencia-banco" class="form-select form-select-sm">
+                                                                <option value="">Seleccione banco</option>
+                                                                @foreach($bancos as $banco)
+                                                                    <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label small fw-semibold mb-1"><i class="ri-numbers-line align-bottom me-1"></i>Referencia</label>
+                                                            <input type="text" id="pago-transferencia-referencia" class="form-control form-control-sm" placeholder="Nro. referencia" />
+                                                        </div>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <label for="referencia-pago-movil-field"
-                                                            class="form-label small fw-semibold mb-1"><i
-                                                                class="ri-numbers-line align-bottom me-1"></i>Referencia
-                                                            Pago Móvil</label>
-                                                        <input type="text" id="referencia-pago-movil-field"
-                                                            name="referencia_pago_movil"
-                                                            class="form-control form-control-sm"
-                                                            placeholder="Número de referencia" />
+                                                </div>
+                                            </div>
+
+                                            {{-- Pago Móvil --}}
+                                            <div class="mt-2 pago-detail-block" id="pago-pago_movil-container" style="display:none;">
+                                                <div class="metodo-form-block">
+                                                    <div class="metodo-form-title"><i class="ri-smartphone-line"></i>Pago Móvil</div>
+                                                    <div class="row g-2">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label small fw-semibold mb-1"><i class="ri-money-dollar-box-line align-bottom me-1"></i>Monto</label>
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-text">$</span>
+                                                                <input type="number" step="0.01" min="0" id="pago-pago_movil-monto" class="form-control pago-monto-input" placeholder="0.00" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label small fw-semibold mb-1"><i class="ri-bank-line align-bottom me-1"></i>Banco</label>
+                                                            <select id="pago-pago_movil-banco" class="form-select form-select-sm">
+                                                                <option value="">Seleccione banco</option>
+                                                                @foreach($bancos as $banco)
+                                                                    <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label small fw-semibold mb-1"><i class="ri-numbers-line align-bottom me-1"></i>Referencia</label>
+                                                            <input type="text" id="pago-pago_movil-referencia" class="form-control form-control-sm" placeholder="Nro. referencia" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1332,6 +1344,11 @@
                 return (colorId && coloresCatalogo[colorId]) ? coloresCatalogo[colorId].nombre : '';
             }
 
+            var logosCatalogo = @json($logos->pluck('name', 'id'));
+            function getLogoNombre(logoId) {
+                return (logoId && logosCatalogo[logoId]) ? logosCatalogo[logoId] : '';
+            }
+
             window.productItemIndex = 0;
             var productItemIndex = window.productItemIndex;
 
@@ -1350,11 +1367,11 @@
 
                 var bordadosArray = Array.isArray(bordados) ? bordados : [];
 
-                if (llevaBordado && bordadosArray.length === 0 && (ubicacionLogo || nombreLogo)) {
+                if (llevaBordado && bordadosArray.length === 0 && ubicacionLogo) {
                     bordadosArray.push({
                         ubicacion_bordado_id: null,
                         nombre_aplicado: ubicacionLogo || 'Ubicación legacy',
-                        nombre_logo: nombreLogo || '',
+                        logo_id: null,
                         es_personalizada: true,
                         cantidad: parseInt(cantidadLogo || 1, 10) || 1,
                         precio_aplicado: 0,
@@ -1391,7 +1408,7 @@
                     if (bordadosArray.length > 0) {
                         bordadosHtml = bordadosArray.map(function (bordado, idx) {
                             var nombreAplicado = escAttr(bordado.nombre_aplicado || 'Ubicación');
-                            var logoAplicado = escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || 'Sin logo');
+                            var logoAplicado = escAttr(bordado.logo ? bordado.logo.name : (getLogoNombre(bordado.logo_id) || bordado.nombre_logo_aplicado || 'Sin logo'));
                             var cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
 
                             return `
@@ -1401,14 +1418,14 @@
                                     `;
                         }).join('');
                     } else {
-                        bordadosHtml = `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${escAttr(nombreLogo || 'Sin logo')} → ${escAttr(ubicacionLogo || 'Sin ubicación')} x${Math.max(1, parseInt(cantidadLogo || 1, 10))}</span></div>`;
+                        bordadosHtml = `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">Sin logo → ${escAttr(ubicacionLogo || 'Sin ubicación')} x${Math.max(1, parseInt(cantidadLogo || 1, 10))}</span></div>`;
                     }
 
                     hiddenBordadosHtml = bordadosArray.map(function (bordado, idx) {
                         return `
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][ubicacion_bordado_id]" value="${escAttr(bordado.ubicacion_bordado_id || '')}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_aplicado]" value="${escAttr(bordado.nombre_aplicado || '')}" />
-                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_logo]" value="${escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || '')}" />
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][logo_id]" value="${escAttr(bordado.logo_id || bordado.logo?.id || '')}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][es_personalizada]" value="${bordado.es_personalizada ? 1 : 0}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][cantidad]" value="${Math.max(1, parseInt(bordado.cantidad || 1, 10))}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][precio_aplicado]" value="${parseFloat(bordado.precio_aplicado || 0)}" />
@@ -1521,9 +1538,6 @@
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][talla_id]" value="${tallaId || ''}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][descripcion]" value="${descripcion}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="${llevaBordado ? 1 : 0}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" value="${nombreLogo}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][ubicacion_logo]" value="${ubicacionLogoLegacy}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][cantidad_logo]" value="${cantidadLogoLegacy || 1}" />
                                                                                                                         ${hiddenBordadosHtml}
                                                                                                                     </div>
                                                                                                                 </div>
@@ -1554,35 +1568,34 @@
             }
 
             function togglePaymentFieldsVisibility() {
-                let transferenciaChecked = $('#transferencia-pagado-field').is(':checked');
-                let pagoMovilChecked = $('#pago-movil-pagado-field').is(':checked');
+                $('.metodo-pago-check').each(function () {
+                    var metodo = $(this).data('metodo');
+                    var container = $('#pago-' + metodo + '-container');
+                    if ($(this).is(':checked')) {
+                        container.slideDown(200);
+                    } else {
+                        container.slideUp(200);
+                        container.find('input, select').val('');
+                    }
+                });
+            }
 
-                // Referencia y Banco Transferencia
-                if (transferenciaChecked) {
-                    $('#referencia-transferencia-container').show();
-                    $('#referencia-transferencia-field').prop('required', true);
-                    $('#banco-transferencia-id-field').prop('required', true);
-                } else {
-                    $('#referencia-transferencia-container').hide();
-                    $('#referencia-transferencia-field').val('').prop('required', false);
-                    $('#banco-transferencia-id-field').val('').prop('required', false);
-                }
-
-                // Referencia y Banco Pago Móvil
-                if (pagoMovilChecked) {
-                    $('#referencia-pago-movil-container').show();
-                    $('#referencia-pago-movil-field').prop('required', true);
-                    $('#banco-pago-movil-id-field').prop('required', true);
-                } else {
-                    $('#referencia-pago-movil-container').hide();
-                    $('#referencia-pago-movil-field').val('').prop('required', false);
-                    $('#banco-pago-movil-id-field').val('').prop('required', false);
-                }
+            function recalcularAbono() {
+                let abono = 0;
+                $('.metodo-pago-check:checked').each(function () {
+                    var metodo = $(this).data('metodo');
+                    abono += parseFloat($('#pago-' + metodo + '-monto').val()) || 0;
+                });
+                $('#abono-field').val(abono.toFixed(2));
+                updateRemaining();
             }
 
             // Eventos para los nuevos campos de pago y prioridad
-            $('#abono-field').on('change keyup', updateRemaining);
-            $('#efectivo-pagado-field, #transferencia-pagado-field, #pago-movil-pagado-field').on('change', togglePaymentFieldsVisibility);
+            $('.metodo-pago-check').on('change', function () {
+                togglePaymentFieldsVisibility();
+                recalcularAbono();
+            });
+            $(document).on('change keyup', '.pago-monto-input', recalcularAbono);
             $('#productos-container').on('change', '.cantidad-input', calculateProductTotals); // Recalcular total cuando cambia la cantidad
 
             $('#create-btn').on('click', function () {
@@ -1597,19 +1610,13 @@
                 $('#productos-container').empty(); // Limpiar productos existentes
                 // Los productos se cargan automáticamente desde la cotización
 
-                // Resetear y ocultar nuevos campos de pago/prioridad
+                // Resetear y ocultar campos de pago/prioridad
                 $('#abono-field').val(0);
-                $('#efectivo-pagado-field').prop('checked', false);
-                $('#transferencia-pagado-field').prop('checked', false);
-                $('#pago-movil-pagado-field').prop('checked', false);
-                $('#referencia-transferencia-field').val('');
-                $('#referencia-pago-movil-field').val('');
-                $('#banco-transferencia-id-field').val('');
-                $('#banco-pago-movil-id-field').val('');
-                $('#prioridad-field').val('Normal'); // Valor por defecto
-                currentPedidoTotal = 0; // Resetear total para un nuevo pedido
-                calculateProductTotals(); // Calcular el total inicial (que ser� 0)
-                togglePaymentFieldsVisibility(); // Ocultar referencias y banco inicialmente
+                $('.metodo-pago-check').prop('checked', false);
+                $('.pago-detail-block').hide().find('input, select').val('');
+                $('#prioridad-field').val('Normal');
+                currentPedidoTotal = 0;
+                calculateProductTotals();
             });
 
 
@@ -1650,8 +1657,20 @@
                     formData.set('cliente_id', clienteId);
                 }
 
+                // Construir array de pagos desde los métodos de pago marcados
+                let pagoIndex = 0;
+                $('.metodo-pago-check:checked').each(function () {
+                    var metodo = $(this).data('metodo');
+                    var monto = parseFloat($('#pago-' + metodo + '-monto').val()) || 0;
+                    formData.append('pagos[' + pagoIndex + '][metodo]', metodo);
+                    formData.append('pagos[' + pagoIndex + '][monto]', monto);
+                    var banco = $('#pago-' + metodo + '-banco').val();
+                    if (banco) formData.append('pagos[' + pagoIndex + '][banco_id]', banco);
+                    var referencia = $('#pago-' + metodo + '-referencia').val();
+                    if (referencia) formData.append('pagos[' + pagoIndex + '][referencia]', referencia);
+                    pagoIndex++;
+                });
 
-                // A�adir el token CSRF y el m�todo HTTP manualmente para PUT/DELETE
                 if (id) {
                     formData.append('_method', 'PUT');
                 }
@@ -1739,16 +1758,24 @@
                         $('#fecha-entrega-estimada-field').val(data.fecha_entrega_estimada || '');
                         $('#estado-field').val(data.estado);
 
-                        // Cargar nuevos campos de pago y prioridad
+                        // Cargar pagos normalizados desde data.pagos
                         $('#abono-field').val(data.abono);
-                        $('#efectivo-pagado-field').prop('checked', data.efectivo_pagado);
-                        $('#transferencia-pagado-field').prop('checked', data.transferencia_pagado);
-                        $('#pago-movil-pagado-field').prop('checked', data.pago_movil_pagado);
-                        $('#referencia-transferencia-field').val(data.referencia_transferencia || '');
-                        $('#referencia-pago-movil-field').val(data.referencia_pago_movil || '');
+                        $('.metodo-pago-check').prop('checked', false);
+                        $('.pago-detail-block').hide().find('input, select').val('');
+                        if (data.pagos && data.pagos.length > 0) {
+                            data.pagos.forEach(function (pago) {
+                                var metodo = pago.metodo;
+                                // Marcar checkbox correspondiente
+                                $('.metodo-pago-check[data-metodo="' + metodo + '"]').prop('checked', true);
+                                $('#pago-' + metodo + '-container').show();
+                                $('#pago-' + metodo + '-monto').val(parseFloat(pago.monto).toFixed(2));
+                                if (pago.banco_id) $('#pago-' + metodo + '-banco').val(pago.banco_id);
+                                if (pago.referencia) $('#pago-' + metodo + '-referencia').val(pago.referencia);
+                            });
+                        }
                         $('#prioridad-field').val(data.prioridad);
 
-                        currentPedidoTotal = parseFloat(data.total); // Cargar el total del backend
+                        currentPedidoTotal = parseFloat(data.total);
                         $('#total-display-field').val(currentPedidoTotal.toFixed(2));
 
                         // Llenar productos del pedido
@@ -1770,7 +1797,7 @@
                                     item.precio_unitario,
                                     item.descripcion,
                                     item.lleva_bordado,
-                                    item.nombre_logo,
+                                    '',
                                     item.color_id || null,
                                     item.talla_id || null,
                                     insumosTransformados,
@@ -1856,27 +1883,33 @@
                         let restante = parseFloat(data.total) - parseFloat(data.abono);
                         $('#view-restante').text('$' + restante.toFixed(2));
 
+                        // Mostrar pagos normalizados desde data.pagos
                         let metodosPago = [];
-                        if (data.efectivo_pagado) metodosPago.push('<span class="metodo-pago-pill metodo-pago-pill--efectivo"><i class="ri-money-dollar-circle-line"></i>Efectivo</span>');
-                        if (data.transferencia_pagado) metodosPago.push('<span class="metodo-pago-pill metodo-pago-pill--transferencia"><i class="ri-bank-card-line"></i>Transferencia</span>');
-                        if (data.pago_movil_pagado) metodosPago.push('<span class="metodo-pago-pill metodo-pago-pill--pago-movil"><i class="ri-smartphone-line"></i>Pago Móvil</span>');
+                        let detallesPagoHtml = '';
+                        const metodoLabels = { efectivo: 'Efectivo', transferencia: 'Transferencia', pago_movil: 'Pago Móvil' };
+                        const metodoIcons = { efectivo: 'ri-money-dollar-circle-line', transferencia: 'ri-bank-card-line', pago_movil: 'ri-smartphone-line' };
+                        const metodoClasses = { efectivo: 'efectivo', transferencia: 'transferencia', pago_movil: 'pago-movil' };
+
+                        if (data.pagos && data.pagos.length > 0) {
+                            data.pagos.forEach(function (pago) {
+                                var label = metodoLabels[pago.metodo] || pago.metodo;
+                                var icon = metodoIcons[pago.metodo] || 'ri-money-dollar-circle-line';
+                                var cls = metodoClasses[pago.metodo] || 'none';
+                                metodosPago.push('<span class="metodo-pago-pill metodo-pago-pill--' + cls + '"><i class="' + icon + '"></i>' + label + ' $' + parseFloat(pago.monto).toFixed(2) + '</span>');
+
+                                if (pago.metodo !== 'efectivo') {
+                                    var bancoNombre = pago.banco ? pago.banco.nombre : 'Sin banco';
+                                    var referencia = pago.referencia || 'Sin referencia';
+                                    detallesPagoHtml += '<div class="mt-1"><small class="text-muted">' + label + ':</small> Banco: <strong>' + bancoNombre + '</strong> — Ref: <strong>' + referencia + '</strong></div>';
+                                }
+                            });
+                        }
                         $('#view-metodo-pago').html(metodosPago.join('') || '<span class="metodo-pago-pill metodo-pago-pill--none">Sin método</span>');
-
-                        const referenciaTransferencia = data.referencia_transferencia || '';
-                        const bancoTransferenciaNombre = data.banco_transferencia?.nombre || data.banco?.nombre || '';
-                        const mostrarBloqueTransferencia = Boolean(data.transferencia_pagado || referenciaTransferencia || bancoTransferenciaNombre);
-
-                        $('#view-referencia-transferencia').text(referenciaTransferencia || 'Sin referencia');
-                        $('#view-banco-transferencia').text(bancoTransferenciaNombre || 'Sin banco');
-                        $('#view-bloque-transferencia-container').toggle(mostrarBloqueTransferencia);
-
-                        const referenciaPagoMovil = data.referencia_pago_movil || '';
-                        const bancoPagoMovilNombre = data.banco_pago_movil?.nombre || data.banco?.nombre || '';
-                        const mostrarBloquePagoMovil = Boolean(data.pago_movil_pagado || referenciaPagoMovil || bancoPagoMovilNombre);
-
-                        $('#view-referencia-pago-movil').text(referenciaPagoMovil || 'Sin referencia');
-                        $('#view-banco-pago-movil').text(bancoPagoMovilNombre || 'Sin banco');
-                        $('#view-bloque-pago-movil-container').toggle(mostrarBloquePagoMovil);
+                        $('#view-bloque-transferencia-container').hide();
+                        $('#view-bloque-pago-movil-container').hide();
+                        if (detallesPagoHtml) {
+                            $('#view-bloque-transferencia-container').html(detallesPagoHtml).show();
+                        }
 
                         // Mostrar prioridad con badge
                         let prioridadBadgeClass = '';
@@ -1987,7 +2020,7 @@
                                         const bordadosHtml = bordados.length
                                             ? bordados.map((bordado) => {
                                                 const nombreAplicado = bordado.nombre_aplicado || 'Ubicación';
-                                                const logoAplicado = bordado.nombre_logo_aplicado || bordado.nombre_logo || item.nombre_logo || 'Sin logo';
+                                                const logoAplicado = (bordado.logo ? bordado.logo.name : null) || bordado.nombre_logo_aplicado || 'Sin logo';
                                                 const cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
                                                 return `
                                                                                                                                         <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
@@ -1995,7 +2028,7 @@
                                                                                                                                 </div>
                                                                                                                             `;
                                             }).join('')
-                                            : `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${item.nombre_logo || 'Sin logo'} → ${item.ubicacion_logo || 'Sin ubicación'} x${item.cantidad_logo || 1}</span></div>`;
+                                            : `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">Sin logo → ${item.ubicacion_logo || 'Sin ubicación'} x${item.cantidad_logo || 1}</span></div>`;
 
                                         return `
                                                                                                                         <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.08);">
@@ -2152,17 +2185,13 @@
                 $('#productos-container').empty(); // Limpiar productos existentes
                 // Los productos se cargan automáticamente desde la cotización
 
-                // Resetear y ocultar nuevos campos de pago/prioridad
+                // Resetear campos de pago/prioridad
                 $('#abono-field').val(0);
-                $('#efectivo-pagado-field').prop('checked', false);
-                $('#transferencia-pagado-field').prop('checked', false);
-                $('#pago-movil-pagado-field').prop('checked', false);
-                $('#referencia-transferencia-field').val('');
-                $('#referencia-pago-movil-field').val('');
-                $('#prioridad-field').val('Normal'); // Valor por defecto
-                currentPedidoTotal = 0; // Resetear total
-                calculateProductTotals(); // Recalcular el total inicial (que ser� 0)
-                togglePaymentFieldsVisibility(); // Ocultar referencias y banco
+                $('.metodo-pago-check').prop('checked', false);
+                $('.pago-detail-block').hide().find('input, select').val('');
+                $('#prioridad-field').val('Normal');
+                currentPedidoTotal = 0;
+                calculateProductTotals();
 
                 // Reiniciar los campos del CI/RIF a sus valores por defecto al resetear el formulario
                 $('#ci-rif-prefix-field').val('V-');
@@ -2556,13 +2585,20 @@
                             $('#fecha-entrega-estimada-field').val(data.fecha_entrega_estimada || '');
                             $('#estado-field').val(data.estado);
 
-                            // Cargar campos de pago y prioridad
+                            // Cargar pagos normalizados
                             $('#abono-field').val(data.abono || 0);
-                            $('#efectivo-pagado-field').prop('checked', data.efectivo_pagado);
-                            $('#transferencia-pagado-field').prop('checked', data.transferencia_pagado);
-                            $('#pago-movil-pagado-field').prop('checked', data.pago_movil_pagado);
-                            $('#referencia-transferencia-field').val(data.referencia_transferencia || '');
-                            $('#referencia-pago-movil-field').val(data.referencia_pago_movil || '');
+                            $('.metodo-pago-check').prop('checked', false);
+                            $('.pago-detail-block').hide().find('input, select').val('');
+                            if (data.pagos && data.pagos.length > 0) {
+                                data.pagos.forEach(function (pago) {
+                                    var metodo = pago.metodo;
+                                    $('.metodo-pago-check[data-metodo="' + metodo + '"]').prop('checked', true);
+                                    $('#pago-' + metodo + '-container').show();
+                                    $('#pago-' + metodo + '-monto').val(parseFloat(pago.monto).toFixed(2));
+                                    if (pago.banco_id) $('#pago-' + metodo + '-banco').val(pago.banco_id);
+                                    if (pago.referencia) $('#pago-' + metodo + '-referencia').val(pago.referencia);
+                                });
+                            }
                             $('#prioridad-field').val(data.prioridad || 'Normal');
 
                             if (typeof currentPedidoTotal !== 'undefined') {
@@ -2588,7 +2624,7 @@
                                         item.precio_unitario,
                                         item.descripcion || '',
                                         item.lleva_bordado || false,
-                                        item.nombre_logo || '',
+                                        '',
                                         item.color_id || null,
                                         item.talla_id || null,
                                         insumosTransformados,

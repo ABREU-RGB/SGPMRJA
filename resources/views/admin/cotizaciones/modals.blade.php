@@ -334,7 +334,7 @@
                                     <select id="estado-field" name="estado" class="form-select form-select-sm">
                                         <option value="Pendiente">Pendiente</option>
                                         <option value="Aprobada">Aprobada</option>
-                                        <option value="Cancelado">Cancelado</option>
+                                        <option value="Cancelada">Cancelada</option>
                                     </select>
                                     <small class="text-muted d-block mt-1">
                                         <i class="ri-information-line me-1"></i>El estado "Vencida" se asigna

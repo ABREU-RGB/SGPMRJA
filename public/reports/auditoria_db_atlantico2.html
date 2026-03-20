@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría Arquitectónica de Base de Datos — Sistema Atlántico v2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ══════════════════════════════════════════════════════════
+           VARIABLES & RESET
+           ══════════════════════════════════════════════════════════ */
+        :root {
+            --navy:        #1e3c72;
+            --navy-dark:   #132649;
+            --navy-light:  #2a5298;
+            --emerald:     #10b981;
+            --emerald-dark:#064e3b;
+            --emerald-light:#d1fae5;
+            --sky:         #0ea5e9;
+            --sky-dark:    #0c4a6e;
+            --red:         #dc2626;
+            --red-bg:      #fef2f2;
+            --red-border:  #fecaca;
+            --yellow:      #f59e0b;
+            --yellow-bg:   #fffbeb;
+            --yellow-border:#fde68a;
+            --green:       #16a34a;
+            --green-bg:    #f0fdf4;
+            --green-border:#bbf7d0;
+            --gray-50:     #f9fafb;
+            --gray-100:    #f3f4f6;
+            --gray-200:    #e5e7eb;
+            --gray-300:    #d1d5db;
+            --gray-500:    #6b7280;
+            --gray-600:    #4b5563;
+            --gray-700:    #374151;
+            --gray-800:    #1f2937;
+            --gray-900:    #111827;
+            --font-sans:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono:   'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ══════════════════════════════════════════════════════════
+           PAGE & PRINT
+           ══════════════════════════════════════════════════════════ */
+        @page {
+            size: A4;
+            margin: 18mm 15mm 20mm 15mm;
+        }
+
+        @media print {
+            body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .page-break { page-break-before: always; }
+            .no-break    { page-break-inside: avoid; }
+            .cover-page  { page-break-after: always; }
+            nav.toc       { page-break-after: always; }
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--gray-800);
+            background: #fff;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           COVER PAGE
+           ══════════════════════════════════════════════════════════ */
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+            text-align: center;
+            position: relative;
+        }
+        .cover-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 48px;
+        }
+        .cover-brand .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--navy), var(--navy-light));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            box-shadow: 0 4px 16px rgba(30,60,114,0.3);
+        }
+        .cover-brand .brand-text {
+            text-align: left;
+        }
+        .cover-brand .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+            letter-spacing: -0.3px;
+        }
+        .cover-brand .brand-sub {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .cover-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--navy-dark);
+            line-height: 1.2;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        .cover-subtitle {
+            font-size: 18px;
+            color: var(--gray-600);
+            font-weight: 400;
+            margin-bottom: 48px;
+        }
+        .cover-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            width: 480px;
+            max-width: 100%;
+        }
+        .cover-meta-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            text-align: left;
+        }
+        .cover-meta-item:nth-child(odd) {
+            border-right: 1px solid var(--gray-200);
+        }
+        .cover-meta-item:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
+        .cover-meta-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+        .cover-meta-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+        .cover-badge {
+            margin-top: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .cover-badge.confidential {
+            background: var(--red-bg);
+            color: var(--red);
+            border: 1px solid var(--red-border);
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           TABLE OF CONTENTS
+           ══════════════════════════════════════════════════════════ */
+        nav.toc {
+            padding: 40px 0;
+        }
+        nav.toc h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--navy);
+        }
+        nav.toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        nav.toc > ol > li {
+            counter-increment: toc-counter;
+            margin-bottom: 6px;
+        }
+        nav.toc > ol > li > a {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
+        nav.toc > ol > li > a:hover {
+            background: var(--gray-100);
+        }
+        nav.toc > ol > li > a::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--emerald);
+            margin-right: 14px;
+            min-width: 24px;
+        }
+        nav.toc .toc-badge {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 100px;
+        }
+        .toc-badge.critical { background: var(--red-bg); color: var(--red); }
+        .toc-badge.medium   { background: var(--yellow-bg); color: var(--yellow); }
+        .toc-badge.low      { background: var(--green-bg); color: var(--green); }
+
+        /* ══════════════════════════════════════════════════════════
+           HEADINGS
+           ══════════════════════════════════════════════════════════ */
+        h1.section-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--navy-dark);
+            margin: 48px 0 8px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--navy);
+            letter-spacing: -0.3px;
+        }
+        h1.section-title .section-number {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--emerald);
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        h2.finding-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 32px 0 6px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.4;
+        }
+        h2.finding-title .finding-id {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .finding-id.critical { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+        .finding-id.medium   { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+        .finding-id.low      { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+        /* ══════════════════════════════════════════════════════════
+           SEVERITY SECTION HEADERS
+           ══════════════════════════════════════════════════════════ */
+        .severity-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin: 40px 0 20px 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .severity-header.critical {
+            background: linear-gradient(135deg, #fef2f2, #fff1f2);
+            border-left: 4px solid var(--red);
+            color: var(--red);
+        }
+        .severity-header.medium {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-left: 4px solid var(--yellow);
+            color: #b45309;
+        }
+        .severity-header.low {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 4px solid var(--green);
+            color: var(--emerald-dark);
+        }
+        .severity-header .severity-icon {
+            font-size: 22px;
+        }
+        .severity-header .severity-count {
+            margin-left: auto;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.7;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           FINDING CARDS
+           ══════════════════════════════════════════════════════════ */
+        .finding-card {
+            background: #fff;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .finding-card.critical { border-left: 4px solid var(--red); }
+        .finding-card.medium   { border-left: 4px solid var(--yellow); }
+        .finding-card.low      { border-left: 4px solid var(--green); }
+
+        .finding-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .finding-card h3 .fid {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .fid.cr { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+        .fid.me { background: var(--yellow-bg); color: #b45309; border: 1px solid var(--yellow-border); }
+        .fid.ba { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+        .finding-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+        .finding-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .finding-meta span + span::before {
+            content: "·";
+            margin: 0 8px;
+            color: var(--gray-300);
+        }
+
+        .finding-card p {
+            margin-bottom: 12px;
+            color: var(--gray-700);
+            font-size: 13.5px;
+            line-height: 1.7;
+        }
+        .finding-card strong {
+            color: var(--gray-900);
+        }
+
+        .label-impact, .label-fix {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+        .label-impact { background: #fef2f2; color: var(--red); }
+        .label-fix    { background: #eff6ff; color: #1d4ed8; }
+
+        /* ══════════════════════════════════════════════════════════
+           CODE BLOCKS
+           ══════════════════════════════════════════════════════════ */
+        pre {
+            background: var(--gray-900);
+            color: #e5e7eb;
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 10px 0 14px 0;
+            border: 1px solid var(--gray-700);
+        }
+        pre .comment { color: #6b7280; }
+        pre .keyword { color: #93c5fd; }
+        pre .string  { color: #86efac; }
+        pre .fn      { color: #fbbf24; }
+        code {
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            background: var(--gray-100);
+            color: var(--red);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           TABLES
+           ══════════════════════════════════════════════════════════ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0 18px 0;
+            font-size: 13px;
+        }
+        table thead th {
+            background: var(--navy);
+            color: #fff;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        table thead th:first-child { border-radius: 8px 0 0 0; }
+        table thead th:last-child  { border-radius: 0 8px 0 0; }
+        table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: top;
+        }
+        table tbody tr:nth-child(even) {
+            background: var(--gray-50);
+        }
+        table tbody tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+        table tbody tr:last-child td:last-child  { border-radius: 0 0 8px 0; }
+
+        table.compact { font-size: 12px; }
+        table.compact td, table.compact th { padding: 8px 12px; }
+
+        /* Badge inside tables */
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 100px;
+            white-space: nowrap;
+        }
+        .badge-danger  { background: var(--red-bg); color: var(--red); }
+        .badge-warning { background: var(--yellow-bg); color: #b45309; }
+        .badge-success { background: var(--green-bg); color: var(--green); }
+        .badge-info    { background: #eff6ff; color: #1d4ed8; }
+        .badge-navy    { background: #eef2ff; color: var(--navy); }
+
+        /* ══════════════════════════════════════════════════════════
+           CALLOUTS
+           ══════════════════════════════════════════════════════════ */
+        .callout {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .callout-danger {
+            background: var(--red-bg);
+            border: 1px solid var(--red-border);
+            color: #991b1b;
+        }
+        .callout-warning {
+            background: var(--yellow-bg);
+            border: 1px solid var(--yellow-border);
+            color: #92400e;
+        }
+        .callout-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           SUMMARY STATS
+           ══════════════════════════════════════════════════════════ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .stat-card {
+            background: #fff;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .stat-card .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+        .stat-card .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+        }
+        .stat-card.total  .stat-number { color: var(--navy); }
+        .stat-card.total  .stat-label  { color: var(--gray-500); }
+        .stat-card.critical .stat-number { color: var(--red); }
+        .stat-card.critical .stat-label  { color: var(--red); }
+        .stat-card.medium .stat-number { color: var(--yellow); }
+        .stat-card.medium .stat-label  { color: #b45309; }
+        .stat-card.low .stat-number { color: var(--green); }
+        .stat-card.low .stat-label  { color: var(--green); }
+
+        /* ══════════════════════════════════════════════════════════
+           FOOTER
+           ══════════════════════════════════════════════════════════ */
+        .report-footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid var(--gray-200);
+            text-align: center;
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+        .report-footer .footer-brand {
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           UTILITIES
+           ══════════════════════════════════════════════════════════ */
+        .text-danger  { color: var(--red); }
+        .text-warning { color: #b45309; }
+        .text-success { color: var(--green); }
+        .text-navy    { color: var(--navy); }
+        .text-muted   { color: var(--gray-500); }
+        .text-mono    { font-family: var(--font-mono); }
+        .fw-600       { font-weight: 600; }
+        .fw-700       { font-weight: 700; }
+        .mt-0         { margin-top: 0; }
+        .mb-0         { margin-bottom: 0; }
+        .mb-4         { margin-bottom: 4px; }
+        .mb-8         { margin-bottom: 8px; }
+
+        .divider {
+            border: none;
+            height: 1px;
+            background: var(--gray-200);
+            margin: 30px 0;
+        }
+
+        .intro-text {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin: 8px 0 20px 0;
+            line-height: 1.7;
+        }
+
+        /* Priority list */
+        ol.priority-list {
+            counter-reset: priority;
+            list-style: none;
+            padding: 0;
+        }
+        ol.priority-list li {
+            counter-increment: priority;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+        ol.priority-list li:nth-child(odd) { background: var(--gray-50); }
+        ol.priority-list li::before {
+            content: counter(priority);
+            min-width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--navy);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ════════════════════════════════════════════════════════════
+         PORTADA
+         ════════════════════════════════════════════════════════════ -->
+    <div class="cover-page">
+        <div class="cover-brand">
+            <div class="logo-icon">RJA</div>
+            <div class="brand-text">
+                <div class="brand-name">Manufacturas R.J. Atl&aacute;ntico</div>
+                <div class="brand-sub">Sistema de Gesti&oacute;n de Producci&oacute;n</div>
+            </div>
+        </div>
+
+        <h1 class="cover-title">Auditor&iacute;a Arquitect&oacute;nica<br>de Base de Datos</h1>
+        <p class="cover-subtitle">An&aacute;lisis profundo del schema post-correcci&oacute;n &mdash; Versi&oacute;n 2</p>
+
+        <div class="cover-meta">
+            <div class="cover-meta-item">
+                <div class="cover-meta-label">Fecha de Auditor&iacute;a</div>
+                <div class="cover-meta-value">19 de marzo de 2026</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="cover-meta-label">Versi&oacute;n</div>
+                <div class="cover-meta-value">2.0 &mdash; Post-Fix</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="cover-meta-label">Schema</div>
+                <div class="cover-meta-value text-mono">sistema_atlantico4</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="cover-meta-label">Motor</div>
+                <div class="cover-meta-value text-mono">MySQL 8.0.45 / InnoDB</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="cover-meta-label">Tablas Analizadas</div>
+                <div class="cover-meta-value">27 tablas &middot; 26 modelos Eloquent</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="cover-meta-label">Framework</div>
+                <div class="cover-meta-value">Laravel &mdash; Eloquent ORM</div>
+            </div>
+        </div>
+
+        <div class="cover-badge confidential">Uso Interno &mdash; Equipo de Desarrollo</div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         TABLA DE CONTENIDOS
+         ════════════════════════════════════════════════════════════ -->
+    <nav class="toc">
+        <h2>&Iacute;ndice de Contenidos</h2>
+        <ol>
+            <li><a href="#resumen">Resumen Ejecutivo <span class="toc-badge critical">19 hallazgos</span></a></li>
+            <li><a href="#scope">Alcance y Metodolog&iacute;a</a></li>
+            <li><a href="#criticos">Hallazgos Cr&iacute;ticos <span class="toc-badge critical">7 hallazgos</span></a></li>
+            <li><a href="#medios">Hallazgos de Severidad Media <span class="toc-badge medium">7 hallazgos</span></a></li>
+            <li><a href="#bajos">Hallazgos de Severidad Baja <span class="toc-badge low">5 hallazgos</span></a></li>
+            <li><a href="#plan">Plan de Remediaci&oacute;n Priorizado</a></li>
+        </ol>
+    </nav>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SECCIÓN 01 — RESUMEN EJECUTIVO
+         ════════════════════════════════════════════════════════════ -->
+    <h1 class="section-title" id="resumen">
+        <span class="section-number">Secci&oacute;n 01</span>
+        Resumen Ejecutivo
+    </h1>
+
+    <p class="intro-text">
+        Esta segunda auditor&iacute;a arquitect&oacute;nica se realiz&oacute; sobre el schema <code>sistema_atlantico4</code> despu&eacute;s de aplicar las 16 correcciones de la auditor&iacute;a v1. El an&aacute;lisis cruzado entre el dump SQL y los 26 modelos Eloquent revel&oacute; <strong>19 hallazgos nuevos</strong>, con &eacute;nfasis en Foreign Keys peligrosas, inconsistencias de integridad referencial y desconexiones schema-modelo.
+    </p>
+
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-number">19</div>
+            <div class="stat-label">Total Hallazgos</div>
+        </div>
+        <div class="stat-card critical">
+            <div class="stat-number">7</div>
+            <div class="stat-label">Cr&iacute;ticos</div>
+        </div>
+        <div class="stat-card medium">
+            <div class="stat-number">7</div>
+            <div class="stat-label">Medios</div>
+        </div>
+        <div class="stat-card low">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Bajos</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Severidad</th>
+                <th>Cantidad</th>
+                <th>Riesgo Principal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-danger">CRITICO</span></td>
+                <td class="fw-700">7</td>
+                <td>P&eacute;rdida irreversible de datos comerciales al borrar usuario / producto / insumo</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-warning">MEDIO</span></td>
+                <td class="fw-700">7</td>
+                <td>Inconsistencias FK, &iacute;ndices faltantes, datos desnormalizados</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-success">BAJO</span></td>
+                <td class="fw-700">5</td>
+                <td>Naming, redundancias, deuda t&eacute;cnica menor</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-danger">
+        <strong>Amenaza #1 del schema:</strong> CR-01 + CR-07 combinados &mdash; un <code>DELETE</code> de usuario sin SoftDeletes + CASCADE en cotizaciones y pedidos puede destruir <strong>todo el historial comercial del sistema</strong> en una sola operaci&oacute;n SQL.
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SECCIÓN 02 — ALCANCE
+         ════════════════════════════════════════════════════════════ -->
+    <h1 class="section-title page-break" id="scope">
+        <span class="section-number">Secci&oacute;n 02</span>
+        Alcance y Metodolog&iacute;a
+    </h1>
+
+    <p class="intro-text">
+        Se analiz&oacute; el dump SQL completo <code>sistema_atlantico4_2026-03-19_150709.sql</code> (789 l&iacute;neas, 27 tablas) y se cruzaron las definiciones de esquema con los 26 modelos Eloquent del directorio <code>app/Models/</code>.
+    </p>
+
+    <table class="compact">
+        <thead>
+            <tr>
+                <th>&Aacute;rea de An&aacute;lisis</th>
+                <th>Enfoque</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fw-600">Foreign Keys</td>
+                <td>Revisar cada ON DELETE behavior &mdash; identificar CASCADEs destructivos sobre datos financieros/comerciales</td>
+            </tr>
+            <tr>
+                <td class="fw-600">&Iacute;ndices</td>
+                <td>Detectar &iacute;ndices compuestos faltantes para queries de alto tr&aacute;fico y redundancias</td>
+            </tr>
+            <tr>
+                <td class="fw-600">Normalizaci&oacute;n / DDD</td>
+                <td>Verificar consistencia del patr&oacute;n Persona, desnormalizaciones residuales</td>
+            </tr>
+            <tr>
+                <td class="fw-600">Schema ↔ Eloquent</td>
+                <td>Cruzar FKs del schema con relaciones definidas en modelos &mdash; detectar desconexiones</td>
+            </tr>
+            <tr>
+                <td class="fw-600">SoftDeletes</td>
+                <td>Verificar qu&eacute; tablas tienen <code>deleted_at</code> vs qu&eacute; modelos usan el trait</td>
+            </tr>
+            <tr>
+                <td class="fw-600">Naming</td>
+                <td>Convenciones singular/plural, consistencia en nombres de constraints e &iacute;ndices</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SECCIÓN 03 — HALLAZGOS CRÍTICOS
+         ════════════════════════════════════════════════════════════ -->
+    <h1 class="section-title page-break" id="criticos">
+        <span class="section-number">Secci&oacute;n 03</span>
+        Hallazgos Cr&iacute;ticos
+    </h1>
+
+    <div class="severity-header critical">
+        <span class="severity-icon">&#x1F534;</span>
+        CR&Iacute;TICO &mdash; Riesgo de p&eacute;rdida de datos o integridad rota
+        <span class="severity-count">7 hallazgos</span>
+    </div>
+
+    <!-- CR-01 -->
+    <div class="finding-card critical no-break">
+        <h3>
+            <span class="fid cr">CR-01</span>
+            ON DELETE CASCADE en <code>cotizacion.user_id</code> y <code>pedido.user_id</code>
+        </h3>
+        <div class="finding-meta">
+            <span>Tablas: <code>cotizacion</code>, <code>pedido</code></span>
+            <span>Tipo: Foreign Key destructiva</span>
+        </div>
+
+        <span class="label-impact">Impacto</span>
+        <p>
+            Borrar un usuario del sistema <strong>elimina permanentemente</strong> todas sus cotizaciones y pedidos, incluyendo detalles, bordados asociados (CASCADE en cadena), y las &oacute;rdenes de producci&oacute;n quedan hu&eacute;rfanas con <code>pedido_id = NULL</code>. Es la FK m&aacute;s peligrosa del schema &mdash; destruye datos financieros y comerciales irrecuperables.
+        </p>
+        <p>
+            <strong>Agravante:</strong> La tabla <code>user</code> NO tiene SoftDeletes ni columna <code>deleted_at</code>. No hay red de seguridad.
+        </p>
+
+        <span class="label-fix">Implementaci&oacute;n Propuesta</span>
+<pre><span class="comment">// Migraci&oacute;n — cambiar CASCADE a RESTRICT</span>
+Schema::table(<span class="string">'cotizacion'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">dropForeign</span>(<span class="string">'cotizaciones_user_id_foreign'</span>);
+    $table-><span class="fn">foreign</span>(<span class="string">'user_id'</span>)-><span class="fn">references</span>(<span class="string">'id'</span>)-><span class="fn">on</span>(<span class="string">'user'</span>)
+          -><span class="fn">onDelete</span>(<span class="string">'restrict'</span>);
+});
+
+Schema::table(<span class="string">'pedido'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">dropForeign</span>(<span class="string">'pedidos_user_id_foreign'</span>);
+    $table-><span class="fn">foreign</span>(<span class="string">'user_id'</span>)-><span class="fn">references</span>(<span class="string">'id'</span>)-><span class="fn">on</span>(<span class="string">'user'</span>)
+          -><span class="fn">onDelete</span>(<span class="string">'restrict'</span>);
+});</pre>
+    </div>
+
+    <!-- CR-02 -->
+    <div class="finding-card critical no-break">
+        <h3>
+            <span class="fid cr">CR-02</span>
+            ON DELETE CASCADE en detalles de producto &mdash; destruye historial comercial
+        </h3>
+        <div class="finding-meta">
+            <span>Tablas: <code>detalle_cotizacion</code>, <code>detalle_pedido</code></span>
+            <span>Tipo: Foreign Key destructiva</span>
+        </div>
+
+        <span class="label-impact">Impacto</span>
+        <p>
+            Si se hace hard-delete de un producto, se eliminan <strong>todas las l&iacute;neas de detalle</strong> de cotizaciones y pedidos donde aparec&iacute;a. El <code>total</code> del pedido/cotizaci&oacute;n padre queda inconsistente (suma de detalles &ne; total). Producto usa SoftDeletes, pero si alguien ejecuta <code>forceDelete()</code> o un DELETE directo, se pierde el historial.
+        </p>
+
+        <span class="label-fix">Implementaci&oacute;n Propuesta</span>
+<pre><span class="comment">// Cambiar ambas a ON DELETE RESTRICT</span>
+Schema::table(<span class="string">'detalle_cotizacion'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">dropForeign</span>(<span class="string">'detalle_cotizaciones_producto_id_foreign'</span>);
+    $table-><span class="fn">foreign</span>(<span class="string">'producto_id'</span>)-><span class="fn">references</span>(<span class="string">'id'</span>)-><span class="fn">on</span>(<span class="string">'producto'</span>)
+          -><span class="fn">onDelete</span>(<span class="string">'restrict'</span>);
+});
+
+Schema::table(<span class="string">'detalle_pedido'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">dropForeign</span>(<span class="string">'detalle_pedidos_producto_id_foreign'</span>);
+    $table-><span class="fn">foreign</span>(<span class="string">'producto_id'</span>)-><span class="fn">references</span>(<span class="string">'id'</span>)-><span class="fn">on</span>(<span class="string">'producto'</span>)
+          -><span class="fn">onDelete</span>(<span class="string">'restrict'</span>);
+});</pre>
+    </div>
+
+    <!-- CR-03 -->
+    <div class="finding-card critical no-break">
+        <h3>
+            <span class="fid cr">CR-03</span>
+            ON DELETE CASCADE en <code>movimiento_insumo.insumo_id</code> &mdash; p&eacute;rdida de trazabilidad
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>movimiento_insumo</code></span>
+            <span>Tipo: Foreign Key destructiva sobre registros de auditor&iacute;a</span>
+        </div>
+
+        <span class="label-impact">Impacto</span>
+        <p>
+            Borrar un insumo elimina <strong>todo el historial de movimientos de inventario</strong>. Los movimientos son registros de auditor&iacute;a que documentan qui&eacute;n movi&oacute; qu&eacute;, cu&aacute;ndo y por qu&eacute;. Deben ser inmutables.
+        </p>
+
+        <span class="label-fix">Implementaci&oacute;n Propuesta</span>
+<pre>Schema::table(<span class="string">'movimiento_insumo'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">dropForeign</span>(<span class="string">'movimientos_insumos_insumo_id_foreign'</span>);
+    $table-><span class="fn">foreign</span>(<span class="string">'insumo_id'</span>)-><span class="fn">references</span>(<span class="string">'id'</span>)-><span class="fn">on</span>(<span class="string">'insumo'</span>)
+          -><span class="fn">onDelete</span>(<span class="string">'restrict'</span>);
+});</pre>
+    </div>
+
+    <!-- CR-04 -->
+    <div class="finding-card critical no-break">
+        <h3>
+            <span class="fid cr">CR-04</span>
+            Relaci&oacute;n incorrecta <code>User::produccionDiaria()</code> &mdash; FK apunta a tabla equivocada
+        </h3>
+        <div class="finding-meta">
+            <span>Modelo: <code>User.php</code></span>
+            <span>Tabla: <code>produccion_diaria</code></span>
+            <span>Tipo: Desconexión Schema ↔ Eloquent</span>
+        </div>
+
+        <span class="label-impact">Impacto</span>
+        <p>
+            La relaci&oacute;n <code>User::produccionDiaria()</code> define <code>hasMany(ProduccionDiaria::class, 'empleado_id')</code>, pero el FK <code>produccion_diaria.empleado_id</code> referencia <code>empleado(id)</code>, <strong>NO</strong> <code>user(id)</code>. Si un User tiene <code>id=3</code> y un Empleado diferente tiene <code>id=3</code>, retorna datos del empleado equivocado. Si no coinciden IDs, retorna resultado vac&iacute;o silenciosamente.
+        </p>
+
+        <span class="label-fix">Implementaci&oacute;n Propuesta</span>
+<pre><span class="comment">// En User.php — ELIMINAR la relaci&oacute;n produccionDiaria()</span>
+<span class="comment">// Acceso correcto: $user->persona->empleado->produccionDiaria</span>
+
+<span class="comment">// Eliminar este m&eacute;todo del modelo User:</span>
+<span class="keyword">public function</span> <span class="fn">produccionDiaria</span>()
+{
+    <span class="keyword">return</span> $this-><span class="fn">hasMany</span>(ProduccionDiaria::class, <span class="string">'empleado_id'</span>);
+}</pre>
+    </div>
+
+    <!-- CR-05 -->
+    <div class="finding-card critical no-break">
+        <h3>
+            <span class="fid cr">CR-05</span>
+            UNIQUE en <code>persona.documento_identidad</code> sin incluir <code>tipo_documento</code>
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>persona</code></span>
+            <span>Tipo: Constraint de unicidad incompleto</span>
+        </div>
+
+        <span class="label-impact">Impacto</span>
+        <p>
+            Una persona con c&eacute;dula <code>V-12345678</code> y otra con pasaporte <code>E-12345678</code> no pueden coexistir &mdash; el UNIQUE es solo sobre el n&uacute;mero, no incluye el tipo de documento. Tambi&eacute;n afecta proveedores jur&iacute;dicos (<code>J-</code>) que podr&iacute;an tener el mismo n&uacute;mero que una persona natural.
+        </p>
+
+        <span class="label-fix">Implementaci&oacute;n Propuesta</span>
+<pre>Schema::table(<span class="string">'persona'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">dropUnique</span>(<span class="string">'persona_documento_identidad_unique'</span>);
+    $table-><span class="fn">unique</span>(
+        [<span class="string">'tipo_documento'</span>, <span class="string">'documento_identidad'</span>],
+        <span class="string">'persona_tipo_doc_documento_unique'</span>
+    );
+});</pre>
+    </div>
+
+    <!-- CR-06 -->
+    <div class="finding-card critical no-break">
+        <h3>
+            <span class="fid cr">CR-06</span>
+            <code>pedido.banco_transferencia_id</code> y <code>banco_pago_movil_id</code> sin FK constraint
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>pedido</code></span>
+            <span>Tipo: Integridad referencial rota</span>
+        </div>
+
+        <span class="label-impact">Impacto</span>
+        <p>
+            Las columnas existen y el modelo Pedido define las relaciones <code>bancoTransferencia()</code> y <code>bancoPagoMovil()</code>, pero <strong>no hay CONSTRAINT FOREIGN KEY</strong> en el schema. Se puede guardar un <code>banco_transferencia_id = 999</code> que no existe. Eloquent retorna <code>null</code> silenciosamente.
+        </p>
+
+        <span class="label-fix">Implementaci&oacute;n Propuesta</span>
+<pre>Schema::table(<span class="string">'pedido'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">foreign</span>(<span class="string">'banco_transferencia_id'</span>)
+          -><span class="fn">references</span>(<span class="string">'id'</span>)-><span class="fn">on</span>(<span class="string">'banco'</span>)
+          -><span class="fn">onDelete</span>(<span class="string">'set null'</span>);
+
+    $table-><span class="fn">foreign</span>(<span class="string">'banco_pago_movil_id'</span>)
+          -><span class="fn">references</span>(<span class="string">'id'</span>)-><span class="fn">on</span>(<span class="string">'banco'</span>)
+          -><span class="fn">onDelete</span>(<span class="string">'set null'</span>);
+});</pre>
+    </div>
+
+    <!-- CR-07 -->
+    <div class="finding-card critical no-break">
+        <h3>
+            <span class="fid cr">CR-07</span>
+            Tabla <code>user</code> sin SoftDeletes &mdash; punto de falla sist&eacute;mico
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>user</code></span>
+            <span>Modelo: <code>User.php</code></span>
+            <span>Tipo: Ausencia de protecci&oacute;n</span>
+        </div>
+
+        <span class="label-impact">Impacto</span>
+        <p>
+            La tabla <code>user</code> no tiene columna <code>deleted_at</code> y el modelo no usa SoftDeletes. Pero <code>user</code> es referenciada por cotizaciones (CASCADE), pedidos (CASCADE), &oacute;rdenes (NO ACTION) y movimientos (RESTRICT). No hay manera segura de &ldquo;desactivar&rdquo; un usuario. El campo <code>estado</code> es un flag de aplicaci&oacute;n, no una protecci&oacute;n a nivel DB.
+        </p>
+
+        <table class="compact">
+            <thead>
+                <tr>
+                    <th>Tabla que referencia <code>user</code></th>
+                    <th>FK</th>
+                    <th>ON DELETE</th>
+                    <th>Riesgo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>cotizacion.user_id</code></td>
+                    <td>cotizaciones_user_id_foreign</td>
+                    <td><span class="badge badge-danger">CASCADE</span></td>
+                    <td>Destruye cotizaciones</td>
+                </tr>
+                <tr>
+                    <td><code>pedido.user_id</code></td>
+                    <td>pedidos_user_id_foreign</td>
+                    <td><span class="badge badge-danger">CASCADE</span></td>
+                    <td>Destruye pedidos</td>
+                </tr>
+                <tr>
+                    <td><code>orden_produccion.created_by</code></td>
+                    <td>ordenes_produccion_created_by_foreign</td>
+                    <td><span class="badge badge-info">NO ACTION</span></td>
+                    <td>Bloquea borrado</td>
+                </tr>
+                <tr>
+                    <td><code>movimiento_insumo.created_by</code></td>
+                    <td>movimientos_insumos_created_by_foreign</td>
+                    <td><span class="badge badge-info">RESTRICT</span></td>
+                    <td>Bloquea borrado</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <span class="label-fix">Implementaci&oacute;n Propuesta</span>
+<pre><span class="comment">// Migraci&oacute;n</span>
+Schema::table(<span class="string">'user'</span>, <span class="keyword">function</span> (Blueprint $table) {
+    $table-><span class="fn">softDeletes</span>();
+});
+
+<span class="comment">// Modelo User.php</span>
+<span class="keyword">use</span> Illuminate\Database\Eloquent\SoftDeletes;
+
+<span class="keyword">class</span> User <span class="keyword">extends</span> Authenticatable
+{
+    <span class="keyword">use</span> SoftDeletes;
+    <span class="comment">// ...</span>
+}</pre>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SECCIÓN 04 — HALLAZGOS MEDIOS
+         ════════════════════════════════════════════════════════════ -->
+    <h1 class="section-title page-break" id="medios">
+        <span class="section-number">Secci&oacute;n 04</span>
+        Hallazgos de Severidad Media
+    </h1>
+
+    <div class="severity-header medium">
+        <span class="severity-icon">&#x1F7E1;</span>
+        MEDIO &mdash; Inconsistencias y riesgos operacionales
+        <span class="severity-count">7 hallazgos</span>
+    </div>
+
+    <!-- ME-01 -->
+    <div class="finding-card medium no-break">
+        <h3>
+            <span class="fid me">ME-01</span>
+            ON DELETE CASCADE inconsistente en FKs de <code>persona_id</code>
+        </h3>
+        <div class="finding-meta">
+            <span>Tablas: <code>user</code>, <code>empleado</code>, <code>cliente</code>, <code>proveedor</code></span>
+            <span>Tipo: Inconsistencia de pol&iacute;tica FK</span>
+        </div>
+
+        <p>Las cuatro tablas que referencian <code>persona(id)</code> usan pol&iacute;ticas ON DELETE diferentes e inconsistentes:</p>
+
+        <table class="compact">
+            <thead>
+                <tr>
+                    <th>Tabla</th>
+                    <th>FK &rarr; persona</th>
+                    <th>ON DELETE</th>
+                    <th>&iquest;Correcto?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>user</code></td>
+                    <td>persona_id</td>
+                    <td><span class="badge badge-danger">CASCADE</span></td>
+                    <td class="text-danger fw-600">Peligroso &mdash; borra usuario</td>
+                </tr>
+                <tr>
+                    <td><code>empleado</code></td>
+                    <td>persona_id</td>
+                    <td><span class="badge badge-danger">CASCADE</span></td>
+                    <td class="text-danger fw-600">Peligroso &mdash; borra empleado</td>
+                </tr>
+                <tr>
+                    <td><code>cliente</code></td>
+                    <td>persona_id</td>
+                    <td><span class="badge badge-info">RESTRICT</span></td>
+                    <td class="text-success fw-600">Correcto</td>
+                </tr>
+                <tr>
+                    <td><code>proveedor</code></td>
+                    <td>persona_id</td>
+                    <td><span class="badge badge-warning">SET NULL</span></td>
+                    <td class="text-warning fw-600">Peligroso &mdash; ver ME-02</td>
+                </tr>
+                <tr>
+                    <td><code>telefono</code></td>
+                    <td>persona_id</td>
+                    <td><span class="badge badge-danger">CASCADE</span></td>
+                    <td class="text-success fw-600">OK (dato dependiente)</td>
+                </tr>
+                <tr>
+                    <td><code>direccion</code></td>
+                    <td>persona_id</td>
+                    <td><span class="badge badge-danger">CASCADE</span></td>
+                    <td class="text-success fw-600">OK (dato dependiente)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Propuesta:</strong> Unificar user, empleado y proveedor a <code>ON DELETE RESTRICT</code>. Tel&eacute;fonos y direcciones son dependientes de persona &mdash; CASCADE es correcto ah&iacute;.</p>
+    </div>
+
+    <!-- ME-02 -->
+    <div class="finding-card medium no-break">
+        <h3>
+            <span class="fid me">ME-02</span>
+            <code>proveedor.persona_id ON DELETE SET NULL</code> &mdash; proveedor queda vac&iacute;o
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>proveedor</code></span>
+            <span>Tipo: FK con comportamiento da&ntilde;ino</span>
+        </div>
+
+        <p>
+            El modelo Proveedor obtiene <strong>todo</strong> su contenido de persona v&iacute;a accessors (nombre, documento, tel&eacute;fono, email, direcci&oacute;n). Si <code>persona_id</code> se pone NULL, todos los accessors retornan <code>null</code>. El proveedor existe pero es un registro fantasma sin datos visibles.
+        </p>
+        <p><strong>Propuesta:</strong> Cambiar a <code>ON DELETE RESTRICT</code>.</p>
+    </div>
+
+    <!-- ME-03 -->
+    <div class="finding-card medium no-break">
+        <h3>
+            <span class="fid me">ME-03</span>
+            ON DELETE CASCADE en <code>detalle_orden_insumo.insumo_id</code>
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>detalle_orden_insumo</code></span>
+            <span>Tipo: Foreign Key destructiva silenciosa</span>
+        </div>
+
+        <p>
+            Borrar un insumo elimina silenciosamente sus asignaciones a &oacute;rdenes de producci&oacute;n. La orden queda con datos de costos estimados inconsistentes &mdash; se pierde la relaci&oacute;n insumo-orden sin aviso.
+        </p>
+        <p><strong>Propuesta:</strong> Cambiar a <code>ON DELETE RESTRICT</code>.</p>
+    </div>
+
+    <!-- ME-04 -->
+    <div class="finding-card medium no-break">
+        <h3>
+            <span class="fid me">ME-04</span>
+            &Iacute;ndices compuestos faltantes para queries de alto tr&aacute;fico
+        </h3>
+        <div class="finding-meta">
+            <span>Tablas: varias</span>
+            <span>Tipo: Rendimiento</span>
+        </div>
+
+        <table class="compact">
+            <thead>
+                <tr>
+                    <th>Query T&iacute;pico</th>
+                    <th>&Iacute;ndice Faltante</th>
+                    <th>Justificaci&oacute;n</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Historial movimientos por insumo</td>
+                    <td><code>movimiento_insumo(insumo_id, created_at)</code></td>
+                    <td>Cubre el JOIN + ORDER BY</td>
+                </tr>
+                <tr>
+                    <td>Producci&oacute;n diaria por orden + fecha</td>
+                    <td><code>produccion_diaria(orden_id, fecha_produccion)</code></td>
+                    <td>Reportes de producci&oacute;n</td>
+                </tr>
+                <tr>
+                    <td>Pedidos por cliente + estado</td>
+                    <td><code>pedido(cliente_id, estado)</code></td>
+                    <td>Dashboard de pedidos</td>
+                </tr>
+                <tr>
+                    <td>Cotizaciones por cliente + estado</td>
+                    <td><code>cotizacion(cliente_id, estado)</code></td>
+                    <td>Mismo patr&oacute;n</td>
+                </tr>
+                <tr>
+                    <td>&Oacute;rdenes por estado + fecha fin</td>
+                    <td><code>orden_produccion(estado, fecha_fin_estimada)</code></td>
+                    <td>&Iacute;ndices separados existen pero no compuesto</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ME-05 -->
+    <div class="finding-card medium no-break">
+        <h3>
+            <span class="fid me">ME-05</span>
+            <code>ordenes_produccion_created_by_foreign</code> sin ON DELETE expl&iacute;cito
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>orden_produccion</code></span>
+            <span>Tipo: Inconsistencia declarativa</span>
+        </div>
+
+        <p>
+            La FK funciona correctamente (default = RESTRICT en InnoDB), pero es impl&iacute;cito. Contraste con <code>movimiento_insumo.created_by</code> que s&iacute; declara <code>ON DELETE RESTRICT</code> expl&iacute;citamente. Debe ser expl&iacute;cito para documentar la intenci&oacute;n del DBA.
+        </p>
+    </div>
+
+    <!-- ME-06 -->
+    <div class="finding-card medium no-break">
+        <h3>
+            <span class="fid me">ME-06</span>
+            Naming inconsistente &mdash; tablas singular vs plural
+        </h3>
+        <div class="finding-meta">
+            <span>Schema completo</span>
+            <span>Tipo: Convenci&oacute;n de nombrado</span>
+        </div>
+
+        <table class="compact">
+            <thead>
+                <tr>
+                    <th>Singular (convenci&oacute;n dominante)</th>
+                    <th>Plural (inconsistente)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>banco</code>, <code>cliente</code>, <code>cotizacion</code>, <code>pedido</code>, <code>persona</code>, <code>producto</code>, <code>empleado</code>, <code>insumo</code>, <code>proveedor</code>, <code>telefono</code>, <code>direccion</code></td>
+                    <td><code>colores</code>, <code>tallas</code>, <code>logos</code>, <code>bordado_ubicaciones</code>, <code>failed_jobs</code>, <code>personal_access_tokens</code>, <code>password_resets</code></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>El proyecto usa convenci&oacute;n <strong>singular</strong> mayoritariamente. Las tablas plurales son cat&aacute;logos m&aacute;s recientes o tablas de framework (Laravel default). No es urgente pero genera confusi&oacute;n al escribir migraciones.</p>
+    </div>
+
+    <!-- ME-07 -->
+    <div class="finding-card medium no-break">
+        <h3>
+            <span class="fid me">ME-07</span>
+            <code>detalle_cotizacion</code> y <code>detalle_pedido</code> con <code>nombre_logo</code> desnormalizado
+        </h3>
+        <div class="finding-meta">
+            <span>Tablas: <code>detalle_cotizacion</code>, <code>detalle_pedido</code></span>
+            <span>Tipo: Desnormalizaci&oacute;n residual</span>
+        </div>
+
+        <p>
+            Ambas tablas tienen <code>nombre_logo varchar(191)</code> como texto libre, mientras que <code>orden_produccion</code> ya fue migrado a <code>logo_id</code> FK. Las cotizaciones y pedidos siguen usando texto libre para el logo &mdash; dato desnormalizado sin referencia a la tabla <code>logos</code>.
+        </p>
+        <p><strong>Propuesta futura:</strong> Migrar a <code>logo_id</code> FK con <code>ON DELETE SET NULL</code>, como se hizo en <code>orden_produccion</code>.</p>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SECCIÓN 05 — HALLAZGOS BAJOS
+         ════════════════════════════════════════════════════════════ -->
+    <h1 class="section-title page-break" id="bajos">
+        <span class="section-number">Secci&oacute;n 05</span>
+        Hallazgos de Severidad Baja
+    </h1>
+
+    <div class="severity-header low">
+        <span class="severity-icon">&#x1F7E2;</span>
+        BAJO &mdash; Mejoras de calidad y limpieza
+        <span class="severity-count">5 hallazgos</span>
+    </div>
+
+    <!-- BA-01 -->
+    <div class="finding-card low no-break">
+        <h3>
+            <span class="fid ba">BA-01</span>
+            <code>password_resets</code> &mdash; PK en <code>email</code> + INDEX en <code>email</code> redundante
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>password_resets</code></span>
+            <span>Tipo: &Iacute;ndice redundante</span>
+        </div>
+        <p>El PRIMARY KEY ya es un &iacute;ndice. El <code>KEY password_resets_email_index</code> adicional ocupa espacio innecesariamente y ralentiza inserts sin beneficio en lecturas.</p>
+    </div>
+
+    <!-- BA-02 -->
+    <div class="finding-card low no-break">
+        <h3>
+            <span class="fid ba">BA-02</span>
+            Cat&aacute;logos maestros sin SoftDeletes
+        </h3>
+        <div class="finding-meta">
+            <span>Tablas: <code>banco</code>, <code>colores</code>, <code>tallas</code>, <code>logos</code>, <code>bordado_ubicaciones</code>, <code>tipo_producto</code></span>
+            <span>Tipo: Protecci&oacute;n de datos</span>
+        </div>
+        <p>Estos cat&aacute;logos no tienen <code>deleted_at</code>. Usan campo <code>activo</code> (los que lo tienen) como soft-flag de aplicaci&oacute;n. Si se hace DELETE directo, las FKs con <code>ON DELETE SET NULL</code> dejan huecos y las de <code>ON DELETE RESTRICT</code> bloquean. Aceptable para catálogos peque&ntilde;os pero sin red de seguridad a nivel DB.</p>
+    </div>
+
+    <!-- BA-03 -->
+    <div class="finding-card low no-break">
+        <h3>
+            <span class="fid ba">BA-03</span>
+            <code>produccion_diaria.empleado_id</code> FK sin ON DELETE expl&iacute;cito
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>produccion_diaria</code></span>
+            <span>Tipo: Inconsistencia declarativa</span>
+        </div>
+        <p>Mismo patr&oacute;n que ME-05. Funciona como RESTRICT (default InnoDB), pero deber&iacute;a ser expl&iacute;cito para documentar intenci&oacute;n.</p>
+    </div>
+
+    <!-- BA-04 -->
+    <div class="finding-card low no-break">
+        <h3>
+            <span class="fid ba">BA-04</span>
+            Campos de pago en <code>pedido</code> como columnas flat
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>pedido</code></span>
+            <span>Tipo: Dise&ntilde;o extensible</span>
+        </div>
+        <p>
+            7 columnas para 3 m&eacute;todos de pago: <code>efectivo_pagado</code>, <code>transferencia_pagado</code>, <code>pago_movil_pagado</code>, <code>referencia_transferencia</code>, <code>banco_transferencia_id</code>, <code>referencia_pago_movil</code>, <code>banco_pago_movil_id</code>. Si se agrega un nuevo m&eacute;todo de pago (Zelle, cripto, etc.), hay que agregar m&aacute;s columnas.
+        </p>
+        <p><strong>Propuesta futura:</strong> Normalizar en tabla <code>pago_pedido(id, pedido_id, metodo_pago ENUM, referencia, banco_id, monto)</code>.</p>
+    </div>
+
+    <!-- BA-05 -->
+    <div class="finding-card low no-break">
+        <h3>
+            <span class="fid ba">BA-05</span>
+            <code>cotizacion.estado</code> ENUM con inconsistencia gramatical
+        </h3>
+        <div class="finding-meta">
+            <span>Tabla: <code>cotizacion</code></span>
+            <span>Tipo: Consistencia de datos</span>
+        </div>
+<pre><span class="comment">-- cotizacion (femenino: "cotización cancelada")</span>
+estado ENUM(<span class="string">'Pendiente'</span>,<span class="string">'Aprobada'</span>,<span class="string">'Cancelado'</span>,<span class="string">'Convertida'</span>,<span class="string">'Vencida'</span>)
+<span class="comment">--                                 ^ debería ser 'Cancelada'</span>
+
+<span class="comment">-- pedido (masculino: "pedido cancelado")</span>
+estado ENUM(<span class="string">'Pendiente'</span>,<span class="string">'Procesando'</span>,<span class="string">'Completado'</span>,<span class="string">'Cancelado'</span>)
+<span class="comment">--                                                  ^ correcto</span></pre>
+        <p>&ldquo;Cancelado&rdquo; en cotizaci&oacute;n deber&iacute;a ser &ldquo;Cancelada&rdquo; (femenino). Inconsistencia gramatical menor.</p>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SECCIÓN 06 — PLAN DE REMEDIACIÓN
+         ════════════════════════════════════════════════════════════ -->
+    <h1 class="section-title page-break" id="plan">
+        <span class="section-number">Secci&oacute;n 06</span>
+        Plan de Remediaci&oacute;n Priorizado
+    </h1>
+
+    <p class="intro-text">
+        Orden recomendado de implementaci&oacute;n, priorizando la protecci&oacute;n de datos comerciales y la eliminaci&oacute;n de riesgos de p&eacute;rdida irreversible.
+    </p>
+
+    <div class="callout callout-info">
+        <strong>Estrategia:</strong> Agrupar correcciones relacionadas en migraciones batch para minimizar el n&uacute;mero de deploys y asegurar consistencia transaccional.
+    </div>
+
+    <ol class="priority-list">
+        <li>
+            <div>
+                <strong class="text-danger">CR-01 + CR-07</strong> &mdash;
+                Agregar SoftDeletes a <code>user</code> + cambiar CASCADE&rarr;RESTRICT en <code>cotizacion.user_id</code> y <code>pedido.user_id</code>. <em>Elimina la amenaza #1 del schema.</em>
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-danger">CR-06</strong> &mdash;
+                Agregar FKs faltantes de banco en <code>pedido</code> (<code>banco_transferencia_id</code>, <code>banco_pago_movil_id</code>). <em>Cierra integridad referencial rota.</em>
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-danger">CR-04</strong> &mdash;
+                Eliminar relaci&oacute;n incorrecta <code>User::produccionDiaria()</code>. <em>Fix de c&oacute;digo, sin migraci&oacute;n DB.</em>
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-danger">CR-05</strong> &mdash;
+                Cambiar UNIQUE de <code>persona.documento_identidad</code> a compuesto <code>(tipo_documento, documento_identidad)</code>.
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-danger">CR-02 + CR-03 + ME-03</strong> &mdash;
+                Batch de cambios CASCADE&rarr;RESTRICT en detalles de producto, movimientos de insumo, y detalles de orden-insumo.
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-warning">ME-01 + ME-02</strong> &mdash;
+                Unificar pol&iacute;ticas ON DELETE de <code>persona_id</code>: cambiar user, empleado y proveedor a RESTRICT.
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-warning">ME-04</strong> &mdash;
+                Crear &iacute;ndices compuestos para queries de alto tr&aacute;fico.
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-warning">ME-05 + BA-03</strong> &mdash;
+                Hacer expl&iacute;cito el ON DELETE RESTRICT en <code>orden_produccion.created_by</code> y <code>produccion_diaria.empleado_id</code>.
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-warning">ME-07</strong> &mdash;
+                Migrar <code>nombre_logo</code> a <code>logo_id</code> FK en <code>detalle_cotizacion</code> y <code>detalle_pedido</code> (requiere data migration).
+            </div>
+        </li>
+        <li>
+            <div>
+                <strong class="text-success">BA-01 &rarr; BA-05</strong> &mdash;
+                Batch de correcciones menores: &iacute;ndice redundante, ENUM gramatical, documentaci&oacute;n de naming.
+            </div>
+        </li>
+    </ol>
+
+    <hr class="divider">
+
+    <!-- ════════════════════════════════════════════════════════════
+         FOOTER
+         ════════════════════════════════════════════════════════════ -->
+    <div class="report-footer">
+        <p>
+            <span class="footer-brand">Manufacturas R.J. Atl&aacute;ntico</span> &mdash; Auditor&iacute;a Arquitect&oacute;nica de Base de Datos v2
+        </p>
+        <p>
+            Generado el 19 de marzo de 2026 &middot; Schema <code>sistema_atlantico4</code> &middot; MySQL 8.0.45 / InnoDB
+        </p>
+        <p style="margin-top: 8px; font-size: 10px; color: #9ca3af;">
+            Este documento es confidencial y de uso exclusivo del equipo de desarrollo.
+        </p>
+    </div>
+
+</body>
+</html>
