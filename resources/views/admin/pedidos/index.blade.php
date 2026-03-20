@@ -1344,6 +1344,11 @@
                 return (colorId && coloresCatalogo[colorId]) ? coloresCatalogo[colorId].nombre : '';
             }
 
+            var logosCatalogo = @json($logos->pluck('name', 'id'));
+            function getLogoNombre(logoId) {
+                return (logoId && logosCatalogo[logoId]) ? logosCatalogo[logoId] : '';
+            }
+
             window.productItemIndex = 0;
             var productItemIndex = window.productItemIndex;
 
@@ -1362,11 +1367,11 @@
 
                 var bordadosArray = Array.isArray(bordados) ? bordados : [];
 
-                if (llevaBordado && bordadosArray.length === 0 && (ubicacionLogo || nombreLogo)) {
+                if (llevaBordado && bordadosArray.length === 0 && ubicacionLogo) {
                     bordadosArray.push({
                         ubicacion_bordado_id: null,
                         nombre_aplicado: ubicacionLogo || 'Ubicación legacy',
-                        nombre_logo: nombreLogo || '',
+                        logo_id: null,
                         es_personalizada: true,
                         cantidad: parseInt(cantidadLogo || 1, 10) || 1,
                         precio_aplicado: 0,
@@ -1403,7 +1408,7 @@
                     if (bordadosArray.length > 0) {
                         bordadosHtml = bordadosArray.map(function (bordado, idx) {
                             var nombreAplicado = escAttr(bordado.nombre_aplicado || 'Ubicación');
-                            var logoAplicado = escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || 'Sin logo');
+                            var logoAplicado = escAttr(bordado.logo ? bordado.logo.name : (getLogoNombre(bordado.logo_id) || bordado.nombre_logo_aplicado || 'Sin logo'));
                             var cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
 
                             return `
@@ -1413,14 +1418,14 @@
                                     `;
                         }).join('');
                     } else {
-                        bordadosHtml = `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${escAttr(nombreLogo || 'Sin logo')} → ${escAttr(ubicacionLogo || 'Sin ubicación')} x${Math.max(1, parseInt(cantidadLogo || 1, 10))}</span></div>`;
+                        bordadosHtml = `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">Sin logo → ${escAttr(ubicacionLogo || 'Sin ubicación')} x${Math.max(1, parseInt(cantidadLogo || 1, 10))}</span></div>`;
                     }
 
                     hiddenBordadosHtml = bordadosArray.map(function (bordado, idx) {
                         return `
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][ubicacion_bordado_id]" value="${escAttr(bordado.ubicacion_bordado_id || '')}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_aplicado]" value="${escAttr(bordado.nombre_aplicado || '')}" />
-                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][nombre_logo]" value="${escAttr(bordado.nombre_logo || bordado.nombre_logo_aplicado || nombreLogo || '')}" />
+                                    <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][logo_id]" value="${escAttr(bordado.logo_id || bordado.logo?.id || '')}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][es_personalizada]" value="${bordado.es_personalizada ? 1 : 0}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][cantidad]" value="${Math.max(1, parseInt(bordado.cantidad || 1, 10))}" />
                                     <input type="hidden" name="productos[${productItemIndex}][bordados][${idx}][precio_aplicado]" value="${parseFloat(bordado.precio_aplicado || 0)}" />
@@ -1533,9 +1538,6 @@
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][talla_id]" value="${tallaId || ''}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][descripcion]" value="${descripcion}" />
                                                                                                                         <input type="hidden" name="productos[${productItemIndex}][lleva_bordado]" value="${llevaBordado ? 1 : 0}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][nombre_logo]" value="${nombreLogo}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][ubicacion_logo]" value="${ubicacionLogoLegacy}" />
-                                                                                                                        <input type="hidden" name="productos[${productItemIndex}][cantidad_logo]" value="${cantidadLogoLegacy || 1}" />
                                                                                                                         ${hiddenBordadosHtml}
                                                                                                                     </div>
                                                                                                                 </div>
@@ -1795,7 +1797,7 @@
                                     item.precio_unitario,
                                     item.descripcion,
                                     item.lleva_bordado,
-                                    item.nombre_logo,
+                                    '',
                                     item.color_id || null,
                                     item.talla_id || null,
                                     insumosTransformados,
@@ -2018,7 +2020,7 @@
                                         const bordadosHtml = bordados.length
                                             ? bordados.map((bordado) => {
                                                 const nombreAplicado = bordado.nombre_aplicado || 'Ubicación';
-                                                const logoAplicado = bordado.nombre_logo_aplicado || bordado.nombre_logo || item.nombre_logo || 'Sin logo';
+                                                const logoAplicado = (bordado.logo ? bordado.logo.name : null) || bordado.nombre_logo_aplicado || 'Sin logo';
                                                 const cantidadAplicada = Math.max(1, parseInt(bordado.cantidad || 1, 10));
                                                 return `
                                                                                                                                         <div class="pb-1 mb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);">
@@ -2026,7 +2028,7 @@
                                                                                                                                 </div>
                                                                                                                             `;
                                             }).join('')
-                                            : `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">${item.nombre_logo || 'Sin logo'} → ${item.ubicacion_logo || 'Sin ubicación'} x${item.cantidad_logo || 1}</span></div>`;
+                                            : `<div class="pb-1" style="border-bottom:1px dashed rgba(30,60,114,0.2);"><span class="fw-semibold" style="font-size:0.84rem;color:#1e3c72;">Sin logo → ${item.ubicacion_logo || 'Sin ubicación'} x${item.cantidad_logo || 1}</span></div>`;
 
                                         return `
                                                                                                                         <div class="rounded p-2 mb-3" style="background: rgba(30, 60, 114, 0.08);">
@@ -2622,7 +2624,7 @@
                                         item.precio_unitario,
                                         item.descripcion || '',
                                         item.lleva_bordado || false,
-                                        item.nombre_logo || '',
+                                        '',
                                         item.color_id || null,
                                         item.talla_id || null,
                                         insumosTransformados,
