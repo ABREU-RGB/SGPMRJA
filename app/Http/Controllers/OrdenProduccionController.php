@@ -6,6 +6,7 @@ use App\Models\OrdenProduccion;
 use App\Models\Producto;
 use App\Models\Insumo;
 use App\Models\Pedido;
+use App\Models\Logo;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -31,7 +32,8 @@ class OrdenProduccionController extends Controller
                 'id'   => $e->id,
                 'name' => $e->persona->nombre_completo ?? 'Sin nombre',
             ]);
-        return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos', 'empleados'));
+        $logos = Logo::orderBy('name')->get(['id', 'name']);
+        return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos', 'empleados', 'logos'));
     }
 
     public function getOrdenes()
@@ -74,7 +76,7 @@ class OrdenProduccionController extends Controller
             'fecha_inicio' => 'required|date',
             'fecha_fin_estimada' => 'required|date|after:fecha_inicio',
             'costo_estimado' => 'required|numeric|min:0',
-            'logo' => 'nullable|string',
+            'logo_id' => 'nullable|exists:logo,id',
             'notas' => 'nullable|string',
             'insumos' => 'required|array',
             'insumos.*.id' => 'required|exists:insumo,id',
@@ -90,7 +92,7 @@ class OrdenProduccionController extends Controller
             'fecha_fin_estimada' => $request->fecha_fin_estimada,
             'estado' => 'Pendiente',
             'costo_estimado' => $request->costo_estimado,
-            'logo' => $request->logo,
+            'logo_id' => $request->logo_id,
             'notas' => $request->notas,
             'created_by' => Auth::id()
         ]);
@@ -112,6 +114,7 @@ class OrdenProduccionController extends Controller
                 'insumos',
                 'creadoPor:id,name',
                 'produccionDiaria.empleado.persona',
+                'logo',
             ])->findOrFail($id);
 
         return response()->json($orden);
@@ -132,7 +135,7 @@ class OrdenProduccionController extends Controller
             'fecha_fin_estimada' => 'required|date|after:fecha_inicio',
             'estado' => 'required|in:Pendiente,En Proceso,Finalizado,Cancelado',
             'costo_estimado' => 'required|numeric|min:0',
-            'logo' => 'nullable|string',
+            'logo_id' => 'nullable|exists:logo,id',
             'notas' => 'nullable|string',
             'insumos' => 'required|array',
             'insumos.*.id' => 'required|exists:insumo,id',
@@ -141,14 +144,22 @@ class OrdenProduccionController extends Controller
 
         $orden = OrdenProduccion::findOrFail($id);
 
+        $fechaFinReal = $orden->fecha_fin_real;
+        if ($request->estado === 'Finalizado' && is_null($fechaFinReal)) {
+            $fechaFinReal = now()->toDateString();
+        } elseif ($request->estado !== 'Finalizado') {
+            $fechaFinReal = null;
+        }
+
         $orden->update([
             'producto_id' => $request->producto_id,
             'cantidad_solicitada' => $request->cantidad_solicitada,
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_fin_estimada' => $request->fecha_fin_estimada,
             'estado' => $request->estado,
+            'fecha_fin_real' => $fechaFinReal,
             'costo_estimado' => $request->costo_estimado,
-            'logo' => $request->logo,
+            'logo_id' => $request->logo_id,
             'notas' => $request->notas
         ]);
 

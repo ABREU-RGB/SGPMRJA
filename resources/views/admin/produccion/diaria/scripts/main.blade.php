@@ -153,7 +153,10 @@
                     $('#view_orden_id').text(response.orden_id);
                     $('#view_producto').text(response.orden && response.orden.producto ? response.orden.producto.nombre : 'N/A');
                     $('#view_operario').text(response.empleado?.persona?.nombre_completo ?? 'N/A');
-                    $('#view_fecha').text(moment(response.created_at).format('DD/MM/YYYY'));
+                    var fechaDisplay = response.fecha_produccion
+                        ? moment(response.fecha_produccion).format('DD/MM/YYYY')
+                        : moment(response.created_at).format('DD/MM/YYYY');
+                    $('#view_fecha').text(fechaDisplay);
                     $('#view_cantidad_producida').text(response.cantidad_producida);
                     $('#view_cantidad_defectuosa').text(response.cantidad_defectuosa);
                     $('#view_observaciones').text(response.observaciones || 'Sin observaciones');
@@ -191,6 +194,7 @@
                     $('#edit_orden_id').text(response.orden_id);
                     $('#edit_producto').text(response.orden && response.orden.producto ? response.orden.producto.nombre : 'N/A');
                     $('#edit_operario').text(response.empleado?.persona?.nombre_completo ?? 'N/A');
+                    $('#edit_fecha_produccion').val(response.fecha_produccion || '');
                     $('#edit_cantidad_producida').val(response.cantidad_producida);
                     $('#edit_cantidad_defectuosa').val(response.cantidad_defectuosa);
                     $('#edit_observaciones').val(response.observaciones);

@@ -15,11 +15,6 @@ class Proveedor extends Model
     protected $fillable = [
         'tipo_proveedor',
         'persona_id',
-        'razon_social',
-        'rif',
-        'direccion',
-        'telefono',
-        'email',
         'contacto',
         'telefono_contacto',
         'estado',
@@ -30,7 +25,7 @@ class Proveedor extends Model
     ];
 
     /**
-     * Relación con Persona (solo para proveedores naturales)
+     * Relación con Persona (para todos los proveedores)
      */
     public function persona()
     {
@@ -49,73 +44,38 @@ class Proveedor extends Model
     // ACCESSORS para datos unificados
     // ============================================
 
-    /**
-     * Obtener nombre/razón social según tipo
-     */
     public function getNombreCompletoAttribute()
     {
-        if ($this->tipo_proveedor === 'natural' && $this->persona) {
-            return $this->persona->nombre_completo;
-        }
-        return $this->razon_social;
+        return $this->persona ? trim($this->persona->nombre_completo) : null;
     }
 
-    /**
-     * Obtener documento (RIF o cédula) según tipo
-     */
     public function getDocumentoAttribute()
     {
-        if ($this->tipo_proveedor === 'natural' && $this->persona) {
-            return $this->persona->documento_completo;
-        }
-        return $this->rif;
+        return $this->persona ? $this->persona->documento_completo : null;
     }
 
-    /**
-     * Obtener teléfono según tipo
-     */
     public function getTelefonoUnificadoAttribute()
     {
-        if ($this->tipo_proveedor === 'natural' && $this->persona) {
-            return $this->persona->telefono_principal;
-        }
-        return $this->telefono;
+        return $this->persona ? $this->persona->telefono_principal : null;
     }
 
-    /**
-     * Obtener email según tipo
-     */
     public function getEmailUnificadoAttribute()
     {
-        if ($this->tipo_proveedor === 'natural' && $this->persona) {
-            return $this->persona->email;
-        }
-        return $this->email;
+        return $this->persona ? $this->persona->email : null;
     }
 
-    /**
-     * Obtener dirección según tipo
-     */
     public function getDireccionUnificadaAttribute()
     {
-        if ($this->tipo_proveedor === 'natural' && $this->persona) {
-            $dir = $this->persona->direccion_principal;
-            return $dir ? $dir->direccion : null;
-        }
-        return $this->direccion;
+        if (!$this->persona) return null;
+        $dir = $this->persona->direccion_principal;
+        return $dir ? $dir->direccion : null;
     }
 
-    /**
-     * Verificar si es proveedor natural
-     */
     public function esNatural()
     {
         return $this->tipo_proveedor === 'natural';
     }
 
-    /**
-     * Verificar si es proveedor jurídico
-     */
     public function esJuridico()
     {
         return $this->tipo_proveedor === 'juridico';

@@ -139,7 +139,7 @@
                             @endif
                         </td>
                         <td>{{ $insumo->stock_minimo }}</td>
-                        <td style="font-size: 8px;">{{ $insumo->proveedor->razon_social ?? 'Sin proveedor' }}</td>
+                        <td style="font-size: 8px;">{{ $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'Sin proveedor' }}</td>
                         <td>
                             @if($insumo->estado)
                                 <span class="badge-activo">Activo</span>

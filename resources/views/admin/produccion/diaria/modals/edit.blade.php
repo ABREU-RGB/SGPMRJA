@@ -18,6 +18,12 @@
                         <p class="mb-1"><strong>Empleado:</strong> <span id="edit_operario"></span></p>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="edit_fecha_produccion" class="form-label">Fecha de Producción <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="edit_fecha_produccion" name="fecha_produccion"
+                            max="{{ date('Y-m-d') }}" required />
+                    </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <x-forms.input name="cantidad_producida" label="Cantidad Producida" type="number" min="1" required id="edit_cantidad_producida" />

@@ -79,7 +79,7 @@
                                     <div>
                                         <small class="text-muted d-block">Proveedor</small>
                                         <span
-                                            class="fw-semibold">{{ $insumo->proveedor ? $insumo->proveedor->razon_social : 'No asignado' }}</span>
+                                            class="fw-semibold">{{ $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'No asignado' }}</span>
                                     </div>
                                 </div>
                             </div>

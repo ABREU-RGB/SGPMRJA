@@ -22,6 +22,9 @@
                     <x-forms.select name="empleado_id" label="Empleado" required
                         :options="$empleadoOptions" placeholder="Seleccione un empleado..." />
 
+                    <x-forms.input name="fecha_produccion" label="Fecha de Producción" type="date" required
+                        :value="date('Y-m-d')" :max="date('Y-m-d')" />
+
                     <div class="row">
                         <div class="col-md-6">
                             <x-forms.input name="cantidad_producida" label="Cantidad Producida" type="number" min="1" required />

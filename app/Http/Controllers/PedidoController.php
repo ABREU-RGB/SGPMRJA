@@ -10,6 +10,7 @@ use App\Models\MovimientoInsumo;
 use App\Models\Banco;
 use App\Models\Cotizacion;
 use App\Models\Talla;
+use App\Models\Color;
 use App\Http\Requests\StorePedidoRequest;
 use App\Http\Requests\UpdatePedidoRequest;
 use Illuminate\Support\Facades\Log;
@@ -19,6 +20,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Models\Logo;
 use App\Rules\CiRifFormat;
 use PDF;
 
@@ -34,8 +36,10 @@ class PedidoController extends Controller
         $productos = Producto::with('tipoProducto')->where('estado', true)->get();
         $insumos = Insumo::all();
         $bancos = Banco::all();
-        $tallas = Talla::activo()->orderBy('orden')->orderBy('nombre')->get(['nombre', 'etiqueta']);
-        return view('admin.pedidos.index', compact('productos', 'insumos', 'bancos', 'tallas'));
+        $tallas = Talla::activo()->orderBy('orden')->orderBy('nombre')->get(['id', 'nombre', 'etiqueta']);
+        $colores = Color::activo()->orderBy('grupo')->orderBy('nombre')->get(['id', 'nombre', 'hex_referencial']);
+        $logos = Logo::orderBy('name')->get(['id', 'name']);
+        return view('admin.pedidos.index', compact('productos', 'insumos', 'bancos', 'tallas', 'colores', 'logos'));
     }
 
     public function getPedidos()
@@ -124,10 +128,8 @@ class PedidoController extends Controller
         $pedido = Pedido::with([
             'user:id,name',
             'productos.producto.tipoProducto',
-            'productos.bordados',
-            'banco:id,nombre',
-            'bancoTransferencia:id,nombre',
-            'bancoPagoMovil:id,nombre',
+            'productos.bordados.logo:id,name',
+            'pagos.banco:id,nombre',
             'cliente.persona.telefonos',
             'cliente.persona.direcciones'
         ])->findOrFail($id);
@@ -201,7 +203,7 @@ class PedidoController extends Controller
     public function pedidoPdf(Pedido $pedido)
     {
         // Cargar relaciones necesarias
-        $pedido->load(['user:id,name', 'productos.producto', 'productos.bordados', 'cliente', 'cliente.persona']);
+        $pedido->load(['user:id,name', 'productos.producto', 'productos.bordados.logo:id,name', 'cliente', 'cliente.persona']);
 
         // Cálculos financieros
         $ivaTasa = 0.16; // 16 %

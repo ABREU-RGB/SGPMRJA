@@ -148,7 +148,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="tipo" label="Tipo" required
-                                        :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Botón' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
+                                        :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Boton' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta', 'Otro' => 'Otro']" />
                                 </div>
                             </div>
 
@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="proveedor_id" label="Proveedor" required
-                                        :options="$proveedores->pluck('razon_social', 'id')->toArray()" />
+                                        :options="$proveedores->mapWithKeys(fn($p) => [$p->id => $p->nombre_completo])->toArray()" />
                                 </div>
                             </div>
                         </div>
@@ -289,9 +289,10 @@
                             var tipos = {
                                 'Tela': '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
                                 'Hilo': '<span class="badge-tipo badge-tipo-hilo"><i class="ri-links-line"></i> Hilo</span>',
-                                'Botón': '<span class="badge-tipo badge-tipo-boton"><i class="ri-radio-button-line"></i> Botón</span>',
+                                'Boton': '<span class="badge-tipo badge-tipo-boton"><i class="ri-radio-button-line"></i> Botón</span>',
                                 'Cierre': '<span class="badge-tipo badge-tipo-cierre"><i class="ri-lock-line"></i> Cierre</span>',
-                                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>'
+                                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>',
+                                'Otro': '<span class="badge bg-secondary"><i class="ri-more-line"></i> Otro</span>'
                             };
                             return tipos[data] || '<span class="badge-tipo"><i class="ri-more-line"></i> ' + data + '</span>';
                         }
@@ -315,7 +316,7 @@
                     },
                     {
                         data: 'proveedor_nombre',
-                        name: 'proveedor.razon_social',
+                        name: 'proveedor_nombre',
                         width: '28%',
                         render: function (data) {
                             return renderEllipsis(data);
@@ -351,7 +352,7 @@
                     $("#view-stock-actual").text(data.stock_actual);
                     $("#view-stock-minimo").text(data.stock_minimo);
                     $("#view-costo-unitario").text('$/ ' + parseFloat(data.costo_unitario).toFixed(2));
-                    $("#view-proveedor").text(data.proveedor ? data.proveedor.razon_social : 'Sin proveedor');
+                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor');
                     $("#view-created").text(data.created_at);
                     $("#viewModal").modal('show');
                 });

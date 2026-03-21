@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Color;
+use App\Models\Talla;
 
 class DetallePedido extends Model
 {
@@ -17,9 +19,8 @@ class DetallePedido extends Model
         'cantidad',
         'descripcion',
         'lleva_bordado',
-        'nombre_logo',
-        'color',
-        'talla',
+        'color_id',
+        'talla_id',
         'precio_unitario',
     ];
 
@@ -33,6 +34,16 @@ class DetallePedido extends Model
         'ubicacion_logo',
         'cantidad_logo',
     ];
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
+
+    public function talla()
+    {
+        return $this->belongsTo(Talla::class);
+    }
 
     public function pedido()
     {
@@ -77,22 +88,19 @@ class DetallePedido extends Model
         return $cantidad ?: null;
     }
 
-    public function getNombreLogoAttribute($value)
+    public function getNombreLogoAttribute()
     {
-        $logos = $this->relationLoaded('bordados')
-            ? $this->bordados->pluck('nombre_logo_aplicado')
-            : $this->bordados()->pluck('nombre_logo_aplicado');
+        $bordados = $this->relationLoaded('bordados')
+            ? $this->bordados
+            : $this->bordados()->with('logo:id,name')->get();
 
-        $logos = collect($logos)
-            ->map(fn($logo) => trim((string) $logo))
-            ->filter()
-            ->unique()
-            ->values();
+        $logos = $bordados->map(function ($b) {
+            // Preferir nombre del catálogo (logo FK), fallback al snapshot
+            return $b->relationLoaded('logo') && $b->logo
+                ? $b->logo->name
+                : ($b->nombre_logo_aplicado ?: null);
+        })->filter()->unique()->values();
 
-        if ($logos->isNotEmpty()) {
-            return $logos->implode(', ');
-        }
-
-        return $value;
+        return $logos->isNotEmpty() ? $logos->implode(', ') : null;
     }
 }

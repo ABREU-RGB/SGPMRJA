@@ -76,7 +76,7 @@
                                             </td>
                                             <td>$/ {{ number_format($insumo->costo_unitario, 2) }}</td>
                                             <td>$/ {{ number_format($insumo->stock_actual * $insumo->costo_unitario, 2) }}</td>
-                                            <td>{{ $insumo->proveedor ? $insumo->proveedor->razon_social : 'No asignado' }}</td>
+                                            <td>{{ $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'No asignado' }}</td>
                                             <td>
                                                 <div class="dropdown d-inline-block">
                                                     <button class="btn btn-soft-secondary btn-sm dropdown" type="button"

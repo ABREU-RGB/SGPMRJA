@@ -21,14 +21,6 @@ class Pedido extends Model
         'total',
         'user_id',
         'abono',
-        'efectivo_pagado',
-        'transferencia_pagado',
-        'pago_movil_pagado',
-        'referencia_transferencia',
-        'referencia_pago_movil',
-        'banco_id', // Legacy support
-        'banco_transferencia_id',
-        'banco_pago_movil_id',
         'prioridad',
     ];
 
@@ -47,27 +39,19 @@ class Pedido extends Model
     }
 
     /**
-     * Relación con el banco para transferencias (Legacy o general)
+     * Pagos normalizados (tabla pago_pedido)
      */
-    public function banco()
+    public function pagos()
     {
-        return $this->belongsTo(Banco::class);
+        return $this->hasMany(PagoPedido::class);
     }
 
     /**
-     * Relación con el banco para transferencias
+     * Recalcula el abono como suma de los montos de pagos
      */
-    public function bancoTransferencia()
+    public function recalcularAbono(): void
     {
-        return $this->belongsTo(Banco::class, 'banco_transferencia_id');
-    }
-
-    /**
-     * Relación con el banco para pago móvil
-     */
-    public function bancoPagoMovil()
-    {
-        return $this->belongsTo(Banco::class, 'banco_pago_movil_id');
+        $this->update(['abono' => $this->pagos()->sum('monto')]);
     }
 
     /**

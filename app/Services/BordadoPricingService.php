@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Logo;
+
 class BordadoPricingService
 {
     /**
@@ -16,10 +18,12 @@ class BordadoPricingService
 
         $bordados = [];
         foreach ($item['bordados'] as $index => $bordado) {
+            $logoId = $bordado['logo_id'] ?? $item['logo_id'] ?? null;
+
             $bordados[] = [
                 'ubicacion_bordado_id' => $bordado['ubicacion_bordado_id'] ?? null,
                 'nombre_aplicado' => trim((string) ($bordado['nombre_aplicado'] ?? '')),
-                'nombre_logo' => trim((string) ($bordado['nombre_logo'] ?? $item['nombre_logo'] ?? '')),
+                'logo_id' => $logoId ? (int) $logoId : null,
                 'es_personalizada' => (bool) ($bordado['es_personalizada'] ?? false),
                 'cantidad' => max(1, (int) ($bordado['cantidad'] ?? 1)),
                 'precio_aplicado' => (float) ($bordado['precio_aplicado'] ?? 0),
@@ -54,21 +58,15 @@ class BordadoPricingService
     }
 
     /**
-     * Resuelve el nombre_logo legado para detalle padre como resumen.
+     * Resuelve el nombre del logo para snapshot (nombre_logo_aplicado).
+     * Busca el nombre en el catálogo por logo_id.
      */
-    public function resolverNombreLogoDetalle(array $item, array $bordados): ?string
+    public function resolverNombreLogoSnapshot(?int $logoId): string
     {
-        $logos = collect($bordados)
-            ->map(fn($bordado) => trim((string) ($bordado['nombre_logo'] ?? '')))
-            ->filter()
-            ->unique()
-            ->values();
-
-        if ($logos->isNotEmpty()) {
-            return mb_substr($logos->implode(', '), 0, 100);
+        if (!$logoId) {
+            return '';
         }
 
-        $legacy = trim((string) ($item['nombre_logo'] ?? ''));
-        return $legacy !== '' ? mb_substr($legacy, 0, 100) : null;
+        return Logo::where('id', $logoId)->value('name') ?? '';
     }
 }

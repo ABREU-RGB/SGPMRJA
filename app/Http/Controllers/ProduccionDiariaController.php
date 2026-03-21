@@ -45,7 +45,9 @@ class ProduccionDiariaController extends Controller
                     : 'N/A';
             })
             ->addColumn('fecha', function ($registro) {
-                return $registro->created_at->format('d/m/Y');
+                return $registro->fecha_produccion
+                    ? $registro->fecha_produccion->format('d/m/Y')
+                    : $registro->created_at->format('d/m/Y');
             })
             ->addColumn('actions', function ($registro) {
                 $actions = '<div class="d-flex gap-2 justify-content-center">';
@@ -71,6 +73,7 @@ class ProduccionDiariaController extends Controller
         $request->validate([
             'orden_id' => 'required|exists:orden_produccion,id',
             'empleado_id' => 'required|exists:empleado,id',
+            'fecha_produccion' => 'required|date|before_or_equal:today',
             'cantidad_producida' => 'required|numeric|min:1',
             'cantidad_defectuosa' => 'required|numeric|min:0',
             'observaciones' => 'nullable|string|max:500'
@@ -95,6 +98,7 @@ class ProduccionDiariaController extends Controller
             $registro = ProduccionDiaria::create([
                 'orden_id' => $request->orden_id,
                 'empleado_id' => $request->empleado_id,
+                'fecha_produccion' => $request->fecha_produccion,
                 'cantidad_producida' => $request->cantidad_producida,
                 'cantidad_defectuosa' => $request->cantidad_defectuosa,
                 'observaciones' => $request->observaciones
@@ -104,6 +108,7 @@ class ProduccionDiariaController extends Controller
             $orden->cantidad_producida += $request->cantidad_producida;
             if ($orden->cantidad_producida >= $orden->cantidad_solicitada) {
                 $orden->estado = 'Finalizado';
+                $orden->fecha_fin_real = now()->toDateString();
             } elseif ($orden->estado === 'Pendiente') {
                 $orden->estado = 'En Proceso';
             }
@@ -128,6 +133,7 @@ class ProduccionDiariaController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'fecha_produccion' => 'required|date|before_or_equal:today',
             'cantidad_producida' => 'required|numeric|min:1',
             'cantidad_defectuosa' => 'required|numeric|min:0',
             'observaciones' => 'nullable|string|max:500'
@@ -142,6 +148,7 @@ class ProduccionDiariaController extends Controller
 
             // Actualizar el registro
             $registro->update([
+                'fecha_produccion' => $request->fecha_produccion,
                 'cantidad_producida' => $request->cantidad_producida,
                 'cantidad_defectuosa' => $request->cantidad_defectuosa,
                 'observaciones' => $request->observaciones
@@ -151,8 +158,12 @@ class ProduccionDiariaController extends Controller
             $orden->cantidad_producida += $request->cantidad_producida;
             if ($orden->cantidad_producida >= $orden->cantidad_solicitada) {
                 $orden->estado = 'Finalizado';
+                if (is_null($orden->fecha_fin_real)) {
+                    $orden->fecha_fin_real = now()->toDateString();
+                }
             } else {
                 $orden->estado = 'En Proceso';
+                $orden->fecha_fin_real = null;
             }
             $orden->save();
 

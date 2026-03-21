@@ -119,9 +119,6 @@ class CotizacionService
                 'fecha_pedido' => now(),
                 'total' => $cotizacion->total,
                 'abono' => 0,
-                'efectivo_pagado' => 0,
-                'transferencia_pagado' => 0,
-                'pago_movil_pagado' => 0,
                 'prioridad' => $cotizacion->prioridad ?? 'Normal',
                 'estado' => 'Pendiente',
                 'user_id' => Auth::id(),
@@ -136,15 +133,15 @@ class CotizacionService
                     'precio_unitario' => $detalle->precio_unitario,
                     'descripcion' => $detalle->descripcion,
                     'lleva_bordado' => $detalle->lleva_bordado ?? false,
-                    'nombre_logo' => $detalle->nombre_logo,
-                    'color' => $detalle->color,
-                    'talla' => $detalle->talla,
+                    'color_id' => $detalle->color_id,
+                    'talla_id' => $detalle->talla_id,
                 ]);
 
                 foreach ($detalle->bordados as $index => $bordado) {
                     DetallePedidoBordado::create([
                         'detalle_pedido_id' => $detallePedido->id,
                         'ubicacion_bordado_id' => $bordado->ubicacion_bordado_id,
+                        'logo_id' => $bordado->logo_id,
                         'nombre_aplicado' => $bordado->nombre_aplicado,
                         'nombre_logo_aplicado' => $bordado->nombre_logo_aplicado,
                         'es_personalizada' => (bool) $bordado->es_personalizada,
@@ -209,18 +206,19 @@ class CotizacionService
                 'cantidad' => $item['cantidad'],
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                'nombre_logo' => $this->bordadoPricingService->resolverNombreLogoDetalle($item, $bordados),
-                'color' => $item['color'] ?? null,
-                'talla' => $item['talla'] ?? null,
+                'color_id' => $item['color_id'] ?? null,
+                'talla_id' => $item['talla_id'] ?? null,
                 'precio_unitario' => $precioUnitarioFinal,
             ]);
 
             foreach ($bordados as $bordado) {
+                $logoId = $bordado['logo_id'] ?? null;
                 DetalleCotizacionBordado::create([
                     'detalle_cotizacion_id' => $detalle->id,
                     'ubicacion_bordado_id' => $bordado['ubicacion_bordado_id'] ?? null,
+                    'logo_id' => $logoId,
                     'nombre_aplicado' => trim((string) ($bordado['nombre_aplicado'] ?? '')),
-                    'nombre_logo_aplicado' => trim((string) ($bordado['nombre_logo'] ?? $item['nombre_logo'] ?? '')),
+                    'nombre_logo_aplicado' => $this->bordadoPricingService->resolverNombreLogoSnapshot($logoId),
                     'es_personalizada' => (bool) ($bordado['es_personalizada'] ?? false),
                     'cantidad' => max(1, (int) ($bordado['cantidad'] ?? 1)),
                     'precio_aplicado' => (float) ($bordado['precio_aplicado'] ?? 0),

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Pedido;
+use App\Models\PagoPedido;
 use App\Models\Producto;
 use App\Models\DetallePedido;
 use App\Models\DetallePedidoBordado;
@@ -35,18 +36,11 @@ class PedidoService
                 'estado' => 'Pendiente',
                 'total' => $total_pedido,
                 'user_id' => Auth::id(),
-                'abono' => $data['abono'],
-                'efectivo_pagado' => $data['efectivo_pagado'] ?? false,
-                'transferencia_pagado' => $data['transferencia_pagado'] ?? false,
-                'pago_movil_pagado' => $data['pago_movil_pagado'] ?? false,
-                'referencia_transferencia' => $data['referencia_transferencia'] ?? null,
-                'referencia_pago_movil' => $data['referencia_pago_movil'] ?? null,
-                'banco_id' => $data['banco_id'] ?? null,
-                'banco_transferencia_id' => $data['banco_transferencia_id'] ?? null,
-                'banco_pago_movil_id' => $data['banco_pago_movil_id'] ?? null,
+                'abono' => 0,
                 'prioridad' => $data['prioridad'],
             ]);
 
+            $this->syncPagos($pedido, $data['pagos'] ?? []);
             $this->crearDetalles($pedido, $data['productos']);
 
             if ($cotizacion) {
@@ -84,18 +78,10 @@ class PedidoService
                 'fecha_entrega_estimada' => $data['fecha_entrega_estimada'] ?? null,
                 'estado' => $data['estado'],
                 'total' => $total_pedido,
-                'abono' => $data['abono'],
-                'efectivo_pagado' => $data['efectivo_pagado'] ?? false,
-                'transferencia_pagado' => $data['transferencia_pagado'] ?? false,
-                'pago_movil_pagado' => $data['pago_movil_pagado'] ?? false,
-                'referencia_transferencia' => $data['referencia_transferencia'] ?? null,
-                'referencia_pago_movil' => $data['referencia_pago_movil'] ?? null,
-                'banco_id' => $data['banco_id'] ?? null,
-                'banco_transferencia_id' => $data['banco_transferencia_id'] ?? null,
-                'banco_pago_movil_id' => $data['banco_pago_movil_id'] ?? null,
                 'prioridad' => $data['prioridad'],
             ]);
 
+            $this->syncPagos($pedido, $data['pagos'] ?? []);
             $this->crearDetalles($pedido, $data['productos']);
         });
 
@@ -151,18 +137,19 @@ class PedidoService
                 'cantidad' => $item['cantidad'],
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,
-                'nombre_logo' => $this->bordadoPricingService->resolverNombreLogoDetalle($item, $bordados),
-                'color' => $item['color'] ?? null,
-                'talla' => $item['talla'] ?? null,
+                'color_id' => $item['color_id'] ?? null,
+                'talla_id' => $item['talla_id'] ?? null,
                 'precio_unitario' => $precioUnitarioFinal,
             ]);
 
             foreach ($bordados as $bordado) {
+                $logoId = $bordado['logo_id'] ?? null;
                 DetallePedidoBordado::create([
                     'detalle_pedido_id' => $detalle->id,
                     'ubicacion_bordado_id' => $bordado['ubicacion_bordado_id'] ?? null,
+                    'logo_id' => $logoId,
                     'nombre_aplicado' => trim((string) ($bordado['nombre_aplicado'] ?? '')),
-                    'nombre_logo_aplicado' => trim((string) ($bordado['nombre_logo'] ?? $item['nombre_logo'] ?? '')),
+                    'nombre_logo_aplicado' => $this->bordadoPricingService->resolverNombreLogoSnapshot($logoId),
                     'es_personalizada' => (bool) ($bordado['es_personalizada'] ?? false),
                     'cantidad' => max(1, (int) ($bordado['cantidad'] ?? 1)),
                     'precio_aplicado' => (float) ($bordado['precio_aplicado'] ?? 0),
@@ -170,6 +157,27 @@ class PedidoService
                 ]);
             }
         }
+    }
+
+    /**
+     * Sincronizar pagos del pedido: elimina los anteriores y crea los nuevos.
+     * Recalcula el abono como suma de montos.
+     */
+    private function syncPagos(Pedido $pedido, array $pagos): void
+    {
+        $pedido->pagos()->delete();
+
+        foreach ($pagos as $pago) {
+            PagoPedido::create([
+                'pedido_id'  => $pedido->id,
+                'metodo'     => $pago['metodo'],
+                'monto'      => $pago['monto'],
+                'banco_id'   => $pago['banco_id'] ?? null,
+                'referencia' => $pago['referencia'] ?? null,
+            ]);
+        }
+
+        $pedido->recalcularAbono();
     }
 
     private function validarCotizacionParaCrearPedido(?int $cotizacionId): ?Cotizacion

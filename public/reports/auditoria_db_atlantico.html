@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Auditoría de Base de Datos — Manufacturas R.J. Atlántico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       VARIABLES & RESET
+    ═══════════════════════════════════════════════════ */
+    :root {
+      --navy:        #1e3c72;
+      --navy-dark:   #132649;
+      --navy-light:  #2a5298;
+      --emerald:     #10b981;
+      --emerald-dark:#059669;
+      --red:         #dc2626;
+      --red-bg:      #fef2f2;
+      --red-border:  #fecaca;
+      --amber:       #d97706;
+      --amber-bg:    #fffbeb;
+      --amber-border:#fde68a;
+      --green:       #16a34a;
+      --green-bg:    #f0fdf4;
+      --green-border:#bbf7d0;
+      --gray-50:     #f8fafc;
+      --gray-100:    #f1f5f9;
+      --gray-200:    #e2e8f0;
+      --gray-300:    #cbd5e1;
+      --gray-400:    #94a3b8;
+      --gray-500:    #64748b;
+      --gray-700:    #334155;
+      --gray-900:    #0f172a;
+      --text:        #1e293b;
+      --font:        'Inter', 'Segoe UI', system-ui, sans-serif;
+      --mono:        'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 13px; }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: #f0f4f8;
+      line-height: 1.6;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       PAGE WRAPPER
+    ═══════════════════════════════════════════════════ */
+    .page {
+      max-width: 1020px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.12);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       COVER HEADER
+    ═══════════════════════════════════════════════════ */
+    .cover {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
+      padding: 3rem 3.5rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(16,185,129,0.08);
+    }
+    .cover::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 40%;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .cover-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+    }
+
+    .brand-text {
+      color: #fff;
+    }
+    .brand-text .company {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .brand-text .subtitle {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .doc-badge {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.72rem;
+      text-align: right;
+      line-height: 1.8;
+    }
+    .doc-badge strong { color: #fff; display: block; font-size: 0.78rem; }
+
+    .cover-title {
+      color: #fff;
+      position: relative;
+      z-index: 1;
+    }
+    .cover-title .tag {
+      display: inline-block;
+      background: rgba(16,185,129,0.25);
+      border: 1px solid rgba(16,185,129,0.5);
+      color: var(--emerald);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      margin-bottom: 0.75rem;
+    }
+    .cover-title h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .cover-title h1 span { color: var(--emerald); }
+    .cover-title p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.92rem;
+      max-width: 600px;
+    }
+
+    .cover-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    .stat-pill {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 0.6rem 1.1rem;
+      text-align: center;
+      min-width: 90px;
+    }
+    .stat-pill .num {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+    .stat-pill .lbl {
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 0.2rem;
+    }
+    .stat-pill.red   .num { color: #f87171; }
+    .stat-pill.amber .num { color: #fbbf24; }
+    .stat-pill.green .num { color: var(--emerald); }
+
+    /* ═══════════════════════════════════════════════════
+       CONTENT AREA
+    ═══════════════════════════════════════════════════ */
+    .content {
+      padding: 2.5rem 3.5rem;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION HEADERS
+    ═══════════════════════════════════════════════════ */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      margin-top: 2.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--gray-100);
+    }
+    .section-header:first-child { margin-top: 0; }
+
+    .section-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .section-icon.navy    { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
+    .section-icon.emerald { background: linear-gradient(135deg, var(--emerald-dark), var(--emerald)); }
+    .section-icon.red     { background: linear-gradient(135deg, #b91c1c, #dc2626); }
+    .section-icon.amber   { background: linear-gradient(135deg, #b45309, #d97706); }
+    .section-icon.green   { background: linear-gradient(135deg, #15803d, #16a34a); }
+
+    .section-title {
+      flex: 1;
+    }
+    .section-title h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.01em;
+    }
+    .section-title p {
+      font-size: 0.78rem;
+      color: var(--gray-500);
+      margin-top: 0.1rem;
+    }
+
+    .badge-count {
+      background: var(--navy);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+    }
+    .badge-count.red   { background: var(--red); }
+    .badge-count.amber { background: var(--amber); }
+    .badge-count.green { background: var(--green); }
+
+    /* ═══════════════════════════════════════════════════
+       FORTALEZAS LIST
+    ═══════════════════════════════════════════════════ */
+    .strengths-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+    }
+    .strength-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+    }
+    .strength-item .check {
+      color: var(--green);
+      font-size: 0.9rem;
+      margin-top: 0.05rem;
+      flex-shrink: 0;
+    }
+    .strength-item span {
+      font-size: 0.82rem;
+      color: #166534;
+      line-height: 1.4;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       FINDING CARDS
+    ═══════════════════════════════════════════════════ */
+    .findings { display: flex; flex-direction: column; gap: 1rem; }
+
+    .finding {
+      border-radius: 10px;
+      border: 1px solid;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .finding.red   { border-color: var(--red-border);   background: var(--red-bg); }
+    .finding.amber { border-color: var(--amber-border); background: var(--amber-bg); }
+    .finding.green { border-color: var(--green-border); background: var(--green-bg); }
+
+    .finding-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.1rem;
+      border-bottom: 1px solid;
+    }
+    .finding.red   .finding-header { background: rgba(220,38,38,0.06);   border-color: var(--red-border); }
+    .finding.amber .finding-header { background: rgba(217,119,6,0.06);   border-color: var(--amber-border); }
+    .finding.green .finding-header { background: rgba(22,163,74,0.06);   border-color: var(--green-border); }
+
+    .finding-id {
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      padding: 0.2rem 0.55rem;
+      border-radius: 5px;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .finding.red   .finding-id { background: #fee2e2; color: #991b1b; }
+    .finding.amber .finding-id { background: #fef3c7; color: #92400e; }
+    .finding.green .finding-id { background: #dcfce7; color: #14532d; }
+
+    .finding-title {
+      flex: 1;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      line-height: 1.3;
+    }
+
+    .finding-body {
+      padding: 0.9rem 1.1rem;
+    }
+
+    .finding-body p {
+      font-size: 0.82rem;
+      color: var(--gray-700);
+      line-height: 1.65;
+      margin-bottom: 0.6rem;
+    }
+    .finding-body p:last-child { margin-bottom: 0; }
+
+    .finding-body .affected {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 5px;
+      padding: 0.2rem 0.55rem;
+      margin-bottom: 0.6rem;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CODE BLOCKS
+    ═══════════════════════════════════════════════════ */
+    .code-block {
+      background: #0f172a;
+      border-radius: 7px;
+      padding: 0.75rem 1rem;
+      margin: 0.6rem 0;
+      overflow-x: auto;
+    }
+    .code-block code {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: #e2e8f0;
+      line-height: 1.7;
+      white-space: pre;
+      display: block;
+    }
+    .code-block code .kw  { color: #93c5fd; } /* keywords */
+    .code-block code .str { color: #86efac; } /* strings  */
+    .code-block code .cmt { color: #64748b; } /* comments */
+    .code-block code .col { color: #fbbf24; } /* columns  */
+    .code-block code .typ { color: #f9a8d4; } /* types    */
+
+    /* ═══════════════════════════════════════════════════
+       IMPACT RISK BADGE
+    ═══════════════════════════════════════════════════ */
+    .risk-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .risk-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .risk-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.55rem;
+      border-radius: 20px;
+    }
+    .risk-badge.data-integrity { background: #fee2e2; color: #991b1b; }
+    .risk-badge.performance    { background: #fef3c7; color: #92400e; }
+    .risk-badge.normalization  { background: #ede9fe; color: #5b21b6; }
+    .risk-badge.architecture   { background: #e0f2fe; color: #075985; }
+    .risk-badge.convention     { background: #f0fdf4; color: #14532d; }
+    .risk-badge.naming         { background: #fdf4ff; color: #86198f; }
+
+    /* ═══════════════════════════════════════════════════
+       SUMMARY TABLE
+    ═══════════════════════════════════════════════════ */
+    .summary-wrap {
+      border-radius: 10px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    table.summary {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.summary thead tr {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+    }
+    table.summary thead th {
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.8rem 1.1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    table.summary thead th:last-child { text-align: center; }
+
+    table.summary tbody tr {
+      border-bottom: 1px solid var(--gray-100);
+      transition: background 0.15s;
+    }
+    table.summary tbody tr:last-child { border-bottom: none; }
+    table.summary tbody tr:nth-child(even) { background: var(--gray-50); }
+
+    table.summary tbody td {
+      padding: 0.8rem 1.1rem;
+      font-size: 0.82rem;
+      color: var(--gray-700);
+      vertical-align: top;
+    }
+
+    .level-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .level-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .level-dot.red   { background: var(--red); }
+    .level-dot.amber { background: var(--amber); }
+    .level-dot.green { background: var(--green); }
+
+    .count-cell {
+      text-align: center;
+    }
+    .count-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .count-chip.red   { background: var(--red); }
+    .count-chip.amber { background: var(--amber); }
+    .count-chip.green { background: var(--green); }
+
+    /* ═══════════════════════════════════════════════════
+       INDEX TABLE
+    ═══════════════════════════════════════════════════ */
+    .index-table-wrap {
+      border-radius: 10px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+    table.idx {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.idx thead tr {
+      background: var(--navy);
+    }
+    table.idx thead th {
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    table.idx tbody tr {
+      border-bottom: 1px solid var(--gray-100);
+    }
+    table.idx tbody tr:last-child { border-bottom: none; }
+    table.idx tbody tr:nth-child(even) { background: var(--gray-50); }
+    table.idx tbody td {
+      padding: 0.55rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--gray-700);
+    }
+    table.idx tbody td:first-child {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--navy);
+      font-weight: 500;
+    }
+    table.idx tbody td:nth-child(2) {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--emerald-dark);
+      font-weight: 500;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       PRIORITY RECOMMENDATION BOX
+    ═══════════════════════════════════════════════════ */
+    .recommendation {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      border-radius: 10px;
+      padding: 1.5rem 1.75rem;
+      margin-top: 2.5rem;
+      color: #fff;
+      page-break-inside: avoid;
+    }
+    .recommendation h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 1rem;
+      color: var(--emerald);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+    .rec-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .rec-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .rec-item .num {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: rgba(16,185,129,0.2);
+      border: 1px solid rgba(16,185,129,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--emerald);
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+    .rec-item .text {
+      font-size: 0.83rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.5;
+    }
+    .rec-item .text strong { color: #fff; }
+
+    /* ═══════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════ */
+    .doc-footer {
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-200);
+      padding: 1.25rem 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .doc-footer p {
+      font-size: 0.72rem;
+      color: var(--gray-400);
+    }
+    .doc-footer .emerald-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+      margin-right: 0.4rem;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       DIVIDER
+    ═══════════════════════════════════════════════════ */
+    .divider {
+      height: 1px;
+      background: var(--gray-100);
+      margin: 2rem 0;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       PRINT STYLES
+    ═══════════════════════════════════════════════════ */
+    @media print {
+      body {
+        background: #fff;
+        font-size: 11px;
+      }
+      .page {
+        margin: 0;
+        box-shadow: none;
+        border-radius: 0;
+        max-width: 100%;
+      }
+      .cover {
+        padding: 2rem 2.5rem 1.75rem;
+      }
+      .content {
+        padding: 1.75rem 2.5rem;
+      }
+      .doc-footer {
+        padding: 1rem 2.5rem;
+      }
+      .finding {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .section-header {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+      .recommendation {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      @page {
+        margin: 1.5cm 1.2cm;
+        size: A4;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ░░░ COVER ░░░ -->
+  <div class="cover">
+    <div class="cover-top">
+      <div class="brand">
+        <div class="brand-icon">🏭</div>
+        <div class="brand-text">
+          <div class="company">Manufacturas R.J. Atlántico</div>
+          <div class="subtitle">Sistema de Gestión ERP</div>
+        </div>
+      </div>
+      <div class="doc-badge">
+        <strong>INFORME TÉCNICO CONFIDENCIAL</strong>
+        Fecha: 18 de marzo de 2026<br>
+        Base de datos: sistema_atlantico4<br>
+        Motor: MySQL 8.0 / InnoDB<br>
+        Versión del esquema: rev. 32
+      </div>
+    </div>
+
+    <div class="cover-title">
+      <div class="tag">📋 Auditoría de Base de Datos</div>
+      <h1>Diagnóstico del <span>Esquema Relacional</span><br>— Informe Completo</h1>
+      <p>Evaluación exhaustiva de normalización, integridad de datos, convenciones Laravel/Eloquent,
+         rendimiento e indexación para el ERP de manufactura textil.</p>
+    </div>
+
+    <div class="cover-stats">
+      <div class="stat-pill">
+        <div class="num">31</div>
+        <div class="lbl">Tablas</div>
+      </div>
+      <div class="stat-pill red">
+        <div class="num">6</div>
+        <div class="lbl">Críticos</div>
+      </div>
+      <div class="stat-pill amber">
+        <div class="num">7</div>
+        <div class="lbl">Medios</div>
+      </div>
+      <div class="stat-pill green">
+        <div class="num">6</div>
+        <div class="lbl">Bajos</div>
+      </div>
+      <div class="stat-pill">
+        <div class="num">19</div>
+        <div class="lbl">Total hallazgos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░░ CONTENT ░░░ -->
+  <div class="content">
+
+    <!-- ── FORTALEZAS ── -->
+    <div class="section-header">
+      <div class="section-icon emerald">✅</div>
+      <div class="section-title">
+        <h2>Fortalezas del Esquema</h2>
+        <p>Decisiones de diseño correctas identificadas durante la auditoría</p>
+      </div>
+    </div>
+
+    <div class="strengths-grid">
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span>Arquitectura <strong>Persona</strong> como entidad base para <code>User</code>, <code>Cliente</code>, <code>Empleado</code> — diseño de herencia de tabla concreta correcto y escalable</span>
+      </div>
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span><code>decimal(10,2)</code> en todos los campos monetarios y de cantidades — sin riesgo de errores de coma flotante (float)</span>
+      </div>
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span>Collation <code>utf8mb4_unicode_ci</code> uniforme en todo el esquema — soporte correcto para caracteres especiales y emojis</span>
+      </div>
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span>Soft deletes (<code>deleted_at</code>) en las entidades de negocio principales: Cliente, Empleado, Pedido, Cotización, Producto, Orden de Producción</span>
+      </div>
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span><code>orden_produccion.estado</code> correctamente definido como <code>ENUM</code> con valores controlados: Pendiente, En Proceso, Finalizado, Cancelado</span>
+      </div>
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span>Claves foráneas definidas a nivel de base de datos con comportamientos <code>ON DELETE</code> explícitos en la mayoría de relaciones críticas</span>
+      </div>
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span>Tablas catálogo bien diseñadas: <code>colores</code>, <code>tallas</code>, <code>bordado_ubicaciones</code> con campos <code>activo</code>, <code>orden</code> y <code>grupo</code> para UI</span>
+      </div>
+      <div class="strength-item">
+        <span class="check">✅</span>
+        <span><code>tasa_cambio</code> con índice compuesto único <code>(moneda, fecha_bcv)</code> — previene duplicados y permite consultas rápidas de tasa vigente</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ══════════════════════════════════
+         🔴 CRÍTICOS
+    ══════════════════════════════════ -->
+    <div class="section-header">
+      <div class="section-icon red">🔴</div>
+      <div class="section-title">
+        <h2>Hallazgos Críticos</h2>
+        <p>Riesgos de corrupción de datos, violaciones de integridad referencial o anti-patrones graves de arquitectura</p>
+      </div>
+      <span class="badge-count red">6 hallazgos</span>
+    </div>
+
+    <div class="findings">
+
+      <!-- CR-01 -->
+      <div class="finding red">
+        <div class="finding-header">
+          <span class="finding-id">CR-01</span>
+          <span class="finding-title">color y talla almacenados como texto libre — tablas lookup ignoradas</span>
+        </div>
+        <div class="finding-body">
+          <div class="affected">📋 Tablas afectadas: detalle_cotizacion · detalle_pedido</div>
+          <div class="code-block"><code><span class="cmt">-- detalle_cotizacion</span>
+<span class="col">`color`</span> <span class="typ">varchar(50)</span>  DEFAULT NULL,   <span class="cmt">-- texto libre, sin FK</span>
+<span class="col">`talla`</span> <span class="typ">varchar(191)</span> DEFAULT NULL,   <span class="cmt">-- ¡varchar(191)!</span>
+
+<span class="cmt">-- detalle_pedido (mismo problema, tamaño diferente)</span>
+<span class="col">`color`</span> <span class="typ">varchar(50)</span>  DEFAULT NULL,
+<span class="col">`talla`</span> <span class="typ">varchar(50)</span>  DEFAULT NULL,   <span class="cmt">-- varchar(50) aquí</span></code></div>
+          <p>El sistema posee las tablas <code>colores</code> (32 registros) y <code>tallas</code> (15 registros) completamente pobladas con datos normalizados. Sin embargo, los detalles de cotización y pedido almacenan estos valores como <strong>cadenas de texto libre sin foreign key</strong>. Esto permite que un pedido tenga <code>talla = "mediano"</code> en lugar de <code>"M"</code>, haciendo que los reportes de producción por talla o color sean estadísticamente poco confiables.</p>
+          <p>Además, hay una inconsistencia de tipos entre las dos tablas "gemelas": <code>detalle_cotizacion.talla</code> es <code>varchar(191)</code> mientras <code>detalle_pedido.talla</code> es <code>varchar(50)</code>.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge data-integrity">Integridad de Datos</span>
+            <span class="risk-badge normalization">2NF Violation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CR-02 -->
+      <div class="finding red">
+        <div class="finding-header">
+          <span class="finding-id">CR-02</span>
+          <span class="finding-title">proveedor semi-normalizado: proveedores jurídicos fuera del sistema Persona</span>
+        </div>
+        <div class="finding-body">
+          <div class="affected">📋 Tabla afectada: proveedor</div>
+          <div class="code-block"><code><span class="col">`persona_id`</span>        <span class="typ">bigint</span> DEFAULT NULL,  <span class="cmt">-- solo para tipo 'natural'</span>
+<span class="col">`razon_social`</span>      <span class="typ">varchar(100)</span> DEFAULT NULL, <span class="cmt">-- texto libre (juridico)</span>
+<span class="col">`direccion`</span>         <span class="typ">varchar(191)</span> DEFAULT NULL, <span class="cmt">-- fuera del sistema direccion</span>
+<span class="col">`telefono`</span>          <span class="typ">varchar(20)</span>  DEFAULT NULL, <span class="cmt">-- fuera del sistema telefono</span>
+<span class="col">`email`</span>             <span class="typ">varchar(191)</span> DEFAULT NULL, <span class="cmt">-- duplicado</span>
+<span class="col">`contacto`</span>         <span class="typ">varchar(100)</span> DEFAULT NULL,
+<span class="col">`telefono_contacto`</span> <span class="typ">varchar(20)</span>  DEFAULT NULL,</code></div>
+          <p><code>cliente</code> fue completamente normalizado a <code>persona + telefono + direccion</code>. <code>proveedor</code> quedó a la mitad: los proveedores naturales usan <code>persona_id</code>, pero los jurídicos (8 de 14 en producción) tienen sus datos de contacto embebidos directamente — dirección como texto libre, teléfono y email duplicados fuera del sistema normalizado. No es posible buscar un proveedor desde <code>persona</code> ni listar sus teléfonos desde la tabla <code>telefono</code>.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge architecture">Inconsistencia Arquitectural</span>
+            <span class="risk-badge normalization">2NF / 3NF</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CR-03 -->
+      <div class="finding red">
+        <div class="finding-header">
+          <span class="finding-id">CR-03</span>
+          <span class="finding-title">pedido.estado y cotizacion.estado son varchar libre — sin restricción ENUM</span>
+        </div>
+        <div class="finding-body">
+          <div class="affected">📋 Tablas afectadas: pedido · cotizacion (campos estado y prioridad)</div>
+          <div class="code-block"><code><span class="cmt">-- pedido y cotizacion — VARCHAR sin restricción</span>
+<span class="col">`estado`</span>    <span class="typ">varchar(191)</span> NOT NULL DEFAULT <span class="str">'Pendiente'</span>,
+<span class="col">`prioridad`</span> <span class="typ">varchar(191)</span> NOT NULL DEFAULT <span class="str">'Normal'</span>,
+
+<span class="cmt">-- orden_produccion — ENUM correcto</span>
+<span class="col">`estado`</span> <span class="kw">enum</span>(<span class="str">'Pendiente'</span>,<span class="str">'En Proceso'</span>,<span class="str">'Finalizado'</span>,<span class="str">'Cancelado'</span>)</code></div>
+          <p>La tabla <code>orden_produccion</code> usa correctamente <code>ENUM</code> para su estado. Las tablas <code>pedido</code> y <code>cotizacion</code> usan <code>varchar(191)</code>. Estados observados en los datos: <code>'Pendiente'</code>, <code>'Procesando'</code>, <code>'Completado'</code>, <code>'Cancelado'</code> para pedido. Un typo como <code>'Completada'</code> o <code>'completado'</code> se inserta silenciosamente sin error de base de datos, rompiendo filtros y reportes de estado.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge data-integrity">Datos Corruptos Silenciosos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CR-04 -->
+      <div class="finding red">
+        <div class="finding-header">
+          <span class="finding-id">CR-04</span>
+          <span class="finding-title">user.persona_id nullable — usuarios activos sin entidad Persona</span>
+        </div>
+        <div class="finding-body">
+          <div class="affected">📋 Tabla afectada: user</div>
+          <div class="code-block"><code><span class="col">`persona_id`</span> <span class="typ">bigint</span> DEFAULT NULL, <span class="cmt">-- users 5 y 7 son NULL (admins activos)</span>
+<span class="col">`name`</span>       <span class="typ">varchar(191)</span> NOT NULL, <span class="cmt">-- duplica persona.nombre + apellido</span>
+<span class="col">`email`</span>      <span class="typ">varchar(191)</span> NOT NULL, <span class="cmt">-- duplica persona.email</span></code></div>
+          <p>Hay 2 usuarios administradores activos reales (<code>id=5</code> Vanessa Díaz, <code>id=7</code> Jesús Rodríguez) con <code>persona_id = NULL</code>. Esto viola el contrato de la arquitectura normalizada: si toda la información de la persona vive en la tabla <code>persona</code>, <code>user</code> no debería tener campos <code>name</code> y <code>email</code> propios. Existen <strong>dos fuentes de verdad</strong> para el nombre e email de un usuario. Si se actualiza el email en <code>persona</code> pero no en <code>user</code>, el sistema de autenticación quedará desincronizado.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge data-integrity">Datos Duplicados / Desincronización</span>
+            <span class="risk-badge architecture">Anti-patrón Arquitectural</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CR-05 -->
+      <div class="finding red">
+        <div class="finding-header">
+          <span class="finding-id">CR-05</span>
+          <span class="finding-title">orden_produccion.logo: texto libre desconectado de la tabla logos</span>
+        </div>
+        <div class="finding-body">
+          <div class="affected">📋 Tabla afectada: orden_produccion</div>
+          <div class="code-block"><code><span class="col">`logo`</span> <span class="typ">varchar(191)</span> DEFAULT NULL,
+<span class="cmt">-- Datos reales: 'Los Caminos', 'Asoportuguesa Corp', 'Logo UPTP'</span>
+<span class="cmt">-- 'Logo UPTP' NO existe en la tabla logos → integridad rota</span></code></div>
+          <p>La tabla <code>logos</code> existe con IDs, nombres únicos y filenames normalizados (20 logos). Sin embargo, <code>orden_produccion.logo</code> almacena el nombre del logo como <strong>texto libre sin FK</strong>. En los datos de producción existe el valor <code>'Logo UPTP'</code> que no corresponde a ningún registro en la tabla <code>logos</code> — integridad referencial rota a nivel de negocio. Esto también imposibilita obtener el filename del logo para imprimir órdenes de producción.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge data-integrity">Integridad Referencial Rota</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CR-06 -->
+      <div class="finding red">
+        <div class="finding-header">
+          <span class="finding-id">CR-06</span>
+          <span class="finding-title">movimiento_insumo.created_by: FK sin comportamiento ON DELETE explícito</span>
+        </div>
+        <div class="finding-body">
+          <div class="affected">📋 Tabla afectada: movimiento_insumo</div>
+          <div class="code-block"><code><span class="col">`created_by`</span> <span class="typ">bigint unsigned</span> NOT NULL,
+<span class="cmt">-- Sin ON DELETE → InnoDB asume RESTRICT implícito</span>
+<span class="kw">CONSTRAINT</span> movimientos_insumos_created_by_foreign
+  <span class="kw">FOREIGN KEY</span> (<span class="col">created_by</span>) <span class="kw">REFERENCES</span> <span class="col">user</span> (<span class="col">id</span>)
+  <span class="cmt">-- ← falta ON DELETE RESTRICT explícito</span></code></div>
+          <p><code>created_by</code> es <code>NOT NULL</code>. Si se intenta eliminar un usuario que haya registrado movimientos de inventario, la operación fallará con un error de FK en producción — probablemente sin un mensaje claro para el usuario final. El comportamiento debe ser <code>ON DELETE RESTRICT</code> explícito (los movimientos de inventario son registros contables inmutables), o cambiar <code>created_by</code> a nullable con <code>ON DELETE SET NULL</code> para preservar el historial auditando al "usuario eliminado".</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge data-integrity">Error en Producción</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /findings critical -->
+
+    <div class="divider"></div>
+
+    <!-- ══════════════════════════════════
+         🟡 MEDIOS
+    ══════════════════════════════════ -->
+    <div class="section-header">
+      <div class="section-icon amber">🟡</div>
+      <div class="section-title">
+        <h2>Hallazgos de Severidad Media</h2>
+        <p>Problemas de rendimiento, normalización incompleta o deuda técnica acumulada</p>
+      </div>
+      <span class="badge-count amber">7 hallazgos</span>
+    </div>
+
+    <div class="findings">
+
+      <!-- ME-01 -->
+      <div class="finding amber">
+        <div class="finding-header">
+          <span class="finding-id">ME-01</span>
+          <span class="finding-title">8 índices faltantes en columnas de alta frecuencia de consulta</span>
+        </div>
+        <div class="finding-body">
+          <p>En un ERP de manufactura, los siguientes filtros y ordenamientos ocurrirán en cada carga de pantalla. Sin índice, MySQL realizará <strong>full table scan</strong>:</p>
+          <div class="index-table-wrap">
+            <table class="idx">
+              <thead>
+                <tr>
+                  <th>Tabla</th>
+                  <th>Columna faltante</th>
+                  <th>Query típica</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>pedido</td><td>estado</td><td>WHERE estado = 'Pendiente'</td></tr>
+                <tr><td>pedido</td><td>fecha_pedido</td><td>ORDER BY fecha_pedido DESC</td></tr>
+                <tr><td>cotizacion</td><td>estado</td><td>WHERE estado != 'Convertida'</td></tr>
+                <tr><td>orden_produccion</td><td>estado</td><td>WHERE estado IN ('Pendiente','En Proceso')</td></tr>
+                <tr><td>orden_produccion</td><td>fecha_fin_estimada</td><td>Alertas de órdenes vencidas</td></tr>
+                <tr><td>movimiento_insumo</td><td>created_at</td><td>ORDER BY created_at DESC por insumo</td></tr>
+                <tr><td>tasa_cambio</td><td>fecha_bcv</td><td>ORDER BY fecha_bcv DESC LIMIT 1</td></tr>
+                <tr><td>insumo</td><td>stock_actual</td><td>WHERE stock_actual &lt;= stock_minimo</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="risk-row" style="margin-top:0.6rem">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge performance">Rendimiento</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ME-02 -->
+      <div class="finding amber">
+        <div class="finding-header">
+          <span class="finding-id">ME-02</span>
+          <span class="finding-title">4 tablas recientes violan la convención singular establecida por el propio proyecto</span>
+        </div>
+        <div class="finding-body">
+          <p>La migración <code>2025_12_04_150028_rename_all_tables_to_singular_final</code> renombró todas las tablas a singular. Las tablas creadas después retornaron al plural sin consistencia:</p>
+          <div class="code-block"><code><span class="cmt">-- Tablas en PLURAL (incorrecto para este proyecto)</span>
+colores           <span class="cmt">→ debería ser: color</span>
+tallas            <span class="cmt">→ debería ser: talla</span>
+logos             <span class="cmt">→ debería ser: logo</span>
+bordado_ubicaciones <span class="cmt">→ debería ser: bordado_ubicacion</span></code></div>
+          <p>Los modelos Eloquent <code>Color</code>, <code>Talla</code>, <code>Logo</code> probablemente tienen <code>protected $table</code> hardcodeado para compensar, generando deuda técnica.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge convention">Convención Laravel</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ME-03 -->
+      <div class="finding amber">
+        <div class="finding-header">
+          <span class="finding-id">ME-03</span>
+          <span class="finding-title">tipo_producto.contador viola 3NF — dato derivado almacenado como columna</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="col">`contador`</span> <span class="typ">int</span> NOT NULL DEFAULT <span class="str">'0'</span>
+<span class="cmt">-- Valor real: Franela tiene contador=0 pero hay 2 productos tipo Franela</span>
+<span class="cmt">-- Dato correcto: SELECT COUNT(*) FROM producto WHERE tipo_producto_id = 2</span></code></div>
+          <p>El campo <code>contador</code> almacena cuántos productos existen de ese tipo — un dato <strong>completamente derivable</strong> con <code>COUNT(*)</code>. Los datos actuales ya muestran desincronización: <code>Franela</code> tiene <code>contador = 0</code> pero existen 2 productos Franela (<code>FRN-CEV-001</code>, <code>FRN-CUR-001</code>). Cualquier operación directa en DB o seed rompe el contador.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge normalization">3NF Violation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ME-04 -->
+      <div class="finding amber">
+        <div class="finding-header">
+          <span class="finding-id">ME-04</span>
+          <span class="finding-title">produccion_diaria sin campo fecha_produccion — registros retroactivos imposibles</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="cmt">-- No existe fecha_produccion en la tabla</span>
+<span class="col">`created_at`</span> <span class="typ">timestamp</span> NULL DEFAULT NULL  <span class="cmt">-- se usa como fecha de producción</span>
+<span class="cmt">-- Problema: supervisor registra hoy la producción de ayer</span>
+<span class="cmt">-- created_at = NOW() pero la producción fue ayer</span></code></div>
+          <p>Un supervisor que registre producción del día anterior debe hacerlo con <code>created_at = NOW()</code> ya que no existe un campo de fecha de producción separado. Los reportes de eficiencia diaria quedan distorsionados con registros retroactivos. Se necesita un campo <code>fecha_produccion DATE NOT NULL</code> independiente del timestamp de creación del registro.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge data-integrity">Reportes Poco Confiables</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ME-05 -->
+      <div class="finding amber">
+        <div class="finding-header">
+          <span class="finding-id">ME-05</span>
+          <span class="finding-title">pedido.banco_id es un campo legacy muerto con índice y FK activos</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="col">`banco_id`</span>             <span class="typ">bigint</span> DEFAULT NULL,  <span class="cmt">-- LEGACY: NULL en 58/58 pedidos</span>
+<span class="col">`banco_transferencia_id`</span> <span class="typ">bigint</span> DEFAULT NULL,  <span class="cmt">-- reemplazó a banco_id</span>
+<span class="col">`banco_pago_movil_id`</span>    <span class="typ">bigint</span> DEFAULT NULL,  <span class="cmt">-- reemplazó a banco_id</span></code></div>
+          <p>La migración <code>add_separate_bank_fields_to_pedidos_table</code> agregó los campos diferenciados por método de pago, pero <code>banco_id</code> nunca fue eliminado. En los 58 pedidos actuales <code>banco_id = NULL</code> en el <strong>100% de los casos</strong>. El campo está muerto pero consume espacio en el índice y genera confusión al leer el esquema.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge performance">Deuda Técnica</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ME-06 -->
+      <div class="finding amber">
+        <div class="finding-header">
+          <span class="finding-id">ME-06</span>
+          <span class="finding-title">orden_produccion sin fecha_fin_real — métricas de eficiencia imposibles</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="col">`fecha_fin_estimada`</span> <span class="typ">date</span> NOT NULL,  <span class="cmt">-- existe</span>
+<span class="cmt">-- fecha_fin_real date NULL          ← NO EXISTE</span>
+<span class="cmt">-- Cuando estado → 'Finalizado' solo se actualiza updated_at</span></code></div>
+          <p>Sin <code>fecha_fin_real</code> no es posible calcular: días de retraso por orden, cumplimiento de fechas estimadas, velocidad real de producción por empleado/producto, ni tendencias de eficiencia operativa. El campo <code>updated_at</code> actualmente se usa como proxy, pero puede cambiar por cualquier edición posterior al cierre de la orden.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge performance">KPIs de Producción Faltantes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ME-07 -->
+      <div class="finding amber">
+        <div class="finding-header">
+          <span class="finding-id">ME-07</span>
+          <span class="finding-title">detalle_pedido_insumo: propósito ambiguo duplica la lógica de detalle_orden_insumo</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="cmt">-- Tabla 1: insumos por ítem de pedido (antes de producción)</span>
+detalle_pedido_insumo: detalle_pedido_id → insumo_id + cantidad_estimada
+
+<span class="cmt">-- Tabla 2: insumos por orden de producción (durante producción)</span>
+detalle_orden_insumo:  orden_produccion_id → insumo_id + cantidad_estimada + cantidad_utilizada</code></div>
+          <p>El flujo de negocio correcto es <strong>Pedido → Orden de Producción → consume Insumos</strong>. La relación directa <code>detalle_pedido_insumo</code> crea un cortocircuito que salta la orden, generando ambigüedad sobre cuál tabla es la fuente de verdad para el consumo de materiales. Posible residuo de arquitectura pre-refactoring.</p>
+          <div class="risk-row">
+            <span class="risk-label">Tipo de riesgo:</span>
+            <span class="risk-badge architecture">Ambigüedad de Dominio</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /findings medium -->
+
+    <div class="divider"></div>
+
+    <!-- ══════════════════════════════════
+         🟢 BAJOS
+    ══════════════════════════════════ -->
+    <div class="section-header">
+      <div class="section-icon green">🟢</div>
+      <div class="section-title">
+        <h2>Hallazgos de Severidad Baja</h2>
+        <p>Ajustes de nomenclatura, tipos de datos subóptimos o inconsistencias menores</p>
+      </div>
+      <span class="badge-count green">6 hallazgos</span>
+    </div>
+
+    <div class="findings">
+
+      <div class="finding green">
+        <div class="finding-header">
+          <span class="finding-id">BA-01</span>
+          <span class="finding-title">Nombre de índice legacy en produccion_diaria referencia "operario" en lugar de "empleado"</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="kw">KEY</span> <span class="str">`produccion_diaria_operario_id_foreign`</span> (<span class="col">`empleado_id`</span>)
+<span class="cmt">-- El índice apunta a empleado_id pero su nombre dice "operario"</span>
+<span class="cmt">-- Residuo de la migración 2026_03_06_155710_rename_operario_id_to_empleado_id</span></code></div>
+          <p>Funcional, pero confuso para cualquier DBA o desarrollador que inspeccione el esquema. El índice fue renombrado como columna pero no como nombre de KEY.</p>
+          <div class="risk-row"><span class="risk-label">Tipo de riesgo:</span><span class="risk-badge naming">Nomenclatura</span></div>
+        </div>
+      </div>
+
+      <div class="finding green">
+        <div class="finding-header">
+          <span class="finding-id">BA-02</span>
+          <span class="finding-title">insumo.tipo ENUM contiene 'Botón' con tilde — riesgo en imports/exports</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="col">`tipo`</span> <span class="kw">enum</span>(<span class="str">'Tela'</span>,<span class="str">'Hilo'</span>,<span class="str">'Botón'</span>,<span class="str">'Cierre'</span>,<span class="str">'Etiqueta'</span>,<span class="str">'Otro'</span>)
+<span class="cmt">-- 'Botón' tiene tilde → problemático en scripts externos sin charset</span>
+<span class="cmt">-- Recomendado: 'Boton' sin acento diacrítico en valores ENUM</span></code></div>
+          <p>Los valores de ENUM con caracteres especiales pueden causar problemas en importaciones CSV, scripts de migración externos o integraciones API que no especifiquen correctamente el charset.</p>
+          <div class="risk-row"><span class="risk-label">Tipo de riesgo:</span><span class="risk-badge convention">Compatibilidad</span></div>
+        </div>
+      </div>
+
+      <div class="finding green">
+        <div class="finding-header">
+          <span class="finding-id">BA-03</span>
+          <span class="finding-title">persona.estado_persona nombrado confusamente — almacena estado geográfico</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="col">`estado_persona`</span> <span class="typ">varchar(100)</span> DEFAULT NULL
+<span class="cmt">-- Datos reales: 'Portuguesa', 'Washington DC', 'Texas'</span>
+<span class="cmt">-- El campo almacena estado geográfico, no estado de la persona (activo/inactivo)</span>
+<span class="cmt">-- Recomendado: estado_geografico o estado_ubicacion</span></code></div>
+          <p>El nombre <code>estado_persona</code> es semánticamente ambiguo: sugiere "estado" como activo/inactivo de la persona, pero almacena el estado o territorio geográfico de residencia.</p>
+          <div class="risk-row"><span class="risk-label">Tipo de riesgo:</span><span class="risk-badge naming">Nomenclatura</span></div>
+        </div>
+      </div>
+
+      <div class="finding green">
+        <div class="finding-header">
+          <span class="finding-id">BA-04</span>
+          <span class="finding-title">user.avatar definido como TEXT — varchar(255) es suficiente y más eficiente</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="col">`avatar`</span> <span class="typ">text</span> COLLATE utf8mb4_unicode_ci,
+<span class="cmt">-- Datos reales: 'avatars/69a05e0f7203f.png' (27 caracteres)</span>
+<span class="cmt">-- text = hasta 65,535 bytes. varchar(255) es más que suficiente.</span>
+<span class="cmt">-- text no puede ser indexado directamente en MySQL</span></code></div>
+          <p>Las rutas de archivo de avatar no superan los 100 caracteres. Usar <code>text</code> impide crear índices directos sobre este campo si fuera necesario.</p>
+          <div class="risk-row"><span class="risk-label">Tipo de riesgo:</span><span class="risk-badge performance">Tipo Subóptimo</span></div>
+        </div>
+      </div>
+
+      <div class="finding green">
+        <div class="finding-header">
+          <span class="finding-id">BA-05</span>
+          <span class="finding-title">password_resets sin PRIMARY KEY — tabla legada de Laravel anterior</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="kw">CREATE TABLE</span> <span class="col">`password_resets`</span> (
+  <span class="col">`email`</span> <span class="typ">varchar(191)</span> NOT NULL,
+  <span class="col">`token`</span> <span class="typ">varchar(191)</span> NOT NULL,
+  <span class="col">`created_at`</span> <span class="typ">timestamp</span> NULL,
+  <span class="kw">KEY</span> password_resets_email_index (<span class="col">email</span>)  <span class="cmt">-- sin PK</span>
+)
+<span class="cmt">-- Laravel 9+ usa password_reset_tokens con PK compuesto</span></code></div>
+          <p>La tabla no tiene <code>PRIMARY KEY</code>. Funcional en volúmenes bajos, pero degradará en entornos de alta concurrencia de resets de contraseña.</p>
+          <div class="risk-row"><span class="risk-label">Tipo de riesgo:</span><span class="risk-badge performance">Rendimiento Marginal</span></div>
+        </div>
+      </div>
+
+      <div class="finding green">
+        <div class="finding-header">
+          <span class="finding-id">BA-06</span>
+          <span class="finding-title">banco.nombre = varchar(191) sobredimensionado — varchar(100) es suficiente</span>
+        </div>
+        <div class="finding-body">
+          <div class="code-block"><code><span class="col">`nombre`</span> <span class="typ">varchar(191)</span> NOT NULL
+<span class="cmt">-- El nombre de banco más largo en Venezuela: ~60 caracteres</span>
+<span class="cmt">-- varchar(191) es el default ciego de Laravel. varchar(100) es correcto.</span></code></div>
+          <p>Menor impacto, pero refleja el hábito de usar <code>varchar(191)</code> como tamaño por defecto sin analizar el dominio real del dato.</p>
+          <div class="risk-row"><span class="risk-label">Tipo de riesgo:</span><span class="risk-badge naming">Tipo Subóptimo Menor</span></div>
+        </div>
+      </div>
+
+    </div><!-- /findings low -->
+
+    <div class="divider"></div>
+
+    <!-- ══════════════════════════════════
+         RESUMEN EJECUTIVO
+    ══════════════════════════════════ -->
+    <div class="section-header">
+      <div class="section-icon navy">📊</div>
+      <div class="section-title">
+        <h2>Resumen Ejecutivo</h2>
+        <p>Tabla consolidada de hallazgos por nivel de severidad</p>
+      </div>
+    </div>
+
+    <div class="summary-wrap">
+      <table class="summary">
+        <thead>
+          <tr>
+            <th style="width:12%">Nivel</th>
+            <th style="width:8%">Código</th>
+            <th>Hallazgo</th>
+            <th style="width:22%">Tipo de Riesgo</th>
+            <th style="width:8%">Cant.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot red"></div>Crítico</div></td>
+            <td><code style="font-size:0.72rem">CR-01</code></td>
+            <td>color/talla como texto libre — tablas lookup ignoradas</td>
+            <td>Integridad de datos</td>
+            <td class="count-cell" rowspan="6"><div class="count-chip red">6</div></td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot red"></div>Crítico</div></td>
+            <td><code style="font-size:0.72rem">CR-02</code></td>
+            <td>proveedor semi-normalizado — jurídicos fuera del sistema Persona</td>
+            <td>Arquitectura / 2NF</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot red"></div>Crítico</div></td>
+            <td><code style="font-size:0.72rem">CR-03</code></td>
+            <td>pedido.estado y cotizacion.estado son varchar libre sin ENUM</td>
+            <td>Datos corruptos silenciosos</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot red"></div>Crítico</div></td>
+            <td><code style="font-size:0.72rem">CR-04</code></td>
+            <td>user.persona_id nullable con usuarios activos sin Persona</td>
+            <td>Duplicación / Desincronización</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot red"></div>Crítico</div></td>
+            <td><code style="font-size:0.72rem">CR-05</code></td>
+            <td>orden_produccion.logo desconectado de la tabla logos</td>
+            <td>Integridad referencial rota</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot red"></div>Crítico</div></td>
+            <td><code style="font-size:0.72rem">CR-06</code></td>
+            <td>movimiento_insumo.created_by sin ON DELETE explícito</td>
+            <td>Error en producción</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot amber"></div>Medio</div></td>
+            <td><code style="font-size:0.72rem">ME-01</code></td>
+            <td>8 índices faltantes en columnas de alta frecuencia</td>
+            <td>Rendimiento</td>
+            <td class="count-cell" rowspan="7"><div class="count-chip amber">7</div></td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot amber"></div>Medio</div></td>
+            <td><code style="font-size:0.72rem">ME-02</code></td>
+            <td>4 tablas nuevas en plural — violación convención singular</td>
+            <td>Convención Laravel</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot amber"></div>Medio</div></td>
+            <td><code style="font-size:0.72rem">ME-03</code></td>
+            <td>tipo_producto.contador viola 3NF — dato derivado almacenado</td>
+            <td>3NF Violation</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot amber"></div>Medio</div></td>
+            <td><code style="font-size:0.72rem">ME-04</code></td>
+            <td>produccion_diaria sin campo fecha_produccion separado</td>
+            <td>Reportes poco confiables</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot amber"></div>Medio</div></td>
+            <td><code style="font-size:0.72rem">ME-05</code></td>
+            <td>pedido.banco_id campo legacy muerto con FK activa</td>
+            <td>Deuda técnica</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot amber"></div>Medio</div></td>
+            <td><code style="font-size:0.72rem">ME-06</code></td>
+            <td>orden_produccion sin fecha_fin_real — KPIs imposibles</td>
+            <td>KPIs de producción</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot amber"></div>Medio</div></td>
+            <td><code style="font-size:0.72rem">ME-07</code></td>
+            <td>detalle_pedido_insumo duplica lógica de detalle_orden_insumo</td>
+            <td>Ambigüedad de dominio</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot green"></div>Bajo</div></td>
+            <td><code style="font-size:0.72rem">BA-01</code></td>
+            <td>Nombre de índice "operario" no actualizado tras renombrado</td>
+            <td>Nomenclatura</td>
+            <td class="count-cell" rowspan="6"><div class="count-chip green">6</div></td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot green"></div>Bajo</div></td>
+            <td><code style="font-size:0.72rem">BA-02</code></td>
+            <td>insumo.tipo ENUM con 'Botón' con tilde</td>
+            <td>Compatibilidad charset</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot green"></div>Bajo</div></td>
+            <td><code style="font-size:0.72rem">BA-03</code></td>
+            <td>persona.estado_persona nombre ambiguo — almacena dato geográfico</td>
+            <td>Nomenclatura</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot green"></div>Bajo</div></td>
+            <td><code style="font-size:0.72rem">BA-04</code></td>
+            <td>user.avatar definido como TEXT en lugar de varchar(255)</td>
+            <td>Tipo subóptimo</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot green"></div>Bajo</div></td>
+            <td><code style="font-size:0.72rem">BA-05</code></td>
+            <td>password_resets sin PRIMARY KEY — tabla legada</td>
+            <td>Rendimiento marginal</td>
+          </tr>
+          <tr>
+            <td><div class="level-cell"><div class="level-dot green"></div>Bajo</div></td>
+            <td><code style="font-size:0.72rem">BA-06</code></td>
+            <td>banco.nombre = varchar(191) sobredimensionado</td>
+            <td>Tipo subóptimo menor</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ══════════════════════════════════
+         PRIORIDADES RECOMENDADAS
+    ══════════════════════════════════ -->
+    <div class="recommendation">
+      <h3>🎯 Plan de Acción Recomendado — Orden de Prioridad</h3>
+      <div class="rec-items">
+        <div class="rec-item">
+          <div class="num">1</div>
+          <div class="text">
+            <strong>CR-03 — ENUM en pedido.estado y cotizacion.estado</strong> —
+            Cambio de bajo riesgo, alta recompensa. Una migración de 30 minutos elimina el riesgo de estados inválidos silenciosos que afectan el corazón del negocio.
+          </div>
+        </div>
+        <div class="rec-item">
+          <div class="num">2</div>
+          <div class="text">
+            <strong>CR-01 — color_id y talla_id como FK en detalles</strong> —
+            Las tablas lookup ya existen y están pobladas. Solo falta agregar las FK y migrar los datos. Impacto directo en confiabilidad de reportes de producción.
+          </div>
+        </div>
+        <div class="rec-item">
+          <div class="num">3</div>
+          <div class="text">
+            <strong>ME-01 — Crear los 8 índices faltantes</strong> —
+            Una migración de índices es no destructiva, puede correr en producción sin downtime, y el impacto en rendimiento es inmediato.
+          </div>
+        </div>
+        <div class="rec-item">
+          <div class="num">4</div>
+          <div class="text">
+            <strong>ME-04 + ME-06 — Agregar fecha_produccion y fecha_fin_real</strong> —
+            Columnas nullable, migración segura. Desbloquea los reportes de KPI de producción que son el núcleo del módulo de manufactura.
+          </div>
+        </div>
+        <div class="rec-item">
+          <div class="num">5</div>
+          <div class="text">
+            <strong>CR-02 — Normalizar proveedor jurídico</strong> —
+            Mayor esfuerzo pero necesario para coherencia arquitectural. Requiere migración de datos de los 8 proveedores jurídicos al sistema persona/telefono/direccion.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ░░░ FOOTER ░░░ -->
+  <div class="doc-footer">
+    <p><span class="emerald-dot"></span>Manufacturas R.J. Atlántico — Documento de Auditoría Técnica Interna — Confidencial</p>
+    <p>sistema_atlantico4 · MySQL 8.0 · 31 tablas · rev. 32 · 2026-03-18</p>
+    <p>Generado por: DBA / Senior Laravel Architect · Claude Sonnet 4.6</p>
+  </div>
+
+</div><!-- /page -->
+</body>
+</html>

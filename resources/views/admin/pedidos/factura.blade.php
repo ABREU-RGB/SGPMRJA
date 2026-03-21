@@ -251,8 +251,8 @@
                             @endif
                         </td>
                         <td>{{ $detalle->producto->modelo ?? '-' }}</td>
-                        <td>{{ $detalle->color ?? '-' }}</td>
-                        <td>{{ $detalle->talla ?? '-' }}</td>
+                        <td>{{ $detalle->color?->nombre ?? '-' }}</td>
+                        <td>{{ $detalle->talla?->etiqueta ?? '-' }}</td>
                         <td>
                             @if($detalle->lleva_bordado)
                                 {{ $logosTexto ?: ($detalle->nombre_logo ?: '-') }}

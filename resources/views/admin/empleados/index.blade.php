@@ -378,7 +378,7 @@
 
                             <div class="row mb-0">
                                 <div class="col-md-6">
-                                    <x-forms.input name="estado_persona" label="Estado" placeholder="Estado" />
+                                    <x-forms.input name="estado_geografico" label="Estado" placeholder="Estado" />
                                 </div>
                                 <div class="col-md-6">
                                     <x-forms.input name="ciudad" label="Ciudad" placeholder="Ciudad" />
@@ -785,7 +785,7 @@
                     $("#field-telefono").val(data.telefono || '');
                     $("#field-direccion").val(data.direccion || '');
                     $("#field-ciudad").val(data.ciudad || '');
-                    $("#field-estado_persona").val(data.persona.estado_persona);
+                    $("#field-estado_geografico").val(data.persona.estado_geografico);
                     $("#field-fecha_nacimiento").val(data.persona.fecha_nacimiento);
                     $("#field-genero").val(data.persona.genero);
                     $("#field-codigo_empleado").val(data.codigo_empleado);
