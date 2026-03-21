@@ -497,10 +497,7 @@
                                                         <input type="text" id="cliente-nombre-field" name="cliente_nombre"
                                                             class="form-control" placeholder="Buscar cliente por nombre..."
                                                             autocomplete="off" required />
-                                                        <button type="button" class="btn btn-outline-success"
-                                                            id="open-add-cliente-modal" title="Agregar nuevo cliente">
-                                                            <i class="ri-user-add-line"></i>
-                                                        </button>
+
                                                     </div>
                                                     <div id="cliente-autocomplete-list"
                                                         class="list-group position-absolute w-100"
@@ -782,89 +779,7 @@
         </div>
     </div>
 
-    <!-- Modal Agregar/Editar Cliente (reutilizado) -->
-    <div class="modal fade atlantico-modal atlantico-modal--op" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="clienteFormPedido">
-                    <div class="modal-body">
-                        <input type="hidden" id="id-field-cliente" />
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="nombre-field-cliente" class="form-label">Nombre</label>
-                                    <input type="text" id="nombre-field-cliente" name="nombre" class="form-control"
-                                        placeholder="Nombre" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tipo_cliente-field-cliente" class="form-label">Tipo de Cliente</label>
-                                    <select id="tipo_cliente-field-cliente" name="tipo_cliente" class="form-control"
-                                        required>
-                                        <option value="">Seleccione tipo</option>
-                                        <option value="natural">Natural</option>
-                                        <option value="juridico">Jurídico</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email-field-cliente" class="form-label">Email</label>
-                                    <input type="email" id="email-field-cliente" name="email" class="form-control"
-                                        placeholder="Email" />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="telefono-field-cliente" class="form-label">Teléfono</label>
-                                    <input type="text" id="telefono-field-cliente" name="telefono" class="form-control"
-                                        placeholder="Teléfono" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="documento-field-cliente" class="form-label">Documento (Cédula o
-                                        RIF)</label>
-                                    <input type="text" id="documento-field-cliente" name="documento" class="form-control"
-                                        placeholder="Cédula o RIF" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="direccion-field-cliente" class="form-label">Dirección</label>
-                                    <input type="text" id="direccion-field-cliente" name="direccion" class="form-control"
-                                        placeholder="Dirección" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ciudad-field-cliente" class="form-label">Ciudad</label>
-                                    <input type="text" id="ciudad-field-cliente" name="ciudad" class="form-control"
-                                        placeholder="Ciudad" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="estado-field-cliente" class="form-label">Estado</label>
-                                    <select name="estado" id="estado-field-cliente" class="form-control form-select">
-                                        <option value="1">Activo</option>
-                                        <option value="0">Inactivo</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light border-0">
-                        <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                <i class="ri-close-line me-1"></i>Cerrar
-                            </button>
-                            <button type="button" class="btn btn-success" id="add-btn-cliente">
-                                <i class="ri-add-line me-1"></i>Agregar
-                            </button>
-                            <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
-                                <i class="ri-save-line me-1"></i>Actualizar
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+
 @endsection
 
 @push('scripts')
@@ -2289,20 +2204,7 @@
                 }
             });
 
-            // --- MODAL AGREGAR CLIENTE DESDE PEDIDO ---
-            $('#open-add-cliente-modal').on('click', function () {
-                $('#clienteFormPedido')[0].reset();
-                $('#id-field-cliente').val('');
-                $('#modalClienteTitle').text('Agregar Cliente');
-                $('#add-btn-cliente').show();
-                $('#edit-btn-cliente').hide();
-                $('#modalAddCliente').modal('show');
-            });
 
-            // Guardar nuevo cliente desde el modal
-            $('#add-btn-cliente').on('click', function () {
-                $('#clienteFormPedido').submit();
-            });
             $('#clienteFormPedido').on('submit', function (e) {
                 e.preventDefault();
                 var formData = $(this).serialize() + '&_token=' + $('meta[name="csrf-token"]').attr('content');
