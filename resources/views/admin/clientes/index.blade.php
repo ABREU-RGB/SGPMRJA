@@ -239,7 +239,7 @@
                                                     <i class="ri-building-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block">Ciudad</small>
+                                                    <small class="text-muted d-block">Municipio</small>
                                                     <span class="fw-semibold" id="view-ciudad">-</span>
                                                 </div>
                                             </div>
