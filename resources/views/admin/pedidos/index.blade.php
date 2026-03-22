@@ -2100,11 +2100,11 @@
             $('#pedidos-table').on('click', '.remove-btn', function () {
                 var id = $(this).data('id');
                 Swal.fire({
-                    title: '�Est�s seguro?',
-                    text: "�No podr�s revertir esto!",
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esto!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'S�, eliminarlo!',
+                    confirmButtonText: 'Sí, eliminarlo!',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -2123,7 +2123,7 @@
                             },
                             success: function (response) {
                                 Swal.fire({
-                                    title: '�Eliminado!',
+                                    title: '¡Eliminado!',
                                     text: response.success,
                                     icon: 'success',
                                     showConfirmButton: false,
@@ -2313,7 +2313,7 @@
                     success: function (response) {
                         Swal.fire({
                             icon: 'success',
-                            title: '��Â¡Ã‰xito!',
+                            title: '¡Éxito!',
                             text: response.message,
                             showConfirmButton: false,
                             customClass: {
