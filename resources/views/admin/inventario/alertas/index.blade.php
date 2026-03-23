@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @section('title', 'Alertas de Stock')
 
@@ -193,9 +193,7 @@
         $(document).ready(function () {
             // Inicializar DataTable
             var table = $('#alertas-table').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
-                },
+                language: lenguajeData,
                 responsive: true,
                 dom: 'Brtip',
                 buttons: [
