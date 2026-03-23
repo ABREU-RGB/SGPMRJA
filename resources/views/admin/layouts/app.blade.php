@@ -332,8 +332,8 @@
     <script>
         const lenguajeData = {
             emptyTable: "No hay datos disponibles",
-            info: "Mostrando _START_\u2013_END_ de _TOTAL_ registros",
-            infoEmpty: "Mostrando 0 a 0 de 0 registros",
+            info: "Mostrando _START_–_END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0–0 de 0 registros",
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             lengthMenu: "Mostrar _MENU_ registros",
             loadingRecords: "Cargando...",
