@@ -834,9 +834,9 @@
                                         placeholder="Dirección" required />
                                 </div>
                                 <div class="mb-3">
-                                    <label for="ciudad-field-cliente" class="form-label">Ciudad</label>
+                                    <label for="ciudad-field-cliente" class="form-label">Municipio</label>
                                     <input type="text" id="ciudad-field-cliente" name="ciudad" class="form-control"
-                                        placeholder="Ciudad" required />
+                                        placeholder="Municipio" required />
                                 </div>
                                 <div class="mb-3">
                                     <label for="estado-field-cliente" class="form-label">Estado</label>

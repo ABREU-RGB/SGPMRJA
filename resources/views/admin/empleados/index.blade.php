@@ -199,7 +199,7 @@
                                                     <i class="ri-building-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block">Ciudad</small>
+                                                    <small class="text-muted d-block">Municipio</small>
                                                     <span class="fw-semibold" id="view-ciudad">-</span>
                                                 </div>
                                             </div>
@@ -381,7 +381,7 @@
                                     <x-forms.input name="estado_geografico" label="Estado" placeholder="Estado" />
                                 </div>
                                 <div class="col-md-6">
-                                    <x-forms.input name="ciudad" label="Ciudad" placeholder="Ciudad" />
+                                    <x-forms.input name="ciudad" label="Municipio" placeholder="Municipio" />
                                 </div>
                             </div>
                         </div>
