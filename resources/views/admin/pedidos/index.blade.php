@@ -1603,7 +1603,7 @@
                             title: '¡Éxito!',
                             text: response.success,
                             icon: 'success',
-                            confirmButtonClass: 'btn btn-primary w-xs me-2',
+                            customClass: { confirmButton: 'btn btn-primary w-xs me-2' },
                             buttonsStyling: false,
                             showCloseButton: true
                         })
@@ -1626,7 +1626,7 @@
                             title: 'Error!',
                             text: errorMessage,
                             icon: 'error',
-                            confirmButtonClass: 'btn btn-primary w-xs me-2',
+                            customClass: { confirmButton: 'btn btn-primary w-xs me-2' },
                             buttonsStyling: false,
                             showCloseButton: true
                         })
@@ -1739,7 +1739,7 @@
                             title: 'Error!',
                             text: 'No se pudo cargar los datos del pedido.',
                             icon: 'error',
-                            confirmButtonClass: 'btn btn-primary w-xs me-2',
+                            customClass: { confirmButton: 'btn btn-primary w-xs me-2' },
                             buttonsStyling: false,
                             showCloseButton: true
                         })
@@ -2206,20 +2206,6 @@
             });
 
 
-
-            $(`#insumos - container - ${currentProductItemIndex} .insumo - select`).last().on('change', function () {
-                const selected = $(this).find('option:selected');
-                const stock = parseFloat(selected.data('stock'));
-                const stockMin = parseFloat(selected.data('stock-minimo'));
-                const unidad = selected.data('unidad') || '';
-                let color = stock <= stockMin ? 'red' : 'green';
-                let text = '';
-                if (!isNaN(stock)) {
-                    text = `<span style="color:${color};font-weight:bold;">Stock actual: ${stock.toFixed(2)} ${unidad}</span>`;
-                }
-                const infoId = $(this).data('insumo-index');
-                $(`#stock - info - ${infoId}`).html(text);
-            }).trigger('change');
         });
 
         // ================================================
