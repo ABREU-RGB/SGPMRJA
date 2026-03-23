@@ -315,7 +315,7 @@
                 <th class="col-telefono">Teléfono</th>
                 <th class="col-documento">Documento</th>
                 <th class="col-direccion">Dirección</th>
-                <th class="col-ciudad">Ciudad</th>
+                <th class="col-ciudad">Municipio</th>
                 <th class="col-estatus">Estatus</th>
                 <th class="col-creado">Creado</th>
             </tr>

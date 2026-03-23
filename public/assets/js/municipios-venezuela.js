@@ -1,6 +1,12 @@
 /**
  * Municipios de Venezuela organizados por Estado
  * Fuente: División político-territorial de Venezuela
+ *
+ * ESTÁNDAR GEOGRÁFICO DEL SISTEMA:
+ * Este script maneja la relación jerárquica "Estado" → "Municipio" según la
+ * división político-territorial oficial de Venezuela.
+ * Nota: En la base de datos el campo se llama 'ciudad' por retrocompatibilidad,
+ * pero en toda la interfaz de usuario se muestra como "Municipio".
  */
 const municipiosVenezuela = {
     "Amazonas": [
@@ -126,18 +132,18 @@ function getMunicipios(estado) {
 function poblarMunicipios(estadoSelectId, ciudadSelectId) {
     const estadoSelect = document.getElementById(estadoSelectId);
     const ciudadSelect = document.getElementById(ciudadSelectId);
-    
+
     if (!estadoSelect || !ciudadSelect) return;
-    
-    estadoSelect.addEventListener('change', function() {
+
+    estadoSelect.addEventListener('change', function () {
         const estado = this.value;
         const municipios = getMunicipios(estado);
-        
+
         // Limpiar opciones anteriores
         ciudadSelect.innerHTML = '<option value="">Seleccione municipio</option>';
-        
+
         // Agregar nuevas opciones
-        municipios.forEach(function(municipio) {
+        municipios.forEach(function (municipio) {
             const option = document.createElement('option');
             option.value = municipio;
             option.textContent = municipio;
