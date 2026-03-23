@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
-    <!-- Autocorrecci�n y Autocompletado -->
+    <!-- Autocorrección y Autocompletado -->
     <link href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
     {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO PEDIDOS" --}}
 @endpush
@@ -52,7 +52,7 @@
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
                             <h6 class="mb-0" style="color: #00d9a5;">
-                                <i class="ri-filter-3-line me-2"></i>Filtros de BÃºsqueda
+                                <i class="ri-filter-3-line me-2"></i>Filtros de Búsqueda
                             </h6>
                         </div>
                         <div class="card-body">
@@ -64,7 +64,7 @@
                                             <i class="ri-search-line" style="color: #1e3c72;"></i>
                                         </span>
                                         <input type="text" id="buscarProductoModal" class="form-control"
-                                            placeholder="Buscar por c�digo, tipo o modelo..."
+                                            placeholder="Buscar por código, tipo o modelo..."
                                             style="border-color: #1e3c72;">
                                     </div>
                                 </div>
@@ -81,7 +81,7 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
                             <h6 class="mb-0" style="color: #1e3c72;">
-                                <i class="ri-store-2-line me-2"></i>Cat�logo de Productos
+                                <i class="ri-store-2-line me-2"></i>Catálogo de Productos
                             </h6>
                         </div>
                         <div class="card-body p-0">
@@ -1461,7 +1461,7 @@
                 $('#productos-container').append(itemHtml);
                 window.productItemIndex++;
             }
-            // funciÃ³nes para manejar los nuevos campos de pago y prioridad
+            // funciones para manejar los nuevos campos de pago y prioridad
             let currentPedidoTotal = 0; // Para almacenar el total del pedido, ya sea del backend o calculado
 
             function calculateProductTotals() {
@@ -1542,7 +1542,7 @@
                 $(this).closest('.card').remove();
             });
 
-            // funciÃ³n para combinar el prefijo y el Numero del RIF/CI
+            // función para combinar el prefijo y el Numero del RIF/CI
             function updateRifFullField() {
                 let prefix = $('#ci-rif-prefix-field').val();
                 let number = $('#ci-rif-number-field').val();
@@ -1620,7 +1620,7 @@
                                 errorMessage += errors[key][0] + '\n';
                             }
                         } else {
-                            errorMessage = 'OcurriÃ³ un error inesperado.';
+                            errorMessage = 'Ocurrió un error inesperado.';
                         }
                         Swal.fire({
                             title: 'Error!',
@@ -2016,11 +2016,11 @@
             $('#pedidos-table').on('click', '.remove-btn', function () {
                 var id = $(this).data('id');
                 Swal.fire({
-                    title: '�Est�s seguro?',
-                    text: "�No podr�s revertir esto!",
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esto!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'S�, eliminarlo!',
+                    confirmButtonText: 'Sí, eliminarlo!',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -2039,7 +2039,7 @@
                             },
                             success: function (response) {
                                 Swal.fire({
-                                    title: '�Eliminado!',
+                                    title: '¡Eliminado!',
                                     text: response.success,
                                     icon: 'success',
                                     showConfirmButton: false,
@@ -2071,7 +2071,7 @@
                 });
             });
 
-            // funciÃ³n para inicializar Select2
+            // función para inicializar Select2
             function initializeSelect2(selector) {
                 $(selector).select2({
                     theme: 'bootstrap-5',
@@ -2145,7 +2145,7 @@
                 }, 300);
             });
 
-            // Selecci�n de cliente de la lista
+            // Selección de cliente de la lista
             $(document).on('click', '.cliente-autocomplete-item', function () {
                 const $this = $(this);
                 const clienteId = $this.data('id'); // ID del cliente seleccionado
@@ -2157,7 +2157,7 @@
                 // Llenar cliente_id (FK normalizada)
                 $('#cliente-id-field').val(clienteId);
 
-                // Llenar campos b�sicos
+                // Llenar campos básicos
                 $('#cliente-nombre-field').val(nombre);
                 $('#cliente-email-field').val(email);
                 $('#cliente-telefono-field').val(telefono);
@@ -2178,9 +2178,9 @@
                         prefix = docString.substring(0, 2);
                         number = docString.substring(2);
                     } else {
-                        // Si no tiene prefijo, determinar autom�ticamente
+                        // Si no tiene prefijo, determinar automáticamente
                         number = docString;
-                        // L�gica para determinar si es V- o J-
+                        // Lógica para determinar si es V- o J-
                         if (docString.length >= 8 && /^[2-9]/.test(docString)) {
                             prefix = 'J-';
                         } else {
@@ -2205,6 +2205,8 @@
                 }
             });
 
+
+
             $(`#insumos - container - ${currentProductItemIndex} .insumo - select`).last().on('change', function () {
                 const selected = $(this).find('option:selected');
                 const stock = parseFloat(selected.data('stock'));
@@ -2221,7 +2223,7 @@
         });
 
         // ================================================
-        // MODAL DE SELECCI�N DE PRODUCTOS
+        // MODAL DE SELECCIÓN DE PRODUCTOS
         // ================================================
         var currentProductIndex = null;
         var productosModal = null;
@@ -2266,11 +2268,11 @@
                 var matchFiltro = true;
                 var matchTipo = true;
                 if (filtro) {
-                    var BÃºsqueda = filtro.toLowerCase();
+                    var busqueda = filtro.toLowerCase();
                     var codigo = (p.codigo || '').toLowerCase();
                     var modelo = (p.modelo || '').toLowerCase();
                     var tipo = p.tipo_producto ? p.tipo_producto.nombre.toLowerCase() : '';
-                    matchFiltro = codigo.includes(BÃºsqueda) || modelo.includes(BÃºsqueda) || tipo.includes(BÃºsqueda);
+                    matchFiltro = codigo.includes(busqueda) || modelo.includes(busqueda) || tipo.includes(busqueda);
                 }
                 if (tipoId) {
                     matchTipo = p.tipo_producto && p.tipo_producto.id == tipoId;
@@ -2335,9 +2337,9 @@
     </script>
 
     <script>
-        // === CARGA DE PEDIDO DESDE COTIZACI�N ===
+        // === CARGA DE PEDIDO DESDE COTIZACIÓN ===
         $(document).ready(function () {
-            // Verificar si venimos desde una cotizaci�n
+            // Verificar si venimos desde una cotización
             var urlParams = new URLSearchParams(window.location.search);
             var cotizacionId = urlParams.get('desde_cotizacion');
             var editarPedidoId = urlParams.get('editar');
