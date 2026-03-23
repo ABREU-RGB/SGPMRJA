@@ -161,64 +161,125 @@ body:not(.swal2-toast-shown) div.swal2-container.swal2-backdrop-show {
   /* 12px para headers */
 }
 
-/* ============================================
-   ICONOS DEL DASHBOARD - Paleta Verde-Azul
-   ============================================ */
+/* ================================================================
+   TARJETAS KPI DEL DASHBOARD — Paleta Armonizada con Navy #1e3c72
+   Tarea V-03 · Sprint de Calidad
+   ================================================================
+   Cada tarjeta conserva identidad cromática pero usa tonos oscuros
+   y saturados que armonizan con el Azul Marino Institucional.
+   Selectores con .card-animate para no afectar otros módulos.
+   ================================================================ */
 
-/* Total Insumos - Verde esmeralda */
+/* ── Total Clientes — Navy Institucional ────────────────────────── */
 .card-animate .avatar-title.bg-soft-primary {
   background: linear-gradient(
     135deg,
-    rgba(16, 185, 129, 0.15) 0%,
-    rgba(16, 185, 129, 0.25) 100%
+    rgba(30, 60, 114, 0.10) 0%,
+    rgba(30, 60, 114, 0.18) 100%
   ) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(30, 60, 114, 0.25);
 }
 
 .card-animate .avatar-title.bg-soft-primary i.text-primary {
-  color: #10b981 !important;
+  color: #1e3c72 !important;
 }
 
-/* Órdenes en Proceso - Turquesa */
+/* ── Total Productos — Esmeralda Oscuro ─────────────────────────── */
 .card-animate .avatar-title.bg-soft-success {
   background: linear-gradient(
     135deg,
-    rgba(8, 145, 178, 0.15) 0%,
-    rgba(8, 145, 178, 0.25) 100%
+    rgba(16, 185, 129, 0.10) 0%,
+    rgba(16, 185, 129, 0.18) 100%
   ) !important;
-  border: 1px solid rgba(8, 145, 178, 0.3);
+  border: 1px solid rgba(6, 95, 70, 0.25);
 }
 
 .card-animate .avatar-title.bg-soft-success i.text-success {
-  color: #0891b2 !important;
+  color: #065f46 !important;
 }
 
-/* Producción Total - Azul */
+/* ── Total Empleados — Sky Oscuro ───────────────────────────────── */
 .card-animate .avatar-title.bg-soft-info {
   background: linear-gradient(
     135deg,
-    rgba(13, 110, 253, 0.15) 0%,
-    rgba(13, 110, 253, 0.25) 100%
+    rgba(14, 165, 233, 0.10) 0%,
+    rgba(14, 165, 233, 0.18) 100%
   ) !important;
-  border: 1px solid rgba(13, 110, 253, 0.3);
+  border: 1px solid rgba(12, 74, 110, 0.25);
 }
 
 .card-animate .avatar-title.bg-soft-info i.text-info {
-  color: #0d6efd !important;
+  color: #0c4a6e !important;
 }
 
-/* Alertas Stock - Naranja cálido */
+/* ── Total Proveedores — Ámbar Oscuro ───────────────────────────── */
 .card-animate .avatar-title.bg-soft-warning {
   background: linear-gradient(
     135deg,
-    rgba(245, 158, 11, 0.15) 0%,
-    rgba(245, 158, 11, 0.25) 100%
+    rgba(202, 138, 4, 0.10) 0%,
+    rgba(202, 138, 4, 0.18) 100%
   ) !important;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(133, 77, 14, 0.25);
 }
 
 .card-animate .avatar-title.bg-soft-warning i.text-warning {
-  color: #f59e0b !important;
+  color: #854d0e !important;
+}
+
+/* ── DARK MODE — Tarjetas KPI ───────────────────────────────────── */
+/* Fondos semi-transparentes brillantes + íconos pastel -300
+   para garantizar contraste WCAG AA sobre fondos #1f2229.         */
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-primary {
+  background: linear-gradient(
+    135deg,
+    rgba(78, 122, 199, 0.12) 0%,
+    rgba(78, 122, 199, 0.22) 100%
+  ) !important;
+  border-color: rgba(78, 122, 199, 0.30);
+}
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-primary i.text-primary {
+  color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-success {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.12) 0%,
+    rgba(16, 185, 129, 0.22) 100%
+  ) !important;
+  border-color: rgba(16, 185, 129, 0.30);
+}
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-success i.text-success {
+  color: #6ee7b7 !important;
+}
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-info {
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.12) 0%,
+    rgba(14, 165, 233, 0.22) 100%
+  ) !important;
+  border-color: rgba(14, 165, 233, 0.30);
+}
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-info i.text-info {
+  color: #7dd3fc !important;
+}
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-warning {
+  background: linear-gradient(
+    135deg,
+    rgba(202, 138, 4, 0.12) 0%,
+    rgba(202, 138, 4, 0.22) 100%
+  ) !important;
+  border-color: rgba(202, 138, 4, 0.30);
+}
+
+[data-bs-theme="dark"] .card-animate .avatar-title.bg-soft-warning i.text-warning {
+  color: #fcd34d !important;
 }
 
 /* ============================================

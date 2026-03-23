@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Code Review — Vanessa V-01, V-02, V-03</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #1f2937;
+    background: #fff;
+    padding: 40px 52px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .doc-header {
+    text-align: center;
+    border-bottom: 4px solid #7c3aed;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  .doc-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #7c3aed;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .doc-header .subtitle { font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  .doc-header .meta { font-size: 12px; color: #6b7280; }
+  .doc-header .meta span { margin: 0 8px; }
+
+  /* ── Secciones ── */
+  .section {
+    margin-bottom: 32px;
+    page-break-inside: avoid;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #7c3aed;
+    border-bottom: 2px solid #e9d5ff;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+  .subsection-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4c1d95;
+    margin: 18px 0 8px;
+  }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px;
+    font-size: 12.5px;
+  }
+  thead th {
+    background: #7c3aed;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  tbody td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #faf5ff; }
+  tbody tr:hover { background: #f3e8ff; }
+
+  code {
+    background: #f3f4f6;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11.5px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    color: #7c3aed;
+  }
+
+  /* ── Callouts ── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .callout-positive {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+  }
+  .callout-positive .callout-label { color: #16a34a; font-weight: 700; }
+  .callout-warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+  }
+  .callout-warning .callout-label { color: #d97706; font-weight: 700; }
+  .callout-error {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+  }
+  .callout-error .callout-label { color: #dc2626; font-weight: 700; }
+  .callout-info {
+    background: #f5f3ff;
+    border-left: 4px solid #7c3aed;
+  }
+  .callout-info .callout-label { color: #7c3aed; font-weight: 700; }
+
+  /* ── Diagramas ── */
+  .diagram-box {
+    background: #1e1b2e;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    margin: 12px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .diagram-box .label-bad { color: #f87171; font-weight: 700; }
+  .diagram-box .label-good { color: #4ade80; font-weight: 700; }
+  .diagram-box .highlight { color: #c084fc; }
+  .diagram-box .dim { color: #64748b; }
+  .diagram-box .accent { color: #facc15; }
+
+  /* ── Code blocks ── */
+  .code-block {
+    background: #1e1b2e;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    margin: 10px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code-block .comment { color: #64748b; }
+  .code-block .cmd { color: #4ade80; }
+  .code-block .flag { color: #facc15; }
+
+  /* ── Listas ── */
+  ul, ol { margin: 6px 0 10px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .badge-ok { background: #dcfce7; color: #166534; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .badge-fail { background: #fee2e2; color: #991b1b; }
+
+  /* ── Reglas card ── */
+  .rules-card {
+    background: linear-gradient(135deg, #4c1d95, #7c3aed);
+    color: #fff;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 16px 0;
+  }
+  .rules-card h3 {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: #fff;
+  }
+  .rules-card .rule {
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .rules-card .rule strong { color: #fde68a; }
+  .rules-card .rule code {
+    background: rgba(255,255,255,0.2);
+    color: #fde68a;
+    font-size: 11px;
+  }
+
+  /* ── Cierre card ── */
+  .closing-card {
+    background: #f0fdf4;
+    border: 2px solid #22c55e;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .closing-card h3 { color: #166534; font-size: 15px; margin-bottom: 10px; }
+  .closing-card p { font-size: 12.5px; margin-bottom: 6px; }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 20px 30px; }
+    .section { page-break-inside: avoid; }
+    .diagram-box, .code-block { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .rules-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- HEADER                                       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="doc-header">
+  <h1>Feedback de Code Review</h1>
+  <p class="subtitle">Ramas V-01, V-02 y V-03 — Sprint de Calidad</p>
+  <p class="meta">
+    <span><strong>Para:</strong> Vanessa</span>
+    <span><strong>De:</strong> Emmanuel (Tech Lead)</span>
+    <span><strong>Fecha:</strong> 23 de marzo de 2026</span>
+  </p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- RESULTADO GENERAL                            -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Resultado General</h2>
+
+  <table>
+    <thead>
+      <tr><th>Rama</th><th>Tarea</th><th>Veredicto</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>feat/vanessa/v-01-paginacion-datatables</code></td>
+        <td>Paginación DataTables</td>
+        <td><span class="badge badge-warn">⚠️ Aprobada con correcciones</span></td>
+      </tr>
+      <tr>
+        <td><code>feat/vanessa/v-02-navbar-session-timeout</code></td>
+        <td>Session Timeout 30 min</td>
+        <td><span class="badge badge-fail">❌ Rechazada</span></td>
+      </tr>
+      <tr>
+        <td><code>feat/vanessa/v-03-dashboard-paleta-colores</code></td>
+        <td>Paleta KPI Dashboard</td>
+        <td><span class="badge badge-fail">❌ Rechazada</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <span class="callout-label">📌 Nota importante</span><br>
+    El trabajo técnico de las 3 tareas está bien hecho. Los rechazos son por <strong>cómo se manejaron las ramas en Git</strong>, no por la calidad del código.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ERROR PRINCIPAL                              -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Error Principal: Las ramas se crearon desde el lugar equivocado</h2>
+
+  <p>Este es el problema más importante y el que causó todos los demás.</p>
+
+  <h3 class="subsection-title">¿Qué pasó?</h3>
+  <p>Cuando terminaste V-01, en vez de volver a <code>enmanuel</code> para crear la rama de V-02, creaste V-02 <strong>desde la rama de V-01</strong>. Y luego hiciste lo mismo con V-03.</p>
+
+<div class="diagram-box"><span class="label-bad">❌ LO QUE HICISTE:</span>
+
+<span class="highlight">enmanuel</span> ─────●───────────────────────────────────── <span class="dim">(rama principal)</span>
+              │
+              └── <span class="accent">V-01</span> <span class="dim">(2 commits)</span>
+                    │
+                    ├── <span class="accent">V-02</span> <span class="dim">(1 commit de V-01 + 1 commit de V-02)</span>
+                    │
+                    └── <span class="accent">V-03</span> <span class="dim">(1 commit de V-01 + 1 commit de V-03)</span></div>
+
+  <p>Esto hizo que V-02 y V-03 <strong>arrastraran commits de V-01</strong> que no les pertenecen. Es como si entregaras 3 sobres al profesor, pero en los sobres 2 y 3 metiste también una copia del examen 1.</p>
+
+  <h3 class="subsection-title">¿Cómo debió ser?</h3>
+  <p>Cada rama de tarea debe salir directamente de <code>enmanuel</code>, que es nuestra rama principal de desarrollo:</p>
+
+<div class="diagram-box"><span class="label-good">✅ LO CORRECTO:</span>
+
+<span class="highlight">enmanuel</span> ─────●──────────────────────────────────────
+              │
+              ├── <span class="accent">V-01</span> <span class="dim">(solo commits de V-01)</span>
+              │
+              ├── <span class="accent">V-02</span> <span class="dim">(solo commits de V-02)</span>
+              │
+              └── <span class="accent">V-03</span> <span class="dim">(solo commits de V-03)</span></div>
+
+  <h3 class="subsection-title">¿Cómo se hace correctamente? (paso a paso)</h3>
+
+<div class="code-block"><span class="comment"># Terminas V-01 y haces push</span>
+<span class="cmd">git add</span> .
+<span class="cmd">git commit</span> -m <span class="flag">"refactor(V-01): centralizar language DataTables"</span>
+<span class="cmd">git push</span> -u origin feat/vanessa/v-01-paginacion-datatables
+
+<span class="comment"># AHORA: vuelves a enmanuel ANTES de crear la siguiente rama</span>
+<span class="cmd">git checkout</span> enmanuel        <span class="comment"># ← ESTE PASO ES CLAVE</span>
+<span class="cmd">git pull</span> origin enmanuel     <span class="comment"># ← Traer lo más reciente</span>
+
+<span class="comment"># Recién ahora creas la rama de V-02</span>
+<span class="cmd">git checkout</span> -b feat/vanessa/v-02-navbar-session-timeout
+
+<span class="comment"># Trabajas en V-02...</span></div>
+
+  <div class="callout callout-warning">
+    <span class="callout-label">🔑 Regla de oro</span><br>
+    Siempre volver a <code>enmanuel</code> y hacer <code>git pull</code> antes de crear una rama nueva.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ERROR SECUNDARIO                             -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Error Secundario: Tocar archivos fuera del alcance de la tarea</h2>
+
+  <p>En la rama de V-01 (paginación de DataTables), también se cambiaron cosas que no tenían que ver con la tarea:</p>
+
+  <table>
+    <thead>
+      <tr><th>Cambio hecho</th><th>¿Pertenece a V-01?</th><th>Problema</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Centralizar <code>lenguajeData</code></td>
+        <td><span class="badge badge-ok">✅ Sí</span></td>
+        <td>Correcto</td>
+      </tr>
+      <tr>
+        <td>Cambiar "Municipio" → "Ciudad" en clientes</td>
+        <td><span class="badge badge-fail">❌ No</span></td>
+        <td>Eso pertenece a la tarea S-01 de Santiago, que ya estaba resuelta</td>
+      </tr>
+      <tr>
+        <td>Reformatear <code>municipios-venezuela.js</code></td>
+        <td><span class="badge badge-fail">❌ No</span></td>
+        <td>Cambios cosméticos que no fueron pedidos</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-error">
+    <span class="callout-label">¿Por qué esto es un problema?</span>
+    <ul style="margin-top: 6px;">
+      <li>Los cambios "Municipio" → "Ciudad" <strong>deshacen trabajo ya aprobado</strong> en <code>enmanuel</code> (el estándar es "Municipio" en la interfaz).</li>
+      <li>Cuando tocas archivos que no son de tu tarea, puedes generar <strong>conflictos de merge</strong> con el trabajo de otros compañeros.</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-label">📌 La regla</span><br>
+    Solo modifica los archivos que tu tarea necesita. Si ves algo que está mal en otro archivo, repórtalo al Tech Lead — no lo arregles en tu rama.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DETALLE POR TAREA                            -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Detalle por Tarea</h2>
+
+  <!-- V-01 -->
+  <h3 class="subsection-title">V-01 — Paginación DataTables &nbsp;<span class="badge badge-warn">⚠️ Con correcciones</span></h3>
+
+  <div class="callout callout-positive">
+    <span class="callout-label">✅ Lo que está bien</span>
+    <ul style="margin-top: 6px;">
+      <li>La centralización de <code>lenguajeData</code> en <code>app.blade.php</code> está correcta</li>
+      <li>Eliminaste los 10 overrides duplicados en las vistas individuales</li>
+      <li>El formato usa endash "–" como se pidió</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-error">
+    <span class="callout-label">❌ Lo que hay que corregir</span>
+    <ol style="margin-top: 6px;">
+      <li><code>zeroRecords</code> dice <strong>"No se encontraron coincidencias"</strong> pero el criterio pedía <strong>"No se encontraron resultados"</strong></li>
+      <li>Revertir los cambios de "Municipio" → "Ciudad" (no eran parte de esta tarea)</li>
+      <li>Quitar los cambios de formato en <code>municipios-venezuela.js</code></li>
+    </ol>
+  </div>
+
+  <!-- V-02 -->
+  <h3 class="subsection-title">V-02 — Session Timeout &nbsp;<span class="badge badge-fail">❌ Rechazada</span></h3>
+
+  <div class="callout callout-positive">
+    <span class="callout-label">✅ Lo que está bien</span>
+    <ul style="margin-top: 6px;">
+      <li>El cambio en <code>config/session.php</code> de 120 → 30 minutos es correcto</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-error">
+    <span class="callout-label">❌ Por qué se rechaza</span>
+    <ul style="margin-top: 6px;">
+      <li>La rama arrastra el commit <code>5f2e8d1</code> de V-01 (porque se creó desde V-01, no desde <code>enmanuel</code>)</li>
+      <li>No es necesario rehacer nada — el Tech Lead va a hacer cherry-pick del commit correcto</li>
+    </ul>
+  </div>
+
+  <!-- V-03 -->
+  <h3 class="subsection-title">V-03 — Paleta Dashboard &nbsp;<span class="badge badge-fail">❌ Rechazada</span></h3>
+
+  <div class="callout callout-positive">
+    <span class="callout-label">✅ Lo que está bien</span>
+    <ul style="margin-top: 6px;">
+      <li>Los colores CSS están excelentes, armonizan perfecto con el Navy institucional</li>
+      <li>Pusiste todo en <code>public/assets/css/custom.css</code> (archivo correcto)</li>
+      <li>El dark mode funciona bien con <code>[data-bs-theme="dark"]</code></li>
+      <li>No tocaste el blade del dashboard</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-error">
+    <span class="callout-label">❌ Por qué se rechaza</span>
+    <ul style="margin-top: 6px;">
+      <li>Mismo problema: arrastra el commit <code>5f2e8d1</code> de V-01 porque la rama fue creada desde V-01 en vez de <code>enmanuel</code></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- REGLAS                                       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Reglas para las Próximas Tareas</h2>
+
+  <div class="rules-card">
+    <h3>📋 Recuerda siempre</h3>
+    <div class="rule">
+      <strong>1. SIEMPRE crear ramas nuevas desde <code>enmanuel</code></strong><br>
+      <code>git checkout enmanuel</code> → <code>git pull</code> → <code>git checkout -b feat/vanessa/v-XX-...</code>
+    </div>
+    <div class="rule">
+      <strong>2. UN commit = UNA tarea</strong><br>
+      No mezclar cambios de distintas tareas en un mismo commit.
+    </div>
+    <div class="rule">
+      <strong>3. Solo tocar archivos de TU tarea</strong><br>
+      Si ves un problema en otro archivo, avísale al Tech Lead.
+    </div>
+    <div class="rule">
+      <strong>4. Leer los criterios de aceptación con cuidado</strong><br>
+      Si dice "No se encontraron resultados", no poner "No se encontraron coincidencias".
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- CIERRE                                       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">¿Qué pasa ahora?</h2>
+
+  <div class="closing-card">
+    <h3>✅ No tienes que rehacer nada</h3>
+    <p>El Tech Lead va a:</p>
+    <ol style="margin: 8px 0 8px 20px;">
+      <li>Tomar los commits buenos de cada rama (cherry-pick)</li>
+      <li>Aplicar las correcciones menores (texto de <code>zeroRecords</code>)</li>
+      <li>Mergear todo limpio a <code>enmanuel</code></li>
+    </ol>
+    <p style="margin-top: 10px;"><strong>Tu código funcional está bien</strong> — solo hay que limpiar el historial de Git.</p>
+    <p>Para las próximas tareas (V-04 en adelante), recuerda siempre partir desde <code>enmanuel</code>.</p>
+  </div>
+</div>
+
+</body>
+</html>
