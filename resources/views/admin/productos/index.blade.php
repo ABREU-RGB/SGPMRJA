@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -251,7 +251,7 @@
                                     {{-- Imagen — mantiene HTML nativo por preview --}}
                                     <div class="mb-3">
                                         <label for="imagen-field" class="form-label">Imagen <span
-                                                class="text-danger">*</span></label>
+                                                class="text-danger" id="imagen-required-star">*</span></label>
                                         <input type="file" id="imagen-field" name="imagen" class="form-control"
                                             accept="image/*" required />
                                         <div id="imagen-preview" class="mt-2 text-center" style="display: none;">
@@ -553,6 +553,13 @@
                     if (data.imagen) {
                         $("#imagen-preview img").attr('src', data.imagen);
                         $("#imagen-preview").show();
+                        // Al editar con imagen existente, no es obligatorio subir una nueva
+                        $("#imagen-field").prop('required', false);
+                        $("#imagen-required-star").addClass('d-none');
+                    } else {
+                        // Si no tiene imagen (caso raro), pedimos una
+                        $("#imagen-field").prop('required', true);
+                        $("#imagen-required-star").removeClass('d-none');
                     }
 
                     $("#add-btn").hide();
@@ -713,7 +720,9 @@
                 $("#id-field").val("");
                 $("#codigo-field").val("");
                 $("#imagen-preview").hide();
-                $("#add-btn").show();
+                // Por defecto para nuevo producto, la imagen es obligatoria
+                $("#imagen-field").prop('required', true);
+                $("#imagen-required-star").removeClass('d-none');
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 validator.resetValidation();
