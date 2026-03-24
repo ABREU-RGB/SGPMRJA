@@ -264,7 +264,6 @@
                                                     <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block">Estatus</small>
                                                     <span class="fw-semibold" id="view-estatus">-</span>
                                                 </div>
                                             </div>
