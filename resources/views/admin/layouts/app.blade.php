@@ -329,6 +329,79 @@
             observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
         })();
     </script>
+
+    <!-- Fullscreen Persistence (mismo patrón que el tema oscuro) -->
+    <script>
+        (function () {
+            var FS_KEY = 'sgpmrja-fullscreen';
+
+            // Sincronizar ícono del botón según el estado real de fullscreen
+            function syncFullscreenIcon() {
+                var btn = document.querySelector('[data-toggle="fullscreen"]');
+                if (!btn) return;
+                var icon = btn.querySelector('i');
+                if (!icon) return;
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    icon.classList.remove('bx-fullscreen');
+                    icon.classList.add('bx-exit-fullscreen');
+                } else {
+                    icon.classList.remove('bx-exit-fullscreen');
+                    icon.classList.add('bx-fullscreen');
+                }
+            }
+
+            // Restaurar fullscreen (requiere gesto del usuario)
+            function enterFullscreen() {
+                var docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen().catch(function () { });
+                } else if (docEl.webkitRequestFullscreen) {
+                    docEl.webkitRequestFullscreen();
+                }
+            }
+
+            // Escuchar cambios reales de fullscreen (botón, Esc, F11)
+            document.addEventListener('fullscreenchange', function () {
+                var isFS = !!document.fullscreenElement;
+                localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
+                syncFullscreenIcon();
+            });
+            document.addEventListener('webkitfullscreenchange', function () {
+                var isFS = !!document.webkitFullscreenElement;
+                localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
+                syncFullscreenIcon();
+            });
+
+            // Si el fullscreen estaba activo, restaurarlo en el PRIMER clic del usuario.
+            // Los navegadores exigen un gesto (clic/tecla) para permitir requestFullscreen().
+            // Este listener se dispara UNA sola vez y luego se autodestruye.
+            function setupAutoRestore() {
+                if (localStorage.getItem(FS_KEY) !== 'true') return;
+                // Si ya estamos en fullscreen no hacer nada
+                if (document.fullscreenElement || document.webkitFullscreenElement) return;
+
+                document.addEventListener('click', function onFirstClick() {
+                    document.removeEventListener('click', onFirstClick, true);
+                    // Solo restaurar si aún no estamos en fullscreen
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, true);
+            }
+
+            // Al cargar el DOM: configurar auto-restore y sincronizar ícono
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    setupAutoRestore();
+                    syncFullscreenIcon();
+                });
+            } else {
+                setupAutoRestore();
+                syncFullscreenIcon();
+            }
+        })();
+    </script>
+
     <script>
         const lenguajeData = {
             emptyTable: "No hay datos disponibles",
