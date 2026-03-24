@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -260,10 +260,15 @@
                                         </div>
                                     </div>
 
-                                    <x-forms.select name="estado" label="Estado" required
-                                        :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1"
-                                        id="estado-field" />
-                                </div>
+                                    {{-- Switch de Estado sincronizado con hidden input --}}
+                                    <div class="mb-3">
+                                        <label class="form-label mb-2">Estado <span class="text-danger">*</span></label>
+                                        <div class="form-check form-switch form-switch-success form-switch-md" dir="ltr">
+                                            <input type="checkbox" class="form-check-input" id="estado-switch" checked>
+                                            <label class="form-check-label fw-medium" for="estado-switch" id="estado-label">Activo</label>
+                                        </div>
+                                        <input type="hidden" name="estado" id="estado-hidden-field" value="1">
+                                    </div>                                </div>
                             </div>
                         </div>
                     </div>
@@ -504,6 +509,13 @@
                 table.search(this.value).draw();
             });
 
+            // Sincronizar switch de estado con hidden input
+            $("#estado-switch").on('change', function() {
+                var isChecked = $(this).is(':checked');
+                $("#estado-hidden-field").val(isChecked ? '1' : '0');
+                $("#estado-label").text(isChecked ? 'Activo' : 'Inactivo');
+            });
+
             // Vista previa de imagen
             $("#imagen-field").change(function () {
                 if (this.files && this.files[0]) {
@@ -548,7 +560,11 @@
                     $("#descripcion-field").val(data.descripcion);
                     $("#modelo-field").val(data.modelo);
                     $("#precio-base-field").val(data.precio_base);
-                    $("#estado-field").val(data.estado ? '1' : '0');
+                    
+                    var isActivo = data.estado ? true : false;
+                    $("#estado-switch").prop('checked', isActivo);
+                    $("#estado-hidden-field").val(isActivo ? '1' : '0');
+                    $("#estado-label").text(isActivo ? 'Activo' : 'Inactivo');
 
                     if (data.imagen) {
                         $("#imagen-preview img").attr('src', data.imagen);
@@ -713,7 +729,12 @@
                 $("#id-field").val("");
                 $("#codigo-field").val("");
                 $("#imagen-preview").hide();
-                $("#add-btn").show();
+                
+                // Reset Switch de Estado a Activo por defecto
+                $("#estado-switch").prop('checked', true);
+                $("#estado-hidden-field").val("1");
+                $("#estado-label").text("Activo");
+                
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 validator.resetValidation();
