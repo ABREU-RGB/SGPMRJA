@@ -1923,6 +1923,20 @@ header#page-topbar,
 .badge-tipo-juridico    { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
 .badge-tipo-gubernamental { background-color: rgba(247, 184, 75, 0.18); color: #e0a800; }
 
+/* Overrides para Dark Mode (Tarea V-04) - Tonos pastel -300 para legibilidad WCAG AA */
+[data-bs-theme="dark"] .badge-tipo-natural {
+    background-color: rgba(125, 211, 252, 0.15);
+    color: #7dd3fc; /* Sky-300 */
+}
+[data-bs-theme="dark"] .badge-tipo-juridico {
+    background-color: rgba(196, 181, 253, 0.15);
+    color: #c4b5fd; /* Violet-300 */
+}
+[data-bs-theme="dark"] .badge-tipo-gubernamental {
+    background-color: rgba(252, 211, 77, 0.15);
+    color: #fcd34d; /* Amber-300 */
+}
+
 /* Colores de departamento (Empleados) */
 .badge-depto-administracion { background-color: rgba(111, 66, 193, 0.15); color: #6f42c1; }
 .badge-depto-produccion     { background-color: rgba(41, 156, 219, 0.15); color: #299cdb; }
