@@ -334,9 +334,10 @@
     <script>
         (function () {
             var FS_KEY = 'sgpmrja-fullscreen';
-            var isUnloading = false;
+            // true cuando el usuario inició la salida del fullscreen (botón o Esc).
+            // false cuando el browser lo fuerza por navegación — en ese caso no guardamos 'false'.
+            var userExiting = false;
 
-            // Sincronizar ícono del botón según el estado real de fullscreen
             function syncFullscreenIcon() {
                 var btn = document.querySelector('[data-toggle="fullscreen"]');
                 if (!btn) return;
@@ -351,7 +352,6 @@
                 }
             }
 
-            // Restaurar fullscreen (requiere gesto del usuario)
             function enterFullscreen() {
                 var docEl = document.documentElement;
                 if (docEl.requestFullscreen) {
@@ -361,33 +361,49 @@
                 }
             }
 
-            // Antes de navegar: guardar estado real y marcar que estamos saliendo.
-            // Esto evita que el fullscreenchange del browser (que dispara al descargar
-            // la página) sobreescriba el localStorage con 'false'.
-            window.addEventListener('beforeunload', function () {
-                isUnloading = true;
-                var isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
-                localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
-            });
-
-            // Escuchar cambios reales de fullscreen (botón, Esc, F11).
-            // Ignorar el cambio que dispara el browser al descargar la página.
-            document.addEventListener('fullscreenchange', function () {
-                if (isUnloading) return;
-                var isFS = !!document.fullscreenElement;
-                localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
+            // Al ENTRAR fullscreen: siempre guardar 'true'.
+            // Al SALIR: solo guardar 'false' si fue una salida intencional del usuario.
+            // La salida por navegación no toca localStorage → 'true' persiste para la siguiente página.
+            function onFsChange(isFS) {
+                if (isFS) {
+                    localStorage.setItem(FS_KEY, 'true');
+                    userExiting = false;
+                } else if (userExiting) {
+                    localStorage.setItem(FS_KEY, 'false');
+                    userExiting = false;
+                }
                 syncFullscreenIcon();
+            }
+            document.addEventListener('fullscreenchange', function () {
+                onFsChange(!!document.fullscreenElement);
             });
             document.addEventListener('webkitfullscreenchange', function () {
-                if (isUnloading) return;
-                var isFS = !!document.webkitFullscreenElement;
-                localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
-                syncFullscreenIcon();
+                onFsChange(!!document.webkitFullscreenElement);
             });
 
-            // Si el fullscreen estaba activo, restaurarlo en el PRIMER clic del usuario.
-            // Los navegadores exigen un gesto (clic/tecla) para permitir requestFullscreen().
-            // Este listener se dispara UNA sola vez y luego se autodestruye.
+            // Detectar salida INTENCIONAL del usuario:
+            // 1. Tecla Escape mientras está en fullscreen
+            document.addEventListener('keydown', function (e) {
+                if ((e.key === 'Escape' || e.keyCode === 27) &&
+                    (document.fullscreenElement || document.webkitFullscreenElement)) {
+                    userExiting = true;
+                }
+            });
+
+            // 2. Clic en el botón de fullscreen cuando ya está en fullscreen (= quiere salir)
+            document.addEventListener('DOMContentLoaded', function () {
+                var btn = document.querySelector('[data-toggle="fullscreen"]');
+                if (btn) {
+                    btn.addEventListener('click', function () {
+                        if (document.fullscreenElement || document.webkitFullscreenElement) {
+                            userExiting = true;
+                        }
+                    });
+                }
+            });
+
+            // Al cargar la página: si el usuario estaba en fullscreen antes de navegar,
+            // restaurarlo en el primer clic (el browser exige un gesto del usuario).
             function setupAutoRestore() {
                 if (localStorage.getItem(FS_KEY) !== 'true') return;
                 if (document.fullscreenElement || document.webkitFullscreenElement) return;
@@ -400,7 +416,6 @@
                 }, true);
             }
 
-            // Al cargar el DOM: configurar auto-restore y sincronizar ícono
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', function () {
                     setupAutoRestore();
