@@ -436,7 +436,13 @@
 
                 toast.style.display = 'block';
 
+                // Auto-ocultar tras 8 s si el usuario no interactúa
+                var autoHide = setTimeout(function () {
+                    toast.style.display = 'none';
+                }, 8000);
+
                 btnOk.addEventListener('click', function () {
+                    clearTimeout(autoHide);
                     toast.style.display = 'none';
                     enterFullscreen();
                 }, { once: true });
@@ -444,6 +450,7 @@
                 // Si el usuario cierra el toast con la X, interpreta que no quiere
                 // restaurar → guardar 'false' para no volver a molestar.
                 btnX.addEventListener('click', function () {
+                    clearTimeout(autoHide);
                     toast.style.display = 'none';
                     localStorage.setItem(FS_KEY, 'false');
                 }, { once: true });
