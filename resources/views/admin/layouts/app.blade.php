@@ -334,6 +334,7 @@
     <script>
         (function () {
             var FS_KEY = 'sgpmrja-fullscreen';
+            var isUnloading = false;
 
             // Sincronizar ícono del botón según el estado real de fullscreen
             function syncFullscreenIcon() {
@@ -360,13 +361,25 @@
                 }
             }
 
-            // Escuchar cambios reales de fullscreen (botón, Esc, F11)
+            // Antes de navegar: guardar estado real y marcar que estamos saliendo.
+            // Esto evita que el fullscreenchange del browser (que dispara al descargar
+            // la página) sobreescriba el localStorage con 'false'.
+            window.addEventListener('beforeunload', function () {
+                isUnloading = true;
+                var isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
+                localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
+            });
+
+            // Escuchar cambios reales de fullscreen (botón, Esc, F11).
+            // Ignorar el cambio que dispara el browser al descargar la página.
             document.addEventListener('fullscreenchange', function () {
+                if (isUnloading) return;
                 var isFS = !!document.fullscreenElement;
                 localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
                 syncFullscreenIcon();
             });
             document.addEventListener('webkitfullscreenchange', function () {
+                if (isUnloading) return;
                 var isFS = !!document.webkitFullscreenElement;
                 localStorage.setItem(FS_KEY, isFS ? 'true' : 'false');
                 syncFullscreenIcon();
@@ -377,12 +390,10 @@
             // Este listener se dispara UNA sola vez y luego se autodestruye.
             function setupAutoRestore() {
                 if (localStorage.getItem(FS_KEY) !== 'true') return;
-                // Si ya estamos en fullscreen no hacer nada
                 if (document.fullscreenElement || document.webkitFullscreenElement) return;
 
                 document.addEventListener('click', function onFirstClick() {
                     document.removeEventListener('click', onFirstClick, true);
-                    // Solo restaurar si aún no estamos en fullscreen
                     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
                         enterFullscreen();
                     }
