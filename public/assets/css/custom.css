@@ -2375,6 +2375,17 @@ header#page-topbar,
 #empleadosTable td:nth-child(6) { overflow: visible; text-overflow: clip; text-align: center; }
 
 /* ============================================================
+   TOAST RESTAURAR FULLSCREEN (V-10)
+   ============================================================ */
+[data-bs-theme="dark"] #fs-restore-toast {
+    background: #1e2a3a !important;
+    border-left-color: #4e7ac7 !important;
+}
+[data-bs-theme="dark"] #fs-restore-toast .fw-semibold { color: #90b4f0 !important; }
+[data-bs-theme="dark"] #fs-restore-toast .text-muted   { color: #8a9ab0 !important; }
+[data-bs-theme="dark"] #fs-restore-toast .btn-close    { filter: invert(1); }
+
+/* ============================================================
    SWEETALERT2 — ESTÁNDAR ATLÁNTICO
    Centralizadas aquí para evitar inline <style> en layouts.
    Z-index 1200 garantiza visibilidad sobre todo modal del sistema

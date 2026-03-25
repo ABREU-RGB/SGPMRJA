@@ -243,6 +243,27 @@
 
 <body>
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
+    <!-- Toast: restaurar pantalla completa tras navegación (V-10) -->
+    <div id="fs-restore-toast" role="alert" aria-live="assertive" aria-atomic="true"
+         style="position:fixed;top:70px;right:20px;z-index:9999;min-width:290px;display:none;
+                background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);
+                border-left:4px solid #1e3c72;overflow:hidden;">
+        <div class="d-flex align-items-center gap-3 p-3">
+            <i class="bx bx-fullscreen text-primary" style="font-size:1.4rem;flex-shrink:0;"></i>
+            <div class="flex-grow-1 lh-sm">
+                <div class="fw-semibold" style="font-size:.83rem;color:#1e3c72;">Pantalla completa</div>
+                <div class="text-muted" style="font-size:.76rem;">Estaba activa antes de navegar</div>
+            </div>
+            <button type="button" id="fs-restore-btn"
+                    class="btn btn-sm btn-primary px-3" style="white-space:nowrap;font-size:.8rem;">
+                Restaurar
+            </button>
+            <button type="button" id="fs-restore-dismiss"
+                    class="btn-close" style="flex-shrink:0;" aria-label="Cerrar"></button>
+        </div>
+    </div>
+
     <!-- Begin page -->
     <div id="layout-wrapper">
         @include('admin.layouts.header')
@@ -403,17 +424,29 @@
             });
 
             // Al cargar la página: si el usuario estaba en fullscreen antes de navegar,
-            // restaurarlo en el primer clic (el browser exige un gesto del usuario).
+            // mostrar un toast con botón para restaurarlo (el browser exige gesto del usuario).
             function setupAutoRestore() {
                 if (localStorage.getItem(FS_KEY) !== 'true') return;
                 if (document.fullscreenElement || document.webkitFullscreenElement) return;
 
-                document.addEventListener('click', function onFirstClick() {
-                    document.removeEventListener('click', onFirstClick, true);
-                    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                        enterFullscreen();
-                    }
-                }, true);
+                var toast   = document.getElementById('fs-restore-toast');
+                var btnOk   = document.getElementById('fs-restore-btn');
+                var btnX    = document.getElementById('fs-restore-dismiss');
+                if (!toast) return;
+
+                toast.style.display = 'block';
+
+                btnOk.addEventListener('click', function () {
+                    toast.style.display = 'none';
+                    enterFullscreen();
+                }, { once: true });
+
+                // Si el usuario cierra el toast con la X, interpreta que no quiere
+                // restaurar → guardar 'false' para no volver a molestar.
+                btnX.addEventListener('click', function () {
+                    toast.style.display = 'none';
+                    localStorage.setItem(FS_KEY, 'false');
+                }, { once: true });
             }
 
             if (document.readyState === 'loading') {
