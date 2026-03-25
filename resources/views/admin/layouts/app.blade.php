@@ -262,6 +262,8 @@
             <button type="button" id="fs-restore-dismiss"
                     class="btn-close" style="flex-shrink:0;" aria-label="Cerrar"></button>
         </div>
+        <div id="fs-restore-progress"
+             style="height:3px;width:100%;background:#1e3c72;transform-origin:left;"></div>
     </div>
 
     <!-- Begin page -->
@@ -435,6 +437,9 @@
                 if (!toast) return;
 
                 toast.style.display = 'block';
+                // Arrancar barra de progreso
+                var progress = document.getElementById('fs-restore-progress');
+                if (progress) progress.classList.add('running');
 
                 // Auto-ocultar tras 8 s si el usuario no interactúa
                 var autoHide = setTimeout(function () {

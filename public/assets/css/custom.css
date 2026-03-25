@@ -2377,13 +2377,21 @@ header#page-topbar,
 /* ============================================================
    TOAST RESTAURAR FULLSCREEN (V-10)
    ============================================================ */
+@keyframes fs-progress-shrink {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
+}
+#fs-restore-progress.running {
+    animation: fs-progress-shrink 8s linear forwards;
+}
 [data-bs-theme="dark"] #fs-restore-toast {
     background: #1e2a3a !important;
     border-left-color: #4e7ac7 !important;
 }
-[data-bs-theme="dark"] #fs-restore-toast .fw-semibold { color: #90b4f0 !important; }
+[data-bs-theme="dark"] #fs-restore-toast .fw-semibold  { color: #90b4f0 !important; }
 [data-bs-theme="dark"] #fs-restore-toast .text-muted   { color: #8a9ab0 !important; }
 [data-bs-theme="dark"] #fs-restore-toast .btn-close    { filter: invert(1); }
+[data-bs-theme="dark"] #fs-restore-progress            { background: #4e7ac7 !important; }
 
 /* ============================================================
    SWEETALERT2 — ESTÁNDAR ATLÁNTICO
