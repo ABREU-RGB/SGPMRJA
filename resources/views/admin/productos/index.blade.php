@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -34,12 +34,23 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Productos</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Toggle Historial -->
+                            @if($historial)
+                                <a href="{{ route('productos.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                </a>
+                            @else
+                                <a href="{{ route('productos.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                </a>
+                            @endif
                             <!-- Buscador Personalizado -->
                             <div class="search-box">
                                 <input type="text" class="form-control form-control-sm" id="custom-search-input"
                                     placeholder="Buscar producto...">
                                 <i class="ri-search-line search-icon"></i>
                             </div>
+                            @if(!$historial)
                             <div class="d-flex gap-2 align-items-center">
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#tiposModal">
@@ -54,6 +65,13 @@
                                 </a>
                                 </a>
                             </div>
+                            @else
+                            <div class="d-flex gap-2 align-items-center">
+                                <a href="{{ route('productos.reporte.pdf') }}" target="_blank" class="btn btn-danger">
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -409,7 +427,17 @@
         }
 
         $(document).ready(function () {
-            function generateButtons(productoId) {
+            var esHistorial = {{ $historial ? 'true' : 'false' }};
+
+            function generateButtons(productoId, isTrashed) {
+                // Si el registro está inhabilitado (trashed), solo mostrar botón "Ver"
+                if (isTrashed) {
+                    return '<div class="d-flex gap-1 justify-content-center">' +
+                        '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + productoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '</div>';
+                }
                 return '<div class="d-flex gap-1 justify-content-center">' +
                     '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + productoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
@@ -417,8 +445,8 @@
                     '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + productoId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
                     '</button>' +
-                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + productoId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + productoId + '" title="Inhabilitar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-forbid-line" style="font-size:13px;"></i>' +
                     '</button>' +
                     '</div>';
             }
@@ -431,7 +459,7 @@
             var table = $('#productos-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('productos.data') }}",
+                ajax: "{{ route('productos.data') }}" + (esHistorial ? '?historial=true' : ''),
                 columns: [
                     {
                         data: 'codigo',
@@ -472,7 +500,11 @@
                     {
                         data: 'estado',
                         name: 'estado',
-                        render: function (data) {
+                        render: function (data, type, row) {
+                            // Si está en historial (trashed), mostrar badge "Inactivo"
+                            if (row.trashed) {
+                                return '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line"></i> Inactivo</span>';
+                            }
                             return data ? '<span class="badge badge-status status-activo"><i class="ri-checkbox-circle-line"></i> Activo</span>' : '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line"></i> Inactivo</span>';
                         }
                     },
@@ -481,8 +513,8 @@
                         name: 'actions',
                         orderable: false,
                         searchable: false,
-                        render: function (data) {
-                            return generateButtons(data);
+                        render: function (data, type, row) {
+                            return generateButtons(data, row.trashed);
                         }
                     }
                 ],
@@ -676,10 +708,10 @@
                 var id = $(this).data("id");
                 Swal.fire({
                     title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
+                    text: "El producto será inhabilitado y moverá al historial.",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, inhabilitar',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -699,7 +731,7 @@
                                 table.draw();
                                 Swal.fire({
                                     icon: 'success',
-                                    title: '¡Eliminado!',
+                                    title: '¡Inhabilitado!',
                                     text: response.success,
                                     showConfirmButton: false,
                                     customClass: {
@@ -715,7 +747,7 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: 'No se pudo eliminar el producto',
+                                    text: 'No se pudo inhabilitar el producto',
                                     customClass: {
                                         confirmButton: 'btn btn-primary w-xs me-2',
                                         cancelButton: 'btn btn-danger w-xs'

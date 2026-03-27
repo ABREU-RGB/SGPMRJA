@@ -34,12 +34,23 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Clientes</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Toggle Historial -->
+                            @if($historial)
+                                <a href="{{ route('clientes.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                </a>
+                            @else
+                                <a href="{{ route('clientes.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                </a>
+                            @endif
                             <!-- Buscador Personalizado -->
                             <div class="search-box">
                                 <input type="text" class="form-control form-control-sm" id="custom-search-input"
                                     placeholder="Buscar cliente...">
                                 <i class="ri-search-line search-icon"></i>
                             </div>
+                            @if(!$historial)
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                     data-bs-target="#showModal">
@@ -49,6 +60,13 @@
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
                                 </a>
                             </div>
+                            @else
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('clientes.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -755,7 +773,17 @@
             $.ajaxSetup({
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
-            function generateButtons(clienteId) {
+            var esHistorial = {{ $historial ? 'true' : 'false' }};
+
+            function generateButtons(clienteId, isTrashed) {
+                // Si el registro está inhabilitado (trashed), solo mostrar botón "Ver"
+                if (isTrashed) {
+                    return '<div class="d-flex gap-1 justify-content-center">' +
+                        '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + clienteId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '</div>';
+                }
                 return '<div class="d-flex gap-1 justify-content-center">' +
                     '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + clienteId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
@@ -763,8 +791,8 @@
                     '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + clienteId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
                     '</button>' +
-                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + clienteId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + clienteId + '" title="Inhabilitar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-forbid-line" style="font-size:13px;"></i>' +
                     '</button>' +
                     '</div>';
             }
@@ -791,7 +819,7 @@
             }
 
             var table = $('#clientes-table').DataTable({
-                ajax: { url: "{{ route('clientes.data') }}", dataSrc: 'data' },
+                ajax: { url: "{{ route('clientes.data') }}" + (esHistorial ? '?historial=true' : ''), dataSrc: 'data' },
                 columns: [
                     { data: 'documento' },
                     {
@@ -820,7 +848,7 @@
                             return '<span title="' + data + '" style="cursor:default;">' + data + '</span>';
                         }
                     },
-                    { data: null, orderable: false, render: function (data, type, row) { return generateButtons(row.id); } }
+                    { data: null, orderable: false, render: function (data, type, row) { return generateButtons(row.id, row.trashed); } }
                 ],
                 order: [[0, 'asc']], // Ordenar por documento (primera columna)
                 dom: 'rtip',
@@ -1051,10 +1079,10 @@
                 document.activeElement.blur();
                 Swal.fire({
                     title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
+                    text: "El cliente será inhabilitado y moverá al historial.",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, inhabilitar',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -1076,13 +1104,13 @@
                                 if (response.warning) {
                                     Swal.fire({
                                         icon: 'warning',
-                                        title: 'Cliente Eliminado',
+                                        title: 'Cliente Inhabilitado',
                                         html: '<p>' + response.message + '</p><p class="text-muted small">' + response.warning + '</p>'
                                     });
                                 } else {
                                     Swal.fire({
                                         icon: 'success',
-                                        title: 'Eliminado',
+                                        title: 'Inhabilitado',
                                         text: response.message
                                     });
                                 }
@@ -1091,7 +1119,7 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: xhr.responseJSON.message || 'Ocurrió un error al eliminar el cliente'
+                                    text: xhr.responseJSON.message || 'Ocurrió un error al inhabilitar el cliente'
                                 });
                             }
                         });

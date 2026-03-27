@@ -22,15 +22,20 @@ class ClienteController extends Controller
     ) {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.clientes.index');
+        $historial = $request->has('historial');
+        return view('admin.clientes.index', compact('historial'));
     }
 
-    public function getClientes()
+    public function getClientes(Request $request)
     {
         // Paginación server-side: pasar query builder, no colección
-        $clientes = Cliente::with(['persona.telefonos', 'persona.direcciones']);
+        if ($request->has('historial')) {
+            $clientes = Cliente::onlyTrashed()->with(['persona.telefonos', 'persona.direcciones']);
+        } else {
+            $clientes = Cliente::with(['persona.telefonos', 'persona.direcciones']);
+        }
 
         return DataTables::of($clientes)
             ->addColumn('nombre', fn($c) => $c->nombre ?? 'N/A')
@@ -44,6 +49,7 @@ class ClienteController extends Controller
             ->addColumn('ciudad', fn($c) => $c->ciudad)
             ->addColumn('estatus', fn($c) => $c->estatus)
             ->addColumn('created_at', fn($c) => $c->created_at ? $c->created_at->format('d/m/Y H:i') : null)
+            ->addColumn('trashed', fn($c) => $c->trashed())
             ->make(true);
     }
 
@@ -105,9 +111,9 @@ class ClienteController extends Controller
         // Verificar si tiene cotizaciones asociadas
         $cotizacionesCount = $cliente->cotizaciones()->count();
 
-        $cliente->delete();
+        $cliente->delete(); // SoftDelete: marca deleted_at
 
-        \Log::warning('Cliente eliminado', [
+        \Log::warning('Cliente inhabilitado (soft delete)', [
             'cliente_id' => $id,
             'cotizaciones_count' => $cotizacionesCount,
             'user_id' => auth()->id(),
@@ -115,12 +121,12 @@ class ClienteController extends Controller
 
         if ($cotizacionesCount > 0) {
             return response()->json([
-                'message' => 'Cliente eliminado exitosamente.',
+                'message' => 'Cliente inhabilitado exitosamente.',
                 'warning' => 'Este cliente tenía ' . $cotizacionesCount . ' cotización(es). Los registros históricos se mantienen.'
             ]);
         }
 
-        return response()->json(['message' => 'Cliente eliminado exitosamente.']);
+        return response()->json(['message' => 'Cliente inhabilitado exitosamente.']);
     }
 
     public function show($id)
