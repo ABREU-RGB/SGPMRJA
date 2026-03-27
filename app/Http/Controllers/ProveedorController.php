@@ -15,14 +15,19 @@ class ProveedorController extends Controller
         private ProveedorService $proveedorService
     ) {
     }
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.proveedores.index');
+        $historial = $request->has('historial');
+        return view('admin.proveedores.index', compact('historial'));
     }
 
-    public function getProveedores()
+    public function getProveedores(Request $request)
     {
-        $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
+        if ($request->has('historial')) {
+            $proveedores = Proveedor::onlyTrashed()->with('persona.telefonos', 'persona.direcciones')->get();
+        } else {
+            $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
+        }
 
         $data = $proveedores->map(function ($proveedor) {
             return [
@@ -34,6 +39,7 @@ class ProveedorController extends Controller
                 'telefono_display' => $proveedor->telefono_unificado,
                 'email_display' => $proveedor->email_unificado,
                 'estado' => $proveedor->estado,
+                'trashed' => $proveedor->trashed(),
             ];
         });
 
@@ -155,8 +161,8 @@ class ProveedorController extends Controller
     public function destroy($id)
     {
         $proveedor = Proveedor::findOrFail($id);
-        $proveedor->delete();
-        return response()->json(['success' => 'Proveedor eliminado exitosamente.']);
+        $proveedor->delete(); // SoftDelete: marca deleted_at
+        return response()->json(['success' => 'Proveedor inhabilitado exitosamente.']);
     }
 
     public function reportePdf()
