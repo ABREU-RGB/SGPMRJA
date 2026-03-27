@@ -53,6 +53,106 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- ============================================================
+                         FILTROS — Patrón Maestro S-07 (Colapsable)
+                         Copiar este bloque completo a Proveedores, Productos, etc.
+                         Solo ajustar las opciones de cada <select> y los data-col-index.
+                         CSS genérico en custom.css: .navy-filter-*
+                         ============================================================ --}}
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        {{-- Header: siempre visible, actúa como trigger del collapse --}}
+                        <button class="navy-filter-toggle collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                            aria-expanded="false" aria-controls="filters-collapse-body">
+                            <div class="navy-filter-title">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                            </div>
+                            <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                        </button>
+                        {{-- Body: colapsable, oculto por defecto --}}
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-2 align-items-end">
+                                    {{-- Filtro 1: Tipo de Cliente --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-tipo-cliente">
+                                            <i class="ri-user-settings-line"></i> Tipo de Cliente
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tipo-cliente" data-col-index="6">
+                                            <option value="">Todos</option>
+                                            <option value="natural">Natural</option>
+                                            <option value="juridico">Jurídico</option>
+                                            <option value="gubernamental">Gubernamental</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 2: Estatus (Activo = normal, Inactivo = trashed / SoftDelete) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estatus">
+                                            <i class="ri-shield-check-line"></i> Estatus
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estatus" data-col-index="7">
+                                            <option value="">Todos</option>
+                                            <option value="1" selected>Activo</option>
+                                            <option value="0">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 3: Estado Territorial (Venezuela) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estado-territorial">
+                                            <i class="ri-map-pin-line"></i> Estado
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estado-territorial" data-col-index="8">
+                                            <option value="">Todos</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 4: Búsqueda por Cédula/RIF --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-documento">
+                                            <i class="ri-bank-card-line"></i> Cédula / RIF
+                                        </label>
+                                        <div class="position-relative">
+                                            <input type="text" class="form-control navy-filter-input" id="filter-documento"
+                                                data-col-index="0" placeholder="Ej: V-12345678" autocomplete="off">
+                                            <i class="ri-search-line navy-filter-input-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- Botón limpiar: dentro del body colapsable --}}
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
+                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- FIN FILTROS --}}
+
                     <table id="clientes-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
@@ -791,20 +891,29 @@
             }
 
             var table = $('#clientes-table').DataTable({
-                ajax: { url: "{{ route('clientes.data') }}", dataSrc: 'data' },
+                ajax: {
+                    url: "{{ route('clientes.data') }}",
+                    dataSrc: 'data',
+                    data: function (d) {
+                        // ── Filtros avanzados: enviar valores al server ──
+                        d.filter_tipo_cliente       = $('#filter-tipo-cliente').val();
+                        d.filter_estatus            = $('#filter-estatus').val();
+                        d.filter_estado_territorial  = $('#filter-estado-territorial').val();
+                        d.filter_documento          = $('#filter-documento').val();
+                    }
+                },
                 columns: [
-                    { data: 'documento' },
-                    {
+                    { data: 'documento' },                           // col 0
+                    {                                                 // col 1
                         data: null,
                         render: function (data, type, row) {
-                            // Para Jurídico/Gubernamental solo mostrar nombre (Razón Social)
                             if (row.tipo_cliente === 'juridico' || row.tipo_cliente === 'gubernamental') {
                                 return row.nombre || 'N/A';
                             }
                             return (row.nombre || '') + ' ' + (row.apellido || '');
                         }
                     },
-                    {
+                    {                                                 // col 2
                         data: 'tipo_cliente', render: function (data) {
                             if (data === 'natural') return '<span class="badge-tipo badge-tipo-natural"><i class="ri-user-line"></i> Natural</span>';
                             if (data === 'juridico') return '<span class="badge-tipo badge-tipo-juridico"><i class="ri-building-line"></i> Jurídico</span>';
@@ -812,38 +921,57 @@
                             return data;
                         }
                     },
-                    { data: 'telefono' },
-                    {
+                    { data: 'telefono' },                             // col 3
+                    {                                                 // col 4
                         data: 'email',
                         render: function (data) {
                             if (!data) return '<span class="text-muted">—</span>';
                             return '<span title="' + data + '" style="cursor:default;">' + data + '</span>';
                         }
                     },
-                    { data: null, orderable: false, render: function (data, type, row) { return generateButtons(row.id); } }
+                    { data: null, orderable: false, render: function (data, type, row) { return generateButtons(row.id); } }  // col 5
                 ],
-                order: [[0, 'asc']], // Ordenar por documento (primera columna)
+                order: [[0, 'asc']],
                 dom: 'rtip',
                 buttons: [
-                    {
-                        extend: 'copy',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4]
-                        }
-                    },
-                    {
-                        extend: 'excel',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4]
-                        }
-                    }
+                    { extend: 'copy', exportOptions: { columns: [0, 1, 2, 3, 4] } },
+                    { extend: 'excel', exportOptions: { columns: [0, 1, 2, 3, 4] } }
                 ],
                 language: lenguajeData
             });
 
-            // Buscador personalizado
+            // Buscador personalizado (búsqueda global)
             $('#custom-search-input').on('keyup', function () {
                 table.search(this.value).draw();
+            });
+
+            // ══════════════════════════════════════════════════════
+            // FILTROS AVANZADOS — Lógica JS (Patrón Maestro S-07)
+            // Para replicar: copiar este bloque y ajustar los IDs
+            // de los selectores (#filter-xxx) y sus data-col-index.
+            // ══════════════════════════════════════════════════════
+
+            // Aplicar filtros al cambiar cualquier select
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+            });
+
+            // Aplicar filtro de documento con debounce (300ms)
+            var filterDocTimeout = null;
+            $('#filter-documento').on('keyup', function () {
+                clearTimeout(filterDocTimeout);
+                filterDocTimeout = setTimeout(function () {
+                    table.ajax.reload();
+                }, 300);
+            });
+
+            // Botón limpiar filtros
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-tipo-cliente').val('');
+                $('#filter-estatus').val('');
+                $('#filter-estado-territorial').val('');
+                $('#filter-documento').val('');
+                table.ajax.reload();
             });
 
 
