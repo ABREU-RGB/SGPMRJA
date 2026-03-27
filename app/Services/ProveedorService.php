@@ -64,12 +64,7 @@ class ProveedorService
             $this->crearTelefono($persona->id, $data['telefono']);
 
             if (!empty($data['direccion'])) {
-                Direccion::create([
-                    'persona_id' => $persona->id,
-                    'direccion' => $data['direccion'],
-                    'tipo' => 'trabajo',
-                    'es_principal' => true,
-                ]);
+                $this->crearDireccion($persona->id, $data);
             }
 
             return Proveedor::create([

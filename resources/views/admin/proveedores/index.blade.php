@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -364,6 +364,45 @@
 
                                 <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
+                                        <label for="estado-territorial-jur-field" class="form-label">Estado</label>
+                                        <select id="estado-territorial-jur-field" name="estado_territorial" class="form-select">
+                                            <option value="">Seleccione estado</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ciudad-jur-field" class="form-label">Municipio</label>
+                                        <select id="ciudad-jur-field" name="ciudad" class="form-select">
+                                            <option value="">Primero seleccione un estado</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
                                         <x-forms.input name="telefono_jur_number" label="Teléfono" id="telefono-jur-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
                                             <x-slot:prepend>
                                                 <select class="form-select" id="telefono-jur-prefix-field"
@@ -567,7 +606,8 @@
                     $('#campos-juridico').hide();
                     $('#campos-natural').show();
                     // Limpiar campos jurídicos
-                    $('#rif-number-field, #razon-social-field, #direccion-jur-field, #telefono-jur-field, #email-jur-field, #contacto-field, #telefono-contacto-field').val('');
+                    $('#rif-number-field, #razon-social-field, #direccion-jur-field, #telefono-jur-field, #email-jur-field, #contacto-field, #telefono-contacto-field, #estado-territorial-jur-field').val('');
+                    $('#ciudad-jur-field').empty().append('<option value="">Primero seleccione un estado</option>');
                 } else {
                     $('#campos-juridico').show();
                     $('#campos-natural').hide();
@@ -587,13 +627,30 @@
                 }
             });
 
-            // Dropdown dependiente: Poblar municipios cuando cambia el estado
+            // Dropdown dependiente: Poblar municipios cuando cambia el estado (Natural)
             $("#estado-territorial-field").on('change', function () {
                 const estado = $(this).val();
                 const municipios = getMunicipios(estado);
                 const ciudadSelect = $("#ciudad-field");
 
-                // Limpiar opciones anteriores
+                ciudadSelect.empty();
+
+                if (estado === '') {
+                    ciudadSelect.append('<option value="">Primero seleccione un estado</option>');
+                } else {
+                    ciudadSelect.append('<option value="">Seleccione municipio</option>');
+                    municipios.forEach(function (municipio) {
+                        ciudadSelect.append('<option value="' + municipio + '">' + municipio + '</option>');
+                    });
+                }
+            });
+
+            // Dropdown dependiente: Poblar municipios cuando cambia el estado (Jurídico)
+            $("#estado-territorial-jur-field").on('change', function () {
+                const estado = $(this).val();
+                const municipios = getMunicipios(estado);
+                const ciudadSelect = $("#ciudad-jur-field");
+
                 ciudadSelect.empty();
 
                 if (estado === '') {
@@ -754,6 +811,15 @@
                         $("#razon-social-field").val(data.razon_social);
                         $("#direccion-jur-field").val(data.direccion);
 
+                        // Cargar estado y municipio jurídico
+                        if (data.estado_territorial) {
+                            $("#estado-territorial-jur-field").val(data.estado_territorial);
+                            $("#estado-territorial-jur-field").trigger('change');
+                            setTimeout(function () {
+                                $("#ciudad-jur-field").val(data.ciudad);
+                            }, 100);
+                        }
+
                         // Separar teléfono principal en prefijo y número
                         var telJur = data.telefono || '';
                         var telJurMatch = telJur.match(/^(0212|0251|0241|0255|0412|0414|0424|0416|0426)-(.+)$/);
@@ -821,6 +887,8 @@
 
                     formData.set('email', $('#email-jur-field').val());
                     formData.set('direccion', $('#direccion-jur-field').val());
+                    formData.set('estado_territorial', $('#estado-territorial-jur-field').val());
+                    formData.set('ciudad', $('#ciudad-jur-field').val());
 
                     // Concatenar teléfono de contacto
                     var telefonoContactoCompleto = $('#telefono-contacto-prefix-field').val() + '-' + $('#telefono-contacto-number-field').val();
