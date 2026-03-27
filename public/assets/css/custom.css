@@ -2722,3 +2722,333 @@ header#page-topbar,
     border-color: #60a5fa !important;
 }
 [data-bs-theme="dark"] .swal2-icon.swal2-info      { border-color: #60a5fa !important; color: #60a5fa !important; }
+
+/* ================================================================
+   FILTROS AVANZADOS — Patrón Maestro S-07
+   Clases genéricas reutilizables: .navy-filter-*
+   Paleta: Navy Institucional #1e3c72
+   Aplica a: Clientes, Proveedores, Productos, y futuros módulos.
+   Uso: envolver los filtros en <div class="advanced-filters-wrapper navy-theme">
+   ================================================================ */
+
+/* ── Wrapper principal del bloque de filtros ─────────────────── */
+.advanced-filters-wrapper.navy-theme {
+    background: linear-gradient(135deg, rgba(30, 60, 114, 0.04) 0%, rgba(30, 60, 114, 0.08) 100%);
+    border: 1px solid rgba(30, 60, 114, 0.15);
+    border-left: 4px solid #1e3c72;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.advanced-filters-wrapper.navy-theme:hover {
+    box-shadow: 0 2px 12px rgba(30, 60, 114, 0.1);
+}
+
+/* ── Toggle button (trigger del collapse) ────────────────────── */
+.navy-filter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.45rem 1rem;
+    border: none;
+    background: rgba(30, 60, 114, 0.03);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border-radius: 7px 8px 0 0;
+}
+
+/* Cuando está colapsado (closed), bordes redondeados completos */
+.navy-filter-toggle.collapsed {
+    border-radius: 7px 8px 8px 0;
+    border-bottom: none;
+}
+
+/* Cuando está expandido, borde inferior sutil */
+.navy-filter-toggle:not(.collapsed) {
+    border-bottom: 1px solid rgba(30, 60, 114, 0.1);
+}
+
+.navy-filter-toggle:hover {
+    background: rgba(30, 60, 114, 0.06);
+}
+
+.navy-filter-toggle:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* ── Chevron animado ─────────────────────────────────────────── */
+.navy-filter-chevron {
+    font-size: 1.1rem;
+    color: #1e3c72;
+    transition: transform 0.25s ease;
+}
+
+.navy-filter-toggle.collapsed .navy-filter-chevron {
+    transform: rotate(0deg);
+}
+
+.navy-filter-toggle:not(.collapsed) .navy-filter-chevron {
+    transform: rotate(180deg);
+}
+
+/* ── Título del toggle ───────────────────────────────────────── */
+.navy-filter-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e3c72;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.navy-filter-title i {
+    font-size: 1rem;
+    color: #1e3c72;
+}
+
+/* ── Body del bloque de filtros (compactado) ─────────────────── */
+.navy-filter-body {
+    padding: 0.55rem 1rem 0.6rem;
+}
+
+/* ── Labels de filtro ────────────────────────────────────────── */
+.navy-filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.navy-filter-label i {
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+/* ── Select de filtro ────────────────────────────────────────── */
+.navy-filter-select {
+    font-size: 0.82rem !important;
+    padding: 0.35rem 2rem 0.35rem 0.6rem !important;
+    height: auto !important;
+    border-color: rgba(30, 60, 114, 0.25) !important;
+    color: #2c3e50 !important;
+    background-color: #ffffff !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.navy-filter-select:focus {
+    border-color: #1e3c72 !important;
+    box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.15) !important;
+}
+
+.navy-filter-select:hover {
+    border-color: rgba(30, 60, 114, 0.4) !important;
+}
+
+/* ── Input de filtro (texto) ─────────────────────────────────── */
+.navy-filter-input {
+    font-size: 0.82rem !important;
+    padding: 0.35rem 2rem 0.35rem 0.6rem !important;
+    height: auto !important;
+    border-color: rgba(30, 60, 114, 0.25) !important;
+    color: #2c3e50 !important;
+    background-color: #ffffff !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.navy-filter-input:focus {
+    border-color: #1e3c72 !important;
+    box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.15) !important;
+}
+
+.navy-filter-input:hover {
+    border-color: rgba(30, 60, 114, 0.4) !important;
+}
+
+/* Icono de búsqueda dentro del input */
+.navy-filter-input-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(30, 60, 114, 0.4);
+    font-size: 0.85rem;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.navy-filter-input:focus ~ .navy-filter-input-icon {
+    color: #1e3c72;
+}
+
+/* ── Botón limpiar filtros ───────────────────────────────────── */
+.btn-navy-outline {
+    color: #1e3c72 !important;
+    border: 1px solid rgba(30, 60, 114, 0.35) !important;
+    background: transparent !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    padding: 0.3rem 0.75rem !important;
+    border-radius: 6px !important;
+    transition: all 0.18s ease !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.btn-navy-outline:hover {
+    background: #1e3c72 !important;
+    color: #ffffff !important;
+    border-color: #1e3c72 !important;
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.25) !important;
+    transform: translateY(-1px);
+}
+
+.btn-navy-outline:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(30, 60, 114, 0.2) !important;
+}
+
+.btn-navy-outline i {
+    transition: transform 0.3s ease;
+}
+
+.btn-navy-outline:hover i {
+    transform: rotate(180deg);
+}
+
+/* ── Badges de tipo de cliente ───────────────────────────────── */
+.badge-tipo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3em 0.6em;
+    font-size: 0.78em;
+    font-weight: 600;
+    border-radius: 0.35rem;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.badge-tipo i { font-size: 0.82em; }
+
+.badge-tipo-natural {
+    background-color: rgba(30, 60, 114, 0.12);
+    color: #1e3c72;
+    border-color: rgba(30, 60, 114, 0.2);
+}
+
+.badge-tipo-juridico {
+    background-color: rgba(139, 92, 246, 0.12);
+    color: #7c3aed;
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.badge-tipo-gubernamental {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* ── DARK MODE — Filtros Avanzados ───────────────────────────── */
+[data-bs-theme="dark"] .advanced-filters-wrapper.navy-theme {
+    background: linear-gradient(135deg, rgba(78, 122, 199, 0.06) 0%, rgba(78, 122, 199, 0.1) 100%);
+    border-color: rgba(78, 122, 199, 0.2);
+    border-left-color: #4e7ac7;
+}
+
+[data-bs-theme="dark"] .navy-filter-toggle {
+    background: rgba(78, 122, 199, 0.05);
+}
+
+[data-bs-theme="dark"] .navy-filter-toggle:not(.collapsed) {
+    border-bottom-color: rgba(78, 122, 199, 0.15);
+}
+
+[data-bs-theme="dark"] .navy-filter-toggle:hover {
+    background: rgba(78, 122, 199, 0.1);
+}
+
+[data-bs-theme="dark"] .navy-filter-chevron {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .navy-filter-title {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .navy-filter-title i {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .navy-filter-label {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .navy-filter-select {
+    background-color: #1f2229 !important;
+    border-color: rgba(78, 122, 199, 0.3) !important;
+    color: #c8cbd0 !important;
+}
+
+[data-bs-theme="dark"] .navy-filter-select:focus {
+    border-color: #4e7ac7 !important;
+    box-shadow: 0 0 0 0.2rem rgba(78, 122, 199, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .navy-filter-input {
+    background-color: #1f2229 !important;
+    border-color: rgba(78, 122, 199, 0.3) !important;
+    color: #c8cbd0 !important;
+}
+
+[data-bs-theme="dark"] .navy-filter-input:focus {
+    border-color: #4e7ac7 !important;
+    box-shadow: 0 0 0 0.2rem rgba(78, 122, 199, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .navy-filter-input-icon {
+    color: rgba(147, 197, 253, 0.4);
+}
+
+[data-bs-theme="dark"] .navy-filter-input:focus ~ .navy-filter-input-icon {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .btn-navy-outline {
+    color: #93c5fd !important;
+    border-color: rgba(78, 122, 199, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .btn-navy-outline:hover {
+    background: #4e7ac7 !important;
+    color: #ffffff !important;
+    border-color: #4e7ac7 !important;
+}
+
+/* ── DARK MODE — Badges de tipo ──────────────────────────────── */
+[data-bs-theme="dark"] .badge-tipo-natural {
+    background-color: rgba(147, 197, 253, 0.15);
+    color: #93c5fd;
+    border-color: rgba(147, 197, 253, 0.25);
+}
+
+[data-bs-theme="dark"] .badge-tipo-juridico {
+    background-color: rgba(196, 181, 253, 0.15);
+    color: #c4b5fd;
+    border-color: rgba(196, 181, 253, 0.25);
+}
+
+[data-bs-theme="dark"] .badge-tipo-gubernamental {
+    background-color: rgba(110, 231, 183, 0.15);
+    color: #6ee7b7;
+    border-color: rgba(110, 231, 183, 0.25);
+}
