@@ -156,6 +156,17 @@ class ProductoController extends Controller
         return response()->json(['success' => 'Producto inhabilitado exitosamente.']);
     }
 
+    /**
+     * Restaurar un producto inhabilitado (soft-deleted).
+     */
+    public function restore($id)
+    {
+        $producto = Producto::onlyTrashed()->findOrFail($id);
+        $producto->restore();
+
+        return response()->json(['success' => 'Producto restaurado exitosamente.']);
+    }
+
     public function reportePdf()
     {
         $productos = Producto::with('tipoProducto')->get();

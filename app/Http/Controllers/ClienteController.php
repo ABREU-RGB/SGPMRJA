@@ -164,6 +164,22 @@ class ClienteController extends Controller
         return response()->json(['message' => 'Cliente inhabilitado exitosamente.']);
     }
 
+    /**
+     * Restaurar un cliente inhabilitado (soft-deleted).
+     */
+    public function restore($id)
+    {
+        $cliente = Cliente::onlyTrashed()->findOrFail($id);
+        $cliente->restore();
+
+        \Log::info('Cliente restaurado', [
+            'cliente_id' => $id,
+            'user_id' => auth()->id(),
+        ]);
+
+        return response()->json(['message' => 'Cliente restaurado exitosamente.']);
+    }
+
     public function show($id)
     {
         $cliente = Cliente::with(['persona.telefonos', 'persona.direcciones'])->findOrFail($id);
