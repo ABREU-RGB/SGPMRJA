@@ -65,6 +65,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::get('clientes-check-email', [ClienteController::class, 'checkEmail'])->name('clientes.check-email');
         Route::get('clientes-search', [ClienteController::class, 'searchAjax'])->name('clientes.search');
         Route::get('/clientes/reporte/pdf', [ClienteController::class, 'exportarPDF'])->name('clientes.reporte.pdf');
+        Route::post('clientes/{id}/restore', [ClienteController::class, 'restore'])->name('clientes.restore');
 
         // Empleados
         Route::resource('empleados', EmpleadoController::class);
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::put('proveedores/{proveedor}', [ProveedorController::class, 'update'])->name('proveedores.update');
         Route::delete('proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
         Route::get('proveedores/{proveedor}/edit', [ProveedorController::class, 'edit'])->name('proveedores.edit');
+        Route::post('proveedores/{id}/restore', [ProveedorController::class, 'restore'])->name('proveedores.restore');
     });
 
     // ============================================
@@ -146,6 +148,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::resource('productos', ProductoController::class);
         Route::get('productos-data', [ProductoController::class, 'getProductos'])->name('productos.data');
         Route::get('productos/reporte/pdf', [ProductoController::class, 'reportePdf'])->name('productos.reporte.pdf');
+        Route::post('productos/{id}/restore', [ProductoController::class, 'restore'])->name('productos.restore');
 
         // Tipos de Producto
         Route::get('tipo-productos', [App\Http\Controllers\TipoProductoController::class, 'index'])->name('tipo-productos.index');

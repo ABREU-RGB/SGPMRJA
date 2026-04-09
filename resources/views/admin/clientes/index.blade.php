@@ -874,11 +874,14 @@
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
             function generateButtons(clienteId, isTrashed) {
-                // Si el registro está inhabilitado (trashed), solo mostrar botón "Ver"
+                // Si el registro está inhabilitado (trashed), mostrar botón "Ver" + "Restaurar"
                 if (isTrashed) {
                     return '<div class="d-flex gap-1 justify-content-center">' +
                         '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + clienteId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
                         '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-soft-success restore-item-btn" data-id="' + clienteId + '" title="Restaurar" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-arrow-go-back-line" style="font-size:13px;"></i>' +
                         '</button>' +
                         '</div>';
                 }
@@ -1252,6 +1255,54 @@
                                     icon: 'error',
                                     title: 'Error',
                                     text: xhr.responseJSON.message || 'Ocurrió un error al inhabilitar el cliente'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // ══════════════════════════════════════════════════════
+            // RESTAURAR — SoftDelete Restore (Patrón Maestro S-08)
+            // ══════════════════════════════════════════════════════
+            $(document).on("click", ".restore-item-btn", function () {
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: '¿Restaurar registro?',
+                    text: "¿Estás seguro de que deseas restaurar este cliente?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, restaurar',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'btn btn-success w-xs me-2',
+                        cancelButton: 'btn btn-light w-xs'
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                }).then(function (result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: "{{ url('clientes') }}/" + id + "/restore",
+                            method: "POST",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                table.ajax.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Restaurado!',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: xhr.responseJSON?.message || 'No se pudo restaurar el cliente'
                                 });
                             }
                         });

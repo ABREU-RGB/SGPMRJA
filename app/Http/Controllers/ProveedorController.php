@@ -169,6 +169,17 @@ class ProveedorController extends Controller
         return response()->json(['success' => 'Proveedor inhabilitado exitosamente.']);
     }
 
+    /**
+     * Restaurar un proveedor inhabilitado (soft-deleted).
+     */
+    public function restore($id)
+    {
+        $proveedor = Proveedor::onlyTrashed()->findOrFail($id);
+        $proveedor->restore();
+
+        return response()->json(['success' => 'Proveedor restaurado exitosamente.']);
+    }
+
     public function reportePdf()
     {
         $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
