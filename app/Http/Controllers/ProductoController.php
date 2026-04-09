@@ -10,21 +10,29 @@ use PDF;
 
 class ProductoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $tiposProducto = TipoProducto::orderBy('nombre')->get();
-        return view('admin.productos.index', compact('tiposProducto'));
+        $historial = $request->has('historial');
+        return view('admin.productos.index', compact('tiposProducto', 'historial'));
     }
 
-    public function getProductos()
+    public function getProductos(Request $request)
     {
-        $productos = Producto::with('tipoProducto')->get();
+        if ($request->has('historial')) {
+            $productos = Producto::onlyTrashed()->with('tipoProducto')->get();
+        } else {
+            $productos = Producto::with('tipoProducto')->get();
+        }
         return DataTables::of($productos)
             ->addColumn('tipo_nombre', function ($producto) {
                 return $producto->tipoProducto ? $producto->tipoProducto->nombre : 'Sin tipo';
             })
             ->addColumn('nombre_completo', function ($producto) {
                 return $producto->nombre_completo;
+            })
+            ->addColumn('trashed', function ($producto) {
+                return $producto->trashed();
             })
             ->make(true);
     }
@@ -143,11 +151,20 @@ class ProductoController extends Controller
     public function destroy($id)
     {
         $producto = Producto::findOrFail($id);
-        if ($producto->imagen && file_exists(public_path($producto->imagen))) {
-            unlink(public_path($producto->imagen));
-        }
-        $producto->delete();
-        return response()->json(['success' => 'Producto eliminado exitosamente.']);
+        // No eliminar imagen en soft delete, se conserva por si se restaura
+        $producto->delete(); // SoftDelete: marca deleted_at
+        return response()->json(['success' => 'Producto inhabilitado exitosamente.']);
+    }
+
+    /**
+     * Restaurar un producto inhabilitado (soft-deleted).
+     */
+    public function restore($id)
+    {
+        $producto = Producto::onlyTrashed()->findOrFail($id);
+        $producto->restore();
+
+        return response()->json(['success' => 'Producto restaurado exitosamente.']);
     }
 
     public function reportePdf()

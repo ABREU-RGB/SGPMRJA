@@ -65,6 +65,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::get('clientes-check-email', [ClienteController::class, 'checkEmail'])->name('clientes.check-email');
         Route::get('clientes-search', [ClienteController::class, 'searchAjax'])->name('clientes.search');
         Route::get('/clientes/reporte/pdf', [ClienteController::class, 'exportarPDF'])->name('clientes.reporte.pdf');
+        Route::post('clientes/{id}/restore', [ClienteController::class, 'restore'])->name('clientes.restore');
 
         // Empleados
         Route::resource('empleados', EmpleadoController::class);
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::put('proveedores/{proveedor}', [ProveedorController::class, 'update'])->name('proveedores.update');
         Route::delete('proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
         Route::get('proveedores/{proveedor}/edit', [ProveedorController::class, 'edit'])->name('proveedores.edit');
+        Route::post('proveedores/{id}/restore', [ProveedorController::class, 'restore'])->name('proveedores.restore');
     });
 
     // ============================================
@@ -146,6 +148,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::resource('productos', ProductoController::class);
         Route::get('productos-data', [ProductoController::class, 'getProductos'])->name('productos.data');
         Route::get('productos/reporte/pdf', [ProductoController::class, 'reportePdf'])->name('productos.reporte.pdf');
+        Route::post('productos/{id}/restore', [ProductoController::class, 'restore'])->name('productos.restore');
 
         // Tipos de Producto
         Route::get('tipo-productos', [App\Http\Controllers\TipoProductoController::class, 'index'])->name('tipo-productos.index');
@@ -153,6 +156,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::get('tipo-productos/{tipoProducto}', [App\Http\Controllers\TipoProductoController::class, 'show'])->name('tipo-productos.show');
         Route::put('tipo-productos/{tipoProducto}', [App\Http\Controllers\TipoProductoController::class, 'update'])->name('tipo-productos.update');
         Route::delete('tipo-productos/{tipoProducto}', [App\Http\Controllers\TipoProductoController::class, 'destroy'])->name('tipo-productos.destroy');
+        Route::patch('tipo-productos/{id}/restore', [App\Http\Controllers\TipoProductoController::class, 'restore'])->name('tipo-productos.restore');
         Route::get('tipo-productos/{tipoProducto}/proximo-codigo', [App\Http\Controllers\TipoProductoController::class, 'proximoCodigo'])->name('tipo-productos.proximo-codigo');
         Route::get('tipo-productos-check-nombre', [App\Http\Controllers\TipoProductoController::class, 'checkNombre'])->name('tipo-productos.check-nombre');
         Route::get('tipo-productos-check-codigo', [App\Http\Controllers\TipoProductoController::class, 'checkCodigoPrefijo'])->name('tipo-productos.check-codigo');

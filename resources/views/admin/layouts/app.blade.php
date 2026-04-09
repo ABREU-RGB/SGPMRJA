@@ -73,169 +73,8 @@
             font-weight: bold;
         }
 
+        {{-- Dark mode de layout (navbar, sidebar, cards, tables, modals) — movido a public/assets/css/custom.css (sección DARK MODE — LAYOUT) --}}
         {{-- SweetAlert2 — movido a public/assets/css/custom.css (sección SWEETALERT2 ESTÁNDAR ATLÁNTICO) --}}
-
-        /* ========== DARK MODE STYLES ========== */
-        [data-bs-theme="dark"] .app-menu,
-        [data-bs-theme="dark"] .navbar-menu {
-            background-color: #1a1d21 !important;
-            border-right: 1px solid #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .navbar-brand-box {
-            background-color: transparent !important;
-            border-bottom: 1px solid #2d3139 !important;
-        }
-
-        /* Remover fondo negro del logo usando filtro en modo oscuro */
-        [data-bs-theme="dark"] .navbar-brand-box img,
-        [data-bs-theme="dark"] .horizontal-logo img,
-        [data-bs-theme="dark"] .logo img {
-            filter: brightness(1.2) contrast(1.1);
-            background: transparent !important;
-        }
-
-        [data-bs-theme="dark"] .menu-title {
-            color: #8b92a7 !important;
-        }
-
-        [data-bs-theme="dark"] .nav-link {
-            color: #c8cbd0 !important;
-        }
-
-        [data-bs-theme="dark"] .nav-link:hover {
-            background-color: #242832 !important;
-            color: #ffffff !important;
-        }
-
-        [data-bs-theme="dark"] .nav-link.active {
-            background: rgba(59, 130, 246, 0.2) !important;
-            color: #60a5fa !important;
-            border-left-color: #60a5fa !important;
-        }
-
-        [data-bs-theme="dark"] .nav-link.active i {
-            color: #60a5fa !important;
-        }
-
-        [data-bs-theme="dark"] .menu-dropdown {
-            background-color: #1f2229 !important;
-        }
-
-        [data-bs-theme="dark"] .menu-dropdown .nav-link {
-            color: #a8adb9 !important;
-        }
-
-        [data-bs-theme="dark"] .card {
-            background-color: #242832 !important;
-            border-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .card-header {
-            background-color: #1f2229 !important;
-            border-bottom-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .table {
-            color: #c8cbd0 !important;
-            border-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .table thead th {
-            background-color: #1f2229 !important;
-            color: #e4e7eb !important;
-            border-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .table tbody tr {
-            border-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .table tbody tr:hover {
-            background-color: #2a2f3a !important;
-        }
-
-        [data-bs-theme="dark"] .page-content {
-            background-color: #1a1d21 !important;
-        }
-
-        [data-bs-theme="dark"] .main-content {
-            background-color: #1a1d21 !important;
-        }
-
-        [data-bs-theme="dark"] body {
-            background-color: #151820 !important;
-            color: #c8cbd0 !important;
-        }
-
-        [data-bs-theme="dark"] .form-control,
-        [data-bs-theme="dark"] .form-select {
-            background-color: #1f2229 !important;
-            border-color: #2d3139 !important;
-            color: #c8cbd0 !important;
-        }
-
-        [data-bs-theme="dark"] .form-control:focus,
-        [data-bs-theme="dark"] .form-select:focus {
-            background-color: #242832 !important;
-            border-color: #60a5fa !important;
-            color: #ffffff !important;
-        }
-
-        [data-bs-theme="dark"] .modal-content {
-            background-color: #242832 !important;
-            border-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .modal-header {
-            background-color: #1f2229 !important;
-            border-bottom-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .modal-footer {
-            background-color: #1f2229 !important;
-            border-top-color: #2d3139 !important;
-        }
-
-        [data-bs-theme="dark"] .breadcrumb-item,
-        [data-bs-theme="dark"] .breadcrumb-item.active {
-            color: #8b92a7 !important;
-        }
-
-        [data-bs-theme="dark"] .page-title-box h4 {
-            color: #e4e7eb !important;
-        }
-
-        /* DataTables dark mode */
-        [data-bs-theme="dark"] .dataTables_wrapper .dataTables_filter input,
-        [data-bs-theme="dark"] .dataTables_wrapper .dataTables_length select {
-            background-color: #1f2229 !important;
-            border-color: #2d3139 !important;
-            color: #c8cbd0 !important;
-        }
-
-        [data-bs-theme="dark"] .dataTables_wrapper .dataTables_info,
-        [data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate {
-            color: #8b92a7 !important;
-        }
-
-        [data-bs-theme="dark"] .pagination .page-link {
-            background-color: #242832 !important;
-            border-color: #2d3139 !important;
-            color: #c8cbd0 !important;
-        }
-
-        [data-bs-theme="dark"] .pagination .page-link:hover {
-            background-color: #2a2f3a !important;
-            color: #ffffff !important;
-        }
-
-        [data-bs-theme="dark"] .pagination .page-item.active .page-link {
-            background-color: #60a5fa !important;
-            border-color: #60a5fa !important;
-        }
-
-        {{-- SweetAlert2 dark mode — movido a public/assets/css/custom.css --}}
     </style>
 
     @stack('styles')
@@ -243,6 +82,29 @@
 
 <body>
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
+    <!-- Toast: restaurar pantalla completa tras navegación (V-10) -->
+    <div id="fs-restore-toast" role="alert" aria-live="assertive" aria-atomic="true"
+         style="position:fixed;top:70px;right:20px;z-index:9999;min-width:290px;display:none;
+                background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);
+                border-left:4px solid #1e3c72;overflow:hidden;">
+        <div class="d-flex align-items-center gap-3 p-3">
+            <i class="bx bx-fullscreen text-primary" style="font-size:1.4rem;flex-shrink:0;"></i>
+            <div class="flex-grow-1 lh-sm">
+                <div class="fw-semibold" style="font-size:.83rem;color:#1e3c72;">Pantalla completa</div>
+                <div class="text-muted" style="font-size:.76rem;">Estaba activa antes de navegar</div>
+            </div>
+            <button type="button" id="fs-restore-btn"
+                    class="btn btn-sm btn-primary px-3" style="white-space:nowrap;font-size:.8rem;">
+                Restaurar
+            </button>
+            <button type="button" id="fs-restore-dismiss"
+                    class="btn-close" style="flex-shrink:0;" aria-label="Cerrar"></button>
+        </div>
+        <div id="fs-restore-progress"
+             style="height:3px;width:100%;background:#1e3c72;transform-origin:left;"></div>
+    </div>
+
     <!-- Begin page -->
     <div id="layout-wrapper">
         @include('admin.layouts.header')
@@ -329,17 +191,138 @@
             observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
         })();
     </script>
+
+    <!-- Fullscreen Persistence (mismo patrón que el tema oscuro) -->
+    <script>
+        (function () {
+            var FS_KEY = 'sgpmrja-fullscreen';
+            // true cuando el usuario inició la salida del fullscreen (botón o Esc).
+            // false cuando el browser lo fuerza por navegación — en ese caso no guardamos 'false'.
+            var userExiting = false;
+
+            function syncFullscreenIcon() {
+                var btn = document.querySelector('[data-toggle="fullscreen"]');
+                if (!btn) return;
+                var icon = btn.querySelector('i');
+                if (!icon) return;
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    icon.classList.remove('bx-fullscreen');
+                    icon.classList.add('bx-exit-fullscreen');
+                } else {
+                    icon.classList.remove('bx-exit-fullscreen');
+                    icon.classList.add('bx-fullscreen');
+                }
+            }
+
+            function enterFullscreen() {
+                var docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen().catch(function () { });
+                } else if (docEl.webkitRequestFullscreen) {
+                    docEl.webkitRequestFullscreen();
+                }
+            }
+
+            // Al ENTRAR fullscreen: siempre guardar 'true'.
+            // Al SALIR: solo guardar 'false' si fue una salida intencional del usuario.
+            // La salida por navegación no toca localStorage → 'true' persiste para la siguiente página.
+            function onFsChange(isFS) {
+                if (isFS) {
+                    localStorage.setItem(FS_KEY, 'true');
+                    userExiting = false;
+                } else if (userExiting) {
+                    localStorage.setItem(FS_KEY, 'false');
+                    userExiting = false;
+                }
+                syncFullscreenIcon();
+            }
+            document.addEventListener('fullscreenchange', function () {
+                onFsChange(!!document.fullscreenElement);
+            });
+            document.addEventListener('webkitfullscreenchange', function () {
+                onFsChange(!!document.webkitFullscreenElement);
+            });
+
+            // Detectar salida INTENCIONAL del usuario:
+            // 1. Tecla Escape mientras está en fullscreen
+            document.addEventListener('keydown', function (e) {
+                if ((e.key === 'Escape' || e.keyCode === 27) &&
+                    (document.fullscreenElement || document.webkitFullscreenElement)) {
+                    userExiting = true;
+                }
+            });
+
+            // 2. Clic en el botón de fullscreen cuando ya está en fullscreen (= quiere salir)
+            document.addEventListener('DOMContentLoaded', function () {
+                var btn = document.querySelector('[data-toggle="fullscreen"]');
+                if (btn) {
+                    btn.addEventListener('click', function () {
+                        if (document.fullscreenElement || document.webkitFullscreenElement) {
+                            userExiting = true;
+                        }
+                    });
+                }
+            });
+
+            // Al cargar la página: si el usuario estaba en fullscreen antes de navegar,
+            // mostrar un toast con botón para restaurarlo (el browser exige gesto del usuario).
+            function setupAutoRestore() {
+                if (localStorage.getItem(FS_KEY) !== 'true') return;
+                if (document.fullscreenElement || document.webkitFullscreenElement) return;
+
+                var toast   = document.getElementById('fs-restore-toast');
+                var btnOk   = document.getElementById('fs-restore-btn');
+                var btnX    = document.getElementById('fs-restore-dismiss');
+                if (!toast) return;
+
+                toast.style.display = 'block';
+                // Arrancar barra de progreso
+                var progress = document.getElementById('fs-restore-progress');
+                if (progress) progress.classList.add('running');
+
+                // Auto-ocultar tras 8 s si el usuario no interactúa
+                var autoHide = setTimeout(function () {
+                    toast.style.display = 'none';
+                }, 8000);
+
+                btnOk.addEventListener('click', function () {
+                    clearTimeout(autoHide);
+                    toast.style.display = 'none';
+                    enterFullscreen();
+                }, { once: true });
+
+                // Si el usuario cierra el toast con la X, interpreta que no quiere
+                // restaurar → guardar 'false' para no volver a molestar.
+                btnX.addEventListener('click', function () {
+                    clearTimeout(autoHide);
+                    toast.style.display = 'none';
+                    localStorage.setItem(FS_KEY, 'false');
+                }, { once: true });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    setupAutoRestore();
+                    syncFullscreenIcon();
+                });
+            } else {
+                setupAutoRestore();
+                syncFullscreenIcon();
+            }
+        })();
+    </script>
+
     <script>
         const lenguajeData = {
             emptyTable: "No hay datos disponibles",
-            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-            infoEmpty: "Mostrando 0 a 0 de 0 registros",
+            info: "Mostrando _START_–_END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0–0 de 0 registros",
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             lengthMenu: "Mostrar _MENU_ registros",
             loadingRecords: "Cargando...",
             processing: "Procesando...",
             search: "Buscar:",
-            zeroRecords: "No se encontraron coincidencias",
+            zeroRecords: "No se encontraron resultados",
             paginate: {
                 first: "Primero",
                 last: "Último",

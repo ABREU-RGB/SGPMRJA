@@ -199,7 +199,7 @@
                                                     <i class="ri-building-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block">Ciudad</small>
+                                                    <small class="text-muted d-block">Municipio</small>
                                                     <span class="fw-semibold" id="view-ciudad">-</span>
                                                 </div>
                                             </div>
@@ -381,7 +381,7 @@
                                     <x-forms.input name="estado_geografico" label="Estado" placeholder="Estado" />
                                 </div>
                                 <div class="col-md-6">
-                                    <x-forms.input name="ciudad" label="Ciudad" placeholder="Ciudad" />
+                                    <x-forms.input name="ciudad" label="Municipio" placeholder="Municipio" />
                                 </div>
                             </div>
                         </div>
@@ -673,22 +673,7 @@
                 ],
                 order: [[0, 'desc']],
                 dom: 'rtip',
-                language: {
-                    "sProcessing": "Procesando...",
-                    "sLengthMenu": "Mostrar _MENU_ registros",
-                    "sZeroRecords": "No se encontraron resultados",
-                    "sEmptyTable": "Ningún empleado disponible",
-                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                    "sInfoEmpty": "Mostrando 0 registros",
-                    "sInfoFiltered": "(filtrado de _MAX_ registros)",
-                    "sSearch": "Buscar:",
-                    "oPaginate": {
-                        "sFirst": "Primero",
-                        "sLast": "Último",
-                        "sNext": "Siguiente",
-                        "sPrevious": "Anterior"
-                    }
-                }
+                language: lenguajeData
             });
 
             // Buscador personalizado

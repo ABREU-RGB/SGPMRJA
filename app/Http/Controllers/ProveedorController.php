@@ -15,14 +15,19 @@ class ProveedorController extends Controller
         private ProveedorService $proveedorService
     ) {
     }
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.proveedores.index');
+        $historial = $request->has('historial');
+        return view('admin.proveedores.index', compact('historial'));
     }
 
-    public function getProveedores()
+    public function getProveedores(Request $request)
     {
-        $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
+        if ($request->has('historial')) {
+            $proveedores = Proveedor::onlyTrashed()->with('persona.telefonos', 'persona.direcciones')->get();
+        } else {
+            $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
+        }
 
         $data = $proveedores->map(function ($proveedor) {
             return [
@@ -34,6 +39,7 @@ class ProveedorController extends Controller
                 'telefono_display' => $proveedor->telefono_unificado,
                 'email_display' => $proveedor->email_unificado,
                 'estado' => $proveedor->estado,
+                'trashed' => $proveedor->trashed(),
             ];
         });
 
@@ -131,6 +137,8 @@ class ProveedorController extends Controller
                 'telefono' => 'required|string|max:20',
                 'email' => 'required|email|max:255|unique:persona,email,' . ($proveedor->persona_id ?? 0),
                 'direccion' => 'required|string|max:255',
+                'ciudad' => 'nullable|string|max:100',
+                'estado_territorial' => 'nullable|string|max:50',
             ]);
 
             $this->proveedorService->actualizarNatural($proveedor, $request->all());
@@ -145,6 +153,8 @@ class ProveedorController extends Controller
                 'contacto' => 'nullable|string|max:100',
                 'telefono_contacto' => 'nullable|string|max:20',
                 'estado' => 'nullable|boolean',
+                'ciudad' => 'nullable|string|max:100',
+                'estado_territorial' => 'nullable|string|max:50',
             ]);
 
             $this->proveedorService->actualizarJuridico($proveedor, $request->all());
@@ -155,8 +165,19 @@ class ProveedorController extends Controller
     public function destroy($id)
     {
         $proveedor = Proveedor::findOrFail($id);
-        $proveedor->delete();
-        return response()->json(['success' => 'Proveedor eliminado exitosamente.']);
+        $proveedor->delete(); // SoftDelete: marca deleted_at
+        return response()->json(['success' => 'Proveedor inhabilitado exitosamente.']);
+    }
+
+    /**
+     * Restaurar un proveedor inhabilitado (soft-deleted).
+     */
+    public function restore($id)
+    {
+        $proveedor = Proveedor::onlyTrashed()->findOrFail($id);
+        $proveedor->restore();
+
+        return response()->json(['success' => 'Proveedor restaurado exitosamente.']);
     }
 
     public function reportePdf()

@@ -1,4 +1,4 @@
-﻿<!-- Modal para ver detalles de Cotización -->
+<!-- Modal para ver detalles de Cotización -->
 <div class="modal fade atlantico-modal atlantico-modal--op" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -401,21 +401,22 @@
                         <!-- Columna Derecha: Productos -->
                         <div class="col-lg-7">
                             <div class="card border-0 shadow-sm h-100">
-                                <div
-                                    class="card-header border-0 bg-soft-primary d-flex align-items-center justify-content-between">
+                                <div class="card-header border-0 bg-soft-primary">
                                     <h6 class="mb-0 text-atlantico-dark">
                                         <span
                                             style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">2</span>
                                         <i class="ri-shopping-bag-3-line me-2"></i>Productos de la Cotización
                                     </h6>
-                                    <button type="button" class="btn btn-sm btn-success px-3" id="add-producto-item">
-                                        <i class="ri-add-line me-1"></i>Agregar Producto
-                                    </button>
                                 </div>
                                 <div class="card-body p-2"
                                     style="max-height: 490px; overflow-y: auto; overflow-x: hidden;">
                                     <div id="productos-container">
                                         <!-- Productos dinámicos -->
+                                    </div>
+                                    <div class="mt-3 mb-2 text-center px-2">
+                                        <button type="button" class="btn btn-sm btn-soft-success w-100" style="border: 1px dashed #2ecc71;" id="add-producto-item">
+                                            <i class="ri-add-line me-1"></i>Agregar Producto
+                                        </button>
                                     </div>
                                 </div>
                             </div>

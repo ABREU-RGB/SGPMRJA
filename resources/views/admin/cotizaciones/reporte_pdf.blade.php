@@ -1,97 +1,76 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.pdf')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte de Cotizaciones</title>
-    <style>
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            margin: 0;
-        }
+@section('page-title', 'Reporte de Cotizaciones')
+@section('report-title', 'Reporte General de Cotizaciones')
 
-        .container {
-            max-width: 750px;
-            width: 100%;
-            margin: 0 auto;
-            padding-left: 0px;
-            padding-right: 30px;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
+@section('extra-styles')
+    .col-nro {
+        width: 10%;
+        text-align: center;
+    }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .col-cliente {
+        width: 23%;
+        font-weight: 600;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
+    .col-fecha {
+        width: 12%;
+        text-align: center;
+    }
 
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 4px;
-            text-align: center;
-            font-size: 11px;
-        }
+    .col-total {
+        width: 14%;
+        text-align: right;
+    }
 
-        th {
-            background-color: #f0f0f0;
-        }
-    </style>
-</head>
+    .col-estado {
+        width: 12%;
+        text-align: center;
+    }
 
-<body>
-    <div class="container">
-        <div style="position: relative; min-height: 100px; margin-bottom: 8px;">
-            <img src="{{ public_path('logo.jpg') }}" alt="Logo"
-                style="width: 100px; position: absolute; left: 0; top: 0;">
-            <div style="text-align: center; padding-left: 30px;">
-                <div class="company-name" style="font-size: 18px; font-weight: bold;">Manufacturas R.J. ATLANTICO C.A.
-                </div>
-                <div class="company-info" style="font-size: 11px;">
-                    Rif: J-40391423-0 &nbsp;&nbsp; Telf.: 0414-3558537 - 0255-6640625 &nbsp;&nbsp; Email:
-                    rjatlantico@gmail.com
-                </div>
-                <div class="company-info" style="font-size: 11px;">
-                    Av. Esquina calle 35 locales 1 y 2 sector centro Acarigua - Edo. Portuguesa
-                </div>
-            </div>
-        </div>
-        <div style="text-align:center; font-size:16px; font-weight:bold; margin: 0 0 8px 0;">
-            Reporte General de Cotizaciones
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nro. Cotización</th>
-                    <th>Cliente</th>
-                    <th>Fecha Cotización</th>
-                    <th>Total ($)</th>
-                    <th>Estado</th>
-                    <th>Elaborado por</th>
+    .col-elaborado {
+        width: 18%;
+    }
+@endsection
+
+@section('summary-bar')
+    <td>
+        <span class="label">Total Registros:</span>
+        <span class="value">{{ $cotizaciones->count() }}</span>
+    </td>
+    <td>
+        <span class="label">Monto Total:</span>
+        <span class="value">${{ number_format($cotizaciones->sum('total'), 2) }}</span>
+    </td>
+@endsection
+
+@section('content')
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="col-num">#</th>
+                <th class="col-nro">Nro. Cotización</th>
+                <th class="col-cliente">Cliente</th>
+                <th class="col-fecha">Fecha Cotización</th>
+                <th class="col-total">Total ($)</th>
+                <th class="col-estado">Estado</th>
+                <th class="col-elaborado">Elaborado por</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($cotizaciones as $index => $cotizacion)
+                <tr class="{{ $index % 2 === 1 ? 'zebra' : '' }}">
+                    <td class="col-num">{{ $index + 1 }}</td>
+                    <td class="col-nro">{{ $cotizacion->id }}</td>
+                    <td class="col-cliente">{{ $cotizacion->cliente ? ($cotizacion->cliente->nombre . ' ' . ($cotizacion->cliente->apellido ?? '')) : 'Sin cliente' }}
+                    </td>
+                    <td class="col-fecha">{{ \Carbon\Carbon::parse($cotizacion->fecha_cotizacion)->format('d/m/Y') }}</td>
+                    <td class="col-total">{{ number_format($cotizacion->total, 2) }}</td>
+                    <td class="col-estado">{{ $cotizacion->estado }}</td>
+                    <td class="col-elaborado">{{ $cotizacion->user->name ?? '' }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($cotizaciones as $cotizacion)
-                    <tr>
-                        <td>{{ $cotizacion->id }}</td>
-                        <td>{{ $cotizacion->cliente ? ($cotizacion->cliente->nombre . ' ' . ($cotizacion->cliente->apellido ?? '')) : 'Sin cliente' }}
-                        </td>
-                        <td>{{ \Carbon\Carbon::parse($cotizacion->fecha_cotizacion)->format('d/m/Y') }}</td>
-                        <td>{{ number_format($cotizacion->total, 2) }}</td>
-                        <td>{{ $cotizacion->estado }}</td>
-                        <td>{{ $cotizacion->user->name ?? '' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</body>
-
-</html>
+            @endforeach
+        </tbody>
+    </table>
+@endsection

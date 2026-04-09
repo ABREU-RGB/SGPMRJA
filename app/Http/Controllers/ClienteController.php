@@ -22,17 +22,57 @@ class ClienteController extends Controller
     ) {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.clientes.index');
+        $historial = $request->has('historial');
+        return view('admin.clientes.index', compact('historial'));
     }
 
-    public function getClientes()
+    public function getClientes(Request $request)
     {
-        // Paginación server-side: pasar query builder, no colección
-        $clientes = Cliente::with(['persona.telefonos', 'persona.direcciones']);
+        // ── Base query con relaciones ──
+        $query = Cliente::with(['persona.telefonos', 'persona.direcciones']);
 
-        return DataTables::of($clientes)
+        // ══════════════════════════════════════════════════════════
+        // FILTROS AVANZADOS — Server-Side (Patrón Maestro S-07)
+        // Cada filtro se aplica solo si el frontend envía un valor.
+        // Para replicar en otros módulos: copiar este bloque y
+        // ajustar los nombres de columna/accessor según el modelo.
+        // ══════════════════════════════════════════════════════════
+
+        // Filtro: Tipo de Cliente (natural, juridico, gubernamental)
+        if ($request->filled('filter_tipo_cliente')) {
+            $query->where('tipo_cliente', $request->input('filter_tipo_cliente'));
+        }
+
+        // Filtro: Estatus (1 = activo, 0 = inactivo/trashed)
+        if ($request->filled('filter_estatus')) {
+            $estatus = $request->input('filter_estatus');
+            if ($estatus === '0') {
+                // Inactivo: incluir registros en papelera (SoftDeletes)
+                $query->onlyTrashed();
+            }
+            // Si estatus es '1' (activo), no se necesita filtro adicional
+            // porque el query base ya excluye trashed por defecto.
+        }
+
+        // Filtro: Estado Territorial
+        if ($request->filled('filter_estado_territorial')) {
+            $estado = $request->input('filter_estado_territorial');
+            $query->whereHas('persona.direcciones', function ($q) use ($estado) {
+                $q->where('estado', $estado);
+            });
+        }
+
+        // Filtro: Documento (búsqueda parcial por cédula/RIF)
+        if ($request->filled('filter_documento')) {
+            $doc = $request->input('filter_documento');
+            $query->whereHas('persona', function ($q) use ($doc) {
+                $q->where(DB::raw("CONCAT(tipo_documento, documento_identidad)"), 'LIKE', "%{$doc}%");
+            });
+        }
+
+        return DataTables::of($query)
             ->addColumn('nombre', fn($c) => $c->nombre ?? 'N/A')
             ->addColumn('apellido', fn($c) => $c->apellido ?? '')
             ->addColumn('tipo_cliente', fn($c) => $c->tipo_cliente)
@@ -44,6 +84,7 @@ class ClienteController extends Controller
             ->addColumn('ciudad', fn($c) => $c->ciudad)
             ->addColumn('estatus', fn($c) => $c->estatus)
             ->addColumn('created_at', fn($c) => $c->created_at ? $c->created_at->format('d/m/Y H:i') : null)
+            ->addColumn('trashed', fn($c) => $c->trashed())
             ->make(true);
     }
 
@@ -105,9 +146,9 @@ class ClienteController extends Controller
         // Verificar si tiene cotizaciones asociadas
         $cotizacionesCount = $cliente->cotizaciones()->count();
 
-        $cliente->delete();
+        $cliente->delete(); // SoftDelete: marca deleted_at
 
-        \Log::warning('Cliente eliminado', [
+        \Log::warning('Cliente inhabilitado (soft delete)', [
             'cliente_id' => $id,
             'cotizaciones_count' => $cotizacionesCount,
             'user_id' => auth()->id(),
@@ -115,12 +156,28 @@ class ClienteController extends Controller
 
         if ($cotizacionesCount > 0) {
             return response()->json([
-                'message' => 'Cliente eliminado exitosamente.',
+                'message' => 'Cliente inhabilitado exitosamente.',
                 'warning' => 'Este cliente tenía ' . $cotizacionesCount . ' cotización(es). Los registros históricos se mantienen.'
             ]);
         }
 
-        return response()->json(['message' => 'Cliente eliminado exitosamente.']);
+        return response()->json(['message' => 'Cliente inhabilitado exitosamente.']);
+    }
+
+    /**
+     * Restaurar un cliente inhabilitado (soft-deleted).
+     */
+    public function restore($id)
+    {
+        $cliente = Cliente::onlyTrashed()->findOrFail($id);
+        $cliente->restore();
+
+        \Log::info('Cliente restaurado', [
+            'cliente_id' => $id,
+            'user_id' => auth()->id(),
+        ]);
+
+        return response()->json(['message' => 'Cliente restaurado exitosamente.']);
     }
 
     public function show($id)

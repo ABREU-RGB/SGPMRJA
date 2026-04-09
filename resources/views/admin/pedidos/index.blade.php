@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
-    <!-- Autocorrecci�n y Autocompletado -->
+    <!-- Autocorrección y Autocompletado -->
     <link href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
     {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO PEDIDOS" --}}
 @endpush
@@ -52,7 +52,7 @@
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
                             <h6 class="mb-0" style="color: #00d9a5;">
-                                <i class="ri-filter-3-line me-2"></i>Filtros de BÃºsqueda
+                                <i class="ri-filter-3-line me-2"></i>Filtros de Búsqueda
                             </h6>
                         </div>
                         <div class="card-body">
@@ -64,7 +64,7 @@
                                             <i class="ri-search-line" style="color: #1e3c72;"></i>
                                         </span>
                                         <input type="text" id="buscarProductoModal" class="form-control"
-                                            placeholder="Buscar por c�digo, tipo o modelo..."
+                                            placeholder="Buscar por código, tipo o modelo..."
                                             style="border-color: #1e3c72;">
                                     </div>
                                 </div>
@@ -81,7 +81,7 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
                             <h6 class="mb-0" style="color: #1e3c72;">
-                                <i class="ri-store-2-line me-2"></i>Cat�logo de Productos
+                                <i class="ri-store-2-line me-2"></i>Catálogo de Productos
                             </h6>
                         </div>
                         <div class="card-body p-0">
@@ -497,10 +497,7 @@
                                                         <input type="text" id="cliente-nombre-field" name="cliente_nombre"
                                                             class="form-control" placeholder="Buscar cliente por nombre..."
                                                             autocomplete="off" required />
-                                                        <button type="button" class="btn btn-outline-success"
-                                                            id="open-add-cliente-modal" title="Agregar nuevo cliente">
-                                                            <i class="ri-user-add-line"></i>
-                                                        </button>
+
                                                     </div>
                                                     <div id="cliente-autocomplete-list"
                                                         class="list-group position-absolute w-100"
@@ -782,89 +779,8 @@
         </div>
     </div>
 
-    <!-- Modal Agregar/Editar Cliente (reutilizado) -->
-    <div class="modal fade atlantico-modal atlantico-modal--op" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="clienteFormPedido">
-                    <div class="modal-body">
-                        <input type="hidden" id="id-field-cliente" />
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="nombre-field-cliente" class="form-label">Nombre</label>
-                                    <input type="text" id="nombre-field-cliente" name="nombre" class="form-control"
-                                        placeholder="Nombre" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tipo_cliente-field-cliente" class="form-label">Tipo de Cliente</label>
-                                    <select id="tipo_cliente-field-cliente" name="tipo_cliente" class="form-control"
-                                        required>
-                                        <option value="">Seleccione tipo</option>
-                                        <option value="natural">Natural</option>
-                                        <option value="juridico">Jurídico</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email-field-cliente" class="form-label">Email</label>
-                                    <input type="email" id="email-field-cliente" name="email" class="form-control"
-                                        placeholder="Email" />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="telefono-field-cliente" class="form-label">Teléfono</label>
-                                    <input type="text" id="telefono-field-cliente" name="telefono" class="form-control"
-                                        placeholder="Teléfono" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="documento-field-cliente" class="form-label">Documento (Cédula o
-                                        RIF)</label>
-                                    <input type="text" id="documento-field-cliente" name="documento" class="form-control"
-                                        placeholder="Cédula o RIF" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="direccion-field-cliente" class="form-label">Dirección</label>
-                                    <input type="text" id="direccion-field-cliente" name="direccion" class="form-control"
-                                        placeholder="Dirección" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ciudad-field-cliente" class="form-label">Ciudad</label>
-                                    <input type="text" id="ciudad-field-cliente" name="ciudad" class="form-control"
-                                        placeholder="Ciudad" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="estado-field-cliente" class="form-label">Estado</label>
-                                    <select name="estado" id="estado-field-cliente" class="form-control form-select">
-                                        <option value="1">Activo</option>
-                                        <option value="0">Inactivo</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light border-0">
-                        <div class="hstack gap-2 justify-content-end">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                <i class="ri-close-line me-1"></i>Cerrar
-                            </button>
-                            <button type="button" class="btn btn-success" id="add-btn-cliente">
-                                <i class="ri-add-line me-1"></i>Agregar
-                            </button>
-                            <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
-                                <i class="ri-save-line me-1"></i>Actualizar
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+
+
 @endsection
 
 @push('scripts')
@@ -1191,7 +1107,7 @@
 
             // Autocorrector desactivado por solicitud del usuario. No se inicializa autocorrección.
             // Limpiar sugerencias al cerrar modales
-            $('#showModal, #modalAddCliente').on('hidden.bs.modal', function () {
+            $('#showModal').on('hidden.bs.modal', function () {
                 $('.autocorrect-suggestion').remove();
                 $('.field-with-suggestion').removeClass('field-with-suggestion');
                 $('.is-invalid').removeClass('is-invalid');
@@ -1284,42 +1200,7 @@
                         }
                     }
                 ],
-                language: {
-                    "sProcessing": "Procesando...",
-                    "sLengthMenu": "Mostrar _MENU_ registros",
-                    "sZeroRecords": "No se encontraron resultados",
-                    "sEmptyTable": "Ningún dato disponible en esta tabla",
-                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                    "sInfoPostFix": "",
-                    "sSearch": "Buscar:",
-                    "sUrl": "",
-                    "sInfoThousands": ",",
-                    "sLoadingRecords": "Cargando...",
-                    "oPaginate": {
-                        "sFirst": "Primero",
-                        "sLast": "Último",
-                        "sNext": "Siguiente",
-                        "sPrevious": "Anterior"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                    },
-                    "buttons": {
-                        "copy": "Copiar",
-                        "copyTitle": "Copiado al portapapeles",
-                        "copySuccess": {
-                            "1": "1 fila copiada al portapapeles",
-                            "_": "%d filas copiadas al portapapeles"
-                        },
-                        "csv": "CSV",
-                        "excel": "Excel",
-                        "print": "Imprimir",
-                        "colvis": "Visibilidad de Columna"
-                    }
-                }
+                language: lenguajeData
             });
 
             // Vincular buscador personalizado al DataTable
@@ -1545,7 +1426,7 @@
                 $('#productos-container').append(itemHtml);
                 window.productItemIndex++;
             }
-            // funciÃ³nes para manejar los nuevos campos de pago y prioridad
+            // funciones para manejar los nuevos campos de pago y prioridad
             let currentPedidoTotal = 0; // Para almacenar el total del pedido, ya sea del backend o calculado
 
             function calculateProductTotals() {
@@ -1626,7 +1507,7 @@
                 $(this).closest('.card').remove();
             });
 
-            // funciÃ³n para combinar el prefijo y el Numero del RIF/CI
+            // función para combinar el prefijo y el Numero del RIF/CI
             function updateRifFullField() {
                 let prefix = $('#ci-rif-prefix-field').val();
                 let number = $('#ci-rif-number-field').val();
@@ -1687,7 +1568,7 @@
                             title: '¡Éxito!',
                             text: response.success,
                             icon: 'success',
-                            confirmButtonClass: 'btn btn-primary w-xs me-2',
+                            customClass: { confirmButton: 'btn btn-primary w-xs me-2' },
                             buttonsStyling: false,
                             showCloseButton: true
                         })
@@ -1704,13 +1585,13 @@
                                 errorMessage += errors[key][0] + '\n';
                             }
                         } else {
-                            errorMessage = 'OcurriÃ³ un error inesperado.';
+                            errorMessage = 'Ocurrió un error inesperado.';
                         }
                         Swal.fire({
                             title: 'Error!',
                             text: errorMessage,
                             icon: 'error',
-                            confirmButtonClass: 'btn btn-primary w-xs me-2',
+                            customClass: { confirmButton: 'btn btn-primary w-xs me-2' },
                             buttonsStyling: false,
                             showCloseButton: true
                         })
@@ -1823,7 +1704,7 @@
                             title: 'Error!',
                             text: 'No se pudo cargar los datos del pedido.',
                             icon: 'error',
-                            confirmButtonClass: 'btn btn-primary w-xs me-2',
+                            customClass: { confirmButton: 'btn btn-primary w-xs me-2' },
                             buttonsStyling: false,
                             showCloseButton: true
                         })
@@ -2100,11 +1981,11 @@
             $('#pedidos-table').on('click', '.remove-btn', function () {
                 var id = $(this).data('id');
                 Swal.fire({
-                    title: '�Est�s seguro?',
-                    text: "�No podr�s revertir esto!",
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esto!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'S�, eliminarlo!',
+                    confirmButtonText: 'Sí, eliminarlo!',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -2123,7 +2004,7 @@
                             },
                             success: function (response) {
                                 Swal.fire({
-                                    title: '�Eliminado!',
+                                    title: '¡Eliminado!',
                                     text: response.success,
                                     icon: 'success',
                                     showConfirmButton: false,
@@ -2155,7 +2036,7 @@
                 });
             });
 
-            // funciÃ³n para inicializar Select2
+            // función para inicializar Select2
             function initializeSelect2(selector) {
                 $(selector).select2({
                     theme: 'bootstrap-5',
@@ -2229,7 +2110,7 @@
                 }, 300);
             });
 
-            // Selecci�n de cliente de la lista
+            // Selección de cliente de la lista
             $(document).on('click', '.cliente-autocomplete-item', function () {
                 const $this = $(this);
                 const clienteId = $this.data('id'); // ID del cliente seleccionado
@@ -2241,7 +2122,7 @@
                 // Llenar cliente_id (FK normalizada)
                 $('#cliente-id-field').val(clienteId);
 
-                // Llenar campos b�sicos
+                // Llenar campos básicos
                 $('#cliente-nombre-field').val(nombre);
                 $('#cliente-email-field').val(email);
                 $('#cliente-telefono-field').val(telefono);
@@ -2262,9 +2143,9 @@
                         prefix = docString.substring(0, 2);
                         number = docString.substring(2);
                     } else {
-                        // Si no tiene prefijo, determinar autom�ticamente
+                        // Si no tiene prefijo, determinar automáticamente
                         number = docString;
-                        // L�gica para determinar si es V- o J-
+                        // Lógica para determinar si es V- o J-
                         if (docString.length >= 8 && /^[2-9]/.test(docString)) {
                             prefix = 'J-';
                         } else {
@@ -2289,123 +2170,11 @@
                 }
             });
 
-            // --- MODAL AGREGAR CLIENTE DESDE PEDIDO ---
-            $('#open-add-cliente-modal').on('click', function () {
-                $('#clienteFormPedido')[0].reset();
-                $('#id-field-cliente').val('');
-                $('#modalClienteTitle').text('Agregar Cliente');
-                $('#add-btn-cliente').show();
-                $('#edit-btn-cliente').hide();
-                $('#modalAddCliente').modal('show');
-            });
 
-            // Guardar nuevo cliente desde el modal
-            $('#add-btn-cliente').on('click', function () {
-                $('#clienteFormPedido').submit();
-            });
-            $('#clienteFormPedido').on('submit', function (e) {
-                e.preventDefault();
-                var formData = $(this).serialize() + '&_token=' + $('meta[name="csrf-token"]').attr('content');
-                $.ajax({
-                    url: '/clientes',
-                    type: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '��Â¡Ã‰xito!',
-                            text: response.message,
-                            showConfirmButton: false,
-                            customClass: {
-                                confirmButton: 'btn btn-primary w-xs me-2',
-                                cancelButton: 'btn btn-danger w-xs'
-                            },
-                            buttonsStyling: false,
-                            showCloseButton: true,
-                            timer: 2000
-                        });
-                        $('#modalAddCliente').modal('hide');
-
-                        // Capturar el cliente_id del cliente reci�n creado
-                        if (response.cliente_id) {
-                            $('#cliente-id-field').val(response.cliente_id);
-                        }
-
-                        // Rellenar los campos del pedido con el nuevo cliente
-                        const nombre = $('#nombre-field-cliente').val();
-                        const email = $('#email-field-cliente').val();
-                        const telefono = $('#telefono-field-cliente').val();
-                        const documento = $('#documento-field-cliente').val();
-
-                        $('#cliente-nombre-field').val(nombre);
-                        $('#cliente-email-field').val(email || '');
-                        $('#cliente-telefono-field').val(telefono || '');
-
-                        // Separar prefijo y Numero del documento
-                        let prefix = 'V-'; // Valor por defecto
-                        let number = '';
-
-                        if (documento) {
-                            // Si el documento ya tiene formato V- o J-
-                            if (documento.startsWith('V-') || documento.startsWith('J-')) {
-                                prefix = documento.substring(0, 2);
-                                number = documento.substring(2);
-                            } else {
-                                // Si el documento no tiene prefijo, asumimos que es solo el Numero
-                                number = documento;
-                                // Determinar el prefijo basado en la longitud o primer d�gito
-                                if (documento.length >= 8 && ['2', '3', '4', '5', '6', '7', '8', '9'].includes(documento.charAt(0))) {
-                                    prefix = 'J-';
-                                } else {
-                                    prefix = 'V-';
-                                }
-                            }
-                        }
-
-                        $('#ci-rif-prefix-field').val(prefix);
-                        $('#ci-rif-number-field').val(number);
-                        $('#ci-rif-full-field').val(prefix + number);
-                        $('#cliente-autocomplete-list').empty().hide();
-                    },
-                    error: function (xhr) {
-                        let errorMsg = 'Ocurri� un error al agregar el cliente.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMsg = xhr.responseJSON.message;
-                        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            errorMsg = Object.values(xhr.responseJSON.errors).join('\n');
-                        }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: errorMsg,
-                            customClass: {
-                                confirmButton: 'btn btn-primary w-xs me-2',
-                                cancelButton: 'btn btn-danger w-xs'
-                            },
-                            buttonsStyling: false,
-                            showCloseButton: true
-                        });
-                    }
-                });
-            });
-
-            $(`#insumos - container - ${currentProductItemIndex} .insumo - select`).last().on('change', function () {
-                const selected = $(this).find('option:selected');
-                const stock = parseFloat(selected.data('stock'));
-                const stockMin = parseFloat(selected.data('stock-minimo'));
-                const unidad = selected.data('unidad') || '';
-                let color = stock <= stockMin ? 'red' : 'green';
-                let text = '';
-                if (!isNaN(stock)) {
-                    text = `<span style="color:${color};font-weight:bold;">Stock actual: ${stock.toFixed(2)} ${unidad}</span>`;
-                }
-                const infoId = $(this).data('insumo-index');
-                $(`#stock - info - ${infoId}`).html(text);
-            }).trigger('change');
         });
 
         // ================================================
-        // MODAL DE SELECCI�N DE PRODUCTOS
+        // MODAL DE SELECCIÓN DE PRODUCTOS
         // ================================================
         var currentProductIndex = null;
         var productosModal = null;
@@ -2450,11 +2219,11 @@
                 var matchFiltro = true;
                 var matchTipo = true;
                 if (filtro) {
-                    var BÃºsqueda = filtro.toLowerCase();
+                    var busqueda = filtro.toLowerCase();
                     var codigo = (p.codigo || '').toLowerCase();
                     var modelo = (p.modelo || '').toLowerCase();
                     var tipo = p.tipo_producto ? p.tipo_producto.nombre.toLowerCase() : '';
-                    matchFiltro = codigo.includes(BÃºsqueda) || modelo.includes(BÃºsqueda) || tipo.includes(BÃºsqueda);
+                    matchFiltro = codigo.includes(busqueda) || modelo.includes(busqueda) || tipo.includes(busqueda);
                 }
                 if (tipoId) {
                     matchTipo = p.tipo_producto && p.tipo_producto.id == tipoId;
@@ -2519,9 +2288,9 @@
     </script>
 
     <script>
-        // === CARGA DE PEDIDO DESDE COTIZACI�N ===
+        // === CARGA DE PEDIDO DESDE COTIZACIÓN ===
         $(document).ready(function () {
-            // Verificar si venimos desde una cotizaci�n
+            // Verificar si venimos desde una cotización
             var urlParams = new URLSearchParams(window.location.search);
             var cotizacionId = urlParams.get('desde_cotizacion');
             var editarPedidoId = urlParams.get('editar');

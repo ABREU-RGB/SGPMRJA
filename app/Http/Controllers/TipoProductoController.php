@@ -11,9 +11,15 @@ class TipoProductoController extends Controller
     /**
      * Listar todos los tipos de producto
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $tipos = TipoProducto::withCount('productos')->orderBy('nombre')->get();
+        $query = TipoProducto::withCount('productos')->orderBy('nombre');
+
+        if ($request->boolean('historial')) {
+            $query->onlyTrashed();
+        }
+
+        $tipos = $query->get();
         return response()->json($tipos);
     }
 
@@ -89,7 +95,7 @@ class TipoProductoController extends Controller
         if ($tipoProducto->productos()->count() > 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'No se puede eliminar. Hay productos asociados a este tipo.',
+                'message' => 'No se puede inhabilitar. Hay productos asociados a este tipo.',
             ], 422);
         }
 
@@ -97,7 +103,30 @@ class TipoProductoController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tipo de producto eliminado correctamente',
+            'message' => 'Tipo de producto inhabilitado correctamente',
+        ]);
+    }
+
+    /**
+     * Restaurar tipo de producto inhabilitado
+     */
+    public function restore(int $id): JsonResponse
+    {
+        $tipoProducto = TipoProducto::onlyTrashed()->find($id);
+
+        if (!$tipoProducto) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tipo de producto no encontrado en historial.',
+            ], 404);
+        }
+
+        $tipoProducto->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tipo de producto restaurado correctamente',
+            'tipo' => $tipoProducto,
         ]);
     }
 

@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -34,12 +34,23 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Productos</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Toggle Historial -->
+                            @if($historial)
+                                <a href="{{ route('productos.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                </a>
+                            @else
+                                <a href="{{ route('productos.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                </a>
+                            @endif
                             <!-- Buscador Personalizado -->
                             <div class="search-box">
                                 <input type="text" class="form-control form-control-sm" id="custom-search-input"
                                     placeholder="Buscar producto...">
                                 <i class="ri-search-line search-icon"></i>
                             </div>
+                            @if(!$historial)
                             <div class="d-flex gap-2 align-items-center">
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#tiposModal">
@@ -54,6 +65,13 @@
                                 </a>
                                 </a>
                             </div>
+                            @else
+                            <div class="d-flex gap-2 align-items-center">
+                                <a href="{{ route('productos.reporte.pdf') }}" target="_blank" class="btn btn-danger">
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -251,7 +269,7 @@
                                     {{-- Imagen — mantiene HTML nativo por preview --}}
                                     <div class="mb-3">
                                         <label for="imagen-field" class="form-label">Imagen <span
-                                                class="text-danger">*</span></label>
+                                                class="text-danger" id="imagen-required-star">*</span></label>
                                         <input type="file" id="imagen-field" name="imagen" class="form-control"
                                             accept="image/*" required />
                                         <div id="imagen-preview" class="mt-2 text-center" style="display: none;">
@@ -260,9 +278,15 @@
                                         </div>
                                     </div>
 
-                                    <x-forms.select name="estado" label="Estado" required
-                                        :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1"
-                                        id="estado-field" />
+                                    {{-- Switch de Estado sincronizado con hidden input --}}
+                                    <div class="mb-3">
+                                        <label class="form-label mb-2">Estado <span class="text-danger">*</span></label>
+                                        <div class="form-check form-switch form-switch-success form-switch-md" dir="ltr">
+                                            <input type="checkbox" class="form-check-input" id="estado-switch" checked>
+                                            <label class="form-check-label fw-medium" for="estado-switch" id="estado-label">Activo</label>
+                                        </div>
+                                        <input type="hidden" name="estado" id="estado-hidden-field" value="1">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -291,8 +315,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button type="button" class="btn btn-success" id="add-tipo-btn" data-bs-toggle="modal" data-bs-target="#addTipoModal">
+                            <i class="ri-add-line me-1"></i>Agregar Tipo
+                        </button>
+                        <div class="btn-group" role="group" aria-label="Vista de tipos de producto">
+                            <button type="button" class="btn btn-outline-primary active" id="btn-tipos-activos">Activos</button>
+                            <button type="button" class="btn btn-outline-secondary" id="btn-tipos-historial">Historial (Inhabilitados)</button>
+                        </div>
+                    </div>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="tipos-table">
+                        <table class="table table-striped table-hover w-100" id="tipos-table" width="100%">
                             <thead class="table-light">
                                 <tr>
                                     <th>Nombre</th>
@@ -308,9 +341,6 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTipoModal">
-                        <i class="ri-add-line me-1"></i>Agregar Tipo
-                    </button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="ri-close-line me-1"></i>Cerrar
                     </button>
@@ -403,7 +433,20 @@
         }
 
         $(document).ready(function () {
-            function generateButtons(productoId) {
+            var esHistorial = {{ $historial ? 'true' : 'false' }};
+
+            function generateButtons(productoId, isTrashed) {
+                // Si el registro está inhabilitado (trashed), mostrar botón "Ver" + "Restaurar"
+                if (isTrashed) {
+                    return '<div class="d-flex gap-1 justify-content-center">' +
+                        '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + productoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-soft-success restore-item-btn" data-id="' + productoId + '" title="Restaurar" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-arrow-go-back-line" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '</div>';
+                }
                 return '<div class="d-flex gap-1 justify-content-center">' +
                     '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + productoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
@@ -411,8 +454,8 @@
                     '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + productoId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
                     '</button>' +
-                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + productoId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + productoId + '" title="Inhabilitar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-forbid-line" style="font-size:13px;"></i>' +
                     '</button>' +
                     '</div>';
             }
@@ -425,7 +468,7 @@
             var table = $('#productos-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('productos.data') }}",
+                ajax: "{{ route('productos.data') }}" + (esHistorial ? '?historial=true' : ''),
                 columns: [
                     {
                         data: 'codigo',
@@ -466,7 +509,11 @@
                     {
                         data: 'estado',
                         name: 'estado',
-                        render: function (data) {
+                        render: function (data, type, row) {
+                            // Si está en historial (trashed), mostrar badge "Inactivo"
+                            if (row.trashed) {
+                                return '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line"></i> Inactivo</span>';
+                            }
                             return data ? '<span class="badge badge-status status-activo"><i class="ri-checkbox-circle-line"></i> Activo</span>' : '<span class="badge badge-status status-inactivo"><i class="ri-close-circle-line"></i> Inactivo</span>';
                         }
                     },
@@ -475,8 +522,8 @@
                         name: 'actions',
                         orderable: false,
                         searchable: false,
-                        render: function (data) {
-                            return generateButtons(data);
+                        render: function (data, type, row) {
+                            return generateButtons(data, row.trashed);
                         }
                     }
                 ],
@@ -496,48 +543,19 @@
                         }
                     }
                 ],
-                language: {
-                    "sProcessing": "Procesando...",
-                    "sLengthMenu": "Mostrar _MENU_ registros",
-                    "sZeroRecords": "No se encontraron resultados",
-                    "sEmptyTable": "Ningún dato disponible en esta tabla",
-                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                    "sInfoPostFix": "",
-                    "sSearch": "Buscar:",
-                    "sUrl": "",
-                    "sInfoThousands": ",",
-                    "sLoadingRecords": "Cargando...",
-                    "oPaginate": {
-                        "sFirst": "Primero",
-                        "sLast": "Último",
-                        "sNext": "Siguiente",
-                        "sPrevious": "Anterior"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                    },
-                    "buttons": {
-                        "copy": "Copiar",
-                        "copyTitle": "Copiado al portapapeles",
-                        "copySuccess": {
-                            "_": "%d filas copiadas al portapapeles",
-                            "1": "1 fila copiada al portapapeles"
-                        },
-                        "csv": "CSV",
-                        "excel": "Excel",
-                        "pdf": "PDF",
-                        "print": "Imprimir",
-                        "colvis": "Visibilidad de Columna"
-                    }
-                }
+                language: lenguajeData
             });
 
             // Buscador personalizado
             $('#custom-search-input').on('keyup', function () {
                 table.search(this.value).draw();
+            });
+
+            // Sincronizar switch de estado con hidden input
+            $("#estado-switch").on('change', function() {
+                var isChecked = $(this).is(':checked');
+                $("#estado-hidden-field").val(isChecked ? '1' : '0');
+                $("#estado-label").text(isChecked ? 'Activo' : 'Inactivo');
             });
 
             // Vista previa de imagen
@@ -584,11 +602,21 @@
                     $("#descripcion-field").val(data.descripcion);
                     $("#modelo-field").val(data.modelo);
                     $("#precio-base-field").val(data.precio_base);
-                    $("#estado-field").val(data.estado ? '1' : '0');
+                    var isActivo = data.estado ? true : false;
+                    $("#estado-switch").prop('checked', isActivo);
+                    $("#estado-hidden-field").val(isActivo ? '1' : '0');
+                    $("#estado-label").text(isActivo ? 'Activo' : 'Inactivo');
 
                     if (data.imagen) {
                         $("#imagen-preview img").attr('src', data.imagen);
                         $("#imagen-preview").show();
+                        // Al editar con imagen existente, no es obligatorio subir una nueva
+                        $("#imagen-field").prop('required', false);
+                        $("#imagen-required-star").addClass('d-none');
+                    } else {
+                        // Si no tiene imagen (caso raro), pedimos una
+                        $("#imagen-field").prop('required', true);
+                        $("#imagen-required-star").removeClass('d-none');
                     }
 
                     $("#add-btn").hide();
@@ -689,10 +717,10 @@
                 var id = $(this).data("id");
                 Swal.fire({
                     title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
+                    text: "El producto será inhabilitado y moverá al historial.",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, inhabilitar',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -712,7 +740,7 @@
                                 table.draw();
                                 Swal.fire({
                                     icon: 'success',
-                                    title: '¡Eliminado!',
+                                    title: '¡Inhabilitado!',
                                     text: response.success,
                                     showConfirmButton: false,
                                     customClass: {
@@ -728,13 +756,61 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: 'No se pudo eliminar el producto',
+                                    text: 'No se pudo inhabilitar el producto',
                                     customClass: {
                                         confirmButton: 'btn btn-primary w-xs me-2',
                                         cancelButton: 'btn btn-danger w-xs'
                                     },
                                     buttonsStyling: false,
                                     showCloseButton: true
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // ══════════════════════════════════════════════════════
+            // RESTAURAR — SoftDelete Restore (Patrón Maestro S-08)
+            // ══════════════════════════════════════════════════════
+            $(document).on("click", ".restore-item-btn", function () {
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: '¿Restaurar registro?',
+                    text: "¿Estás seguro de que deseas restaurar este producto?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, restaurar',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'btn btn-success w-xs me-2',
+                        cancelButton: 'btn btn-light w-xs'
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                }).then(function (result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: "{{ url('productos') }}/" + id + "/restore",
+                            method: "POST",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                table.draw();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Restaurado!',
+                                    text: response.success,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'No se pudo restaurar el producto'
                                 });
                             }
                         });
@@ -749,7 +825,13 @@
                 $("#id-field").val("");
                 $("#codigo-field").val("");
                 $("#imagen-preview").hide();
-                $("#add-btn").show();
+                // Para nuevo producto, la imagen es obligatoria
+                $("#imagen-field").prop('required', true);
+                $("#imagen-required-star").removeClass('d-none');
+                // Reset switch de estado a Activo por defecto
+                $("#estado-switch").prop('checked', true);
+                $("#estado-hidden-field").val("1");
+                $("#estado-label").text("Activo");
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 validator.resetValidation();
@@ -758,6 +840,8 @@
 
             const validator = new FormValidator('productoForm');
             const tipoValidator = new FormValidator('tipoForm');
+            let tiposHistorial = false;
+            let tiposTable = null;
 
             // ===============================
             // Funciones para Tipos de Producto
@@ -765,37 +849,105 @@
 
             // Cargar tipos al abrir modal de gestión
             $("#tiposModal").on("show.bs.modal", function () {
-                cargarTipos();
+                actualizarVistaTipos();
+                recargarTipos();
             });
 
-            function cargarTipos() {
-                $.get("{{ route('tipo-productos.index') }}", function (tipos) {
-                    var tbody = $("#tipos-tbody");
-                    tbody.empty();
+            $("#tiposModal").on("shown.bs.modal", function () {
+                if (tiposTable) {
+                    tiposTable.columns.adjust().draw(false);
+                }
+            });
 
-                    tipos.forEach(function (tipo) {
-                        tbody.append(`
-                                            <tr>
-                                                <td>${tipo.nombre}</td>
-                                                <td><span class="badge bg-secondary">${tipo.codigo_prefijo}</span></td>
-                                                <td><span class="badge bg-info">${tipo.productos_count}</span></td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
-                                                        data-id="${tipo.id}" 
-                                                        data-nombre="${tipo.nombre}" 
-                                                        data-prefijo="${tipo.codigo_prefijo}"
-                                                        data-descripcion="${tipo.descripcion || ''}">
-                                                        <i class="ri-pencil-line"></i>
-                                                    </button>
-                                                    <button class="btn btn-sm btn-outline-danger delete-tipo-btn" data-id="${tipo.id}">
-                                                        <i class="ri-delete-bin-line"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        `);
-                    });
+            function tiposUrl() {
+                return "{{ route('tipo-productos.index') }}" + (tiposHistorial ? '?historial=true' : '');
+            }
+
+            function actualizarVistaTipos() {
+                $("#btn-tipos-activos").toggleClass('active', !tiposHistorial);
+                $("#btn-tipos-historial").toggleClass('active', tiposHistorial);
+                $("#add-tipo-btn").toggle(!tiposHistorial);
+            }
+
+            function inicializarTiposTable() {
+                tiposTable = $("#tipos-table").DataTable({
+                    processing: true,
+                    autoWidth: false,
+                    scrollX: false,
+                    ajax: {
+                        url: tiposUrl(),
+                        dataSrc: ''
+                    },
+                    columns: [
+                        { data: 'nombre' },
+                        {
+                            data: 'codigo_prefijo',
+                            render: function (data) {
+                                return `<span class="badge bg-secondary">${data}</span>`;
+                            }
+                        },
+                        {
+                            data: 'productos_count',
+                            render: function (data) {
+                                return `<span class="badge bg-info">${data}</span>`;
+                            }
+                        },
+                        {
+                            data: null,
+                            orderable: false,
+                            searchable: false,
+                            render: function (data, type, row) {
+                                if (tiposHistorial) {
+                                    return `
+                                        <button class="btn btn-sm btn-outline-success restore-tipo-btn" data-id="${row.id}" title="Restaurar">
+                                            <i class="ri-refresh-line"></i>
+                                        </button>
+                                    `;
+                                }
+
+                                return `
+                                    <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
+                                        data-id="${row.id}" 
+                                        data-nombre="${row.nombre}" 
+                                        data-prefijo="${row.codigo_prefijo}"
+                                        data-descripcion="${row.descripcion || ''}">
+                                        <i class="ri-pencil-line"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-tipo-btn" data-id="${row.id}" title="Inhabilitar">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                `;
+                            }
+                        }
+                    ],
+                    order: [[0, 'asc']],
+                    dom: 'rtip',
+                    language: lenguajeData
                 });
             }
+
+            function recargarTipos() {
+                if (!tiposTable) {
+                    inicializarTiposTable();
+                    return;
+                }
+
+                tiposTable.ajax.url(tiposUrl()).load(function () {
+                    tiposTable.columns.adjust().draw(false);
+                });
+            }
+
+            $("#btn-tipos-activos").on('click', function () {
+                tiposHistorial = false;
+                actualizarVistaTipos();
+                recargarTipos();
+            });
+
+            $("#btn-tipos-historial").on('click', function () {
+                tiposHistorial = true;
+                actualizarVistaTipos();
+                recargarTipos();
+            });
 
             // Validaciones AJAX onblur para Tipos de Producto
 
@@ -876,11 +1028,11 @@
                 var id = $(this).data("id");
 
                 Swal.fire({
-                    title: '¿Eliminar tipo?',
-                    text: "Solo se puede eliminar si no tiene productos asociados",
+                    title: '¿Seguro que desea inhabilitar?',
+                    text: "Solo se puede inhabilitar si no tiene productos asociados",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, inhabilitar',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -895,9 +1047,12 @@
                             method: "DELETE",
                             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                             success: function (response) {
-                                cargarTipos();
+                                if (tiposTable) {
+                                    tiposTable.ajax.reload(null, false);
+                                }
+                                actualizarSelectTipos();
                                 Swal.fire({
-                                    title: 'Eliminado',
+                                    title: 'Inhabilitado',
                                     text: response.message,
                                     icon: 'success',
                                     customClass: {
@@ -912,6 +1067,63 @@
                                 Swal.fire({
                                     title: 'Error',
                                     text: xhr.responseJSON.message,
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary w-xs me-2',
+                                        cancelButton: 'btn btn-danger w-xs'
+                                    },
+                                    buttonsStyling: false,
+                                    showCloseButton: true
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Restaurar tipo
+            $(document).on("click", ".restore-tipo-btn", function () {
+                var id = $(this).data("id");
+
+                Swal.fire({
+                    title: '¿Seguro que desea restaurar este registro?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, restaurar',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'btn btn-primary w-xs me-2',
+                        cancelButton: 'btn btn-danger w-xs'
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ url('tipo-productos') }}/" + id + "/restore",
+                            method: "PATCH",
+                            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                            success: function (response) {
+                                if (tiposTable) {
+                                    tiposTable.ajax.reload();
+                                }
+                                actualizarSelectTipos();
+                                Swal.fire({
+                                    title: 'Restaurado',
+                                    text: response.message,
+                                    icon: 'success',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary w-xs me-2',
+                                        cancelButton: 'btn btn-danger w-xs'
+                                    },
+                                    buttonsStyling: false,
+                                    showCloseButton: true
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'No se pudo restaurar el tipo de producto',
                                     icon: 'error',
                                     customClass: {
                                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -949,6 +1161,10 @@
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     success: function (response) {
                         $("#addTipoModal").modal('hide');
+
+                        if (tiposTable) {
+                            tiposTable.ajax.reload(null, false);
+                        }
 
                         // Actualizar select de tipos
                         actualizarSelectTipos();

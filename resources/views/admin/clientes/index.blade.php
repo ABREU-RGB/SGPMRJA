@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -34,12 +34,23 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Clientes</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Toggle Historial -->
+                            @if($historial)
+                                <a href="{{ route('clientes.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                </a>
+                            @else
+                                <a href="{{ route('clientes.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                </a>
+                            @endif
                             <!-- Buscador Personalizado -->
                             <div class="search-box">
                                 <input type="text" class="form-control form-control-sm" id="custom-search-input"
                                     placeholder="Buscar cliente...">
                                 <i class="ri-search-line search-icon"></i>
                             </div>
+                            @if(!$historial)
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                     data-bs-target="#showModal">
@@ -49,10 +60,117 @@
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
                                 </a>
                             </div>
+                            @else
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('clientes.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                    <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- ============================================================
+                         FILTROS — Patrón Maestro S-07 (Colapsable)
+                         Copiar este bloque completo a Proveedores, Productos, etc.
+                         Solo ajustar las opciones de cada <select> y los data-col-index.
+                         CSS genérico en custom.css: .navy-filter-*
+                         ============================================================ --}}
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        {{-- Header: siempre visible, actúa como trigger del collapse --}}
+                        <button class="navy-filter-toggle collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                            aria-expanded="false" aria-controls="filters-collapse-body">
+                            <div class="navy-filter-title">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                            </div>
+                            <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                        </button>
+                        {{-- Body: colapsable, oculto por defecto --}}
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-2 align-items-end">
+                                    {{-- Filtro 1: Tipo de Cliente --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-tipo-cliente">
+                                            <i class="ri-user-settings-line"></i> Tipo de Cliente
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tipo-cliente" data-col-index="6">
+                                            <option value="">Todos</option>
+                                            <option value="natural">Natural</option>
+                                            <option value="juridico">Jurídico</option>
+                                            <option value="gubernamental">Gubernamental</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 2: Estatus (Activo = normal, Inactivo = trashed / SoftDelete) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estatus">
+                                            <i class="ri-shield-check-line"></i> Estatus
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estatus" data-col-index="7">
+                                            <option value="">Todos</option>
+                                            <option value="1" selected>Activo</option>
+                                            <option value="0">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 3: Estado Territorial (Venezuela) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estado-territorial">
+                                            <i class="ri-map-pin-line"></i> Estado
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estado-territorial" data-col-index="8">
+                                            <option value="">Todos</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 4: Búsqueda por Cédula/RIF --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-documento">
+                                            <i class="ri-bank-card-line"></i> Cédula / RIF
+                                        </label>
+                                        <div class="position-relative">
+                                            <input type="text" class="form-control navy-filter-input" id="filter-documento"
+                                                data-col-index="0" placeholder="Ej: V-12345678" autocomplete="off">
+                                            <i class="ri-search-line navy-filter-input-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- Botón limpiar: dentro del body colapsable --}}
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
+                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- FIN FILTROS --}}
+
                     <table id="clientes-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
@@ -239,7 +357,7 @@
                                                     <i class="ri-building-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block">Ciudad</small>
+                                                    <small class="text-muted d-block">Municipio</small>
                                                     <span class="fw-semibold" id="view-ciudad">-</span>
                                                 </div>
                                             </div>
@@ -264,7 +382,6 @@
                                                     <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block">Estatus</small>
                                                     <span class="fw-semibold" id="view-estatus">-</span>
                                                 </div>
                                             </div>
@@ -756,7 +873,18 @@
             $.ajaxSetup({
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
-            function generateButtons(clienteId) {
+            function generateButtons(clienteId, isTrashed) {
+                // Si el registro está inhabilitado (trashed), mostrar botón "Ver" + "Restaurar"
+                if (isTrashed) {
+                    return '<div class="d-flex gap-1 justify-content-center">' +
+                        '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + clienteId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-soft-success restore-item-btn" data-id="' + clienteId + '" title="Restaurar" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-arrow-go-back-line" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '</div>';
+                }
                 return '<div class="d-flex gap-1 justify-content-center">' +
                     '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + clienteId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
@@ -764,8 +892,8 @@
                     '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + clienteId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
                     '</button>' +
-                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + clienteId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + clienteId + '" title="Inhabilitar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-forbid-line" style="font-size:13px;"></i>' +
                     '</button>' +
                     '</div>';
             }
@@ -792,20 +920,29 @@
             }
 
             var table = $('#clientes-table').DataTable({
-                ajax: { url: "{{ route('clientes.data') }}", dataSrc: 'data' },
+                ajax: {
+                    url: "{{ route('clientes.data') }}",
+                    dataSrc: 'data',
+                    data: function (d) {
+                        // ── Filtros avanzados: enviar valores al server ──
+                        d.filter_tipo_cliente       = $('#filter-tipo-cliente').val();
+                        d.filter_estatus            = $('#filter-estatus').val();
+                        d.filter_estado_territorial  = $('#filter-estado-territorial').val();
+                        d.filter_documento          = $('#filter-documento').val();
+                    }
+                },
                 columns: [
-                    { data: 'documento' },
-                    {
+                    { data: 'documento' },                           // col 0
+                    {                                                 // col 1
                         data: null,
                         render: function (data, type, row) {
-                            // Para Jurídico/Gubernamental solo mostrar nombre (Razón Social)
                             if (row.tipo_cliente === 'juridico' || row.tipo_cliente === 'gubernamental') {
                                 return row.nombre || 'N/A';
                             }
                             return (row.nombre || '') + ' ' + (row.apellido || '');
                         }
                     },
-                    {
+                    {                                                 // col 2
                         data: 'tipo_cliente', render: function (data) {
                             if (data === 'natural') return '<span class="badge-tipo badge-tipo-natural"><i class="ri-user-line"></i> Natural</span>';
                             if (data === 'juridico') return '<span class="badge-tipo badge-tipo-juridico"><i class="ri-building-line"></i> Jurídico</span>';
@@ -813,69 +950,63 @@
                             return data;
                         }
                     },
-                    { data: 'telefono' },
-                    {
+                    { data: 'telefono' },                             // col 3
+                    {                                                 // col 4
                         data: 'email',
                         render: function (data) {
                             if (!data) return '<span class="text-muted">—</span>';
                             return '<span title="' + data + '" style="cursor:default;">' + data + '</span>';
                         }
                     },
-                    { data: null, orderable: false, render: function (data, type, row) { return generateButtons(row.id); } }
+                    { data: null, orderable: false, render: function (data, type, row) { return generateButtons(row.id, row.trashed); } }
                 ],
-                order: [[0, 'asc']], // Ordenar por documento (primera columna)
+                order: [[0, 'asc']],
                 dom: 'rtip',
                 buttons: [
-                    {
-                        extend: 'copy',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4]
-                        }
-                    },
-                    {
-                        extend: 'excel',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4]
-                        }
-                    }
+                    { extend: 'copy', exportOptions: { columns: [0, 1, 2, 3, 4] } },
+                    { extend: 'excel', exportOptions: { columns: [0, 1, 2, 3, 4] } }
                 ],
-                language: {
-                    "sProcessing": "Procesando...",
-                    "sLengthMenu": "Mostrar _MENU_ registros",
-                    "sZeroRecords": "No se encontraron resultados",
-                    "sEmptyTable": "Ningún dato disponible en esta tabla",
-                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                    "sInfoPostFix": "",
-                    "sSearch": "Buscar:",
-                    "sUrl": "",
-                    "sInfoThousands": ",",
-                    "sLoadingRecords": "Cargando...",
-                    "oPaginate": {
-                        "sFirst": "Primero",
-                        "sLast": "Último",
-                        "sNext": "Siguiente",
-                        "sPrevious": "Anterior"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                    },
-                    "buttons": {
-                        "copy": "Copiar",
-                        "csv": "CSV",
-                        "excel": "Excel",
-                        "pdf": "PDF",
-                        "print": "Imprimir",
-                        "colvis": "Visibilidad de Columna"
-                    }
-                }
+                language: lenguajeData
             });
 
-            // Buscador personalizado
+            // Buscador personalizado (búsqueda global)
             $('#custom-search-input').on('keyup', function () {
                 table.search(this.value).draw();
+            });
+
+            // ══════════════════════════════════════════════════════
+            // FILTROS AVANZADOS — Lógica JS (Patrón Maestro S-07)
+            // Para replicar: copiar este bloque y ajustar los IDs
+            // de los selectores (#filter-xxx) y sus data-col-index.
+            // ══════════════════════════════════════════════════════
+
+            // Aplicar filtros al cambiar cualquier select
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+            });
+
+            // Aplicar filtro de documento con debounce (300ms)
+            var filterDocTimeout = null;
+            $('#filter-documento').on('keyup', function () {
+                clearTimeout(filterDocTimeout);
+                filterDocTimeout = setTimeout(function () {
+                    table.ajax.reload();
+                }, 300);
+            });
+
+            // Si se llegó por toggle historial (?historial=true), pre-seleccionar "Inactivo"
+            @if($historial)
+                $('#filter-estatus').val('0');
+                table.ajax.reload();
+            @endif
+
+            // Botón limpiar filtros
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-tipo-cliente').val('');
+                $('#filter-estatus').val('');
+                $('#filter-estado-territorial').val('');
+                $('#filter-documento').val('');
+                table.ajax.reload();
             });
 
 
@@ -1083,10 +1214,10 @@
                 document.activeElement.blur();
                 Swal.fire({
                     title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
+                    text: "El cliente será inhabilitado y moverá al historial.",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, inhabilitar',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -1108,13 +1239,13 @@
                                 if (response.warning) {
                                     Swal.fire({
                                         icon: 'warning',
-                                        title: 'Cliente Eliminado',
+                                        title: 'Cliente Inhabilitado',
                                         html: '<p>' + response.message + '</p><p class="text-muted small">' + response.warning + '</p>'
                                     });
                                 } else {
                                     Swal.fire({
                                         icon: 'success',
-                                        title: 'Eliminado',
+                                        title: 'Inhabilitado',
                                         text: response.message
                                     });
                                 }
@@ -1123,7 +1254,55 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: xhr.responseJSON.message || 'Ocurrió un error al eliminar el cliente'
+                                    text: xhr.responseJSON.message || 'Ocurrió un error al inhabilitar el cliente'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // ══════════════════════════════════════════════════════
+            // RESTAURAR — SoftDelete Restore (Patrón Maestro S-08)
+            // ══════════════════════════════════════════════════════
+            $(document).on("click", ".restore-item-btn", function () {
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: '¿Restaurar registro?',
+                    text: "¿Estás seguro de que deseas restaurar este cliente?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, restaurar',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'btn btn-success w-xs me-2',
+                        cancelButton: 'btn btn-light w-xs'
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                }).then(function (result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: "{{ url('clientes') }}/" + id + "/restore",
+                            method: "POST",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                table.ajax.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Restaurado!',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: xhr.responseJSON?.message || 'No se pudo restaurar el cliente'
                                 });
                             }
                         });

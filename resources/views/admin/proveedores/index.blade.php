@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -34,6 +34,16 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Proveedores</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                            <!-- Toggle Historial -->
+                            @if($historial)
+                                <a href="{{ route('proveedores.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                </a>
+                            @else
+                                <a href="{{ route('proveedores.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                </a>
+                            @endif
                             <!-- Buscador Personalizado -->
                             <div class="search-box">
                                 <input type="text" class="form-control form-control-sm" id="custom-search-input"
@@ -41,7 +51,7 @@
                                 <i class="ri-search-line search-icon"></i>
                             </div>
                             <div class="d-flex gap-2">
-                                @if(Auth::user()->isAdmin())
+                                @if(Auth::user()->isAdmin() && !$historial)
                                     <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                         data-bs-target="#showModal">
                                         <i class="ri-add-line align-bottom me-1"></i> Agregar Proveedor
@@ -364,6 +374,45 @@
 
                                 <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
+                                        <label for="estado-territorial-jur-field" class="form-label">Estado</label>
+                                        <select id="estado-territorial-jur-field" name="estado_territorial" class="form-select">
+                                            <option value="">Seleccione estado</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ciudad-jur-field" class="form-label">Municipio</label>
+                                        <select id="ciudad-jur-field" name="ciudad" class="form-select">
+                                            <option value="">Primero seleccione un estado</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
                                         <x-forms.input name="telefono_jur_number" label="Teléfono" id="telefono-jur-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
                                             <x-slot:prepend>
                                                 <select class="form-select" id="telefono-jur-prefix-field"
@@ -537,18 +586,32 @@
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap5.min.js"></script>
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/js/municipios-venezuela.js') }}"></script>
+    <script src="{{ asset('assets/js/municipios-venezuela.js') }}"></script>
 
     <script>
         $(document).ready(function () {
-            function generateButtons(proveedorId) {
+            var esHistorial = {{ $historial ? 'true' : 'false' }};
+
+            function generateButtons(proveedorId, isTrashed) {
+                // Si el registro está inhabilitado (trashed), mostrar botón "Ver" + "Restaurar"
+                if (isTrashed) {
+                    return '<div class="d-flex gap-1 justify-content-center">' +
+                        '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + proveedorId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-soft-success restore-item-btn" data-id="' + proveedorId + '" title="Restaurar" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-arrow-go-back-line" style="font-size:13px;"></i>' +
+                        '</button>' +
+                        '</div>';
+                }
+
                 var isAdmin = {{ Auth::user()->isAdmin() ? 'true' : 'false' }};
                 var editDeleteBtns = isAdmin
                     ? '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + proveedorId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
                     '</button>' +
-                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + proveedorId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + proveedorId + '" title="Inhabilitar" style="padding:0.2rem 0.45rem;">' +
+                    '<i class="ri-forbid-line" style="font-size:13px;"></i>' +
                     '</button>'
                     : '';
 
@@ -561,22 +624,42 @@
             }
 
             // Toggle campos según tipo de proveedor
+            // Gestiona visibilidad Y atributos de validación HTML5 para evitar
+            // "An invalid form control with name='' is not focusable" (Obs. resuelta)
             function toggleCampos() {
                 var tipo = $('#tipo-proveedor-field').val();
                 if (tipo === 'natural') {
                     $('#campos-juridico').hide();
                     $('#campos-natural').show();
+                    // Desactivar validaciones del bloque JURÍDICO oculto
+                    $('#campos-juridico').find('[required]').each(function () {
+                        $(this).removeAttr('required').attr('data-required', 'true');
+                    });
+                    // Restaurar validaciones del bloque NATURAL visible
+                    $('#campos-natural').find('[data-required]').each(function () {
+                        $(this).attr('required', 'required').removeAttr('data-required');
+                    });
                     // Limpiar campos jurídicos
-                    $('#rif-number-field, #razon-social-field, #direccion-jur-field, #telefono-jur-field, #email-jur-field, #contacto-field, #telefono-contacto-field').val('');
+                    $('#rif-number-field, #razon-social-field, #direccion-jur-field, #telefono-jur-field, #email-jur-field, #contacto-field, #telefono-contacto-field, #estado-territorial-jur-field').val('');
+                    $('#ciudad-jur-field').empty().append('<option value="">Primero seleccione un estado</option>');
                 } else {
                     $('#campos-juridico').show();
                     $('#campos-natural').hide();
+                    // Desactivar validaciones del bloque NATURAL oculto
+                    $('#campos-natural').find('[required]').each(function () {
+                        $(this).removeAttr('required').attr('data-required', 'true');
+                    });
+                    // Restaurar validaciones del bloque JURÍDICO visible
+                    $('#campos-juridico').find('[data-required]').each(function () {
+                        $(this).attr('required', 'required').removeAttr('data-required');
+                    });
                     // Limpiar campos naturales
                     $('#nombre-field, #apellido-field, #documento-identidad-field, #telefono-nat-field, #email-nat-field, #direccion-nat-field, #ciudad-field, #estado-territorial-field').val('');
                 }
             }
 
             $('#tipo-proveedor-field').on('change', toggleCampos);
+            toggleCampos(); // Inicializar: quitar required de los campos ocultos al cargar
 
             // Listener para actualizar label del checkbox de estatus
             $("#estado-field").on('change', function () {
@@ -587,13 +670,30 @@
                 }
             });
 
-            // Dropdown dependiente: Poblar municipios cuando cambia el estado
+            // Dropdown dependiente: Poblar municipios cuando cambia el estado (Natural)
             $("#estado-territorial-field").on('change', function () {
                 const estado = $(this).val();
                 const municipios = getMunicipios(estado);
                 const ciudadSelect = $("#ciudad-field");
 
-                // Limpiar opciones anteriores
+                ciudadSelect.empty();
+
+                if (estado === '') {
+                    ciudadSelect.append('<option value="">Primero seleccione un estado</option>');
+                } else {
+                    ciudadSelect.append('<option value="">Seleccione municipio</option>');
+                    municipios.forEach(function (municipio) {
+                        ciudadSelect.append('<option value="' + municipio + '">' + municipio + '</option>');
+                    });
+                }
+            });
+
+            // Dropdown dependiente: Poblar municipios cuando cambia el estado (Jurídico)
+            $("#estado-territorial-jur-field").on('change', function () {
+                const estado = $(this).val();
+                const municipios = getMunicipios(estado);
+                const ciudadSelect = $("#ciudad-jur-field");
+
                 ciudadSelect.empty();
 
                 if (estado === '') {
@@ -607,7 +707,7 @@
             });
 
             var table = $('#proveedores-table').DataTable({
-                ajax: { url: "{{ route('proveedores.data') }}", dataSrc: 'data' },
+                ajax: { url: "{{ route('proveedores.data') }}" + (esHistorial ? '?historial=true' : ''), dataSrc: 'data' },
                 columns: [
                     { data: 'documento_display', name: 'rif' },
                     { data: 'nombre_display', name: 'razon_social' },
@@ -635,29 +735,14 @@
                         name: 'actions',
                         orderable: false,
                         searchable: false,
-                        render: function (data) {
-                            return generateButtons(data);
+                        render: function (data, type, row) {
+                            return generateButtons(data, row.trashed);
                         }
                     }
                 ],
                 order: [[0, 'asc']],
                 dom: 'rtip',
-                language: {
-                    "sProcessing": "Procesando...",
-                    "sLengthMenu": "Mostrar _MENU_ registros",
-                    "sZeroRecords": "No se encontraron resultados",
-                    "sEmptyTable": "Ningún dato disponible en esta tabla",
-                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                    "sSearch": "Buscar:",
-                    "oPaginate": {
-                        "sFirst": "Primero",
-                        "sLast": "Último",
-                        "sNext": "Siguiente",
-                        "sPrevious": "Anterior"
-                    }
-                }
+                language: lenguajeData
             });
 
             // Buscador personalizado
@@ -745,15 +830,16 @@
                         $("#email-nat-field").val(data.email);
                         $("#direccion-nat-field").val(data.direccion);
 
-                        // Cargar estado y luego municipio
+                        // Cargar estado y municipio de forma síncrona (Obs. #4 resuelta)
                         if (data.estado_territorial) {
                             $("#estado-territorial-field").val(data.estado_territorial);
-                            // Disparar evento change para cargar municipios
-                            $("#estado-territorial-field").trigger('change');
-                            // Esperar a que se carguen los municipios y seleccionar el correcto
-                            setTimeout(function () {
-                                $("#ciudad-field").val(data.ciudad);
-                            }, 100);
+                            var municipios = getMunicipios(data.estado_territorial);
+                            var select = $("#ciudad-field");
+                            select.empty().append('<option value="">Seleccione municipio</option>');
+                            municipios.forEach(function(m) {
+                                select.append('<option value="' + m + '">' + m + '</option>');
+                            });
+                            select.val(data.ciudad);
                         }
                     } else {
                         // Cargar datos de empresa jurídica
@@ -768,6 +854,18 @@
                         }
                         $("#razon-social-field").val(data.razon_social);
                         $("#direccion-jur-field").val(data.direccion);
+
+                        // Cargar estado y municipio jurídico de forma síncrona (Obs. #4 resuelta)
+                        if (data.estado_territorial) {
+                            $("#estado-territorial-jur-field").val(data.estado_territorial);
+                            var municipios = getMunicipios(data.estado_territorial);
+                            var select = $("#ciudad-jur-field");
+                            select.empty().append('<option value="">Seleccione municipio</option>');
+                            municipios.forEach(function(m) {
+                                select.append('<option value="' + m + '">' + m + '</option>');
+                            });
+                            select.val(data.ciudad);
+                        }
 
                         // Separar teléfono principal en prefijo y número
                         var telJur = data.telefono || '';
@@ -824,7 +922,7 @@
                 var formData = new FormData(this);
                 formData.set('tipo_proveedor', tipo);
 
-                // Preparar datos según tipo
+                // Preparar datos según tipo y LIMPIAR campos del tipo opuesto
                 if (tipo === 'juridico') {
                     var rifPrefix = $('#rif-prefix-field').val();
                     var rifNumber = $('#rif-number-field').val();
@@ -836,16 +934,39 @@
 
                     formData.set('email', $('#email-jur-field').val());
                     formData.set('direccion', $('#direccion-jur-field').val());
+                    formData.set('estado_territorial', $('#estado-territorial-jur-field').val());
+                    formData.set('ciudad', $('#ciudad-jur-field').val());
 
                     // Concatenar teléfono de contacto
                     var telefonoContactoCompleto = $('#telefono-contacto-prefix-field').val() + '-' + $('#telefono-contacto-number-field').val();
                     formData.set('telefono_contacto', telefonoContactoCompleto);
+
+                    // Eliminar campos huérfanos del bloque Natural que FormData serializó
+                    formData.delete('documento_identidad_number');
+                    formData.delete('telefono_nat_number');
+                    formData.delete('nombre');
+                    formData.delete('apellido');
                 } else {
                     // Concatenar teléfono: prefijo-número
                     var telefonoCompleto = $('#telefono-nat-prefix-field').val() + '-' + $('#telefono-nat-number-field').val();
                     formData.set('telefono', telefonoCompleto);
                     formData.set('email', $('#email-nat-field').val());
                     formData.set('direccion', $('#direccion-nat-field').val());
+
+                    // Concatenar documento de identidad: prefijo + número
+                    var tipoDoc = $('#tipo-documento-field').val();
+                    var docNum = $('#documento-identidad-field').val();
+                    formData.set('tipo_documento', tipoDoc);
+                    formData.set('documento_identidad', docNum);
+
+                    // Eliminar campos huérfanos del bloque Jurídico que FormData serializó
+                    formData.delete('documento_identidad_number');
+                    formData.delete('telefono_nat_number');
+                    formData.delete('rif_number');
+                    formData.delete('telefono_jur_number');
+                    formData.delete('telefono_contacto_number');
+                    formData.delete('razon_social');
+                    formData.delete('contacto');
                 }
 
                 if (method === "PUT") {
@@ -895,10 +1016,10 @@
                 var id = $(this).data("id");
                 Swal.fire({
                     title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
+                    text: "El proveedor será inhabilitado y moverá al historial.",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
+                    confirmButtonText: 'Sí, inhabilitar',
                     cancelButtonText: 'Cancelar',
                     customClass: {
                         confirmButton: 'btn btn-primary w-xs me-2',
@@ -917,7 +1038,7 @@
                                 table.draw();
                                 Swal.fire({
                                     icon: 'success',
-                                    title: '¡Eliminado!',
+                                    title: '¡Inhabilitado!',
                                     text: response.success,
                                     showConfirmButton: false,
                                     timer: 1500
@@ -927,7 +1048,55 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: 'No se pudo eliminar el proveedor'
+                                    text: 'No se pudo inhabilitar el proveedor'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // ══════════════════════════════════════════════════════
+            // RESTAURAR — SoftDelete Restore (Patrón Maestro S-08)
+            // ══════════════════════════════════════════════════════
+            $(document).on("click", ".restore-item-btn", function () {
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: '¿Restaurar registro?',
+                    text: "¿Estás seguro de que deseas restaurar este proveedor?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, restaurar',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'btn btn-success w-xs me-2',
+                        cancelButton: 'btn btn-light w-xs'
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                }).then(function (result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: "{{ url('proveedores') }}/" + id + "/restore",
+                            method: "POST",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                table.draw();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Restaurado!',
+                                    text: response.success,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'No se pudo restaurar el proveedor'
                                 });
                             }
                         });
