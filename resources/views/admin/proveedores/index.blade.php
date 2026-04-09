@@ -586,7 +586,7 @@
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap5.min.js"></script>
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
-    <script src="{{ URL::asset('/assets/js/municipios-venezuela.js') }}"></script>
+    <script src="{{ asset('assets/js/municipios-venezuela.js') }}"></script>
 
     <script>
         $(document).ready(function () {
@@ -621,23 +621,42 @@
             }
 
             // Toggle campos según tipo de proveedor
+            // Gestiona visibilidad Y atributos de validación HTML5 para evitar
+            // "An invalid form control with name='' is not focusable" (Obs. resuelta)
             function toggleCampos() {
                 var tipo = $('#tipo-proveedor-field').val();
                 if (tipo === 'natural') {
                     $('#campos-juridico').hide();
                     $('#campos-natural').show();
+                    // Desactivar validaciones del bloque JURÍDICO oculto
+                    $('#campos-juridico').find('[required]').each(function () {
+                        $(this).removeAttr('required').attr('data-required', 'true');
+                    });
+                    // Restaurar validaciones del bloque NATURAL visible
+                    $('#campos-natural').find('[data-required]').each(function () {
+                        $(this).attr('required', 'required').removeAttr('data-required');
+                    });
                     // Limpiar campos jurídicos
                     $('#rif-number-field, #razon-social-field, #direccion-jur-field, #telefono-jur-field, #email-jur-field, #contacto-field, #telefono-contacto-field, #estado-territorial-jur-field').val('');
                     $('#ciudad-jur-field').empty().append('<option value="">Primero seleccione un estado</option>');
                 } else {
                     $('#campos-juridico').show();
                     $('#campos-natural').hide();
+                    // Desactivar validaciones del bloque NATURAL oculto
+                    $('#campos-natural').find('[required]').each(function () {
+                        $(this).removeAttr('required').attr('data-required', 'true');
+                    });
+                    // Restaurar validaciones del bloque JURÍDICO visible
+                    $('#campos-juridico').find('[data-required]').each(function () {
+                        $(this).attr('required', 'required').removeAttr('data-required');
+                    });
                     // Limpiar campos naturales
                     $('#nombre-field, #apellido-field, #documento-identidad-field, #telefono-nat-field, #email-nat-field, #direccion-nat-field, #ciudad-field, #estado-territorial-field').val('');
                 }
             }
 
             $('#tipo-proveedor-field').on('change', toggleCampos);
+            toggleCampos(); // Inicializar: quitar required de los campos ocultos al cargar
 
             // Listener para actualizar label del checkbox de estatus
             $("#estado-field").on('change', function () {
@@ -808,15 +827,16 @@
                         $("#email-nat-field").val(data.email);
                         $("#direccion-nat-field").val(data.direccion);
 
-                        // Cargar estado y luego municipio
+                        // Cargar estado y municipio de forma síncrona (Obs. #4 resuelta)
                         if (data.estado_territorial) {
                             $("#estado-territorial-field").val(data.estado_territorial);
-                            // Disparar evento change para cargar municipios
-                            $("#estado-territorial-field").trigger('change');
-                            // Esperar a que se carguen los municipios y seleccionar el correcto
-                            setTimeout(function () {
-                                $("#ciudad-field").val(data.ciudad);
-                            }, 100);
+                            var municipios = getMunicipios(data.estado_territorial);
+                            var select = $("#ciudad-field");
+                            select.empty().append('<option value="">Seleccione municipio</option>');
+                            municipios.forEach(function(m) {
+                                select.append('<option value="' + m + '">' + m + '</option>');
+                            });
+                            select.val(data.ciudad);
                         }
                     } else {
                         // Cargar datos de empresa jurídica
@@ -832,13 +852,16 @@
                         $("#razon-social-field").val(data.razon_social);
                         $("#direccion-jur-field").val(data.direccion);
 
-                        // Cargar estado y municipio jurídico
+                        // Cargar estado y municipio jurídico de forma síncrona (Obs. #4 resuelta)
                         if (data.estado_territorial) {
                             $("#estado-territorial-jur-field").val(data.estado_territorial);
-                            $("#estado-territorial-jur-field").trigger('change');
-                            setTimeout(function () {
-                                $("#ciudad-jur-field").val(data.ciudad);
-                            }, 100);
+                            var municipios = getMunicipios(data.estado_territorial);
+                            var select = $("#ciudad-jur-field");
+                            select.empty().append('<option value="">Seleccione municipio</option>');
+                            municipios.forEach(function(m) {
+                                select.append('<option value="' + m + '">' + m + '</option>');
+                            });
+                            select.val(data.ciudad);
                         }
 
                         // Separar teléfono principal en prefijo y número
@@ -896,7 +919,7 @@
                 var formData = new FormData(this);
                 formData.set('tipo_proveedor', tipo);
 
-                // Preparar datos según tipo
+                // Preparar datos según tipo y LIMPIAR campos del tipo opuesto
                 if (tipo === 'juridico') {
                     var rifPrefix = $('#rif-prefix-field').val();
                     var rifNumber = $('#rif-number-field').val();
@@ -914,12 +937,33 @@
                     // Concatenar teléfono de contacto
                     var telefonoContactoCompleto = $('#telefono-contacto-prefix-field').val() + '-' + $('#telefono-contacto-number-field').val();
                     formData.set('telefono_contacto', telefonoContactoCompleto);
+
+                    // Eliminar campos huérfanos del bloque Natural que FormData serializó
+                    formData.delete('documento_identidad_number');
+                    formData.delete('telefono_nat_number');
+                    formData.delete('nombre');
+                    formData.delete('apellido');
                 } else {
                     // Concatenar teléfono: prefijo-número
                     var telefonoCompleto = $('#telefono-nat-prefix-field').val() + '-' + $('#telefono-nat-number-field').val();
                     formData.set('telefono', telefonoCompleto);
                     formData.set('email', $('#email-nat-field').val());
                     formData.set('direccion', $('#direccion-nat-field').val());
+
+                    // Concatenar documento de identidad: prefijo + número
+                    var tipoDoc = $('#tipo-documento-field').val();
+                    var docNum = $('#documento-identidad-field').val();
+                    formData.set('tipo_documento', tipoDoc);
+                    formData.set('documento_identidad', docNum);
+
+                    // Eliminar campos huérfanos del bloque Jurídico que FormData serializó
+                    formData.delete('documento_identidad_number');
+                    formData.delete('telefono_nat_number');
+                    formData.delete('rif_number');
+                    formData.delete('telefono_jur_number');
+                    formData.delete('telefono_contacto_number');
+                    formData.delete('razon_social');
+                    formData.delete('contacto');
                 }
 
                 if (method === "PUT") {
