@@ -1,80 +1,102 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte de Productos</title>
-    <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 0; }
-        .container {
-            max-width: 750px;
-            width: 100%;
-            margin: 0 auto;
-            padding-left: 0px;
-            padding-right: 30px;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
-        h2 { text-align: center; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th, td { border: 1px solid #000; padding: 4px; text-align: center; font-size: 11px; }
-        th { background-color: #f0f0f0; }
-        .product-image {
-            width: 50px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div style="position: relative; min-height: 100px; margin-bottom: 8px;">
-            <img src="{{ public_path('logo.jpg') }}" alt="Logo" style="width: 100px; position: absolute; left: 0; top: 0;">
-            <div style="text-align: center; padding-left: 30px;">
-                <div class="company-name" style="font-size: 18px; font-weight: bold;">Manufacturas R.J. ATLANTICO C.A.</div>
-                <div class="company-info" style="font-size: 11px;">
-                    Rif: J-40391423-0 &nbsp;&nbsp; Telf.: 0414-3558537 - 0255-6640625 &nbsp;&nbsp; Email: rjatlantico@gmail.com
-                </div>
-                <div class="company-info" style="font-size: 11px;">
-                    Av. Esquina calle 35 locales 1 y 2 sector centro Acarigua - Edo. Portuguesa
-                </div>
-            </div>
-        </div>
-        <div style="text-align:center; font-size:16px; font-weight:bold; margin: 0 0 8px 0;">
-            Reporte General de Productos
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Imagen</th>
-                    <th>Nombre</th>
-                    <th>Modelo</th>
-                    <th>Descripción</th>
-                    <th>Precio Base ($)</th>
-                    <th>Estado</th>
-                    <th>Fecha Creación</th>
+@extends('layouts.pdf')
+
+@section('page-title', 'Reporte de Productos')
+@section('report-title', 'Reporte General de Productos')
+
+@section('extra-styles')
+    .col-imagen {
+        width: 8%;
+        text-align: center;
+    }
+
+    .col-nombre {
+        width: 18%;
+        font-weight: 600;
+    }
+
+    .col-modelo {
+        width: 12%;
+    }
+
+    .col-descripcion {
+        width: 25%;
+    }
+
+    .col-precio {
+        width: 12%;
+        text-align: right;
+    }
+
+    .col-estatus {
+        width: 8%;
+        text-align: center;
+    }
+
+    .col-creado {
+        width: 10%;
+        text-align: center;
+    }
+
+    .product-image {
+        width: 50px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+@endsection
+
+@section('summary-bar')
+    <td>
+        <span class="label">Total Registros:</span>
+        <span class="value">{{ $productos->count() }}</span>
+    </td>
+    <td>
+        <span class="label">Activos:</span>
+        <span class="value">{{ $productos->where('estado', 1)->count() }}</span>
+    </td>
+    <td>
+        <span class="label">Inactivos:</span>
+        <span class="value">{{ $productos->where('estado', 0)->count() }}</span>
+    </td>
+@endsection
+
+@section('content')
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="col-num">#</th>
+                <th class="col-imagen">Imagen</th>
+                <th class="col-nombre">Nombre</th>
+                <th class="col-modelo">Modelo</th>
+                <th class="col-descripcion">Descripción</th>
+                <th class="col-precio">Precio Base ($)</th>
+                <th class="col-estatus">Estado</th>
+                <th class="col-creado">Fecha Creación</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($productos as $index => $producto)
+                <tr class="{{ $index % 2 === 1 ? 'zebra' : '' }}">
+                    <td class="col-num">{{ $index + 1 }}</td>
+                    <td class="col-imagen">
+                        @if($producto->imagen)
+                            <img src="{{ public_path($producto->imagen) }}" alt="Imagen Producto" class="product-image">
+                        @else
+                            Sin imagen
+                        @endif
+                    </td>
+                    <td class="col-nombre">{{ $producto->nombre }}</td>
+                    <td class="col-modelo">{{ $producto->modelo }}</td>
+                    <td class="col-descripcion">{{ $producto->descripcion }}</td>
+                    <td class="col-precio">{{ number_format($producto->precio_base, 2) }}</td>
+                    <td class="col-estatus">
+                        <span class="{{ $producto->estado ? 'badge-activo' : 'badge-inactivo' }}">
+                            {{ $producto->estado ? 'Activo' : 'Inactivo' }}
+                        </span>
+                    </td>
+                    <td class="col-creado">{{ \Carbon\Carbon::parse($producto->created_at)->format('d/m/Y') }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($productos as $producto)
-                    <tr>
-                        <td>
-                            @if($producto->imagen)
-                                <img src="{{ public_path($producto->imagen) }}" alt="Imagen Producto" class="product-image">
-                            @else
-                                Sin imagen
-                            @endif
-                        </td>
-                        <td>{{ $producto->nombre }}</td>
-                        <td>{{ $producto->modelo }}</td>
-                        <td>{{ $producto->descripcion }}</td>
-                        <td>{{ number_format($producto->precio_base, 2) }}</td>
-                        <td>{{ $producto->estado ? 'Activo' : 'Inactivo' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($producto->created_at)->format('d/m/Y') }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</body>
-</html> 
+            @endforeach
+        </tbody>
+    </table>
+@endsection

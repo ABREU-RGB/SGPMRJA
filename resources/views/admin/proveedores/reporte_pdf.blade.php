@@ -1,139 +1,108 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.pdf')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte de Proveedores</title>
-    <style>
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            margin: 0;
-        }
+@section('page-title', 'Reporte de Proveedores')
+@section('report-title', 'Reporte General de Proveedores')
 
-        .container {
-            max-width: 750px;
-            width: 100%;
-            margin: 0 auto;
-            padding-left: 0px;
-            padding-right: 30px;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
+@section('extra-styles')
+    .col-tipo {
+        width: 7%;
+        text-align: center;
+    }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .col-documento {
+        width: 11%;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
+    .col-nombre {
+        width: 17%;
+        font-weight: 600;
+    }
 
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 4px;
-            text-align: center;
-            font-size: 10px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-all;
-        }
+    .col-direccion {
+        width: 17%;
+    }
 
-        th {
-            background-color: #f0f0f0;
-        }
+    .col-telefono {
+        width: 10%;
+    }
 
-        .badge-activo {
-            background-color: #28a745;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 9px;
-        }
+    .col-email {
+        width: 14%;
+        font-size: 8px;
+    }
 
-        .badge-inactivo {
-            background-color: #dc3545;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 9px;
-        }
-    </style>
-</head>
+    .col-contacto {
+        width: 10%;
+    }
 
-<body>
-    <div class="container">
-        <div style="position: relative; min-height: 100px; margin-bottom: 8px;">
-            <img src="{{ public_path('logo.jpg') }}" alt="Logo"
-                style="width: 100px; position: absolute; left: 0; top: 0;">
-            <div style="text-align: center; padding-left: 30px;">
-                <div class="company-name" style="font-size: 18px; font-weight: bold;">Manufacturas R.J. ATLANTICO C.A.
-                </div>
-                <div class="company-info" style="font-size: 11px;">
-                    Rif: J-40391423-0 &nbsp;&nbsp; Telf.: 0414-3558537 - 0255-6640625 &nbsp;&nbsp; Email:
-                    rjatlantico@gmail.com
-                </div>
-                <div class="company-info" style="font-size: 11px;">
-                    Av. Esquina calle 35 locales 1 y 2 sector centro Acarigua - Edo. Portuguesa
-                </div>
-            </div>
-        </div>
-        <div style="text-align:center; font-size:16px; font-weight:bold; margin: 0 0 8px 0;">
-            Reporte General de Proveedores
-        </div>
-        <div style="text-align:right; font-size:10px; margin-bottom: 5px;">
-            Fecha de generación: {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 8%;">Tipo</th>
-                    <th style="width: 12%;">Documento</th>
-                    <th style="width: 18%;">Nombre/Razón Social</th>
-                    <th style="width: 18%;">Dirección</th>
-                    <th style="width: 10%;">Teléfono</th>
-                    <th style="width: 15%;">Email</th>
-                    <th style="width: 10%;">Contacto</th>
-                    <th style="width: 7%;">Estado</th>
+    .col-estatus {
+        width: 7%;
+        text-align: center;
+    }
+@endsection
+
+@section('summary-bar')
+    <td>
+        <span class="label">Total Registros:</span>
+        <span class="value">{{ $proveedores->count() }}</span>
+    </td>
+    <td>
+        <span class="label">Activos:</span>
+        <span class="value">{{ $proveedores->where('estado', 1)->count() }}</span>
+    </td>
+    <td>
+        <span class="label">Inactivos:</span>
+        <span class="value">{{ $proveedores->where('estado', 0)->count() }}</span>
+    </td>
+    <td>
+        <span class="label">Naturales:</span>
+        <span class="value">{{ $proveedores->where('tipo_proveedor', 'natural')->count() }}</span>
+    </td>
+    <td>
+        <span class="label">Jurídicos:</span>
+        <span class="value">{{ $proveedores->where('tipo_proveedor', 'juridico')->count() }}</span>
+    </td>
+@endsection
+
+@section('content')
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="col-num">#</th>
+                <th class="col-tipo">Tipo</th>
+                <th class="col-documento">Documento</th>
+                <th class="col-nombre">Nombre/Razón Social</th>
+                <th class="col-direccion">Dirección</th>
+                <th class="col-telefono">Teléfono</th>
+                <th class="col-email">Email</th>
+                <th class="col-contacto">Contacto</th>
+                <th class="col-estatus">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($proveedores as $index => $proveedor)
+                <tr class="{{ $index % 2 === 1 ? 'zebra' : '' }}">
+                    <td class="col-num">{{ $index + 1 }}</td>
+                    <td class="col-tipo">
+                        @if($proveedor->tipo_proveedor === 'natural')
+                            <span class="badge-natural">Natural</span>
+                        @else
+                            <span class="badge-juridico">Jurídico</span>
+                        @endif
+                    </td>
+                    <td class="col-documento">{{ $proveedor->documento }}</td>
+                    <td class="col-nombre">{{ $proveedor->nombre_completo }}</td>
+                    <td class="col-direccion">{{ $proveedor->direccion_unificada }}</td>
+                    <td class="col-telefono">{{ $proveedor->telefono_unificado }}</td>
+                    <td class="col-email">{{ $proveedor->email_unificado }}</td>
+                    <td class="col-contacto">{{ $proveedor->tipo_proveedor === 'natural' ? '-' : $proveedor->contacto }}</td>
+                    <td class="col-estatus">
+                        <span class="{{ $proveedor->estado ? 'badge-activo' : 'badge-inactivo' }}">
+                            {{ $proveedor->estado ? 'Activo' : 'Inactivo' }}
+                        </span>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($proveedores as $proveedor)
-                    <tr>
-                        <td>
-                            @if($proveedor->tipo_proveedor === 'natural')
-                                <span
-                                    style="background:#17a2b8; color:white; padding:2px 4px; border-radius:3px; font-size:8px;">Natural</span>
-                            @else
-                                <span
-                                    style="background:#007bff; color:white; padding:2px 4px; border-radius:3px; font-size:8px;">Jurídico</span>
-                            @endif
-                        </td>
-                        <td>{{ $proveedor->documento }}</td>
-                        <td style="text-align: left; padding-left: 5px;">{{ $proveedor->nombre_completo }}</td>
-                        <td style="text-align: left; padding-left: 5px;">{{ $proveedor->direccion_unificada }}</td>
-                        <td>{{ $proveedor->telefono_unificado }}</td>
-                        <td style="font-size: 8px;">{{ $proveedor->email_unificado }}</td>
-                        <td>{{ $proveedor->tipo_proveedor === 'natural' ? '-' : $proveedor->contacto }}</td>
-                        <td>
-                            @if($proveedor->estado)
-                                <span class="badge-activo">Activo</span>
-                            @else
-                                <span class="badge-inactivo">Inactivo</span>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <div style="margin-top: 15px; font-size: 10px; text-align: right;">
-            <strong>Total de proveedores: {{ count($proveedores) }}</strong>
-        </div>
-    </div>
-</body>
-
-</html>
+            @endforeach
+        </tbody>
+    </table>
+@endsection
