@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deficiencias Pendientes — Santiago S-05, S-06, S-07</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #1f2937;
+    background: #fff;
+    padding: 40px 52px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .doc-header {
+    text-align: center;
+    border-bottom: 4px solid #dc2626;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  .doc-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #dc2626;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .doc-header .subtitle { font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  .doc-header .meta { font-size: 12px; color: #6b7280; }
+  .doc-header .meta span { margin: 0 8px; }
+
+  /* ── Secciones ── */
+  .section {
+    margin-bottom: 32px;
+    page-break-inside: avoid;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #dc2626;
+    border-bottom: 2px solid #fecaca;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+  .subsection-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #991b1b;
+    margin: 18px 0 8px;
+  }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px;
+    font-size: 12.5px;
+  }
+  thead th {
+    background: #dc2626;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  tbody td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #fef2f2; }
+
+  code {
+    background: #f3f4f6;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11.5px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    color: #dc2626;
+  }
+
+  /* ── Callouts ── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .callout-critical {
+    background: #fef2f2;
+    border-left: 4px solid #dc2626;
+  }
+  .callout-critical .callout-label { color: #dc2626; font-weight: 700; }
+  .callout-medium {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+  }
+  .callout-medium .callout-label { color: #d97706; font-weight: 700; }
+  .callout-low {
+    background: #f0f9ff;
+    border-left: 4px solid #0ea5e9;
+  }
+  .callout-low .callout-label { color: #0369a1; font-weight: 700; }
+  .callout-context {
+    background: #f8fafc;
+    border-left: 4px solid #94a3b8;
+  }
+  .callout-context .callout-label { color: #475569; font-weight: 700; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .badge-critical { background: #fee2e2; color: #991b1b; }
+  .badge-medium   { background: #fef3c7; color: #92400e; }
+  .badge-low      { background: #e0f2fe; color: #075985; }
+  .badge-ok       { background: #dcfce7; color: #166534; }
+  .badge-origin   { background: #f3f4f6; color: #374151; font-weight: 600; }
+
+  /* ── Code blocks ── */
+  .code-block {
+    background: #1e1b2e;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    margin: 10px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code-block .comment { color: #64748b; }
+  .code-block .keyword { color: #c084fc; }
+  .code-block .string  { color: #86efac; }
+  .code-block .func    { color: #93c5fd; }
+  .code-block .var     { color: #fbbf24; }
+  .code-block .add     { color: #4ade80; }
+
+  /* ── Diagram ── */
+  .diagram-box {
+    background: #1e1b2e;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    margin: 12px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .diagram-box .highlight { color: #4ade80; }
+  .diagram-box .warn      { color: #fb923c; }
+  .diagram-box .dim       { color: #64748b; }
+  .diagram-box .accent    { color: #facc15; }
+  .diagram-box .missing   { color: #f87171; }
+
+  /* ── Impact card ── */
+  .impact-card {
+    background: linear-gradient(135deg, #7f1d1d, #dc2626);
+    color: #fff;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 16px 0;
+  }
+  .impact-card h3 {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: #fff;
+  }
+  .impact-card .item {
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .impact-card .item strong { color: #fde68a; }
+  .impact-card .item code {
+    background: rgba(255,255,255,0.2);
+    color: #fde68a;
+    font-size: 11px;
+  }
+
+  /* ── Solution card ── */
+  .solution-card {
+    background: #f0fdf4;
+    border: 2px solid #22c55e;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 16px;
+  }
+  .solution-card h3 { color: #166534; font-size: 14px; margin-bottom: 10px; }
+  .solution-card p { font-size: 12.5px; margin-bottom: 6px; }
+
+  /* ── Listas ── */
+  ul, ol { margin: 6px 0 10px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* ── hr ── */
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 20px 30px; }
+    .section { page-break-inside: avoid; }
+    .code-block, .diagram-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .impact-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- HEADER                                       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="doc-header">
+  <h1>Deficiencias Pendientes</h1>
+  <p class="subtitle">Post-merge de ramas S-05, S-06 y S-07 — Santiago</p>
+  <p class="meta">
+    <span><strong>Elaborado por:</strong> Emmanuel (Tech Lead)</span>
+    <span><strong>Fecha:</strong> 27 de marzo de 2026</span>
+    <span><strong>Rama:</strong> <code style="color:#dc2626;">enmanuel</code> (commit <code style="color:#dc2626;">bbc8532</code>)</span>
+  </p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- RESUMEN EJECUTIVO                            -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Resumen Ejecutivo</h2>
+
+  <p>Las tres ramas de Santiago fueron aprobadas y mergeadas en <code>enmanuel</code> el 27/03/2026. Sin embargo, la auditoría del Tech Lead identifico <strong>3 deficiencias funcionales</strong> y <strong>2 observaciones tecnicas</strong> que requieren atencion. Este documento las cataloga por severidad e impacto.</p>
+
+  <table>
+    <thead>
+      <tr><th>#</th><th>Deficiencia</th><th>Origen</th><th>Severidad</th><th>Modulos afectados</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>No existe boton "Restaurar" para registros inhabilitados</td>
+        <td><span class="badge badge-origin">S-06</span></td>
+        <td><span class="badge badge-critical">Critica</span></td>
+        <td>Clientes, Proveedores, Productos</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>6 catalogos maestros sin UI de inhabilitacion/historial</td>
+        <td><span class="badge badge-origin">S-06</span></td>
+        <td><span class="badge badge-medium">Media</span></td>
+        <td>Banco, Color, Talla, TipoProducto, Logo, BordadoUbicacion</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Filtros avanzados solo implementados en Clientes</td>
+        <td><span class="badge badge-origin">S-07</span></td>
+        <td><span class="badge badge-low">Baja</span></td>
+        <td>Proveedores, Productos (sin filtros)</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><code>setTimeout(100ms)</code> fragil para cargar municipio al editar</td>
+        <td><span class="badge badge-origin">S-05</span></td>
+        <td><span class="badge badge-low">Baja</span></td>
+        <td>Proveedores (form juridico)</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Toggle historial redundante con filtro de estatus en Clientes</td>
+        <td><span class="badge badge-origin">S-06 + S-07</span></td>
+        <td><span class="badge badge-low">Baja</span></td>
+        <td>Clientes</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DEFICIENCIA 1                                -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Deficiencia #1 — Sin boton "Restaurar" &nbsp;<span class="badge badge-critical">Critica</span></h2>
+
+  <h3 class="subsection-title">Descripcion del problema</h3>
+  <p>S-06 implemento la inhabilitacion logica (SoftDelete) con un boton que cambia "Eliminar" por "Inhabilitar" y una vista de historial para ver los registros inhabilitados. Sin embargo, <strong>no existe forma de restaurar un registro inhabilitado desde la interfaz</strong>. La inhabilitacion es un camino de ida.</p>
+
+  <div class="callout callout-critical">
+    <span class="callout-label">Impacto directo</span><br>
+    Si un usuario inhabilita un cliente, proveedor o producto por error, no tiene forma de revertirlo desde el sistema. La unica solucion seria intervenir directamente en la base de datos (<code>UPDATE ... SET deleted_at = NULL</code>), lo cual no es aceptable en produccion.
+  </div>
+
+  <h3 class="subsection-title">Estado actual vs. estado esperado</h3>
+
+<div class="diagram-box"><span class="highlight">ESTADO ACTUAL (S-06):</span>
+
+  Registro activo ──[Inhabilitar]──> Registro en historial ──> <span class="missing">??? (sin salida)</span>
+                                     <span class="dim">(solo boton "Ver")</span>
+
+<span class="accent">ESTADO ESPERADO:</span>
+
+  Registro activo ──[Inhabilitar]──> Registro en historial ──[<span class="accent">Restaurar</span>]──> Registro activo
+                                     <span class="dim">(boton "Ver" + boton "Restaurar")</span></div>
+
+  <h3 class="subsection-title">Que se necesita implementar</h3>
+
+  <p><strong>Backend</strong> — Agregar metodo <code>restore()</code> en cada controller:</p>
+
+<div class="code-block"><span class="comment">// En ClienteController, ProductoController, ProveedorController</span>
+<span class="keyword">public function</span> <span class="func">restore</span>(<span class="var">$id</span>)
+{
+    <span class="var">$cliente</span> = Cliente::<span class="func">onlyTrashed</span>()-><span class="func">findOrFail</span>(<span class="var">$id</span>);
+    <span class="var">$cliente</span>-><span class="func">restore</span>();
+
+    <span class="keyword">return</span> <span class="func">response</span>()-><span class="func">json</span>([
+        <span class="string">'message'</span> => <span class="string">'Cliente restaurado exitosamente.'</span>
+    ]);
+}</div>
+
+  <p><strong>Rutas</strong> — Agregar ruta en <code>web.php</code>:</p>
+
+<div class="code-block"><span class="comment">// Una ruta por cada modulo</span>
+Route::<span class="func">post</span>(<span class="string">'clientes/{id}/restore'</span>, [ClienteController::<span class="keyword">class</span>, <span class="string">'restore'</span>])
+    -><span class="func">name</span>(<span class="string">'clientes.restore'</span>);
+
+Route::<span class="func">post</span>(<span class="string">'productos/{id}/restore'</span>, [ProductoController::<span class="keyword">class</span>, <span class="string">'restore'</span>])
+    -><span class="func">name</span>(<span class="string">'productos.restore'</span>);
+
+Route::<span class="func">post</span>(<span class="string">'proveedores/{id}/restore'</span>, [ProveedorController::<span class="keyword">class</span>, <span class="string">'restore'</span>])
+    -><span class="func">name</span>(<span class="string">'proveedores.restore'</span>);</div>
+
+  <p><strong>Frontend</strong> — Agregar boton "Restaurar" en <code>generateButtons()</code> cuando <code>isTrashed === true</code>:</p>
+
+<div class="code-block"><span class="comment">// Dentro del bloque if (isTrashed) de cada vista</span>
+<span class="keyword">if</span> (isTrashed) {
+    <span class="keyword">return</span> <span class="string">'&lt;div class="d-flex gap-1 justify-content-center"&gt;'</span> +
+        <span class="string">'&lt;button class="btn btn-sm btn-soft-secondary view-item-btn" ...&gt;'</span> +
+        <span class="string">'  &lt;i class="ri-eye-fill"&gt;&lt;/i&gt;'</span> +
+        <span class="string">'&lt;/button&gt;'</span> +
+        <span class="add">'&lt;button class="btn btn-sm btn-soft-success restore-item-btn" data-id="' + id + '"&gt;'</span> +
+        <span class="add">'  &lt;i class="ri-arrow-go-back-line"&gt;&lt;/i&gt;'</span> +
+        <span class="add">'&lt;/button&gt;'</span> +
+        <span class="string">'&lt;/div&gt;'</span>;
+}</div>
+
+  <table>
+    <thead>
+      <tr><th>Archivo a modificar</th><th>Cambio</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>app/Http/Controllers/ClienteController.php</code></td><td>Agregar metodo <code>restore($id)</code></td></tr>
+      <tr><td><code>app/Http/Controllers/ProductoController.php</code></td><td>Agregar metodo <code>restore($id)</code></td></tr>
+      <tr><td><code>app/Http/Controllers/ProveedorController.php</code></td><td>Agregar metodo <code>restore($id)</code></td></tr>
+      <tr><td><code>routes/web.php</code></td><td>3 rutas POST <code>/{id}/restore</code></td></tr>
+      <tr><td><code>resources/views/admin/clientes/index.blade.php</code></td><td>Boton + handler JS <code>.restore-item-btn</code></td></tr>
+      <tr><td><code>resources/views/admin/productos/index.blade.php</code></td><td>Boton + handler JS <code>.restore-item-btn</code></td></tr>
+      <tr><td><code>resources/views/admin/proveedores/index.blade.php</code></td><td>Boton + handler JS <code>.restore-item-btn</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DEFICIENCIA 2                                -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Deficiencia #2 — Catalogos maestros sin UI de inhabilitacion &nbsp;<span class="badge badge-medium">Media</span></h2>
+
+  <h3 class="subsection-title">Descripcion del problema</h3>
+  <p>La migracion <strong>BA-02</strong> (ejecutada el 20/03/2026) agrego <code>SoftDeletes</code> (<code>deleted_at</code>) a 6 tablas de catalogos maestros. S-06 implemento la UI de inhabilitacion/historial para Clientes, Proveedores y Productos, pero <strong>no toco los catalogos maestros</strong>.</p>
+
+  <table>
+    <thead>
+      <tr><th>Modelo</th><th>Tabla DB</th><th>SoftDelete en DB</th><th>UI Inhabilitar</th><th>UI Historial</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Banco</code></td><td><code>banco</code></td>
+        <td><span class="badge badge-ok">Si (BA-02)</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+      </tr>
+      <tr>
+        <td><code>Color</code></td><td><code>color</code></td>
+        <td><span class="badge badge-ok">Si (BA-02)</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+      </tr>
+      <tr>
+        <td><code>Talla</code></td><td><code>talla</code></td>
+        <td><span class="badge badge-ok">Si (BA-02)</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+      </tr>
+      <tr>
+        <td><code>TipoProducto</code></td><td><code>tipo_producto</code></td>
+        <td><span class="badge badge-ok">Si (BA-02)</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+      </tr>
+      <tr>
+        <td><code>Logo</code></td><td><code>logo</code></td>
+        <td><span class="badge badge-ok">Si (BA-02)</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+      </tr>
+      <tr>
+        <td><code>BordadoUbicacion</code></td><td><code>bordado_ubicacion</code></td>
+        <td><span class="badge badge-ok">Si (BA-02)</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+        <td><span class="badge badge-critical">No</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-medium">
+    <span class="callout-label">Impacto</span><br>
+    Actualmente, al "eliminar" un catalogo maestro desde la UI, el registro recibe un <code>deleted_at</code> gracias al trait <code>SoftDeletes</code> del modelo, pero el usuario <strong>no recibe feedback visual</strong> de que fue una inhabilitacion y no una eliminacion permanente. Tampoco hay vista de historial para estos catalogos.
+  </div>
+
+  <div class="callout callout-context">
+    <span class="callout-label">Contexto</span><br>
+    Estos son catalogos de configuracion (listas desplegables, opciones de formulario). Su flujo operacional es mucho mas simple que Clientes o Proveedores. <strong>El Tech Lead evaluara si justifica una UI de historial completa o si basta con:</strong>
+    <ul style="margin-top: 6px;">
+      <li>Cambiar el texto del SweetAlert de "Eliminar" a "Inhabilitar" (minimo)</li>
+      <li>Agregar vista de historial solo donde tenga sentido operacional</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- DEFICIENCIA 3                                -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Deficiencia #3 — Filtros avanzados solo en Clientes &nbsp;<span class="badge badge-low">Baja</span></h2>
+
+  <h3 class="subsection-title">Descripcion del problema</h3>
+  <p>S-07 implemento un patron completo y reutilizable de filtros avanzados (CSS generico <code>.navy-filter-*</code>, logica JS documentada, filtros server-side). Sin embargo, <strong>solo Clientes tiene los filtros implementados</strong>. Proveedores y Productos no los tienen.</p>
+
+<div class="diagram-box"><span class="highlight">MODULOS CON FILTROS AVANZADOS:</span>
+
+  Clientes     <span class="accent">[Tipo] [Estatus] [Estado] [Documento]</span>  <span class="highlight">Implementado</span>
+  Proveedores  <span class="dim">───────── sin filtros ─────────</span>          <span class="missing">Pendiente</span>
+  Productos    <span class="dim">───────── sin filtros ─────────</span>          <span class="missing">Pendiente</span>
+
+<span class="dim">CSS generico (.navy-filter-*) ya existe en custom.css</span>
+<span class="dim">Patron documentado en la vista de Clientes con comentarios "copiar a otros modulos"</span></div>
+
+  <div class="callout callout-low">
+    <span class="callout-label">Matiz</span><br>
+    La tarea S-07 decia textualmente <strong>"Filtros por Columna en Clientes"</strong>, asi que tecnicamente esta completa en su scope. La extension a Proveedores y Productos seria una tarea futura. El CSS generico y los comentarios de patron ya estan listos para facilitar esa replicacion.
+  </div>
+
+  <h3 class="subsection-title">Filtros sugeridos por modulo</h3>
+  <table>
+    <thead>
+      <tr><th>Modulo</th><th>Filtros recomendados</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Proveedores</strong></td>
+        <td>Tipo (Natural/Juridico), Estatus (Activo/Inactivo), Estado Territorial, Documento/RIF</td>
+      </tr>
+      <tr>
+        <td><strong>Productos</strong></td>
+        <td>Tipo de Producto, Estado (Activo/Inactivo), Rango de precio</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- OBSERVACION 4                                -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Observacion #4 — <code>setTimeout</code> fragil en S-05 &nbsp;<span class="badge badge-low">Baja</span></h2>
+
+  <p>Al editar un proveedor juridico, el formulario carga el estado territorial y luego dispara un <code>change</code> para poblar los municipios. El municipio se selecciona con un <code>setTimeout(100ms)</code>:</p>
+
+<div class="code-block"><span class="comment">// resources/views/admin/proveedores/index.blade.php</span>
+<span class="keyword">if</span> (data.estado_territorial) {
+    $(<span class="string">"#estado-territorial-jur-field"</span>).val(data.estado_territorial);
+    $(<span class="string">"#estado-territorial-jur-field"</span>).trigger(<span class="string">'change'</span>);
+    <span class="func">setTimeout</span>(<span class="keyword">function</span> () {
+        $(<span class="string">"#ciudad-jur-field"</span>).val(data.ciudad);  <span class="comment">// <-- depende de que el change ya haya poblado el select</span>
+    }, <span class="var">100</span>);  <span class="comment">// <-- 100ms arbitrarios</span>
+}</div>
+
+  <div class="callout callout-low">
+    <span class="callout-label">Riesgo</span><br>
+    Si el navegador esta bajo carga o el array de municipios es grande, 100ms podria no ser suficiente y el municipio no se pre-seleccionaria. La solucion ideal seria poblar el select de municipios de forma sincronica (ya que <code>getMunicipios()</code> es una funcion local, no una llamada AJAX) y luego seleccionar el valor. <strong>No bloquea el uso actual, pero es deuda tecnica.</strong>
+  </div>
+
+  <div class="solution-card">
+    <h3>Solucion recomendada</h3>
+<div class="code-block" style="margin:8px 0 0;"><span class="comment">// Reemplazar el setTimeout por ejecucion sincronica:</span>
+<span class="keyword">if</span> (data.estado_territorial) {
+    $(<span class="string">"#estado-territorial-jur-field"</span>).val(data.estado_territorial);
+    <span class="comment">// Poblar municipios directamente (sincrono)</span>
+    <span class="keyword">var</span> <span class="var">municipios</span> = <span class="func">getMunicipios</span>(data.estado_territorial);
+    <span class="keyword">var</span> <span class="var">select</span> = $(<span class="string">"#ciudad-jur-field"</span>);
+    <span class="var">select</span>.empty().append(<span class="string">'&lt;option value=""&gt;Seleccione municipio&lt;/option&gt;'</span>);
+    <span class="var">municipios</span>.forEach(<span class="keyword">function</span>(<span class="var">m</span>) {
+        <span class="var">select</span>.append(<span class="string">'&lt;option value="' + m + '"&gt;' + m + '&lt;/option&gt;'</span>);
+    });
+    <span class="var">select</span>.val(data.ciudad);  <span class="comment">// Ya esta poblado, seleccion inmediata</span>
+}</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- OBSERVACION 5                                -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Observacion #5 — Toggle historial redundante en Clientes &nbsp;<span class="badge badge-low">Baja</span></h2>
+
+  <p>Tras el merge de S-06 y S-07, el modulo de Clientes tiene <strong>dos formas de ver registros inactivos</strong>:</p>
+
+  <table>
+    <thead>
+      <tr><th>Mecanismo</th><th>Origen</th><th>Cómo funciona</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Boton "Ver Historial (Inactivos)"</strong></td>
+        <td><span class="badge badge-origin">S-06</span></td>
+        <td>Navega a <code>?historial=true</code>, que pre-selecciona el filtro estatus en "Inactivo"</td>
+      </tr>
+      <tr>
+        <td><strong>Filtro desplegable "Estatus → Inactivo"</strong></td>
+        <td><span class="badge badge-origin">S-07</span></td>
+        <td>Filtra la tabla en la misma pagina sin recargar</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-low">
+    <span class="callout-label">Impacto</span><br>
+    No causa ningun bug — ambos mecanismos funcionan correctamente. Sin embargo, es una redundancia de UX. Al resolver el merge, el TL conecto el toggle con el filtro (cuando llega <code>?historial=true</code>, pre-selecciona "Inactivo" en el dropdown).
+    <br><br>
+    <strong>Recomendacion:</strong> En una futura limpieza de UI, evaluar si el toggle de historial en Clientes se puede eliminar (ya que el filtro lo cubre), manteniendo el toggle solo en Proveedores y Productos donde no hay filtros avanzados.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- MAPA DE IMPACTO                              -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Mapa de Impacto por Prioridad</h2>
+
+  <div class="impact-card">
+    <h3>Recomendacion del Tech Lead</h3>
+    <div class="item">
+      <strong>INMEDIATO (antes del proximo deploy):</strong><br>
+      Deficiencia #1 — Implementar boton "Restaurar" en Clientes, Proveedores y Productos. Sin esto, la inhabilitacion es irreversible desde la UI.
+    </div>
+    <div class="item">
+      <strong>CORTO PLAZO (sprint siguiente):</strong><br>
+      Deficiencia #2 — Decidir si los catalogos maestros necesitan UI de historial o solo cambio de textos "Eliminar" -> "Inhabilitar".<br>
+      Deficiencia #3 — Replicar filtros avanzados a Proveedores y Productos usando el patron CSS/JS ya existente.
+    </div>
+    <div class="item">
+      <strong>DEUDA TECNICA (cuando se toque el archivo):</strong><br>
+      Observaciones #4 y #5 — Corregir <code>setTimeout</code> en S-05 y evaluar si eliminar el toggle historial redundante en Clientes.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
