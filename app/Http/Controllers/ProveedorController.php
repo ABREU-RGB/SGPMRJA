@@ -137,6 +137,8 @@ class ProveedorController extends Controller
                 'telefono' => 'required|string|max:20',
                 'email' => 'required|email|max:255|unique:persona,email,' . ($proveedor->persona_id ?? 0),
                 'direccion' => 'required|string|max:255',
+                'ciudad' => 'nullable|string|max:100',
+                'estado_territorial' => 'nullable|string|max:50',
             ]);
 
             $this->proveedorService->actualizarNatural($proveedor, $request->all());
@@ -151,6 +153,8 @@ class ProveedorController extends Controller
                 'contacto' => 'nullable|string|max:100',
                 'telefono_contacto' => 'nullable|string|max:20',
                 'estado' => 'nullable|boolean',
+                'ciudad' => 'nullable|string|max:100',
+                'estado_territorial' => 'nullable|string|max:50',
             ]);
 
             $this->proveedorService->actualizarJuridico($proveedor, $request->all());
