@@ -36,20 +36,14 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Toggle Historial -->
                             @if($historial)
-                                <a href="{{ route('clientes.index') }}" class="btn btn-outline-primary btn-sm">
-                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                <a href="{{ route('clientes.index') }}" class="btn-historial btn-historial-volver">
+                                    <i class="ri-arrow-left-line"></i> Solo Activos
                                 </a>
                             @else
-                                <a href="{{ route('clientes.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
-                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                <a href="{{ route('clientes.index', ['historial' => true]) }}" class="btn-historial btn-historial-ver">
+                                    <i class="ri-time-line"></i> Ver Historial
                                 </a>
                             @endif
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar cliente...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
                             @if(!$historial)
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
@@ -78,22 +72,34 @@
                          CSS genérico en custom.css: .navy-filter-*
                          ============================================================ --}}
                     <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
-                        {{-- Header: siempre visible, actúa como trigger del collapse --}}
-                        <button class="navy-filter-toggle collapsed" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
-                            aria-expanded="false" aria-controls="filters-collapse-body">
-                            <div class="navy-filter-title">
+                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
+                        <div class="navy-filter-header is-collapsed">
+                            {{-- Búsqueda global (siempre visible) --}}
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" id="custom-search-input"
+                                    class="navy-search-input"
+                                    placeholder="Buscar cliente..."
+                                    autocomplete="off">
+                            </div>
+                            {{-- Divisor vertical --}}
+                            <div class="navy-header-divider"></div>
+                            {{-- Trigger del collapse de filtros --}}
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
                                 <i class="ri-filter-3-line"></i>
                                 <span>Filtros</span>
-                            </div>
-                            <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
-                        </button>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
                         {{-- Body: colapsable, oculto por defecto --}}
                         <div class="collapse" id="filters-collapse-body">
                             <div class="navy-filter-body">
                                 <div class="row g-2 align-items-end">
                                     {{-- Filtro 1: Tipo de Cliente --}}
-                                    <div class="col-lg-3 col-md-6">
+                                    <div class="col-lg-4 col-md-6">
                                         <label class="navy-filter-label" for="filter-tipo-cliente">
                                             <i class="ri-user-settings-line"></i> Tipo de Cliente
                                         </label>
@@ -105,7 +111,7 @@
                                         </select>
                                     </div>
                                     {{-- Filtro 2: Estatus (Activo = normal, Inactivo = trashed / SoftDelete) --}}
-                                    <div class="col-lg-3 col-md-6">
+                                    <div class="col-lg-4 col-md-6">
                                         <label class="navy-filter-label" for="filter-estatus">
                                             <i class="ri-shield-check-line"></i> Estatus
                                         </label>
@@ -116,7 +122,7 @@
                                         </select>
                                     </div>
                                     {{-- Filtro 3: Estado Territorial (Venezuela) --}}
-                                    <div class="col-lg-3 col-md-6">
+                                    <div class="col-lg-4 col-md-6">
                                         <label class="navy-filter-label" for="filter-estado-territorial">
                                             <i class="ri-map-pin-line"></i> Estado
                                         </label>
@@ -147,17 +153,6 @@
                                             <option value="Yaracuy">Yaracuy</option>
                                             <option value="Zulia">Zulia</option>
                                         </select>
-                                    </div>
-                                    {{-- Filtro 4: Búsqueda por Cédula/RIF --}}
-                                    <div class="col-lg-3 col-md-6">
-                                        <label class="navy-filter-label" for="filter-documento">
-                                            <i class="ri-bank-card-line"></i> Cédula / RIF
-                                        </label>
-                                        <div class="position-relative">
-                                            <input type="text" class="form-control navy-filter-input" id="filter-documento"
-                                                data-col-index="0" placeholder="Ej: V-12345678" autocomplete="off">
-                                            <i class="ri-search-line navy-filter-input-icon"></i>
-                                        </div>
                                     </div>
                                 </div>
                                 {{-- Botón limpiar: dentro del body colapsable --}}
@@ -925,10 +920,9 @@
                     dataSrc: 'data',
                     data: function (d) {
                         // ── Filtros avanzados: enviar valores al server ──
-                        d.filter_tipo_cliente       = $('#filter-tipo-cliente').val();
-                        d.filter_estatus            = $('#filter-estatus').val();
+                        d.filter_tipo_cliente        = $('#filter-tipo-cliente').val();
+                        d.filter_estatus             = $('#filter-estatus').val();
                         d.filter_estado_territorial  = $('#filter-estado-territorial').val();
-                        d.filter_documento          = $('#filter-documento').val();
                     }
                 },
                 columns: [
@@ -969,44 +963,63 @@
                 language: lenguajeData
             });
 
-            // Buscador personalizado (búsqueda global)
+            // ══════════════════════════════════════════════════════
+            // BÚSQUEDA + FILTROS AVANZADOS — Patrón Maestro S-07
+            // Header unificado: búsqueda global + panel colapsable
+            // ══════════════════════════════════════════════════════
+
+            // ── Badge: actualizar contador de filtros activos ──
+            function updateFilterBadge() {
+                var count = 0;
+                if ($('#filter-tipo-cliente').val() !== '')                          count++;
+                if ($('#filter-estatus').val() !== '1')                              count++;
+                if ($('#filter-estado-territorial').val() !== '')                    count++;
+                var $badge = $('#active-filter-count');
+                if (count > 0) {
+                    $badge.text(count).removeClass('d-none');
+                } else {
+                    $badge.addClass('d-none');
+                }
+            }
+
+            // ── Sincronizar clase is-collapsed con el estado del collapse ──
+            $('#filters-collapse-body').on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            }).on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
+            // ── Búsqueda global (debounce 300ms) ──
+            var searchTimeout = null;
             $('#custom-search-input').on('keyup', function () {
-                table.search(this.value).draw();
-            });
-
-            // ══════════════════════════════════════════════════════
-            // FILTROS AVANZADOS — Lógica JS (Patrón Maestro S-07)
-            // Para replicar: copiar este bloque y ajustar los IDs
-            // de los selectores (#filter-xxx) y sus data-col-index.
-            // ══════════════════════════════════════════════════════
-
-            // Aplicar filtros al cambiar cualquier select
-            $('.navy-filter-select').on('change', function () {
-                table.ajax.reload();
-            });
-
-            // Aplicar filtro de documento con debounce (300ms)
-            var filterDocTimeout = null;
-            $('#filter-documento').on('keyup', function () {
-                clearTimeout(filterDocTimeout);
-                filterDocTimeout = setTimeout(function () {
-                    table.ajax.reload();
+                clearTimeout(searchTimeout);
+                var val = this.value;
+                searchTimeout = setTimeout(function () {
+                    table.search(val).draw();
                 }, 300);
             });
 
-            // Si se llegó por toggle historial (?historial=true), pre-seleccionar "Inactivo"
+            // ── Filtros de select: recargar al cambiar ──
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+                updateFilterBadge();
+            });
+
+            // ── Si se llegó por toggle historial (?historial=true) ──
             @if($historial)
                 $('#filter-estatus').val('0');
                 table.ajax.reload();
+                updateFilterBadge();
             @endif
 
-            // Botón limpiar filtros
+            // ── Botón limpiar: resetea búsqueda + filtros ──
             $('#btn-clear-filters').on('click', function () {
                 $('#filter-tipo-cliente').val('');
                 $('#filter-estatus').val('');
                 $('#filter-estado-territorial').val('');
-                $('#filter-documento').val('');
-                table.ajax.reload();
+                $('#custom-search-input').val('');
+                table.search('').ajax.reload();
+                updateFilterBadge();
             });
 
 

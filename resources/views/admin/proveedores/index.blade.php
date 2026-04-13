@@ -36,20 +36,14 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Toggle Historial -->
                             @if($historial)
-                                <a href="{{ route('proveedores.index') }}" class="btn btn-outline-primary btn-sm">
-                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                <a href="{{ route('proveedores.index') }}" class="btn-historial btn-historial-volver">
+                                    <i class="ri-arrow-left-line"></i> Solo Activos
                                 </a>
                             @else
-                                <a href="{{ route('proveedores.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
-                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                <a href="{{ route('proveedores.index', ['historial' => true]) }}" class="btn-historial btn-historial-ver">
+                                    <i class="ri-time-line"></i> Ver Historial
                                 </a>
                             @endif
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar proveedor...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
                             <div class="d-flex gap-2">
                                 @if(Auth::user()->isAdmin() && !$historial)
                                     <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
@@ -65,6 +59,61 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- ============================================================
+                         FILTROS — Patrón Maestro S-07 (Colapsable)
+                         Filtros client-side: column().search() sobre DataTable local.
+                         CSS genérico en custom.css: .navy-filter-*
+                         ============================================================ --}}
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
+                        <div class="navy-filter-header is-collapsed">
+                            {{-- Búsqueda global (siempre visible) --}}
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" id="custom-search-input"
+                                    class="navy-search-input"
+                                    placeholder="Buscar proveedor..."
+                                    autocomplete="off">
+                            </div>
+                            {{-- Divisor vertical --}}
+                            <div class="navy-header-divider"></div>
+                            {{-- Trigger del collapse de filtros --}}
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
+                        {{-- Body: colapsable, oculto por defecto --}}
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-2 align-items-end">
+                                    {{-- Filtro: Tipo de Proveedor --}}
+                                    <div class="col-lg-4 col-md-6">
+                                        <label class="navy-filter-label" for="filter-tipo-proveedor">
+                                            <i class="ri-user-settings-line"></i> Tipo de Proveedor
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tipo-proveedor">
+                                            <option value="">Todos</option>
+                                            <option value="Natural">Natural</option>
+                                            <option value="Jurídico">Jurídico</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                {{-- Botón limpiar --}}
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
+                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- FIN FILTROS --}}
+
                     <table id="proveedores-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
@@ -745,9 +794,49 @@
                 language: lenguajeData
             });
 
-            // Buscador personalizado
+            // ══════════════════════════════════════════════════════
+            // BÚSQUEDA + FILTROS — Patrón Maestro S-07
+            // Header unificado: búsqueda global + panel colapsable
+            // Filtros: client-side (DataTable carga todos los datos)
+            // ══════════════════════════════════════════════════════
+
+            // ── Badge: contador de filtros activos ──
+            function updateFilterBadge() {
+                var count = 0;
+                if ($('#filter-tipo-proveedor').val() !== '') count++;
+                var $badge = $('#active-filter-count');
+                count > 0 ? $badge.text(count).removeClass('d-none') : $badge.addClass('d-none');
+            }
+
+            // ── Sincronizar clase is-collapsed con el collapse ──
+            $('#filters-collapse-body').on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            }).on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
+            // ── Búsqueda global (debounce 300ms) ──
+            var searchTimeout = null;
             $('#custom-search-input').on('keyup', function () {
-                table.search(this.value).draw();
+                clearTimeout(searchTimeout);
+                var val = this.value;
+                searchTimeout = setTimeout(function () {
+                    table.search(val).draw();
+                }, 300);
+            });
+
+            // ── Filtro Tipo Proveedor (client-side, columna 2) ──
+            $('#filter-tipo-proveedor').on('change', function () {
+                table.column(2).search(this.value).draw();
+                updateFilterBadge();
+            });
+
+            // ── Botón limpiar: resetea búsqueda + filtros ──
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-tipo-proveedor').val('');
+                $('#custom-search-input').val('');
+                table.search('').columns().search('').draw();
+                updateFilterBadge();
             });
 
             // Ver detalles

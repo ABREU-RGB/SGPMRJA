@@ -36,20 +36,14 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Toggle Historial -->
                             @if($historial)
-                                <a href="{{ route('productos.index') }}" class="btn btn-outline-primary btn-sm">
-                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                <a href="{{ route('productos.index') }}" class="btn-historial btn-historial-volver">
+                                    <i class="ri-arrow-left-line"></i> Solo Activos
                                 </a>
                             @else
-                                <a href="{{ route('productos.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
-                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                <a href="{{ route('productos.index', ['historial' => true]) }}" class="btn-historial btn-historial-ver">
+                                    <i class="ri-time-line"></i> Ver Historial
                                 </a>
                             @endif
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar producto...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
                             @if(!$historial)
                             <div class="d-flex gap-2 align-items-center">
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
@@ -76,6 +70,62 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- ============================================================
+                         FILTROS — Patrón Maestro S-07 (Colapsable)
+                         Filtros server-side: ajax.reload() con param filter_tipo_producto_id.
+                         CSS genérico en custom.css: .navy-filter-*
+                         ============================================================ --}}
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
+                        <div class="navy-filter-header is-collapsed">
+                            {{-- Búsqueda global (siempre visible) --}}
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" id="custom-search-input"
+                                    class="navy-search-input"
+                                    placeholder="Buscar producto..."
+                                    autocomplete="off">
+                            </div>
+                            {{-- Divisor vertical --}}
+                            <div class="navy-header-divider"></div>
+                            {{-- Trigger del collapse de filtros --}}
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
+                        {{-- Body: colapsable, oculto por defecto --}}
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-2 align-items-end">
+                                    {{-- Filtro: Tipo de Producto (dinámico desde $tiposProducto) --}}
+                                    <div class="col-lg-4 col-md-6">
+                                        <label class="navy-filter-label" for="filter-tipo-producto">
+                                            <i class="ri-price-tag-3-line"></i> Tipo de Producto
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tipo-producto">
+                                            <option value="">Todos</option>
+                                            @foreach($tiposProducto as $tipo)
+                                                <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                {{-- Botón limpiar --}}
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
+                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- FIN FILTROS --}}
+
                     <table id="productos-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
@@ -468,7 +518,12 @@
             var table = $('#productos-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('productos.data') }}" + (esHistorial ? '?historial=true' : ''),
+                ajax: {
+                    url: "{{ route('productos.data') }}" + (esHistorial ? '?historial=true' : ''),
+                    data: function (d) {
+                        d.filter_tipo_producto_id = $('#filter-tipo-producto').val();
+                    }
+                },
                 columns: [
                     {
                         data: 'codigo',
@@ -546,9 +601,49 @@
                 language: lenguajeData
             });
 
-            // Buscador personalizado
+            // ══════════════════════════════════════════════════════
+            // BÚSQUEDA + FILTROS — Patrón Maestro S-07
+            // Header unificado: búsqueda global + panel colapsable
+            // Filtros: server-side (ajax.reload con filter_tipo_producto_id)
+            // ══════════════════════════════════════════════════════
+
+            // ── Badge: contador de filtros activos ──
+            function updateFilterBadge() {
+                var count = 0;
+                if ($('#filter-tipo-producto').val() !== '') count++;
+                var $badge = $('#active-filter-count');
+                count > 0 ? $badge.text(count).removeClass('d-none') : $badge.addClass('d-none');
+            }
+
+            // ── Sincronizar clase is-collapsed con el collapse ──
+            $('#filters-collapse-body').on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            }).on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
+            // ── Búsqueda global (debounce 300ms) ──
+            var searchTimeout = null;
             $('#custom-search-input').on('keyup', function () {
-                table.search(this.value).draw();
+                clearTimeout(searchTimeout);
+                var val = this.value;
+                searchTimeout = setTimeout(function () {
+                    table.search(val).draw();
+                }, 300);
+            });
+
+            // ── Filtro Tipo Producto (server-side) ──
+            $('#filter-tipo-producto').on('change', function () {
+                table.ajax.reload();
+                updateFilterBadge();
+            });
+
+            // ── Botón limpiar: resetea búsqueda + filtros ──
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-tipo-producto').val('');
+                $('#custom-search-input').val('');
+                table.search('').ajax.reload();
+                updateFilterBadge();
             });
 
             // Sincronizar switch de estado con hidden input

@@ -19,12 +19,16 @@ class ProductoController extends Controller
 
     public function getProductos(Request $request)
     {
-        if ($request->has('historial')) {
-            $productos = Producto::onlyTrashed()->with('tipoProducto')->get();
-        } else {
-            $productos = Producto::with('tipoProducto')->get();
+        $query = $request->has('historial')
+            ? Producto::onlyTrashed()->with('tipoProducto')
+            : Producto::with('tipoProducto');
+
+        // Filtro: Tipo de Producto (Patrón Maestro S-07)
+        if ($request->filled('filter_tipo_producto_id')) {
+            $query->where('tipo_producto_id', $request->filter_tipo_producto_id);
         }
-        return DataTables::of($productos)
+
+        return DataTables::of($query)
             ->addColumn('tipo_nombre', function ($producto) {
                 return $producto->tipoProducto ? $producto->tipoProducto->nombre : 'Sin tipo';
             })
