@@ -453,6 +453,9 @@
                                     style="margin-top: -6px; display: block; margin-bottom: 6px;">Máximo
                                     10 dígitos</small>
                                 <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
+                                <div id="documento-info-notice" class="d-none mt-1" style="font-size:0.8rem; color:#0891b2;">
+                                    <i class="ri-information-line"></i> <span id="documento-info-text"></span>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
@@ -670,12 +673,21 @@
                             if (response.exists) {
                                 $input.addClass('is-invalid');
                                 $error.text('Este cliente ya se encuentra registrado.').show();
-                                // Opcional: Deshabilitar el botón de agregar
                                 $('#add-btn').prop('disabled', true);
+                                $('#documento-info-notice').addClass('d-none');
                             } else {
                                 $input.removeClass('is-invalid').addClass('is-valid');
                                 $error.hide();
                                 $('#add-btn').prop('disabled', false);
+                                if (response.other_role) {
+                                    $('#documento-info-text').text(
+                                        'Este documento ya está registrado como ' + response.other_role +
+                                        '. Los datos de la persona se vincularán automáticamente.'
+                                    );
+                                    $('#documento-info-notice').removeClass('d-none');
+                                } else {
+                                    $('#documento-info-notice').addClass('d-none');
+                                }
                             }
                         },
                         error: function () {
@@ -1037,6 +1049,7 @@
                 $("#tipo_cliente-field").val("");
                 $("#razon-social-field").val("");
                 toggleClienteFields();
+                $('#documento-info-notice').addClass('d-none');
             }
             function setEditMode() {
                 $("#modalTitle").text("Actualizar Cliente");

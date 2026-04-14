@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Persona;
 use App\Services\EmpleadoService;
@@ -228,13 +229,19 @@ class EmpleadoController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        // Solo verificar si ya existe un EMPLEADO con ese documento.
+        // Solo bloquear si ya existe un EMPLEADO con ese documento.
         // Una persona puede ser cliente y empleado al mismo tiempo (persona compartida).
-        $exists = Persona::where('documento_identidad', $numero)
-            ->whereHas('empleado')
-            ->exists();
+        $persona = Persona::where('documento_identidad', $numero)->first();
+        $exists = $persona && Empleado::where('persona_id', $persona->id)->exists();
 
-        return response()->json(['exists' => $exists]);
+        $otherRole = null;
+        if ($persona && !$exists) {
+            if (Cliente::where('persona_id', $persona->id)->exists()) {
+                $otherRole = 'cliente';
+            }
+        }
+
+        return response()->json(['exists' => $exists, 'other_role' => $otherRole]);
     }
 
     public function reportePdf()

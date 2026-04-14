@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Models\Empleado;
 use App\Models\Persona;
 use App\Models\Telefono;
 use App\Models\Direccion;
@@ -243,11 +244,17 @@ class ClienteController extends Controller
 
         // Solo bloquear si ya existe un CLIENTE con ese documento.
         // Una persona puede ser empleado y cliente al mismo tiempo (persona compartida).
-        $exists = \App\Models\Persona::where('documento_identidad', $numero)
-            ->whereHas('cliente')
-            ->exists();
+        $persona = Persona::where('documento_identidad', $numero)->first();
+        $exists = $persona && Cliente::where('persona_id', $persona->id)->exists();
 
-        return response()->json(['exists' => $exists]);
+        $otherRole = null;
+        if ($persona && !$exists) {
+            if (Empleado::where('persona_id', $persona->id)->exists()) {
+                $otherRole = 'empleado';
+            }
+        }
+
+        return response()->json(['exists' => $exists, 'other_role' => $otherRole]);
     }
 
     /**
