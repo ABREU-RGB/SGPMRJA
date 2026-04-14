@@ -635,6 +635,105 @@
                 $('#insumoForm').find('.invalid-feedback').hide();
             });
 
+            // ══════════════════════════════════════════════════════
+            // VALIDACIONES ONBLUR
+            // ══════════════════════════════════════════════════════
+
+            // Nombre — mín. 3 chars + AJAX duplicado
+            $(document).on('blur', '#field-nombre', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var excludeId = $('#id-field').val();
+                if (val.length === 0) {
+                    marcarInvalido($input, 'El nombre es obligatorio.');
+                    return;
+                }
+                if (val.length < 3) {
+                    marcarInvalido($input, 'Mínimo 3 caracteres.');
+                    return;
+                }
+                $.get("{{ route('insumos.check-nombre') }}", { nombre: val, exclude_id: excludeId }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Ya existe un insumo con ese nombre.');
+                    } else {
+                        marcarValido($input);
+                    }
+                });
+            });
+
+            // Tipo — obligatorio
+            $(document).on('blur', '#field-tipo', function () {
+                if (!$(this).val()) {
+                    marcarInvalido($(this), 'El tipo es obligatorio.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Unidad de Medida — obligatoria
+            $(document).on('blur', '#field-unidad_medida', function () {
+                if (!$(this).val()) {
+                    marcarInvalido($(this), 'La unidad de medida es obligatoria.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Proveedor — obligatorio
+            $(document).on('blur', '#field-proveedor_id', function () {
+                if (!$(this).val()) {
+                    marcarInvalido($(this), 'El proveedor es obligatorio.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Stock Actual — no negativo
+            $(document).on('blur', '#field-stock_actual', function () {
+                var val = parseFloat($(this).val());
+                if (isNaN(val) || val < 0) {
+                    marcarInvalido($(this), 'El stock no puede ser negativo.');
+                } else {
+                    marcarValido($(this));
+                    // Re-validar stock mínimo si ya tiene valor
+                    var $min = $('#field-stock_minimo');
+                    if ($min.val() !== '') {
+                        var minVal = parseFloat($min.val());
+                        if (!isNaN(minVal) && minVal > val) {
+                            marcarInvalido($min, 'El stock mínimo no puede superar el stock actual.');
+                        } else if (!isNaN(minVal) && minVal >= 0) {
+                            marcarValido($min);
+                        }
+                    }
+                }
+            });
+
+            // Stock Mínimo — no negativo + no mayor al stock actual
+            $(document).on('blur', '#field-stock_minimo', function () {
+                var val = parseFloat($(this).val());
+                var stockActual = parseFloat($('#field-stock_actual').val());
+                if (isNaN(val) || val < 0) {
+                    marcarInvalido($(this), 'El stock mínimo no puede ser negativo.');
+                } else if (!isNaN(stockActual) && val > stockActual) {
+                    marcarInvalido($(this), 'El stock mínimo no puede superar el stock actual.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Costo Unitario — mayor a 0
+            $(document).on('blur', '#field-costo_unitario', function () {
+                var val = parseFloat($(this).val());
+                if (isNaN(val) || val <= 0) {
+                    marcarInvalido($(this), 'El costo unitario debe ser mayor a cero.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // ══════════════════════════════════════════════════════
+            // VALIDACIÓN AL SUBMIT
+            // ══════════════════════════════════════════════════════
             function validarFormularioInsumo() {
                 let esValido = true;
 
@@ -643,8 +742,8 @@
                 if (!nombre) {
                     marcarInvalido($nombre, 'El nombre es obligatorio.');
                     esValido = false;
-                } else if (nombre.length < 2) {
-                    marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
+                } else if (nombre.length < 3) {
+                    marcarInvalido($nombre, 'El nombre debe tener al menos 3 caracteres.');
                     esValido = false;
                 } else { marcarValido($nombre); }
 
@@ -665,6 +764,23 @@
                     marcarInvalido($proveedor, 'El proveedor es obligatorio.');
                     esValido = false;
                 } else { marcarValido($proveedor); }
+
+                let $stockActual = $('#field-stock_actual');
+                let stockActual = parseFloat($stockActual.val());
+                if (isNaN(stockActual) || stockActual < 0) {
+                    marcarInvalido($stockActual, 'El stock actual no puede ser negativo.');
+                    esValido = false;
+                } else { marcarValido($stockActual); }
+
+                let $stockMin = $('#field-stock_minimo');
+                let stockMin = parseFloat($stockMin.val());
+                if (isNaN(stockMin) || stockMin < 0) {
+                    marcarInvalido($stockMin, 'El stock mínimo no puede ser negativo.');
+                    esValido = false;
+                } else if (!isNaN(stockActual) && stockActual >= 0 && stockMin > stockActual) {
+                    marcarInvalido($stockMin, 'El stock mínimo no puede superar el stock actual.');
+                    esValido = false;
+                } else { marcarValido($stockMin); }
 
                 let $costo = $('#field-costo_unitario');
                 let costo = parseFloat($costo.val());

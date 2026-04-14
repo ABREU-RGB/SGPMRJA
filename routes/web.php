@@ -165,6 +165,7 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::resource('insumos', InsumoController::class);
         Route::get('insumos-data', [InsumoController::class, 'getInsumos'])->name('insumos.data');
         Route::get('insumos/reporte/pdf', [InsumoController::class, 'reportePdf'])->name('insumos.reporte.pdf');
+        Route::get('insumos/check-nombre', [InsumoController::class, 'checkNombre'])->name('insumos.check-nombre');
 
         // Órdenes de Producción
         Route::resource('ordenes', OrdenProduccionController::class);

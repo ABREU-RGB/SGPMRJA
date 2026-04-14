@@ -102,6 +102,19 @@ class InsumoController extends Controller
         return response()->json(['success' => 'Insumo eliminado exitosamente.']);
     }
 
+    public function checkNombre(Request $request)
+    {
+        $nombre = $request->input('nombre');
+        $excludeId = $request->input('exclude_id');
+        if (!$nombre) return response()->json(['exists' => false]);
+
+        $query = Insumo::whereRaw('LOWER(nombre) = ?', [strtolower($nombre)]);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        return response()->json(['exists' => $query->exists()]);
+    }
+
     public function reportePdf()
     {
         $insumos = Insumo::with('proveedor.persona')->get();
