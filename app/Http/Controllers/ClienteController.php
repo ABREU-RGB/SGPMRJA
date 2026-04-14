@@ -241,8 +241,11 @@ class ClienteController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        // Buscar coincidencia exacta en la tabla 'persona'
-        $exists = \App\Models\Persona::where('documento_identidad', $numero)->exists();
+        // Solo bloquear si ya existe un CLIENTE con ese documento.
+        // Una persona puede ser empleado y cliente al mismo tiempo (persona compartida).
+        $exists = \App\Models\Persona::where('documento_identidad', $numero)
+            ->whereHas('cliente')
+            ->exists();
 
         return response()->json(['exists' => $exists]);
     }
