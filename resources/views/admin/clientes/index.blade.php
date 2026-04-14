@@ -531,7 +531,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-form-section mb-0">
+                    <div class="modal-form-section">
                         <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
 
                         <div class="row g-2">
