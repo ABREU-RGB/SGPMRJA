@@ -156,6 +156,11 @@ class EmpleadoController extends Controller
         $data['direccion'] = $empleado->direccion;
         $data['ciudad'] = $empleado->ciudad;
 
+        // Detectar si la persona también está en otro módulo
+        $data['other_role'] = Cliente::where('persona_id', $empleado->persona_id)->exists()
+            ? 'cliente'
+            : null;
+
         return response()->json($data);
     }
 

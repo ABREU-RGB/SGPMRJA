@@ -320,6 +320,12 @@
                 <form id="empleadoForm">
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
+                        <div id="edit-shared-persona-notice" class="d-none alert mb-3 py-2 px-3"
+                            style="background:rgba(8,145,178,0.08); border:1px solid rgba(8,145,178,0.3); border-radius:8px; font-size:0.82rem; color:#0891b2;">
+                            <i class="ri-user-shared-line me-1"></i>
+                            Esta persona también está registrada como <strong id="edit-shared-role"></strong>.
+                            Los cambios en datos personales afectarán ambos registros.
+                        </div>
 
                         <div class="modal-form-section">
                             <div class="modal-form-section-title"><i class="ri-user-3-line"></i>Datos Personales</div>
@@ -800,7 +806,7 @@
                 $("#empleadoForm").trigger("reset");
                 $("#id-field").val("");
                 $("#modalTitle").text("Agregar Empleado");
-                $("#add-btn").show();
+                $("#add-btn").show().prop('disabled', false);
                 $("#edit-btn").hide();
                 $("#field-codigo_empleado").val("");
                 $("#tipo-documento-field").val("V-").prop('disabled', false).removeClass('campo-protegido');
@@ -820,6 +826,7 @@
                 $('#telefono-prefix-field, #field-genero, #estado_geografico-field, #ciudad-field').prop('disabled', false);
                 $('#documento-persona-card').addClass('d-none');
                 $('#documento-vinculado-notice').addClass('d-none');
+                $('#edit-shared-persona-notice').addClass('d-none');
             }
 
             function setEditMode() {
@@ -829,6 +836,10 @@
                 // Bloquear edición de documento
                 $("#tipo-documento-field").prop('disabled', true).addClass('campo-protegido');
                 $("#field-documento_identidad").prop('disabled', true).addClass('campo-protegido');
+                // Limpiar card de vinculación (por si venía del flujo crear)
+                $('#documento-persona-card').addClass('d-none');
+                $('#documento-vinculado-notice').addClass('d-none');
+                $('#edit-shared-persona-notice').addClass('d-none');
             }
 
             function validarFormularioEmpleado() {
@@ -974,6 +985,10 @@
                 var id = $(this).data("id");
                 $.get("{{ route('empleados.edit', ':id') }}".replace(':id', id), function (data) {
                     setEditMode();
+                    if (data.other_role) {
+                        $('#edit-shared-role').text(data.other_role);
+                        $('#edit-shared-persona-notice').removeClass('d-none');
+                    }
                     $("#id-field").val(data.id);
                     $("#field-nombre").val(data.persona.nombre);
                     $("#field-apellido").val(data.persona.apellido);

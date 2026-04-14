@@ -107,6 +107,12 @@ class ClienteController extends Controller
         $telefonoPrincipal = $cliente->telefono;
         $direccionPrincipal = $cliente->persona ? $cliente->persona->direccion_principal : null;
 
+        // Detectar si la persona también está en otro módulo
+        $otherRole = null;
+        if ($cliente->persona && Empleado::where('persona_id', $cliente->persona_id)->exists()) {
+            $otherRole = 'empleado';
+        }
+
         // Formatear respuesta para compatibilidad con el frontend existente
         return response()->json([
             'id' => $cliente->id,
@@ -121,6 +127,7 @@ class ClienteController extends Controller
             'estado_territorial' => $direccionPrincipal ? $direccionPrincipal->estado : '',
             'ciudad' => $direccionPrincipal ? $direccionPrincipal->ciudad : '',
             'estatus' => $cliente->estatus,
+            'other_role' => $otherRole,
             // Datos adicionales para UI de múltiples teléfonos/direcciones
             'telefonos' => $cliente->persona ? $cliente->persona->telefonos : [],
             'direcciones' => $cliente->persona ? $cliente->persona->direcciones : [],
