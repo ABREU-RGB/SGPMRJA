@@ -14,11 +14,56 @@
         }
     });
 
-    // Re-validar fecha_fin cuando cambia fecha_inicio
-    $(document).on('blur', '#fecha-inicio-field, input[name="fecha_inicio"]', function () {
+    // Validación onblur: fecha_inicio — obligatoria
+    $(document).on('blur', '#fecha-inicio-field', function () {
+        if (!$(this).val()) {
+            marcarInvalido($(this), 'La fecha de inicio es obligatoria.');
+        } else {
+            marcarValido($(this));
+        }
+        // Re-validar fecha_fin si ya tiene valor
         let $fin = $('#fecha-fin-estimada-field');
         if ($fin.val()) {
             $fin.trigger('blur');
+        }
+    });
+
+    // Re-validar fecha_fin cuando cambia fecha_inicio (compatibilidad)
+    $(document).on('blur', 'input[name="fecha_inicio"]', function () {
+        let $fin = $('#fecha-fin-estimada-field');
+        if ($fin.val()) {
+            $fin.trigger('blur');
+        }
+    });
+
+    // Validación onblur: costo_estimado — no negativo
+    $(document).on('blur', '#costo-estimado-field', function () {
+        let val = parseFloat($(this).val());
+        if ($(this).val() === '' || isNaN(val)) {
+            marcarInvalido($(this), 'El costo estimado es obligatorio.');
+        } else if (val < 0) {
+            marcarInvalido($(this), 'El costo estimado no puede ser negativo.');
+        } else {
+            marcarValido($(this));
+        }
+    });
+
+    // Validación onblur: insumo select — obligatorio
+    $(document).on('blur', '.insumo-select', function () {
+        if (!$(this).val()) {
+            marcarInvalido($(this), 'Seleccione un insumo.');
+        } else {
+            marcarValido($(this));
+        }
+    });
+
+    // Validación onblur: cantidad_estimada por fila — mayor a 0
+    $(document).on('blur', 'input[name*="[cantidad_estimada]"]', function () {
+        let val = parseFloat($(this).val());
+        if (isNaN(val) || val <= 0) {
+            marcarInvalido($(this), 'La cantidad debe ser mayor a cero.');
+        } else {
+            marcarValido($(this));
         }
     });
 
@@ -429,9 +474,86 @@
             $(this).closest('.insumo-row').remove();
         });
 
+        // ══════════════════════════════════════════════════════
+        // VALIDACIÓN AL SUBMIT
+        // ══════════════════════════════════════════════════════
+        function validarFormularioOrden() {
+            let esValido = true;
+
+            // Pedido — obligatorio (solo en creación, en edición está bloqueado)
+            let isEdit = $('#id-field').val() !== '';
+            if (!isEdit) {
+                let $pedido = $('#pedido-id-field');
+                if (!$pedido.val()) {
+                    marcarInvalido($pedido, 'Debe seleccionar un pedido.');
+                    esValido = false;
+                } else {
+                    marcarValido($pedido);
+                }
+            }
+
+            // Fecha Inicio — obligatoria
+            let $inicio = $('#fecha-inicio-field');
+            if (!$inicio.val()) {
+                marcarInvalido($inicio, 'La fecha de inicio es obligatoria.');
+                esValido = false;
+            } else {
+                marcarValido($inicio);
+            }
+
+            // Fecha Fin Estimada — obligatoria y posterior a inicio
+            let $fin = $('#fecha-fin-estimada-field');
+            if (!$fin.val()) {
+                marcarInvalido($fin, 'La fecha fin estimada es obligatoria.');
+                esValido = false;
+            } else if ($inicio.val() && $fin.val() <= $inicio.val()) {
+                marcarInvalido($fin, 'La fecha fin estimada debe ser posterior a la fecha de inicio.');
+                esValido = false;
+            } else {
+                marcarValido($fin);
+            }
+
+            // Costo Estimado — no negativo
+            let $costo = $('#costo-estimado-field');
+            let costoVal = parseFloat($costo.val());
+            if ($costo.val() === '' || isNaN(costoVal)) {
+                marcarInvalido($costo, 'El costo estimado es obligatorio.');
+                esValido = false;
+            } else if (costoVal < 0) {
+                marcarInvalido($costo, 'El costo estimado no puede ser negativo.');
+                esValido = false;
+            } else {
+                marcarValido($costo);
+            }
+
+            // Insumos — al menos 1 fila, todos con insumo seleccionado y cantidad > 0
+            let insumoValido = true;
+            $('#insumos-container .insumo-row').each(function () {
+                let $select = $(this).find('.insumo-select');
+                let $cantidad = $(this).find('input[name*="[cantidad_estimada]"]');
+                if (!$select.val()) {
+                    marcarInvalido($select, 'Seleccione un insumo.');
+                    insumoValido = false;
+                } else {
+                    marcarValido($select);
+                }
+                let cantVal = parseFloat($cantidad.val());
+                if (isNaN(cantVal) || cantVal <= 0) {
+                    marcarInvalido($cantidad, 'La cantidad debe ser mayor a cero.');
+                    insumoValido = false;
+                } else {
+                    marcarValido($cantidad);
+                }
+            });
+            if (!insumoValido) esValido = false;
+
+            return esValido;
+        }
+
         // Crear orden
         $('#ordenForm').on('submit', function (e) {
             e.preventDefault();
+            if (!validarFormularioOrden()) return;
             let formData = new FormData(this);
             // Los campos disabled no se incluyen en FormData — agregarlos manualmente
             if ($('#producto-id-field').prop('disabled')) {
