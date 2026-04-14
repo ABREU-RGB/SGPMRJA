@@ -143,8 +143,15 @@ class UserController extends Controller
         $email = $request->input('email');
         if (!$email)
             return response()->json(['exists' => false]);
-        $exists = User::where('email', $email)->exists();
-        return response()->json(['exists' => $exists]);
+
+        $query = User::where('email', $email);
+
+        $excludeId = $request->input('exclude_id');
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        return response()->json(['exists' => $query->exists()]);
     }
 }
 

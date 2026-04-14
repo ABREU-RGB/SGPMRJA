@@ -348,8 +348,12 @@
                 let esCreacion = $('#id-field').val() === '';
 
                 let $nombre = $('#field-name');
-                if (!$nombre.val().trim()) {
+                let nombreVal = $nombre.val().trim();
+                if (!nombreVal) {
                     marcarInvalido($nombre, 'El nombre es obligatorio.');
+                    esValido = false;
+                } else if (nombreVal.length < 2) {
+                    marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
                     esValido = false;
                 } else {
                     marcarValido($nombre);
@@ -357,12 +361,12 @@
 
                 let $email = $('#field-email');
                 let emailVal = $email.val().trim();
-                let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                let emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
                 if (!emailVal) {
                     marcarInvalido($email, 'El email es obligatorio.');
                     esValido = false;
                 } else if (!emailRegex.test(emailVal)) {
-                    marcarInvalido($email, 'Ingrese un email válido.');
+                    marcarInvalido($email, 'Ingrese un email válido (ej: usuario@dominio.com).');
                     esValido = false;
                 } else {
                     marcarValido($email);
@@ -627,61 +631,52 @@
                 $("#userForm").submit();
             });
 
-            // Validación onblur para email
-            $('#email-field').on('blur', function () {
-                let value = $(this).val();
+            // Validación onblur para nombre
+            $(document).on('blur', '#field-name', function () {
+                let value = $(this).val().trim();
+                if (value.length === 0) {
+                    marcarInvalido($(this), 'El nombre es obligatorio.');
+                } else if (value.length < 2) {
+                    marcarInvalido($(this), 'El nombre debe tener al menos 2 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Validación onblur para email con verificación de duplicado
+            $(document).on('blur', '#field-email', function () {
+                let value = $(this).val().trim();
                 let $input = $(this);
-                let $error = $input.next('.invalid-feedback');
-                if ($error.length === 0) {
-                    $input.after('<div class="invalid-feedback"></div>');
-                    $error = $input.next('.invalid-feedback');
+                let emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
+                if (value.length === 0) {
+                    limpiarValidacion($input);
+                    return;
                 }
 
-                // Solo verificar si tiene formato de email básico
-                if (value.includes('@') && value.includes('.')) {
-                    $.ajax({
-                        url: "{{ route('users.check-email') }}",
-                        type: "GET",
-                        data: { email: value },
-                        success: function (response) {
-                            if (response.exists) {
-                                // Si es edición y el email es el mismo que el original (no tenemos el original a mano fácilmente, pero el backend lo validaría también)
-                                // Para simplificar, advertimos. El submit bloqueará real duplicados backend.
-                                // Pero para mejorar UX:
-                                // Idealmente deberíamos comparar con el valor inicial en modo edición.
-                                // Por ahora, mostramos error si existe.
-                                // NOTA: Esto podría marcar error al editar el PROPIO email.
-                                // Mejora: No bloquear botón aquí, solo mostrar warning o checkear contra hidden id?
-                                // El backend controller `checkEmail` no recibe ID para excluir.
-                                // Dejaremos que el backend maneje la exclusión en submit, o mejoramos checkEmail.
+                if (!emailRegex.test(value)) {
+                    marcarInvalido($input, 'Ingrese un email válido (ej: usuario@dominio.com).');
+                    return;
+                }
 
-                                // Como no modifiqué checkEmail para excluir ID, esto marcará error incluso si es el mismo usuario.
-                                // Voy a dejarlo informativo pero sin bloquear botón FUERTEMENTE (o solo warning)
-                                // O puedo pasar el ID si existe #id-field
-
-                                // Revisemos checkEmail en controller... no recibe ID.
-                                // Entonces solo mostramos error si es create (id vacio)
-                                if ($('#id-field').val() === '') {
-                                    $input.addClass('is-invalid');
-                                    $error.text('Este correo ya está registrado.').show();
-                                    $('#add-btn').prop('disabled', true);
-                                } else {
-                                    // En edición, si existe, podría ser el mismo. 
-                                    // Idealmente el backend debería filtrar por ID.
-                                    // Por ahora, asumimos que si está editando y no cambió el email, dará exists=true.
-                                    // Simplemente no bloqueamos en edición con esta validación simple.
-                                    $input.removeClass('is-invalid').addClass('is-valid');
-                                    $error.hide();
-                                    $('#add-btn').prop('disabled', false);
-                                }
-                            } else {
-                                $input.removeClass('is-invalid').addClass('is-valid');
-                                $error.hide();
-                                $('#add-btn').prop('disabled', false);
-                            }
+                let excludeId = $('#id-field').val();
+                $.ajax({
+                    url: "{{ route('users.check-email') }}",
+                    type: "GET",
+                    data: { email: value, exclude_id: excludeId },
+                    success: function (response) {
+                        if (response.exists) {
+                            marcarInvalido($input, 'Este correo ya está registrado.');
+                            $('#add-btn').prop('disabled', true);
+                        } else {
+                            marcarValido($input);
+                            $('#add-btn').prop('disabled', false);
                         }
-                    });
-                }
+                    },
+                    error: function () {
+                        console.error('Error al verificar email');
+                    }
+                });
             });
         });
     </script>
