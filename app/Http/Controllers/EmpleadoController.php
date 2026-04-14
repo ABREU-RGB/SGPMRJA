@@ -252,8 +252,18 @@ class EmpleadoController extends Controller
         $email = $request->input('email');
         if (!$email)
             return response()->json(['exists' => false]);
-        $exists = \App\Models\Persona::where('email', $email)->exists();
-        return response()->json(['exists' => $exists]);
+
+        $query = Persona::where('email', $email);
+
+        $excludeEmpleadoId = $request->input('exclude_id');
+        if ($excludeEmpleadoId) {
+            $empleado = Empleado::find($excludeEmpleadoId);
+            if ($empleado && $empleado->persona_id) {
+                $query->where('id', '!=', $empleado->persona_id);
+            }
+        }
+
+        return response()->json(['exists' => $query->exists()]);
     }
 
     public function checkCodigo(Request $request)

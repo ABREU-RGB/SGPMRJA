@@ -519,97 +519,71 @@
             });
 
             // Validación onblur para documento (duplicados)
-            $(document).on('blur', '#documento-identidad-field', function () {
+            $(document).on('blur', '#field-documento_identidad', function () {
                 let value = $(this).val().trim();
                 let $input = $(this);
-                let $error = $input.next('.invalid-feedback'); // Asumiendo estructura
-                // Si no existe el div de error, lo creamos
-                if ($error.length === 0) {
-                    $input.after('<div class="invalid-feedback"></div>');
-                    $error = $input.next('.invalid-feedback');
-                }
-
                 let isEditMode = $('#id-field').val() !== '';
 
                 if (value.length < 6) {
-                    $input.addClass('is-invalid');
-                    $error.text('El documento debe tener al menos 6 dígitos.').show();
-                } else {
-                    // Si longitud válida y NO es edición, verificar duplicado
-                    if (!isEditMode) {
-                        $.ajax({
-                            url: "{{ route('empleados.check-documento') }}",
-                            method: 'GET',
-                            data: { numero: value },
-                            success: function (response) {
-                                if (response.exists) {
-                                    $input.addClass('is-invalid');
-                                    $error.text('Este empleado ya se encuentra registrado.').show();
-                                    $('#add-btn').prop('disabled', true);
-                                } else {
-                                    $input.removeClass('is-invalid').addClass('is-valid');
-                                    $error.hide();
-                                    $('#add-btn').prop('disabled', false);
-                                }
-                            },
-                            error: function () {
-                                console.error('Error al verificar documento de empleado');
-                            }
-                        });
-                    } else {
-                        $input.removeClass('is-invalid').addClass('is-valid');
-                        $error.hide();
-                    }
+                    marcarInvalido($input, 'El documento debe tener al menos 6 dígitos.');
+                    return;
                 }
+                if (isEditMode) {
+                    marcarValido($input);
+                    return;
+                }
+                $.ajax({
+                    url: "{{ route('empleados.check-documento') }}",
+                    method: 'GET',
+                    data: { numero: value },
+                    success: function (response) {
+                        if (response.exists) {
+                            marcarInvalido($input, 'Este empleado ya se encuentra registrado.');
+                            $('#add-btn').prop('disabled', true);
+                        } else {
+                            marcarValido($input);
+                            $('#add-btn').prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        console.error('Error al verificar documento de empleado');
+                    }
+                });
             });
 
             // Validación onblur para Email
-            $(document).on('blur', '#email-field', function () {
+            $(document).on('blur', '#field-email', function () {
                 let value = $(this).val().trim();
                 let $input = $(this);
-                let $error = $input.next('.invalid-feedback');
-                if ($error.length === 0) {
-                    $input.after('<div class="invalid-feedback"></div>');
-                    $error = $input.next('.invalid-feedback');
+                let regex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
+                if (value.length === 0) {
+                    limpiarValidacion($input);
+                    return;
+                }
+                if (!regex.test(value)) {
+                    marcarInvalido($input, 'Ingrese un email válido (ej: usuario@dominio.com).');
+                    return;
                 }
 
-                let isEditMode = $('#id-field').val() !== '';
-                let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                if (value.length > 0) {
-                    if (!regex.test(value)) {
-                        $input.addClass('is-invalid');
-                        $error.text('Ingrese un email válido.').show();
-                    } else {
-                        // Si formato válido y NO es edición, verificar duplicado
-                        if (!isEditMode) {
-                            console.log("Checking email duplicate: " + value);
-                            $.ajax({
-                                url: "{{ route('empleados.check-email') }}",
-                                method: 'GET',
-                                data: { email: value },
-                                success: function (response) {
-                                    console.log("Email check response:", response);
-                                    if (response.exists) {
-                                        $input.addClass('is-invalid');
-                                        $error.text('Este correo ya está registrado.').show();
-                                        $('#add-btn').prop('disabled', true);
-                                    } else {
-                                        $input.removeClass('is-invalid').addClass('is-valid');
-                                        $error.hide();
-                                        $('#add-btn').prop('disabled', false);
-                                    }
-                                }
-                            });
+                let excludeId = $('#id-field').val();
+                $.ajax({
+                    url: "{{ route('empleados.check-email') }}",
+                    method: 'GET',
+                    data: { email: value, exclude_id: excludeId },
+                    success: function (response) {
+                        if (response.exists) {
+                            marcarInvalido($input, 'Este correo ya está registrado.');
+                            $('#add-btn').prop('disabled', true);
                         } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $error.hide();
+                            marcarValido($input);
+                            $('#add-btn').prop('disabled', false);
                         }
+                    },
+                    error: function () {
+                        console.error('Error al verificar email de empleado');
                     }
-                } else {
-                    $input.removeClass('is-invalid').removeClass('is-valid');
-                    $error.hide();
-                }
+                });
             });
         });
 
@@ -781,6 +755,77 @@
                 $("#field-documento_identidad").prop('disabled', true).addClass('campo-protegido');
             }
 
+            function validarFormularioEmpleado() {
+                let esValido = true;
+                let isEditMode = $('#id-field').val() !== '';
+
+                // Documento (solo en creación — en edición está bloqueado)
+                if (!isEditMode) {
+                    let $doc = $('#field-documento_identidad');
+                    if ($doc.val().trim().length < 6) {
+                        marcarInvalido($doc, 'El documento debe tener al menos 6 dígitos.');
+                        esValido = false;
+                    } else { marcarValido($doc); }
+                }
+
+                // Nombre
+                let $nombre = $('#field-nombre');
+                if ($nombre.val().trim().length === 0) {
+                    marcarInvalido($nombre, 'El nombre es obligatorio.');
+                    esValido = false;
+                } else if ($nombre.val().trim().length < 2) {
+                    marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
+                    esValido = false;
+                } else { marcarValido($nombre); }
+
+                // Apellido
+                let $apellido = $('#field-apellido');
+                if ($apellido.val().trim().length === 0) {
+                    marcarInvalido($apellido, 'El apellido es obligatorio.');
+                    esValido = false;
+                } else if ($apellido.val().trim().length < 2) {
+                    marcarInvalido($apellido, 'El apellido debe tener al menos 2 caracteres.');
+                    esValido = false;
+                } else { marcarValido($apellido); }
+
+                // Cargo
+                let $cargo = $('#field-cargo');
+                if ($cargo.val().trim().length === 0) {
+                    marcarInvalido($cargo, 'El cargo es obligatorio.');
+                    esValido = false;
+                } else { marcarValido($cargo); }
+
+                // Departamento
+                let $depto = $('#field-departamento');
+                if (!$depto.val()) {
+                    marcarInvalido($depto, 'El departamento es obligatorio.');
+                    esValido = false;
+                } else { marcarValido($depto); }
+
+                // Fecha de Ingreso
+                let $fechaIngreso = $('#field-fecha_ingreso');
+                if (!$fechaIngreso.val()) {
+                    marcarInvalido($fechaIngreso, 'La fecha de ingreso es obligatoria.');
+                    esValido = false;
+                } else {
+                    let selected = new Date($fechaIngreso.val() + 'T00:00:00');
+                    let today = new Date(); today.setHours(0, 0, 0, 0);
+                    if (selected > today) {
+                        marcarInvalido($fechaIngreso, 'La fecha de ingreso no puede ser futura.');
+                        esValido = false;
+                    } else { marcarValido($fechaIngreso); }
+                }
+
+                // Teléfono (opcional — solo valida si se ingresó número)
+                let $telNum = $('#telefono-number-field');
+                if ($telNum.val().trim().length > 0 && !/^[0-9]{7}$/.test($telNum.val().trim())) {
+                    marcarInvalido($telNum, 'El número debe tener exactamente 7 dígitos.');
+                    esValido = false;
+                }
+
+                return esValido;
+            }
+
             $("#create-btn").click(function () { resetForm(); });
             $("#showModal").on('hidden.bs.modal', function () { resetForm(); });
             $("#add-btn, #edit-btn").click(function (e) { e.preventDefault(); $("#empleadoForm").submit(); });
@@ -788,6 +833,9 @@
             // Envío del formulario via AJAX (crear o actualizar)
             $("#empleadoForm").on("submit", function (e) {
                 e.preventDefault();
+
+                if (!validarFormularioEmpleado()) return;
+
                 var id = $("#id-field").val();
                 var url = id ? "{{ route('empleados.update', ':id') }}".replace(':id', id) : "{{ route('empleados.store') }}";
                 var method = id ? "PUT" : "POST";
