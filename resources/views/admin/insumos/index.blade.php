@@ -76,44 +76,145 @@
     <!-- Modal para ver detalles -->
     <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title">Detalles del Insumo</h5>
+                    <h5 class="modal-title"><i class="ri-archive-line me-2"></i>Detalles del Insumo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <strong>Nombre:</strong>
-                        <p id="view-nombre" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Tipo:</strong>
-                        <p id="view-tipo" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Unidad de Medida:</strong>
-                        <p id="view-unidad-medida" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Stock Actual:</strong>
-                        <p id="view-stock-actual" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Stock Mínimo:</strong>
-                        <p id="view-stock-minimo" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Costo Unitario:</strong>
-                        <p id="view-costo-unitario" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Proveedor:</strong>
-                        <p id="view-proveedor" class="text-muted mb-0"></p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Fecha de Registro:</strong>
-                        <p id="view-created" class="text-muted mb-0"></p>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+
+                        {{-- Columna izquierda: Información General --}}
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
+                                        <i class="ri-information-line me-2"></i>Información General
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
+                                                    <i class="ri-box-3-line" style="color:#1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Nombre</small>
+                                                    <span class="fw-semibold" id="view-nombre">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
+                                                    <i class="ri-price-tag-3-line" style="color:#1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Tipo</small>
+                                                    <span id="view-tipo">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
+                                                    <i class="ri-scales-line" style="color:#1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Unidad de Medida</small>
+                                                    <span class="fw-semibold" id="view-unidad-medida">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
+                                                    <i class="ri-building-2-line" style="color:#1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Proveedor</small>
+                                                    <span class="fw-semibold" id="view-proveedor">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Columna derecha: Inventario y Costo --}}
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
+                                    <h6 class="mb-0" style="color: #1e3c72;">
+                                        <i class="ri-bar-chart-grouped-line me-2"></i>Inventario y Costo
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
+                                                    <i class="ri-store-3-line" style="color:#1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Stock Actual</small>
+                                                    <span class="fw-semibold" id="view-stock-actual">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
+                                                    <i class="ri-alarm-warning-line" style="color:#1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Stock Mínimo</small>
+                                                    <span class="fw-semibold" id="view-stock-minimo">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
+                                                    <i class="ri-money-dollar-circle-line" style="color:#1e3c72;"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block">Costo Unitario</small>
+                                                    <span class="fw-semibold" id="view-costo-unitario">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Tarjeta de Registro --}}
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body py-2 px-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                                            style="width:28px;height:28px;background:rgba(30,60,114,0.08);">
+                                            <i class="ri-calendar-line" style="color:#1e3c72;font-size:12px;"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block" style="font-size:11px;">Fecha de Registro</small>
+                                            <small class="fw-semibold" id="view-created">-</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
@@ -342,16 +443,24 @@
             });
 
             // Ver detalles
+            var tipoBadges = {
+                'Tela':     '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
+                'Hilo':     '<span class="badge-tipo badge-tipo-hilo"><i class="ri-links-line"></i> Hilo</span>',
+                'Boton':    '<span class="badge-tipo badge-tipo-boton"><i class="ri-radio-button-line"></i> Botón</span>',
+                'Cierre':   '<span class="badge-tipo badge-tipo-cierre"><i class="ri-lock-line"></i> Cierre</span>',
+                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>'
+            };
+
             $(document).on('click', '.view-item-btn', function () {
                 var id = $(this).data('id');
                 $.get("{{ route('insumos.show', ':id') }}".replace(':id', id), function (data) {
                     $("#view-nombre").text(data.nombre);
-                    $("#view-tipo").text(data.tipo);
+                    $("#view-tipo").html(tipoBadges[data.tipo] || data.tipo);
                     $("#view-unidad-medida").text(data.unidad_medida);
-                    $("#view-stock-actual").text(data.stock_actual);
-                    $("#view-stock-minimo").text(data.stock_minimo);
+                    $("#view-stock-actual").text(parseFloat(data.stock_actual).toFixed(2));
+                    $("#view-stock-minimo").text(parseFloat(data.stock_minimo).toFixed(2));
                     $("#view-costo-unitario").text('$/ ' + parseFloat(data.costo_unitario).toFixed(2));
-                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor');
+                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor asignado');
                     $("#view-created").text(data.created_at);
                     $("#viewModal").modal('show');
                 });
