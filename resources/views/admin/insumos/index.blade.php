@@ -154,7 +154,8 @@
 
                             <div class="row mb-0">
                                 <div class="col-md-6">
-                                    <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
+                                    <x-forms.select name="unidad_medida" label="Unidad de Medida" required
+                                        :options="['Metro' => 'Metro (m)', 'Kg' => 'Kilogramo (Kg)', 'Gramo' => 'Gramo (g)', 'Unidad' => 'Unidad (Und)', 'Rollo' => 'Rollo', 'Cono' => 'Cono', 'Docena' => 'Docena']" />
                                 </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="proveedor_id" label="Proveedor" required

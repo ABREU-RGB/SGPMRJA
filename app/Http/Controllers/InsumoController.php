@@ -39,7 +39,7 @@ class InsumoController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100',
             'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
-            'unidad_medida' => 'required|string|max:20',
+            'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
             'costo_unitario' => 'required|numeric|min:0.01',
             'stock_actual' => 'required|numeric|min:0',
             'stock_minimo' => 'required|numeric|min:0',
@@ -72,7 +72,7 @@ class InsumoController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100',
             'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
-            'unidad_medida' => 'required|string|max:20',
+            'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
             'costo_unitario' => 'required|numeric|min:0.01',
             'stock_actual' => 'required|numeric|min:0',
             'stock_minimo' => 'required|numeric|min:0',
