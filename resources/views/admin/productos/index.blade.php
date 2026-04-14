@@ -262,7 +262,7 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Producto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="productoForm" enctype="multipart/form-data">
+                <form id="productoForm" enctype="multipart/form-data" novalidate>
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
@@ -408,7 +408,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="tipoForm">
+                <form id="tipoForm" novalidate>
                     <div class="modal-body">
                         <input type="hidden" id="tipo-id-field" />
                         <div class="modal-form-section mb-0">
@@ -941,6 +941,26 @@
                     esValido = false;
                 } else { marcarValido($tipo); }
 
+                let $modelo = $('#modelo-field');
+                let modelo = $modelo.val().trim();
+                if (!modelo) {
+                    marcarInvalido($modelo, 'El modelo es obligatorio.');
+                    esValido = false;
+                } else if (modelo.length < 3) {
+                    marcarInvalido($modelo, 'El modelo debe tener al menos 3 caracteres.');
+                    esValido = false;
+                } else { marcarValido($modelo); }
+
+                let $desc = $('#descripcion-field');
+                let desc = $desc.val().trim();
+                if (!desc) {
+                    marcarInvalido($desc, 'La descripción es obligatoria.');
+                    esValido = false;
+                } else if (desc.length < 10) {
+                    marcarInvalido($desc, 'La descripción debe tener al menos 10 caracteres.');
+                    esValido = false;
+                } else { marcarValido($desc); }
+
                 let $precio = $('#precio-base-field');
                 let precio = parseFloat($precio.val());
                 if (isNaN(precio) || precio <= 0) {
@@ -1094,7 +1114,75 @@
                 recargarTipos();
             });
 
-            // Validaciones AJAX onblur para Tipos de Producto
+            // ══════════════════════════════════════════════════════
+            // VALIDACIONES ONBLUR — Formulario Producto principal
+            // ══════════════════════════════════════════════════════
+
+            // Tipo de Producto — select obligatorio
+            $(document).on('blur', '#tipo-producto-field', function () {
+                if (!$(this).val()) {
+                    marcarInvalido($(this), 'El tipo de producto es obligatorio.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Modelo — mín. 3 chars
+            $(document).on('blur', '#modelo-field', function () {
+                let val = $(this).val().trim();
+                if (!val) {
+                    marcarInvalido($(this), 'El modelo es obligatorio.');
+                } else if (val.length < 3) {
+                    marcarInvalido($(this), 'Mínimo 3 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Descripción — mín. 10 chars
+            $(document).on('blur', '#descripcion-field', function () {
+                let val = $(this).val().trim();
+                if (!val) {
+                    marcarInvalido($(this), 'La descripción es obligatoria.');
+                } else if (val.length < 10) {
+                    marcarInvalido($(this), 'Mínimo 10 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Precio Base — mayor a cero
+            $(document).on('blur', '#precio-base-field', function () {
+                let val = parseFloat($(this).val());
+                if (isNaN(val) || val <= 0) {
+                    marcarInvalido($(this), 'El precio base debe ser mayor a cero.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // Imagen — formato y tamaño (solo en creación)
+            $(document).on('change', '#imagen-field', function () {
+                let esCreacion = $('#id-field').val() === '';
+                let file = this.files[0];
+                if (!file) {
+                    if (esCreacion) marcarInvalido($(this), 'La imagen es obligatoria.');
+                    return;
+                }
+                let tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!tiposPermitidos.includes(file.type)) {
+                    marcarInvalido($(this), 'Formato no permitido. Use JPG, PNG o GIF.');
+                    return;
+                }
+                if (file.size > 2048 * 1024) {
+                    marcarInvalido($(this), 'La imagen no puede superar 2MB.');
+                    return;
+                }
+                marcarValido($(this));
+            });
+
+            // ══════════════════════════════════════════════════════
+            // VALIDACIONES AJAX onblur — Tipos de Producto
 
             // 1. Nombre
             $('#tipo-nombre-field').on('blur', function () {
@@ -1125,26 +1213,35 @@
                 });
             });
 
-            // 2. Prefijo
+            // 2. Prefijo — sanitizar a mayúsculas en tiempo real
+            $(document).on('input', '#tipo-prefijo-field', function () {
+                this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+            });
+
             $('#tipo-prefijo-field').on('blur', function () {
-                let value = $(this).val();
                 let $input = $(this);
-                let $error = $('#tipo-prefijo-error');
+                let value = $input.val().trim();
                 let isEdit = $('#tipo-id-field').val() !== '';
 
-                if (value.length > 0 && !isEdit) {
-                    $.get("{{ route('tipo-productos.check-codigo') }}", { codigo: value }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            $error.text('Este prefijo ya existe').show();
-                            $('#save-tipo-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $error.hide();
-                            $('#save-tipo-btn').prop('disabled', false);
-                        }
-                    });
+                if (!value) {
+                    marcarInvalido($input, 'El código prefijo es obligatorio.');
+                    return;
                 }
+                if (!/^[a-zA-Z]+$/.test(value)) {
+                    marcarInvalido($input, 'El código prefijo solo puede contener letras.');
+                    return;
+                }
+                if (isEdit) { marcarValido($input); return; }
+
+                $.get("{{ route('tipo-productos.check-codigo') }}", { codigo: value }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este prefijo ya está registrado.');
+                        $('#save-tipo-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#save-tipo-btn').prop('disabled', false);
+                    }
+                });
             });
 
             // Limpiar validaciones al cerrar modal de tipo
