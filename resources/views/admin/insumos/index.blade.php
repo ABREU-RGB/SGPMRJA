@@ -235,7 +235,7 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Insumo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="insumoForm">
+                <form id="insumoForm" novalidate>
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />

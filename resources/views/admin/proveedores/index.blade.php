@@ -369,7 +369,7 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Proveedor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="proveedorForm">
+                <form id="proveedorForm" novalidate>
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />

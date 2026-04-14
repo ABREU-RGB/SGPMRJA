@@ -317,7 +317,7 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Empleado</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="empleadoForm">
+                <form id="empleadoForm" novalidate>
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
                         <div id="edit-shared-persona-notice" class="d-none alert mb-3 py-2 px-3"

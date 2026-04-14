@@ -48,8 +48,9 @@
         }
     });
 
-    // Validación onblur: insumo select — obligatorio
-    $(document).on('blur', '.insumo-select', function () {
+    // Validación al cerrar Select2 — insumo obligatorio
+    // (blur nativo no funciona con Select2; se usa select2:close)
+    $(document).on('select2:close', '.insumo-select', function () {
         if (!$(this).val()) {
             marcarInvalido($(this), 'Seleccione un insumo.');
         } else {
