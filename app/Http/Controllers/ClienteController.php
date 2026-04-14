@@ -262,7 +262,17 @@ class ClienteController extends Controller
         $email = $request->input('email');
         if (!$email)
             return response()->json(['exists' => false]);
-        $exists = \App\Models\Persona::where('email', $email)->exists();
-        return response()->json(['exists' => $exists]);
+
+        $query = \App\Models\Persona::where('email', $email);
+
+        $excludeClienteId = $request->input('exclude_id');
+        if ($excludeClienteId) {
+            $cliente = Cliente::find($excludeClienteId);
+            if ($cliente && $cliente->persona_id) {
+                $query->where('id', '!=', $cliente->persona_id);
+            }
+        }
+
+        return response()->json(['exists' => $query->exists()]);
     }
 }

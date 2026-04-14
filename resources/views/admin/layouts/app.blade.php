@@ -397,14 +397,13 @@
             // ============================================
 
             // Campos de NOMBRE/APELLIDO - Solo letras y espacios
+            // #razon-social-field excluido — tiene su propio filtro permisivo (permite números)
             const camposNombre = [
                 '#nombre-field',
                 '#apellido-field',
-                '#razon-social-field',
                 '#nombre-contacto-field',
-                'input[name="nombre"]',
+                'input[name="nombre"]:not(#razon-social-field)',
                 'input[name="apellido"]',
-                'input[name="razon_social"]',
                 'input[name="nombre_contacto"]'
             ];
 
@@ -412,6 +411,11 @@
                 $(document).on('input', selector, function () {
                     this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
                 });
+            });
+
+            // Razón Social — permite letras, números, puntos, comas, guiones y espacios
+            $(document).on('input', '#razon-social-field, input[name="razon_social"]', function () {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9.,\-\s]/g, '');
             });
 
             // Campos de DOCUMENTO - Solo números (máximo 10 dígitos)
@@ -495,7 +499,8 @@
             // ============================================
 
             // Validación de nombres (mínimo 2 caracteres)
-            $(document).on('blur', '#nombre-field, input[name="nombre"]', function () {
+            // Se excluye #razon-social-field — tiene su propio handler en clientes (min 3 chars)
+            $(document).on('blur', '#nombre-field, input[name="nombre"]:not(#razon-social-field)', function () {
                 validarCampoTexto($(this), 2, 'El nombre debe tener al menos 2 caracteres.');
             });
 

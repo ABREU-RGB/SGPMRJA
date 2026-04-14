@@ -705,7 +705,7 @@
         $(document).on('blur', '#email-field', function () {
             let value = $(this).val().trim();
             let $input = $(this);
-            let isEditMode = $('#id-field').val() !== '';
+            let excludeId = $('#id-field').val();
             let regex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
             if (value.length === 0) {
@@ -718,27 +718,23 @@
                 return;
             }
 
-            if (!isEditMode) {
-                $.ajax({
-                    url: "{{ route('clientes.check-email') }}",
-                    method: 'GET',
-                    data: { email: value },
-                    success: function (response) {
-                        if (response.exists) {
-                            marcarInvalido($input, 'Este correo ya está registrado.');
-                            $('#add-btn').prop('disabled', true);
-                        } else {
-                            marcarValido($input);
-                            $('#add-btn').prop('disabled', false);
-                        }
-                    },
-                    error: function () {
-                        console.error('Error al verificar email');
+            $.ajax({
+                url: "{{ route('clientes.check-email') }}",
+                method: 'GET',
+                data: { email: value, exclude_id: excludeId },
+                success: function (response) {
+                    if (response.exists) {
+                        marcarInvalido($input, 'Este correo ya está registrado.');
+                        $('#add-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#add-btn').prop('disabled', false);
                     }
-                });
-            } else {
-                marcarValido($input);
-            }
+                },
+                error: function () {
+                    console.error('Error al verificar email');
+                }
+            });
         });
 
         // Limpiar validaciones al abrir modal
@@ -832,6 +828,16 @@
                 marcarInvalido($(this), 'La razón social es obligatoria.');
             } else if (value.length < 3) {
                 marcarInvalido($(this), 'La razón social debe tener al menos 3 caracteres.');
+            } else {
+                marcarValido($(this));
+            }
+        });
+
+        // Validación onblur para Tipo de Cliente
+        $(document).on('blur', '#tipo_cliente-field', function () {
+            let value = $(this).val();
+            if (!value) {
+                marcarInvalido($(this), 'Seleccione el tipo de cliente.');
             } else {
                 marcarValido($(this));
             }
