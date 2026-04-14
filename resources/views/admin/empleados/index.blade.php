@@ -338,8 +338,20 @@
                                         <input type="text" id="field-documento_identidad" name="documento_identidad"
                                             class="form-control" placeholder="Nro. documento" required />
                                     </div>
-                                    <div id="documento-info-notice" class="d-none mt-1" style="font-size:0.8rem; color:#0891b2;">
-                                        <i class="ri-information-line"></i> <span id="documento-info-text"></span>
+                                    <div id="documento-persona-card" class="d-none mt-2 rounded"
+                                        style="border:1px solid rgba(8,145,178,0.35); background:rgba(8,145,178,0.06); padding:10px 12px;">
+                                        <div style="font-size:0.78rem; font-weight:600; color:#0891b2; margin-bottom:4px;">
+                                            <i class="ri-user-shared-line me-1"></i>
+                                            Persona ya registrada como <span id="persona-card-role" style="text-transform:capitalize;"></span>
+                                        </div>
+                                        <div id="persona-card-data" style="font-size:0.8rem; line-height:1.8; margin-bottom:8px;"></div>
+                                        <button type="button" id="persona-vincular-btn" class="btn btn-sm"
+                                            style="background:#0891b2; color:white; font-size:0.75rem; padding:3px 12px; border-radius:20px;">
+                                            <i class="ri-link me-1"></i>Usar estos datos
+                                        </button>
+                                    </div>
+                                    <div id="documento-vinculado-notice" class="d-none mt-1" style="font-size:0.78rem; color:#0891b2;">
+                                        <i class="ri-link me-1"></i><span id="documento-vinculado-text"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -539,18 +551,24 @@
                         if (response.exists) {
                             marcarInvalido($input, 'Este documento ya pertenece a un empleado registrado.');
                             $('#add-btn').prop('disabled', true);
-                            $('#documento-info-notice').addClass('d-none');
+                            $('#documento-persona-card').addClass('d-none');
+                            $('#documento-vinculado-notice').addClass('d-none');
                         } else {
                             marcarValido($input);
-                            $('#add-btn').prop('disabled', false);
-                            if (response.other_role) {
-                                $('#documento-info-text').text(
-                                    'Este documento ya está registrado como ' + response.other_role +
-                                    '. Los datos de la persona se vincularán automáticamente.'
-                                );
-                                $('#documento-info-notice').removeClass('d-none');
+                            if (response.other_role && response.persona) {
+                                var p = response.persona;
+                                var nombreCompleto = p.nombre + (p.apellido ? ' ' + p.apellido : '');
+                                var detalles = '<strong>' + nombreCompleto + '</strong>';
+                                if (p.email) detalles += '<br>' + p.email;
+                                if (p.telefono) detalles += '<br>' + p.telefono;
+                                $('#persona-card-role').text(response.other_role);
+                                $('#persona-card-data').html(detalles);
+                                $('#persona-vincular-btn').data('persona', p).data('role', response.other_role);
+                                $('#documento-persona-card').removeClass('d-none');
+                                $('#add-btn').prop('disabled', true);
                             } else {
-                                $('#documento-info-notice').addClass('d-none');
+                                $('#documento-persona-card').addClass('d-none');
+                                $('#add-btn').prop('disabled', false);
                             }
                         }
                     },
@@ -558,6 +576,45 @@
                         console.error('Error al verificar documento de empleado');
                     }
                 });
+            });
+
+            // Vincular persona existente al formulario de empleado
+            $(document).on('click', '#persona-vincular-btn', function () {
+                var p = $(this).data('persona');
+                var role = $(this).data('role');
+
+                if (p.tipo_documento) $('#tipo-documento-field').val(p.tipo_documento);
+
+                // Datos personales
+                $('#field-nombre').val(p.nombre || '').prop('readonly', true);
+                $('#field-apellido').val(p.apellido || '').prop('readonly', true);
+                $('#field-email').val(p.email || '').prop('readonly', true);
+
+                // Teléfono
+                if (p.telefono && p.telefono.includes('-')) {
+                    var parts = p.telefono.split('-');
+                    $('#telefono-prefix-field').val(parts[0]).prop('disabled', true);
+                    $('#telefono-number-field').val(parts[1]).prop('readonly', true);
+                }
+
+                // Opcionales
+                if (p.fecha_nacimiento) $('#field-fecha_nacimiento').val(p.fecha_nacimiento).prop('readonly', true);
+                if (p.genero) $('#field-genero').val(p.genero).prop('disabled', true);
+                if (p.direccion) $('#field-direccion').val(p.direccion).prop('readonly', true);
+
+                // Estado y Municipio
+                if (p.estado_geografico) {
+                    $('#estado_geografico-field').val(p.estado_geografico).trigger('change');
+                    if (p.ciudad) $('#ciudad-field').val(p.ciudad);
+                    $('#estado_geografico-field').prop('disabled', true);
+                    $('#ciudad-field').prop('disabled', true);
+                }
+
+                // Mostrar aviso y habilitar guardar
+                $('#documento-persona-card').addClass('d-none');
+                $('#documento-vinculado-text').text('Datos vinculados de persona registrada como ' + role + '.');
+                $('#documento-vinculado-notice').removeClass('d-none');
+                $('#add-btn').prop('disabled', false);
             });
 
             // Validación onblur para Email
@@ -758,7 +815,11 @@
                 // Limpiar validaciones
                 $("#empleadoForm .is-invalid").removeClass("is-invalid");
                 $("#empleadoForm .is-valid").removeClass("is-valid");
-                $('#documento-info-notice').addClass('d-none');
+                // Desbloquear campos vinculados de persona existente
+                $('#field-nombre, #field-apellido, #field-email, #field-fecha_nacimiento, #field-direccion, #telefono-number-field').prop('readonly', false);
+                $('#telefono-prefix-field, #field-genero, #estado_geografico-field, #ciudad-field').prop('disabled', false);
+                $('#documento-persona-card').addClass('d-none');
+                $('#documento-vinculado-notice').addClass('d-none');
             }
 
             function setEditMode() {

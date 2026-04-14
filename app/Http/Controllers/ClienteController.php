@@ -244,17 +244,29 @@ class ClienteController extends Controller
 
         // Solo bloquear si ya existe un CLIENTE con ese documento.
         // Una persona puede ser empleado y cliente al mismo tiempo (persona compartida).
-        $persona = Persona::where('documento_identidad', $numero)->first();
+        $persona = Persona::with(['telefonos', 'direcciones'])->where('documento_identidad', $numero)->first();
         $exists = $persona && Cliente::where('persona_id', $persona->id)->exists();
 
         $otherRole = null;
+        $personaData = null;
         if ($persona && !$exists) {
             if (Empleado::where('persona_id', $persona->id)->exists()) {
                 $otherRole = 'empleado';
+                $dir = $persona->direccionPrincipal;
+                $personaData = [
+                    'nombre'           => $persona->nombre,
+                    'apellido'         => $persona->apellido ?? '',
+                    'tipo_documento'   => $persona->tipo_documento,
+                    'email'            => $persona->email ?? '',
+                    'telefono'         => $persona->telefonoPrincipal ?? '',
+                    'estado_geografico'=> $persona->estado_geografico ?? ($dir?->estado ?? ''),
+                    'ciudad'           => $dir?->ciudad ?? '',
+                    'direccion'        => $dir?->direccion ?? '',
+                ];
             }
         }
 
-        return response()->json(['exists' => $exists, 'other_role' => $otherRole]);
+        return response()->json(['exists' => $exists, 'other_role' => $otherRole, 'persona' => $personaData]);
     }
 
     /**
