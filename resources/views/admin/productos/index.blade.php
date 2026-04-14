@@ -461,7 +461,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
     <script>
@@ -748,7 +747,7 @@
             $("#productoForm").on("submit", function (e) {
                 e.preventDefault();
 
-                if (!validator.validateAll()) {
+                if (!validarFormularioProducto()) {
                     return;
                 }
                 var id = $("#id-field").val();
@@ -929,12 +928,63 @@
                 $("#estado-label").text("Activo");
                 $("#add-btn").show();
                 $("#edit-btn").hide();
-                validator.resetValidation();
-                tipoValidator.resetValidation();
+                $('#productoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
+                $('#productoForm').find('.invalid-feedback').hide();
             });
 
-            const validator = new FormValidator('productoForm');
-            const tipoValidator = new FormValidator('tipoForm');
+            function validarFormularioProducto() {
+                let esValido = true;
+
+                let $tipo = $('#tipo-producto-field');
+                if (!$tipo.val()) {
+                    marcarInvalido($tipo, 'El tipo de producto es obligatorio.');
+                    esValido = false;
+                } else { marcarValido($tipo); }
+
+                let $precio = $('#precio-base-field');
+                let precio = parseFloat($precio.val());
+                if (isNaN(precio) || precio <= 0) {
+                    marcarInvalido($precio, 'El precio base debe ser mayor a cero.');
+                    esValido = false;
+                } else { marcarValido($precio); }
+
+                let esCreacion = $('#id-field').val() === '';
+                if (esCreacion) {
+                    let $imagen = $('#imagen-field');
+                    if (!$imagen[0].files || $imagen[0].files.length === 0) {
+                        marcarInvalido($imagen, 'La imagen es obligatoria al crear un producto.');
+                        esValido = false;
+                    } else { marcarValido($imagen); }
+                }
+
+                return esValido;
+            }
+
+            function validarFormularioTipo() {
+                let esValido = true;
+
+                let $nombre = $('#tipo-nombre-field');
+                let nombre = $nombre.val().trim();
+                if (!nombre) {
+                    marcarInvalido($nombre, 'El nombre del tipo es obligatorio.');
+                    esValido = false;
+                } else if (nombre.length < 2) {
+                    marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
+                    esValido = false;
+                } else { marcarValido($nombre); }
+
+                let $prefijo = $('#tipo-prefijo-field');
+                let prefijo = $prefijo.val().trim();
+                if (!prefijo) {
+                    marcarInvalido($prefijo, 'El código prefijo es obligatorio.');
+                    esValido = false;
+                } else if (!/^[a-zA-Z]+$/.test(prefijo)) {
+                    marcarInvalido($prefijo, 'El código prefijo solo puede contener letras.');
+                    esValido = false;
+                } else { marcarValido($prefijo); }
+
+                return esValido;
+            }
             let tiposHistorial = false;
             let tiposTable = null;
 
@@ -1237,7 +1287,7 @@
             $("#tipoForm").on("submit", function (e) {
                 e.preventDefault();
 
-                if (!tipoValidator.validateAll()) {
+                if (!validarFormularioTipo()) {
                     return;
                 }
 

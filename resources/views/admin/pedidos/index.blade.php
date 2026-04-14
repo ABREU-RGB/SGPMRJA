@@ -800,6 +800,29 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
 
     <script>
+        // Validación onblur: fecha_entrega_estimada debe ser >= fecha_pedido
+        $(document).on('blur', '#fecha-entrega-estimada-field, input[name="fecha_entrega_estimada"]', function () {
+            let entregaVal = $(this).val();
+            let pedidoVal = $('#fecha-pedido-field').val() || $('input[name="fecha_pedido"]').val();
+            if (entregaVal && pedidoVal) {
+                if (entregaVal < pedidoVal) {
+                    marcarInvalido($(this), 'La fecha de entrega no puede ser anterior a la fecha del pedido.');
+                } else {
+                    marcarValido($(this));
+                }
+            } else if (entregaVal) {
+                marcarValido($(this));
+            }
+        });
+
+        // Re-validar fecha_entrega cuando cambia fecha_pedido
+        $(document).on('blur', '#fecha-pedido-field, input[name="fecha_pedido"]', function () {
+            let $entrega = $('#fecha-entrega-estimada-field');
+            if ($entrega.val()) {
+                $entrega.trigger('blur');
+            }
+        });
+
         // === SISTEMA DE AUTOCORRECCIÓN Y AUTOCOMPLETADO ===
 
         // Diccionarios de datos comunes para autocorrección

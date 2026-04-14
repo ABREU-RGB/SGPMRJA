@@ -219,7 +219,6 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
-    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
     <script>
@@ -383,7 +382,7 @@
             $("#insumoForm").on("submit", function (e) {
                 e.preventDefault();
 
-                if (!validator.validateAll()) {
+                if (!validarFormularioInsumo()) {
                     return;
                 }
                 var id = $("#id-field").val();
@@ -508,10 +507,50 @@
                 $("#add-btn").show();
                 $("#add-btn").show();
                 $("#edit-btn").hide();
-                validator.resetValidation();
+                $('#insumoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
+                $('#insumoForm').find('.invalid-feedback').hide();
             });
 
-            const validator = new FormValidator('insumoForm');
+            function validarFormularioInsumo() {
+                let esValido = true;
+
+                let $nombre = $('#field-nombre');
+                let nombre = $nombre.val().trim();
+                if (!nombre) {
+                    marcarInvalido($nombre, 'El nombre es obligatorio.');
+                    esValido = false;
+                } else if (nombre.length < 2) {
+                    marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
+                    esValido = false;
+                } else { marcarValido($nombre); }
+
+                let $tipo = $('#field-tipo');
+                if (!$tipo.val()) {
+                    marcarInvalido($tipo, 'El tipo es obligatorio.');
+                    esValido = false;
+                } else { marcarValido($tipo); }
+
+                let $unidad = $('#field-unidad_medida');
+                if (!$unidad.val().trim()) {
+                    marcarInvalido($unidad, 'La unidad de medida es obligatoria.');
+                    esValido = false;
+                } else { marcarValido($unidad); }
+
+                let $proveedor = $('#field-proveedor_id');
+                if (!$proveedor.val()) {
+                    marcarInvalido($proveedor, 'El proveedor es obligatorio.');
+                    esValido = false;
+                } else { marcarValido($proveedor); }
+
+                let $costo = $('#field-costo_unitario');
+                let costo = parseFloat($costo.val());
+                if (isNaN(costo) || costo <= 0) {
+                    marcarInvalido($costo, 'El costo unitario debe ser mayor a cero.');
+                    esValido = false;
+                } else { marcarValido($costo); }
+
+                return esValido;
+            }
         });
     </script>
 @endpush

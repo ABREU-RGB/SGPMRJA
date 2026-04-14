@@ -1,4 +1,60 @@
 <script>
+    // Validación onblur: fecha_fin_estimada debe ser posterior a fecha_inicio
+    $(document).on('blur', '#fecha-fin-estimada-field, input[name="fecha_fin_estimada"]', function () {
+        let finVal = $(this).val();
+        let inicioVal = $('#fecha-inicio-field').val() || $('input[name="fecha_inicio"]').val();
+        if (finVal && inicioVal) {
+            if (finVal <= inicioVal) {
+                marcarInvalido($(this), 'La fecha fin estimada debe ser posterior a la fecha de inicio.');
+            } else {
+                marcarValido($(this));
+            }
+        } else if (finVal) {
+            marcarValido($(this));
+        }
+    });
+
+    // Re-validar fecha_fin cuando cambia fecha_inicio
+    $(document).on('blur', '#fecha-inicio-field, input[name="fecha_inicio"]', function () {
+        let $fin = $('#fecha-fin-estimada-field');
+        if ($fin.val()) {
+            $fin.trigger('blur');
+        }
+    });
+
+    // Validación onblur: avanceModal — cantidad_producida (máx = piezas restantes)
+    $(document).on('blur', '#am-cantidad-producida', function () {
+        let producida = parseFloat($(this).val());
+        let restante  = parseInt($('#am-restante').val()) || 0;
+
+        if (isNaN(producida) || producida < 1) {
+            marcarInvalido($(this), 'La cantidad producida debe ser al menos 1.');
+        } else if (restante > 0 && producida > restante) {
+            marcarInvalido($(this), 'No puede superar las ' + restante + ' piezas restantes de la orden.');
+        } else {
+            marcarValido($(this));
+        }
+
+        // Re-validar defectuosa si ya tiene valor
+        if ($('#am-cantidad-defectuosa').val() !== '') {
+            $('#am-cantidad-defectuosa').trigger('blur');
+        }
+    });
+
+    // Validación onblur: avanceModal — cantidad_defectuosa ≤ cantidad_producida
+    $(document).on('blur', '#am-cantidad-defectuosa', function () {
+        let defectuosa = parseFloat($(this).val());
+        let producida  = parseFloat($('#am-cantidad-producida').val());
+
+        if (isNaN(defectuosa) || defectuosa < 0) {
+            marcarInvalido($(this), 'La cantidad defectuosa no puede ser negativa.');
+        } else if (!isNaN(producida) && defectuosa > producida) {
+            marcarInvalido($(this), 'La cantidad defectuosa no puede superar la cantidad producida (' + producida + ').');
+        } else {
+            marcarValido($(this));
+        }
+    });
+
     $(document).ready(function () {
         // Función para inicializar Select2
         function initializeSelect2(selector) {

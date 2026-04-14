@@ -594,13 +594,9 @@
             });
         });
 
-        // Validación y formato para el campo de teléfono
-        $(document).on('input', '#telefono-field', function () {
-            let value = this.value.replace(/[^0-9]/g, '');
-            if (value.length > 4) {
-                value = value.slice(0, 4) + '-' + value.slice(4, 11);
-            }
-            this.value = value.slice(0, 12);
+        // Sanitización del número de teléfono (campo visible, solo dígitos, máx 7)
+        $(document).on('input', '#telefono-number-field', function () {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 7);
         });
 
         // === Capitalizar solo la primera letra del campo dirección ===
@@ -630,12 +626,12 @@
         // Validación onblur para nombre
         $(document).on('blur', '#nombre-field', function () {
             let value = $(this).val().trim();
-            if (value.length < 2) {
-                $(this).addClass('is-invalid');
-                $('#nombre-error').text('El nombre debe tener al menos 2 caracteres.').show();
+            if (value.length === 0) {
+                marcarInvalido($(this), 'El nombre es obligatorio.');
+            } else if (value.length < 2) {
+                marcarInvalido($(this), 'El nombre debe tener al menos 2 caracteres.');
             } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                $('#nombre-error').hide();
+                marcarValido($(this));
             }
         });
 
@@ -643,11 +639,11 @@
         $(document).on('blur', '#apellido-field', function () {
             let value = $(this).val().trim();
             if (value.length > 0 && value.length < 2) {
-                $(this).addClass('is-invalid');
-                $('#apellido-error').text('El apellido debe tener al menos 2 caracteres.').show();
+                marcarInvalido($(this), 'El apellido debe tener al menos 2 caracteres.');
+            } else if (value.length >= 2) {
+                marcarValido($(this));
             } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                $('#apellido-error').hide();
+                limpiarValidacion($(this));
             }
         });
 
@@ -693,16 +689,15 @@
             }
         });
 
-        // Validación onblur para teléfono
-        $(document).on('blur', '#telefono-field', function () {
+        // Validación onblur para teléfono (campo visible: solo los 7 dígitos)
+        $(document).on('blur', '#telefono-number-field', function () {
             let value = $(this).val().trim();
-            let regex = /^[0-9]{4}-[0-9]{7}$/;
-            if (!regex.test(value)) {
-                $(this).addClass('is-invalid');
-                $('#telefono-error').text('El teléfono debe tener el formato 0424-1234567.').show();
+            if (value.length === 0) {
+                marcarInvalido($(this), 'El teléfono es obligatorio.');
+            } else if (!/^[0-9]{7}$/.test(value)) {
+                marcarInvalido($(this), 'El número debe tener exactamente 7 dígitos.');
             } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                $('#telefono-error').hide();
+                marcarValido($(this));
             }
         });
 
@@ -710,48 +705,39 @@
         $(document).on('blur', '#email-field', function () {
             let value = $(this).val().trim();
             let $input = $(this);
-            let $error = $('#email-error');
             let isEditMode = $('#id-field').val() !== '';
-            let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            let regex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
-            if (value.length > 0) {
-                if (!regex.test(value)) {
-                    $input.addClass('is-invalid');
-                    $error.text('Ingrese un email válido.').show();
-                } else {
-                    // Si formato es válido y NO es edición, verificar duplicado
-                    if (!isEditMode) {
-                        $.ajax({
-                            url: "{{ route('clientes.check-email') }}",
-                            method: 'GET',
-                            data: { email: value },
-                            success: function (response) {
-                                if (response.exists) {
-                                    $input.addClass('is-invalid');
-                                    $error.text('Este correo ya está registrado.').show();
-                                    $('#add-btn').prop('disabled', true);
-                                } else {
-                                    $input.removeClass('is-invalid').addClass('is-valid');
-                                    $error.hide();
-                                    $('#add-btn').prop('disabled', false);
-                                }
-                            },
-                            error: function () {
-                                console.error('Error al verificar email');
-                            }
-                        });
-                    } else {
-                        // En modo edición no validamos duplicado (limitación por now)
-                        $input.removeClass('is-invalid').addClass('is-valid');
-                        $error.hide();
+            if (value.length === 0) {
+                limpiarValidacion($input);
+                return;
+            }
+
+            if (!regex.test(value)) {
+                marcarInvalido($input, 'Ingrese un email válido (ej: usuario@dominio.com).');
+                return;
+            }
+
+            if (!isEditMode) {
+                $.ajax({
+                    url: "{{ route('clientes.check-email') }}",
+                    method: 'GET',
+                    data: { email: value },
+                    success: function (response) {
+                        if (response.exists) {
+                            marcarInvalido($input, 'Este correo ya está registrado.');
+                            $('#add-btn').prop('disabled', true);
+                        } else {
+                            marcarValido($input);
+                            $('#add-btn').prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        console.error('Error al verificar email');
                     }
-                }
+                });
             } else {
-                // Si está vacío, quitar clases (o mostrar error si required)
-                // Es opcional en el html? No tiene "required" en el html form, pero tiene validator?
-                // En el HTML no tiene 'required'.
-                $input.removeClass('is-invalid').removeClass('is-valid');
-                $error.hide();
+                marcarValido($input);
             }
         });
 
@@ -842,14 +828,12 @@
         // Validación onblur para Razón Social (cuando visible)
         $(document).on('blur', '#razon-social-field', function () {
             let value = $(this).val().trim();
-            let $input = $(this);
-            let $error = $('#razon-social-error');
-            if (value.length > 0 && value.length < 3) {
-                $input.addClass('is-invalid');
-                $error.text('La razón social debe tener al menos 3 caracteres.').show();
+            if (value.length === 0) {
+                marcarInvalido($(this), 'La razón social es obligatoria.');
+            } else if (value.length < 3) {
+                marcarInvalido($(this), 'La razón social debe tener al menos 3 caracteres.');
             } else {
-                $input.removeClass('is-invalid').addClass('is-valid');
-                $error.hide();
+                marcarValido($(this));
             }
         });
     </script>
@@ -857,7 +841,6 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -1088,13 +1071,93 @@
                 }
             });
 
-            const validator = new FormValidator('clienteForm');
+            function validarFormularioCliente() {
+                let esValido = true;
+                let tipo = $('#tipo_cliente-field').val();
+                let esNatural = (tipo === 'natural' || tipo === '');
+
+                if (esNatural) {
+                    let $nombre = $('#nombre-field');
+                    let nombre = $nombre.val().trim();
+                    if (nombre.length === 0) {
+                        marcarInvalido($nombre, 'El nombre es obligatorio.');
+                        esValido = false;
+                    } else if (nombre.length < 2) {
+                        marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
+                        esValido = false;
+                    } else { marcarValido($nombre); }
+
+                    let $apellido = $('#apellido-field');
+                    let apellido = $apellido.val().trim();
+                    if (apellido.length === 0) {
+                        marcarInvalido($apellido, 'El apellido es obligatorio.');
+                        esValido = false;
+                    } else if (apellido.length < 2) {
+                        marcarInvalido($apellido, 'El apellido debe tener al menos 2 caracteres.');
+                        esValido = false;
+                    } else { marcarValido($apellido); }
+                } else {
+                    let $razon = $('#razon-social-field');
+                    let razon = $razon.val().trim();
+                    if (razon.length === 0) {
+                        marcarInvalido($razon, 'La razón social es obligatoria.');
+                        esValido = false;
+                    } else if (razon.length < 3) {
+                        marcarInvalido($razon, 'La razón social debe tener al menos 3 caracteres.');
+                        esValido = false;
+                    } else { marcarValido($razon); }
+                }
+
+                let $doc = $('#documento-number-field');
+                let doc = $doc.val().trim();
+                if (doc.length < 6) {
+                    marcarInvalido($doc, 'El documento debe tener entre 6 y ' + getDocMaxLength() + ' dígitos.');
+                    esValido = false;
+                } else { marcarValido($doc); }
+
+                let $tel = $('#telefono-number-field');
+                let tel = $tel.val().trim();
+                if (tel.length === 0) {
+                    marcarInvalido($tel, 'El teléfono es obligatorio.');
+                    esValido = false;
+                } else if (!/^[0-9]{7}$/.test(tel)) {
+                    marcarInvalido($tel, 'El número debe tener exactamente 7 dígitos.');
+                    esValido = false;
+                } else { marcarValido($tel); }
+
+                let $email = $('#email-field');
+                let emailVal = $email.val().trim();
+                let emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+                if (emailVal.length > 0 && !emailRegex.test(emailVal)) {
+                    marcarInvalido($email, 'Ingrese un email válido (ej: usuario@dominio.com).');
+                    esValido = false;
+                }
+
+                let $dir = $('#direccion-field');
+                if (!$dir.val().trim()) {
+                    marcarInvalido($dir, 'La dirección es obligatoria.');
+                    esValido = false;
+                } else { marcarValido($dir); }
+
+                let $estado = $('#estado_territorial-field');
+                if (!$estado.val()) {
+                    marcarInvalido($estado, 'El estado es obligatorio.');
+                    esValido = false;
+                } else { marcarValido($estado); }
+
+                let $ciudad = $('#ciudad-field');
+                if (!$ciudad.val()) {
+                    marcarInvalido($ciudad, 'El municipio es obligatorio.');
+                    esValido = false;
+                } else { marcarValido($ciudad); }
+
+                return esValido;
+            }
 
             $('#add-btn').click(function (e) {
                 e.preventDefault();
 
-                // Validar formulario antes de enviar
-                if (!validator.validateAll()) {
+                if (!validarFormularioCliente()) {
                     return;
                 }
 
@@ -1328,7 +1391,8 @@
                 $('#modalTitle').text('Agregar Cliente');
                 $('#add-btn').show();
                 $('#edit-btn').hide();
-                validator.resetValidation();
+                $('#clienteForm').find('input, select, textarea').removeClass('is-invalid is-valid');
+                $('#clienteForm').find('.invalid-feedback').hide();
             });
             $("#edit-btn").on("click", function () { $("#clienteForm").submit(); });
         });

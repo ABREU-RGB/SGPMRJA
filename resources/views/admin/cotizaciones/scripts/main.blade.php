@@ -177,6 +177,21 @@
     }
 </style>
 <script>
+    // Validación onblur: fecha_validez debe ser >= fecha_cotizacion
+    $(document).on('blur', '#fecha-validez-field, input[name="fecha_validez"]', function () {
+        let validezVal = $(this).val();
+        let cotizacionVal = $('#fecha-cotizacion-field').val() || $('input[name="fecha_cotizacion"]').val();
+        if (validezVal && cotizacionVal) {
+            if (validezVal < cotizacionVal) {
+                marcarInvalido($(this), 'La fecha de validez no puede ser anterior a la fecha de cotización.');
+            } else {
+                marcarValido($(this));
+            }
+        } else {
+            limpiarValidacion($(this));
+        }
+    });
+
     $(document).ready(function () {
         // === FUNCIÓN GLOBAL: Capitalizar solo la primera letra ===
         function capitalizeFirstLetter(str) {

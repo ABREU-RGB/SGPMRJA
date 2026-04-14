@@ -246,7 +246,6 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
 
 
     <script>
@@ -344,6 +343,71 @@
                 table.search(this.value).draw();
             });
 
+            function validarFormularioUsuario() {
+                let esValido = true;
+                let esCreacion = $('#id-field').val() === '';
+
+                let $nombre = $('#field-name');
+                if (!$nombre.val().trim()) {
+                    marcarInvalido($nombre, 'El nombre es obligatorio.');
+                    esValido = false;
+                } else {
+                    marcarValido($nombre);
+                }
+
+                let $email = $('#field-email');
+                let emailVal = $email.val().trim();
+                let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailVal) {
+                    marcarInvalido($email, 'El email es obligatorio.');
+                    esValido = false;
+                } else if (!emailRegex.test(emailVal)) {
+                    marcarInvalido($email, 'Ingrese un email válido.');
+                    esValido = false;
+                } else {
+                    marcarValido($email);
+                }
+
+                let $role = $('#field-role');
+                if (!$role.val()) {
+                    marcarInvalido($role, 'El rol es obligatorio.');
+                    esValido = false;
+                } else {
+                    marcarValido($role);
+                }
+
+                if (esCreacion) {
+                    let $pass = $('#field-password');
+                    let passVal = $pass.val();
+                    if (passVal.length === 0) {
+                        marcarInvalido($pass, 'La contraseña es obligatoria.');
+                        esValido = false;
+                    } else {
+                        let errorContrasena = validarContrasena(passVal);
+                        if (errorContrasena) {
+                            marcarInvalido($pass, errorContrasena);
+                            esValido = false;
+                        } else {
+                            marcarValido($pass);
+                        }
+                    }
+
+                    let $confirm = $('#field-password_confirmation');
+                    let confirmVal = $confirm.val();
+                    if (!confirmVal) {
+                        marcarInvalido($confirm, 'La confirmación de contraseña es obligatoria.');
+                        esValido = false;
+                    } else if (confirmVal !== passVal) {
+                        marcarInvalido($confirm, 'Las contraseñas no coinciden.');
+                        esValido = false;
+                    } else {
+                        marcarValido($confirm);
+                    }
+                }
+
+                return esValido;
+            }
+
             function resetForm() {
                 $('#modalTitle').text('Agregar Usuario');
                 $('#userForm')[0].reset();
@@ -356,7 +420,8 @@
                 $('#field-password_confirmation').prop('required', true);
 
                 // Reiniciar validaciones
-                validator.resetValidation();
+                $('#userForm').find('input, select, textarea').removeClass('is-invalid is-valid');
+                $('#userForm').find('.invalid-feedback').hide();
             }
 
             function setEditMode() {
@@ -395,13 +460,10 @@
                 resetForm();
             });
 
-            const validator = new FormValidator('userForm');
-
             $('#add-btn').click(function (e) {
                 e.preventDefault();
 
-                // Run validation
-                if (!validator.validateAll()) {
+                if (!validarFormularioUsuario()) {
                     return;
                 }
 
