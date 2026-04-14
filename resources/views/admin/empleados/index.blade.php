@@ -534,7 +534,7 @@
                     data: { numero: value },
                     success: function (response) {
                         if (response.exists) {
-                            marcarInvalido($input, 'Este empleado ya se encuentra registrado.');
+                            marcarInvalido($input, 'Este documento ya pertenece a un empleado registrado.');
                             $('#add-btn').prop('disabled', true);
                         } else {
                             marcarValido($input);

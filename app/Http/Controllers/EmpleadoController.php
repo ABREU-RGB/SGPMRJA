@@ -79,9 +79,9 @@ class EmpleadoController extends Controller
         $request->validate([
             'nombre' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'apellido' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'documento_identidad' => 'required|string|min:6|max:15|regex:/^[0-9]+$/|unique:persona,documento_identidad',
+            'documento_identidad' => 'required|string|min:6|max:15|regex:/^[0-9]+$/',
             'tipo_documento' => 'required|in:V-,E-,J-,G-',
-            'email' => 'nullable|email:rfc,dns|max:255|unique:persona,email',
+            'email' => 'nullable|email:rfc,dns|max:255',
             'telefono' => 'nullable|string|regex:/^[0-9]{4}-[0-9]{7}$/',
             'direccion' => 'nullable|string|max:500',
             'ciudad' => 'nullable|string|max:100',
@@ -228,8 +228,11 @@ class EmpleadoController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        // Buscar coincidencia exacta en la tabla 'persona'
-        $exists = \App\Models\Persona::where('documento_identidad', $numero)->exists();
+        // Solo verificar si ya existe un EMPLEADO con ese documento.
+        // Una persona puede ser cliente y empleado al mismo tiempo (persona compartida).
+        $exists = Persona::where('documento_identidad', $numero)
+            ->whereHas('empleado')
+            ->exists();
 
         return response()->json(['exists' => $exists]);
     }

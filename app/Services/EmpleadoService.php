@@ -16,19 +16,41 @@ class EmpleadoService
     public function crear(array $data): int
     {
         return DB::transaction(function () use ($data) {
-            $persona = Persona::create([
-                'nombre' => $data['nombre'],
-                'apellido' => $data['apellido'],
-                'documento_identidad' => $data['documento_identidad'],
-                'tipo_documento' => $data['tipo_documento'],
-                'email' => $data['email'] ?? null,
-                'estado_geografico' => $data['estado_geografico'] ?? null,
-                'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
-                'genero' => $data['genero'] ?? null,
-            ]);
+            // Buscar si ya existe una persona con ese documento (ej: es cliente)
+            $persona = Persona::where('documento_identidad', $data['documento_identidad'])->first();
 
-            $this->crearTelefono($persona->id, $data);
-            $this->crearDireccion($persona->id, $data);
+            if ($persona) {
+                // La persona ya existe — verificar que no sea ya un empleado
+                if (Empleado::where('persona_id', $persona->id)->exists()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'documento_identidad' => ['Este documento ya pertenece a un empleado registrado.'],
+                    ]);
+                }
+                // Reutilizar la persona existente — agregar teléfono/dirección si se proveyeron
+                $this->crearTelefono($persona->id, $data);
+                $this->crearDireccion($persona->id, $data);
+            } else {
+                // Persona nueva — verificar unicidad de email antes de crear
+                if (!empty($data['email']) && Persona::where('email', $data['email'])->exists()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'email' => ['Este correo ya está registrado.'],
+                    ]);
+                }
+
+                $persona = Persona::create([
+                    'nombre' => $data['nombre'],
+                    'apellido' => $data['apellido'],
+                    'documento_identidad' => $data['documento_identidad'],
+                    'tipo_documento' => $data['tipo_documento'],
+                    'email' => $data['email'] ?? null,
+                    'estado_geografico' => $data['estado_geografico'] ?? null,
+                    'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
+                    'genero' => $data['genero'] ?? null,
+                ]);
+
+                $this->crearTelefono($persona->id, $data);
+                $this->crearDireccion($persona->id, $data);
+            }
 
             // Auto-generar código de empleado si no se proporciona
             $codigoEmpleado = $data['codigo_empleado'] ?? null;
