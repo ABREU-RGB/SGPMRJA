@@ -467,6 +467,8 @@
 
             camposPrecio.forEach(function (selector) {
                 $(document).on('input', selector, function () {
+                    // Los type="number" los maneja el navegador nativamente — tocarlos resetea el cursor
+                    if (this.type === 'number') return;
                     this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
                 });
             });
