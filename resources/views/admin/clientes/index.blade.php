@@ -478,7 +478,7 @@
                         <div id="campos-razon-social" class="row g-2 mb-0 d-none">
                             <div class="col-12">
                                 <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa"
-                                    maxlength="200" id="razon-social-field" hint="Se almacenará como nombre del cliente" />
+                                    maxlength="200" id="razon-social-field" />
                             </div>
                         </div>
                     </div>
