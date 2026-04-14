@@ -2595,6 +2595,7 @@ header#page-topbar,
     color: #ffffff !important;
 }
 
+/* Fallback genérico (Dashboard / items sin sección) */
 [data-bs-theme="dark"] .nav-link.active {
     background: rgba(59, 130, 246, 0.2) !important;
     color: #60a5fa !important;
@@ -2604,6 +2605,52 @@ header#page-topbar,
 [data-bs-theme="dark"] .nav-link.active i {
     color: #60a5fa !important;
 }
+
+/* ── SIDEBAR — Colores por sección (Dark Mode) ──────────────
+   Misma paleta que cards y DataTables de cada área
+──────────────────────────────────────────────────────────── */
+
+/* Gestión General — Navy */
+[data-bs-theme="dark"] .section-maestros .nav-link.active {
+    background: rgba(30, 60, 114, 0.28) !important;
+    color: #4e7ac7 !important;
+    border-left-color: #4e7ac7 !important;
+}
+[data-bs-theme="dark"] .section-maestros .nav-link.active i { color: #4e7ac7 !important; }
+[data-bs-theme="dark"] .section-maestros.section-is-active > .menu-link {
+    color: #4e7ac7 !important;
+    border-left-color: #4e7ac7 !important;
+    background: rgba(30, 60, 114, 0.18) !important;
+}
+[data-bs-theme="dark"] .section-maestros.section-is-active > .menu-link i { color: #4e7ac7 !important; }
+
+/* Gestión Operativa — Emerald */
+[data-bs-theme="dark"] .section-operativa .nav-link.active {
+    background: rgba(16, 185, 129, 0.22) !important;
+    color: #10b981 !important;
+    border-left-color: #10b981 !important;
+}
+[data-bs-theme="dark"] .section-operativa .nav-link.active i { color: #10b981 !important; }
+[data-bs-theme="dark"] .section-operativa.section-is-active > .menu-link {
+    color: #10b981 !important;
+    border-left-color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.15) !important;
+}
+[data-bs-theme="dark"] .section-operativa.section-is-active > .menu-link i { color: #10b981 !important; }
+
+/* Consultas y Reportes — Sky */
+[data-bs-theme="dark"] .section-reportes .nav-link.active {
+    background: rgba(14, 165, 233, 0.20) !important;
+    color: #38bdf8 !important;
+    border-left-color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .section-reportes .nav-link.active i { color: #38bdf8 !important; }
+[data-bs-theme="dark"] .section-reportes.section-is-active > .menu-link {
+    color: #38bdf8 !important;
+    border-left-color: #38bdf8 !important;
+    background: rgba(14, 165, 233, 0.13) !important;
+}
+[data-bs-theme="dark"] .section-reportes.section-is-active > .menu-link i { color: #38bdf8 !important; }
 
 [data-bs-theme="dark"] .menu-dropdown {
     background-color: #1f2229 !important;

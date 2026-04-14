@@ -1,17 +1,74 @@
 <style>
-    /* Estilo para item activo (Sombreado azul original) */
+    /* ══════════════════════════════════════════════════════════
+       SIDEBAR — Estándar de color por sección (Light Mode)
+       Refleja los mismos colores que cards y DataTables
+    ══════════════════════════════════════════════════════════ */
+
+    /* Base común: font-weight y border para todos los activos */
     .navbar-nav .nav-link.active {
-        background: rgba(59, 130, 246, 0.15) !important;
-        color: #3b82f6 !important;
-        border-left: 3px solid #3b82f6;
         font-weight: 600;
+        border-left: 3px solid;
     }
 
-    .navbar-nav .nav-link.active i {
-        color: #3b82f6 !important;
+    /* ── GESTIÓN GENERAL — Navy #1e3c72 ── */
+    .section-maestros .nav-link.active {
+        background: rgba(30, 60, 114, 0.12) !important;
+        color: #1e3c72 !important;
+        border-left-color: #1e3c72 !important;
+    }
+    .section-maestros .nav-link.active i {
+        color: #1e3c72 !important;
+    }
+    /* Header del grupo cuando hay subitem activo */
+    .section-maestros.section-is-active > .menu-link {
+        color: #1e3c72 !important;
+        border-left: 3px solid #1e3c72 !important;
+        background: rgba(30, 60, 114, 0.08) !important;
+        font-weight: 600 !important;
+    }
+    .section-maestros.section-is-active > .menu-link i {
+        color: #1e3c72 !important;
     }
 
-    /* Separación entre items y subitems */
+    /* ── GESTIÓN OPERATIVA — Emerald #10b981 ── */
+    .section-operativa .nav-link.active {
+        background: rgba(16, 185, 129, 0.12) !important;
+        color: #059669 !important;
+        border-left-color: #10b981 !important;
+    }
+    .section-operativa .nav-link.active i {
+        color: #10b981 !important;
+    }
+    .section-operativa.section-is-active > .menu-link {
+        color: #059669 !important;
+        border-left: 3px solid #10b981 !important;
+        background: rgba(16, 185, 129, 0.08) !important;
+        font-weight: 600 !important;
+    }
+    .section-operativa.section-is-active > .menu-link i {
+        color: #10b981 !important;
+    }
+
+    /* ── CONSULTAS Y REPORTES — Sky #0ea5e9 ── */
+    .section-reportes .nav-link.active {
+        background: rgba(14, 165, 233, 0.10) !important;
+        color: #0369a1 !important;
+        border-left-color: #0ea5e9 !important;
+    }
+    .section-reportes .nav-link.active i {
+        color: #0ea5e9 !important;
+    }
+    .section-reportes.section-is-active > .menu-link {
+        color: #0369a1 !important;
+        border-left: 3px solid #0ea5e9 !important;
+        background: rgba(14, 165, 233, 0.08) !important;
+        font-weight: 600 !important;
+    }
+    .section-reportes.section-is-active > .menu-link i {
+        color: #0ea5e9 !important;
+    }
+
+    /* ── Espaciado entre items y subitems ── */
     .menu-dropdown {
         margin-top: 8px;
         margin-bottom: 8px;
@@ -19,19 +76,6 @@
         padding-bottom: 4px;
     }
 
-    /* Subitems con el mismo estilo de sombreado azul */
-    .menu-dropdown .nav-link.active {
-        background: rgba(59, 130, 246, 0.15) !important;
-        color: #3b82f6 !important;
-        border-left: 3px solid #3b82f6;
-        font-weight: 600;
-    }
-
-    .menu-dropdown .nav-link.active i {
-        color: #3b82f6 !important;
-    }
-
-    /* Espaciado entre subitems */
     .menu-dropdown .nav-item {
         margin-bottom: 2px;
     }
@@ -93,7 +137,7 @@
                         {{-- ================================== --}}
                         {{-- 2. MAESTROS --}}
                         {{-- ================================== --}}
-                        <li class="nav-item">
+                        <li class="nav-item section-maestros {{ request()->is('clientes*', 'productos*', 'proveedores*', 'insumos*', 'empleados*') ? 'section-is-active' : '' }}">
                             <a class="nav-link menu-link" href="#sidebarMaestros" data-bs-toggle="collapse" role="button"
                                 aria-expanded="{{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarMaestros">
@@ -139,7 +183,7 @@
                         {{-- ================================== --}}
                         {{-- 3. TRANSACCIONES --}}
                         {{-- ================================== --}}
-                        <li class="nav-item">
+                        <li class="nav-item section-operativa {{ request()->is('cotizaciones*', 'pedidos*', 'ordenes*', 'calidad*', 'inventario*', 'garantias*') ? 'section-is-active' : '' }}">
                             <a class="nav-link menu-link" href="#sidebarTransacciones" data-bs-toggle="collapse" role="button"
                                 aria-expanded="{{ request()->is('cotizaciones*') || request()->is('pedidos*') || request()->is('ordenes*') || request()->is('calidad*') || request()->is('inventario*') || request()->is('garantias*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarTransacciones">
@@ -193,7 +237,7 @@
                         {{-- ================================== --}}
                         {{-- 4. CONSULTAS Y REPORTES --}}
                         {{-- ================================== --}}
-                        <li class="nav-item">
+                        <li class="nav-item section-reportes {{ request()->is('reportes*') ? 'section-is-active' : '' }}">
                             <a class="nav-link menu-link" href="#sidebarReportes" data-bs-toggle="collapse" role="button"
                                 aria-expanded="{{ request()->is('reportes*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarReportes">
