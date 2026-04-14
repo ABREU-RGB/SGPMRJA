@@ -392,10 +392,40 @@
 
                             <div class="row mb-0">
                                 <div class="col-md-6">
-                                    <x-forms.input name="estado_geografico" label="Estado" placeholder="Estado" />
+                                    <label for="estado_geografico-field" class="form-label">Estado</label>
+                                    <select name="estado_geografico" id="estado_geografico-field" class="form-select">
+                                        <option value="">Seleccione estado</option>
+                                        <option value="Amazonas">Amazonas</option>
+                                        <option value="Anzoátegui">Anzoátegui</option>
+                                        <option value="Apure">Apure</option>
+                                        <option value="Aragua">Aragua</option>
+                                        <option value="Barinas">Barinas</option>
+                                        <option value="Bolívar">Bolívar</option>
+                                        <option value="Carabobo">Carabobo</option>
+                                        <option value="Cojedes">Cojedes</option>
+                                        <option value="Delta Amacuro">Delta Amacuro</option>
+                                        <option value="Distrito Capital">Distrito Capital</option>
+                                        <option value="Falcón">Falcón</option>
+                                        <option value="Guárico">Guárico</option>
+                                        <option value="La Guaira">La Guaira</option>
+                                        <option value="Lara">Lara</option>
+                                        <option value="Mérida">Mérida</option>
+                                        <option value="Miranda">Miranda</option>
+                                        <option value="Monagas">Monagas</option>
+                                        <option value="Nueva Esparta">Nueva Esparta</option>
+                                        <option value="Portuguesa">Portuguesa</option>
+                                        <option value="Sucre">Sucre</option>
+                                        <option value="Táchira">Táchira</option>
+                                        <option value="Trujillo">Trujillo</option>
+                                        <option value="Yaracuy">Yaracuy</option>
+                                        <option value="Zulia">Zulia</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <x-forms.input name="ciudad" label="Municipio" placeholder="Municipio" />
+                                    <label for="ciudad-field" class="form-label">Municipio</label>
+                                    <select name="ciudad" id="ciudad-field" class="form-select">
+                                        <option value="">Primero seleccione un estado</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -477,6 +507,7 @@
 
 @push('scripts')
     <script src="{{ URL::asset('/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/js/municipios-venezuela.js') }}"></script>
     <script>
         $(function () {
             // Tooltips
@@ -580,6 +611,22 @@
                     $error.hide();
                 }
             });
+        });
+
+        // Dropdown dependiente: poblar municipios cuando cambia el estado
+        $(document).on('change', '#estado_geografico-field', function () {
+            const estado = $(this).val();
+            const municipios = getMunicipios(estado);
+            const $ciudad = $("#ciudad-field");
+            $ciudad.empty();
+            if (estado === '') {
+                $ciudad.append('<option value="">Primero seleccione un estado</option>');
+            } else {
+                $ciudad.append('<option value="">Seleccione municipio</option>');
+                municipios.forEach(function (municipio) {
+                    $ciudad.append('<option value="' + municipio + '">' + municipio + '</option>');
+                });
+            }
         });
 
         // Sanitización del número de teléfono (solo dígitos, máx 7)
@@ -717,6 +764,9 @@
                 // Resetear teléfono
                 $("#telefono-prefix-field").val("0424");
                 $("#telefono-number-field").val("");
+                // Resetear Estado y Municipio
+                $("#estado_geografico-field").val("");
+                $("#ciudad-field").empty().append('<option value="">Primero seleccione un estado</option>');
                 // Limpiar validaciones
                 $("#empleadoForm .is-invalid").removeClass("is-invalid");
                 $("#empleadoForm .is-valid").removeClass("is-valid");
@@ -808,8 +858,20 @@
                         $("#telefono-number-field").val("");
                     }
                     $("#field-direccion").val(data.direccion || '');
-                    $("#field-ciudad").val(data.ciudad || '');
-                    $("#field-estado_geografico").val(data.persona.estado_geografico);
+                    // Estado y municipio dependiente
+                    const estadoEdit = data.persona.estado_geografico || '';
+                    $("#estado_geografico-field").val(estadoEdit);
+                    const $ciudadEdit = $("#ciudad-field");
+                    $ciudadEdit.empty();
+                    if (estadoEdit === '') {
+                        $ciudadEdit.append('<option value="">Primero seleccione un estado</option>');
+                    } else {
+                        $ciudadEdit.append('<option value="">Seleccione municipio</option>');
+                        getMunicipios(estadoEdit).forEach(function (m) {
+                            $ciudadEdit.append('<option value="' + m + '">' + m + '</option>');
+                        });
+                    }
+                    $ciudadEdit.val(data.ciudad || '');
                     $("#field-fecha_nacimiento").val(data.persona.fecha_nacimiento);
                     $("#field-genero").val(data.persona.genero);
                     $("#field-codigo_empleado").val(data.codigo_empleado);
