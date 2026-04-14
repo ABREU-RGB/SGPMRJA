@@ -463,13 +463,9 @@
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                 <i class="ri-close-line me-1"></i>Cerrar
                             </button>
-                            <button type="button" class="btn btn-success" id="add-btn">
-                                <i class="ri-add-line me-1"></i>Agregar
-                            </button>
-                            <button type="button" class="btn btn-success" id="edit-btn"
-                                style="display: none;">
-                                <i class="ri-save-line me-1"></i>Actualizar
-                            </button>
+                            <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..."
+                                style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -656,6 +652,11 @@
 
             function formatDate(dateStr) {
                 if (!dateStr) return 'N/A';
+                if (typeof dateStr === 'string') {
+                    var parts = dateStr.trim().split(' ');
+                    var datePart = parts[0] || '';
+                    if (/^\d{2}\/\d{2}\/\d{4}$/.test(datePart)) return datePart;
+                }
                 var date = new Date(dateStr);
                 if (isNaN(date.getTime())) return dateStr;
                 var day = String(date.getDate()).padStart(2, '0');
@@ -814,6 +815,17 @@
                         marcarInvalido($fechaIngreso, 'La fecha de ingreso no puede ser futura.');
                         esValido = false;
                     } else { marcarValido($fechaIngreso); }
+                }
+
+                // Email (opcional — solo valida formato si hay valor)
+                let $email = $('#field-email');
+                let emailVal = $email.val().trim();
+                if (emailVal.length > 0) {
+                    let emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+                    if (!emailRegex.test(emailVal)) {
+                        marcarInvalido($email, 'Ingrese un email válido (ej: usuario@dominio.com).');
+                        esValido = false;
+                    }
                 }
 
                 // Teléfono (opcional — solo valida si se ingresó número)
