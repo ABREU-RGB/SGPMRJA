@@ -36,13 +36,13 @@
         }
     });
 
-    // Validación onblur: costo_estimado — no negativo
+    // Validación onblur: costo_estimado — mayor a cero
     $(document).on('blur', '#costo-estimado-field', function () {
         let val = parseFloat($(this).val());
         if ($(this).val() === '' || isNaN(val)) {
             marcarInvalido($(this), 'El costo estimado es obligatorio.');
-        } else if (val < 0) {
-            marcarInvalido($(this), 'El costo estimado no puede ser negativo.');
+        } else if (val <= 0) {
+            marcarInvalido($(this), 'El costo estimado debe ser mayor a cero.');
         } else {
             marcarValido($(this));
         }
@@ -520,8 +520,8 @@
             if ($costo.val() === '' || isNaN(costoVal)) {
                 marcarInvalido($costo, 'El costo estimado es obligatorio.');
                 esValido = false;
-            } else if (costoVal < 0) {
-                marcarInvalido($costo, 'El costo estimado no puede ser negativo.');
+            } else if (costoVal <= 0) {
+                marcarInvalido($costo, 'El costo estimado debe ser mayor a cero.');
                 esValido = false;
             } else {
                 marcarValido($costo);
