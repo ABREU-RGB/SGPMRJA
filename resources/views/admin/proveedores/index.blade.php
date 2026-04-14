@@ -1003,6 +1003,8 @@
             $("#proveedorForm").on("submit", function (e) {
                 e.preventDefault();
 
+                if (!validarFormularioProveedor()) return;
+
                 var id = $("#id-field").val();
                 var url = id ? "{{ route('proveedores.update', ':id') }}".replace(':id', id) : "{{ route('proveedores.store') }}";
                 var method = id ? "PUT" : "POST";
@@ -1200,7 +1202,7 @@
                 $("#id-field").val("");
                 $("#tipo-proveedor-field").val("juridico");
                 toggleCampos();
-                $("#add-btn").show();
+                $("#add-btn").show().prop('disabled', false);
                 $("#edit-btn").hide();
                 // Desbloquear campos de documento
                 $("#tipo-proveedor-field").prop('disabled', false).removeClass('campo-protegido');
@@ -1214,86 +1216,271 @@
                 $('#add-btn').prop('disabled', false);
             });
 
-            // Validaciones AJAX onblur
+            // ══════════════════════════════════════════════════════
+            // VALIDACIONES ONBLUR — Patrón marcarInvalido/marcarValido
+            // ══════════════════════════════════════════════════════
 
-            // 1. RIF (Juridicio)
-            $('#rif-number-field').on('blur', function () {
-                let number = $(this).val();
-                let prefix = $('#rif-prefix-field').val();
-                let fullRif = prefix + number;
-                let $input = $(this);
-                let isEdit = $('#id-field').val() !== '';
+            var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
-                if (number.length > 5 && !isEdit) {
-                    $.get("{{ route('proveedores.check-rif') }}", { rif: fullRif }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            // Agregar feedback si no existe
-                            if ($input.next('.invalid-feedback').length === 0) {
-                                $input.parent().after('<div class="invalid-feedback d-block">Este RIF ya está registrado</div>');
-                            } else {
-                                $input.next('.invalid-feedback').text('Este RIF ya está registrado').show();
-                            }
-                            $('#add-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $input.next('.invalid-feedback').hide();
-                            $input.parent().next('.invalid-feedback').hide();
-                            $('#add-btn').prop('disabled', false);
-                        }
-                    });
+            // Sanitización en tiempo real — solo letras y espacios
+            $(document).on('input', '#nombre-field, #apellido-field, #contacto-field', function () {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+            // Solo dígitos en campos numéricos de teléfono y documento
+            $(document).on('input', '#telefono-jur-number-field, #telefono-nat-number-field, #telefono-contacto-number-field', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 7);
+            });
+            $(document).on('input', '#documento-identidad-field', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+            });
+            $(document).on('input', '#rif-number-field', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);
+            });
+
+            // 1. RIF (Jurídico) — longitud mínima + AJAX duplicado
+            $(document).on('blur', '#rif-number-field', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var isEdit = $('#id-field').val() !== '';
+                if (val.length === 0) {
+                    marcarInvalido($input, 'El RIF es obligatorio.');
+                    return;
+                }
+                if (val.length < 5) {
+                    marcarInvalido($input, 'El RIF debe tener al menos 5 dígitos.');
+                    return;
+                }
+                if (isEdit) { marcarValido($input); return; }
+                var fullRif = $('#rif-prefix-field').val() + val;
+                $.get("{{ route('proveedores.check-rif') }}", { rif: fullRif }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este RIF ya está registrado.');
+                        $('#add-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#add-btn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // 2. Razón Social (Jurídico)
+            $(document).on('blur', '#razon-social-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'La Razón Social es obligatoria.');
+                } else if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
                 }
             });
 
-            // 2. Documento (Natural)
-            $('#documento-identidad-field').on('blur', function () {
-                let val = $(this).val();
-                let $input = $(this);
-                let isEdit = $('#id-field').val() !== '';
-
-                if (val.length > 5 && !isEdit) {
-                    $.get("{{ route('proveedores.check-documento') }}", { numero: val }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            if ($input.parent().next('.invalid-feedback').length === 0) {
-                                $input.parent().after('<div class="invalid-feedback d-block">Este documento ya está registrado</div>');
-                            } else {
-                                $input.parent().next('.invalid-feedback').text('Este documento ya está registrado').show();
-                            }
-                            $('#add-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $input.parent().next('.invalid-feedback').hide();
-                            $('#add-btn').prop('disabled', false);
-                        }
-                    });
+            // 3. Nombre (Natural)
+            $(document).on('blur', '#nombre-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El nombre es obligatorio.');
+                } else if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
                 }
             });
 
-            // 3. Email (Ambos)
-            $('#email-jur-field, #email-nat-field').on('blur', function () {
-                let val = $(this).val();
-                let $input = $(this);
-                let isEdit = $('#id-field').val() !== '';
-
-                if (val.includes('@') && !isEdit) {
-                    $.get("{{ route('proveedores.check-email') }}", { email: val }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            if ($input.next('.invalid-feedback').length === 0) {
-                                $input.after('<div class="invalid-feedback">Este correo ya está registrado</div>');
-                            } else {
-                                $input.next('.invalid-feedback').text('Este correo ya está registrado').show();
-                            }
-                            $('#add-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $input.next('.invalid-feedback').hide();
-                            $('#add-btn').prop('disabled', false);
-                        }
-                    });
+            // 4. Apellido (Natural)
+            $(document).on('blur', '#apellido-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El apellido es obligatorio.');
+                } else if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
                 }
             });
+
+            // 5. Documento de Identidad (Natural) — longitud + AJAX duplicado
+            $(document).on('blur', '#documento-identidad-field', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var isEdit = $('#id-field').val() !== '';
+                if (val.length === 0) {
+                    marcarInvalido($input, 'El documento es obligatorio.');
+                    return;
+                }
+                if (val.length < 6) {
+                    marcarInvalido($input, 'El documento debe tener al menos 6 dígitos.');
+                    return;
+                }
+                if (isEdit) { marcarValido($input); return; }
+                $.get("{{ route('proveedores.check-documento') }}", { numero: val }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este documento ya está registrado.');
+                        $('#add-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#add-btn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // 6. Teléfono principal — Jurídico
+            $(document).on('blur', '#telefono-jur-number-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El teléfono es obligatorio.');
+                } else if (!/^[0-9]{7}$/.test(val)) {
+                    marcarInvalido($(this), 'Debe tener exactamente 7 dígitos.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 7. Teléfono principal — Natural
+            $(document).on('blur', '#telefono-nat-number-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El teléfono es obligatorio.');
+                } else if (!/^[0-9]{7}$/.test(val)) {
+                    marcarInvalido($(this), 'Debe tener exactamente 7 dígitos.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 8. Teléfono de Contacto (Jurídico, opcional)
+            $(document).on('blur', '#telefono-contacto-number-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) { limpiarValidacion($(this)); return; }
+                if (!/^[0-9]{7}$/.test(val)) {
+                    marcarInvalido($(this), 'Debe tener exactamente 7 dígitos.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 9. Email — Jurídico y Natural (formato + AJAX duplicado con exclude_id en edición)
+            $(document).on('blur', '#email-jur-field, #email-nat-field', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var excludeId = $('#id-field').val();
+                if (val.length === 0) { limpiarValidacion($input); return; }
+                if (!emailRegex.test(val)) {
+                    marcarInvalido($input, 'Ingrese un email válido (ej: correo@dominio.com).');
+                    return;
+                }
+                $.get("{{ route('proveedores.check-email') }}", { email: val, exclude_id: excludeId }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este correo ya está registrado.');
+                        $('#add-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#add-btn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // 10. Dirección — Jurídico
+            $(document).on('blur', '#direccion-jur-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'La dirección es obligatoria.');
+                } else if (val.length < 5) {
+                    marcarInvalido($(this), 'Mínimo 5 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 11. Dirección — Natural
+            $(document).on('blur', '#direccion-nat-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'La dirección es obligatoria.');
+                } else if (val.length < 5) {
+                    marcarInvalido($(this), 'Mínimo 5 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 12. Persona de Contacto (Jurídico, opcional)
+            $(document).on('blur', '#contacto-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) { limpiarValidacion($(this)); return; }
+                if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // ══════════════════════════════════════════════════════
+            // VALIDACIÓN AL SUBMIT
+            // ══════════════════════════════════════════════════════
+            function validarFormularioProveedor() {
+                var esValido = true;
+                var tipo = $('#tipo-proveedor-field').val();
+
+                if (tipo === 'juridico') {
+                    var $rif = $('#rif-number-field');
+                    if ($rif.val().trim().length < 5) {
+                        marcarInvalido($rif, 'El RIF debe tener al menos 5 dígitos.');
+                        esValido = false;
+                    }
+                    var $razon = $('#razon-social-field');
+                    if ($razon.val().trim().length < 2) {
+                        marcarInvalido($razon, 'La Razón Social es obligatoria.');
+                        esValido = false;
+                    }
+                    var $telJur = $('#telefono-jur-number-field');
+                    if (!/^[0-9]{7}$/.test($telJur.val().trim())) {
+                        marcarInvalido($telJur, 'El teléfono debe tener 7 dígitos.');
+                        esValido = false;
+                    }
+                    var $dirJur = $('#direccion-jur-field');
+                    if ($dirJur.val().trim().length < 5) {
+                        marcarInvalido($dirJur, 'La dirección es obligatoria (mín. 5 caracteres).');
+                        esValido = false;
+                    }
+                } else {
+                    var $nombre = $('#nombre-field');
+                    if ($nombre.val().trim().length < 2) {
+                        marcarInvalido($nombre, 'El nombre es obligatorio.');
+                        esValido = false;
+                    }
+                    var $apellido = $('#apellido-field');
+                    if ($apellido.val().trim().length < 2) {
+                        marcarInvalido($apellido, 'El apellido es obligatorio.');
+                        esValido = false;
+                    }
+                    var $doc = $('#documento-identidad-field');
+                    if ($doc.val().trim().length < 6) {
+                        marcarInvalido($doc, 'El documento debe tener al menos 6 dígitos.');
+                        esValido = false;
+                    }
+                    var $telNat = $('#telefono-nat-number-field');
+                    if (!/^[0-9]{7}$/.test($telNat.val().trim())) {
+                        marcarInvalido($telNat, 'El teléfono debe tener 7 dígitos.');
+                        esValido = false;
+                    }
+                    var $dirNat = $('#direccion-nat-field');
+                    if ($dirNat.val().trim().length < 5) {
+                        marcarInvalido($dirNat, 'La dirección es obligatoria (mín. 5 caracteres).');
+                        esValido = false;
+                    }
+                }
+
+                // Email opcional — si tiene valor debe tener formato válido
+                var emailActivo = tipo === 'juridico' ? $('#email-jur-field') : $('#email-nat-field');
+                var emailVal = emailActivo.val().trim();
+                if (emailVal.length > 0 && !emailRegex.test(emailVal)) {
+                    marcarInvalido(emailActivo, 'Ingrese un email válido.');
+                    esValido = false;
+                }
+
+                return esValido;
+            }
 
         });
     </script>
