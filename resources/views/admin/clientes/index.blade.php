@@ -429,15 +429,6 @@
                     <div class="modal-form-section">
                         <div class="section-header-compact">
                             <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
-                            <div class="status-inline">
-                                <span class="status-inline-label">Estatus</span>
-                                <div class="form-check form-switch form-switch-success">
-                                    <input type="hidden" name="estatus" value="0" />
-                                    <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
-                                        name="estatus" value="1" checked />
-                                    <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="row g-2 mb-0">
@@ -584,6 +575,15 @@
                         </div>
                     </div>
 
+                    <div class="modal-form-section mb-0">
+                        <div class="modal-form-section-title"><i class="ri-shield-check-line"></i>Estatus</div>
+                        <div class="form-check form-switch form-switch-success">
+                            <input type="hidden" name="estatus" value="0" />
+                            <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
+                                name="estatus" value="1" checked />
+                            <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
+                        </div>
+                    </div>
 
                 </div>
                 <div class="modal-footer bg-light border-0">
