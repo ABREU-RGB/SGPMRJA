@@ -1098,24 +1098,31 @@
 
             // 1. Nombre
             $('#tipo-nombre-field').on('blur', function () {
-                let value = $(this).val();
+                let value = $(this).val().trim();
                 let $input = $(this);
-                let $error = $('#tipo-nombre-error');
                 let isEdit = $('#tipo-id-field').val() !== '';
 
-                if (value.length > 0 && !isEdit) {
-                    $.get("{{ route('tipo-productos.check-nombre') }}", { nombre: value }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            $error.text('Este nombre ya existe').show();
-                            $('#save-tipo-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $error.hide();
-                            $('#save-tipo-btn').prop('disabled', false);
-                        }
-                    });
+                if (value.length === 0) {
+                    marcarInvalido($input, 'El nombre del tipo es obligatorio.');
+                    return;
                 }
+                if (value.length < 2) {
+                    marcarInvalido($input, 'El nombre debe tener al menos 2 caracteres.');
+                    return;
+                }
+                if (isEdit) {
+                    marcarValido($input);
+                    return;
+                }
+                $.get("{{ route('tipo-productos.check-nombre') }}", { nombre: value }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este nombre ya está registrado.');
+                        $('#save-tipo-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#save-tipo-btn').prop('disabled', false);
+                    }
+                });
             });
 
             // 2. Prefijo
