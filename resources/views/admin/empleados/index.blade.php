@@ -352,7 +352,21 @@
                                     <x-forms.input name="email" label="Email" type="email" placeholder="correo@ejemplo.com" />
                                 </div>
                                 <div class="col-md-6">
-                                    <x-forms.input name="telefono" label="Teléfono" placeholder="0424-1234567" />
+                                    <x-forms.input name="telefono_number" label="Teléfono" id="telefono-number-field"
+                                        maxlength="7" placeholder="1234567" prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="telefono-prefix-field"
+                                                style="max-width: 100px; min-width: 100px;">
+                                                <option value="0412">0412</option>
+                                                <option value="0422">0422</option>
+                                                <option value="0414">0414</option>
+                                                <option value="0424" selected>0424</option>
+                                                <option value="0416">0416</option>
+                                                <option value="0426">0426</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
+                                    <input type="hidden" id="telefono-field" name="telefono" />
                                 </div>
                             </div>
 
@@ -568,13 +582,21 @@
             });
         });
 
-        // Validación para teléfono
-        $(document).on('input', '#telefono-field', function () {
-            let value = this.value.replace(/[^0-9]/g, '');
-            if (value.length > 4) {
-                value = value.slice(0, 4) + '-' + value.slice(4, 11);
+        // Sanitización del número de teléfono (solo dígitos, máx 7)
+        $(document).on('input', '#telefono-number-field', function () {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 7);
+        });
+
+        // Validación onblur para teléfono (opcional — solo valida si hay valor)
+        $(document).on('blur', '#telefono-number-field', function () {
+            let value = $(this).val().trim();
+            if (value.length === 0) {
+                limpiarValidacion($(this));
+            } else if (!/^[0-9]{7}$/.test(value)) {
+                marcarInvalido($(this), 'El número debe tener exactamente 7 dígitos.');
+            } else {
+                marcarValido($(this));
             }
-            this.value = value.slice(0, 12);
         });
     </script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -692,6 +714,9 @@
                 $("#tipo-documento-field").val("V-").prop('disabled', false).removeClass('campo-protegido');
                 $("#field-documento_identidad").prop('disabled', false).removeClass('campo-protegido');
                 $("#field-estado").val("1");
+                // Resetear teléfono
+                $("#telefono-prefix-field").val("0424");
+                $("#telefono-number-field").val("");
                 // Limpiar validaciones
                 $("#empleadoForm .is-invalid").removeClass("is-invalid");
                 $("#empleadoForm .is-valid").removeClass("is-valid");
@@ -716,6 +741,9 @@
                 var id = $("#id-field").val();
                 var url = id ? "{{ route('empleados.update', ':id') }}".replace(':id', id) : "{{ route('empleados.store') }}";
                 var method = id ? "PUT" : "POST";
+                // Concatenar teléfono: prefijo-número → campo oculto
+                var telefonoCompleto = $("#telefono-prefix-field").val() + "-" + $("#telefono-number-field").val();
+                $("#telefono-field").val(telefonoCompleto);
                 var formData = $(this).serialize();
                 if (method === 'PUT') { formData += '&_method=PUT'; }
 
@@ -767,7 +795,18 @@
                     $("#tipo-documento-field").val(data.persona.tipo_documento);
                     $("#field-documento_identidad").val(data.persona.documento_identidad);
                     $("#field-email").val(data.persona.email);
-                    $("#field-telefono").val(data.telefono || '');
+                    // Separar teléfono en prefijo y número
+                    if (data.telefono && data.telefono.includes('-')) {
+                        var telParts = data.telefono.split('-');
+                        $("#telefono-prefix-field").val(telParts[0]);
+                        $("#telefono-number-field").val(telParts[1]);
+                    } else if (data.telefono) {
+                        $("#telefono-prefix-field").val(data.telefono.slice(0, 4));
+                        $("#telefono-number-field").val(data.telefono.slice(4));
+                    } else {
+                        $("#telefono-prefix-field").val("0424");
+                        $("#telefono-number-field").val("");
+                    }
                     $("#field-direccion").val(data.direccion || '');
                     $("#field-ciudad").val(data.ciudad || '');
                     $("#field-estado_geografico").val(data.persona.estado_geografico);
