@@ -631,6 +631,11 @@
                 $("#userForm").submit();
             });
 
+            // Sanitización nombre: solo letras, acentos y espacios
+            $(document).on('input', '#field-name', function () {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+            });
+
             // Validación onblur para nombre
             $(document).on('blur', '#field-name', function () {
                 let value = $(this).val().trim();
