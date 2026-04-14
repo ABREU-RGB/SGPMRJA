@@ -652,20 +652,20 @@
             if (p.tipo_documento) $('#documento-prefix-field').val(p.tipo_documento);
 
             // Datos personales
-            $('#nombre-field').val(p.nombre || '').prop('readonly', true);
-            $('#apellido-field').val(p.apellido || '').prop('readonly', true);
-            $('#razon-social-field').val(p.nombre || '').prop('readonly', true);
-            $('#email-field').val(p.email || '').prop('readonly', true);
+            $('#nombre-field').val(p.nombre || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
+            $('#apellido-field').val(p.apellido || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
+            $('#razon-social-field').val(p.nombre || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
+            $('#email-field').val(p.email || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
 
             // Teléfono
             if (p.telefono && p.telefono.includes('-')) {
                 var parts = p.telefono.split('-');
                 $('#telefono-prefix-field').val(parts[0]).prop('disabled', true);
-                $('#telefono-number-field').val(parts[1]).prop('readonly', true);
+                $('#telefono-number-field').val(parts[1]).prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
             }
 
             // Dirección
-            if (p.direccion) $('#direccion-field').val(p.direccion).prop('readonly', true);
+            if (p.direccion) $('#direccion-field').val(p.direccion).prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
 
             // Estado y Municipio
             if (p.estado_geografico) {
@@ -1112,7 +1112,7 @@
                 $("#razon-social-field").val("");
                 toggleClienteFields();
                 // Desbloquear campos vinculados de persona existente
-                $('#nombre-field, #apellido-field, #razon-social-field, #email-field, #telefono-number-field, #direccion-field').prop('readonly', false);
+                $('#nombre-field, #apellido-field, #razon-social-field, #email-field, #telefono-number-field, #direccion-field').prop('readonly', false).removeClass('bg-light').css('cursor', '');
                 $('#telefono-prefix-field, #estado_territorial-field, #ciudad-field').prop('disabled', false);
                 $('#documento-persona-card').addClass('d-none');
                 $('#documento-vinculado-notice').addClass('d-none');

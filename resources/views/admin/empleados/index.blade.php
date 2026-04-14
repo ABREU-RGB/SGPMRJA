@@ -592,21 +592,21 @@
                 if (p.tipo_documento) $('#tipo-documento-field').val(p.tipo_documento);
 
                 // Datos personales
-                $('#field-nombre').val(p.nombre || '').prop('readonly', true);
-                $('#field-apellido').val(p.apellido || '').prop('readonly', true);
-                $('#field-email').val(p.email || '').prop('readonly', true);
+                $('#field-nombre').val(p.nombre || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
+                $('#field-apellido').val(p.apellido || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
+                $('#field-email').val(p.email || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
 
                 // Teléfono
                 if (p.telefono && p.telefono.includes('-')) {
                     var parts = p.telefono.split('-');
                     $('#telefono-prefix-field').val(parts[0]).prop('disabled', true);
-                    $('#telefono-number-field').val(parts[1]).prop('readonly', true);
+                    $('#telefono-number-field').val(parts[1]).prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
                 }
 
                 // Opcionales
-                if (p.fecha_nacimiento) $('#field-fecha_nacimiento').val(p.fecha_nacimiento).prop('readonly', true);
+                if (p.fecha_nacimiento) $('#field-fecha_nacimiento').val(p.fecha_nacimiento).prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
                 if (p.genero) $('#field-genero').val(p.genero).prop('disabled', true);
-                if (p.direccion) $('#field-direccion').val(p.direccion).prop('readonly', true);
+                if (p.direccion) $('#field-direccion').val(p.direccion).prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
 
                 // Estado y Municipio
                 if (p.estado_geografico) {
@@ -822,7 +822,7 @@
                 $("#empleadoForm .is-invalid").removeClass("is-invalid");
                 $("#empleadoForm .is-valid").removeClass("is-valid");
                 // Desbloquear campos vinculados de persona existente
-                $('#field-nombre, #field-apellido, #field-email, #field-fecha_nacimiento, #field-direccion, #telefono-number-field').prop('readonly', false);
+                $('#field-nombre, #field-apellido, #field-email, #field-fecha_nacimiento, #field-direccion, #telefono-number-field').prop('readonly', false).removeClass('bg-light').css('cursor', '');
                 $('#telefono-prefix-field, #field-genero, #estado_geografico-field, #ciudad-field').prop('disabled', false);
                 $('#documento-persona-card').addClass('d-none');
                 $('#documento-vinculado-notice').addClass('d-none');
