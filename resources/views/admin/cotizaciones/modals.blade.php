@@ -214,7 +214,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
-            <form id="cotizacionForm" enctype="multipart/form-data">
+            <form id="cotizacionForm" enctype="multipart/form-data" novalidate>
                 @csrf
                 <div class="modal-body p-3">
                     <input type="hidden" id="id-field" />

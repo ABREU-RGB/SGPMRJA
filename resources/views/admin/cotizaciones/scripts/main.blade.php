@@ -1899,9 +1899,114 @@
 
 
 
+        // ══════════════════════════════════════════════════════
+        // VALIDACIONES onblur — Cotizaciones
+        // ══════════════════════════════════════════════════════
+
+        // Fecha cotización (obligatoria, solo en modo creación)
+        $(document).on('blur', '#fecha-cotizacion-field', function () {
+            if ($(this).prop('readonly')) return;
+            let val = $(this).val();
+            if (!val) {
+                marcarInvalido($(this), 'La fecha de cotización es obligatoria.');
+            } else {
+                marcarValido($(this));
+                // Re-disparar validación de fecha_validez si ya tiene valor
+                let $fv = $('#fecha-validez-field');
+                if ($fv.val()) $fv.trigger('blur');
+            }
+        });
+
+        // Cantidad de producto (mín. 1) — event delegation
+        $(document).on('blur', '.cantidad-input', function () {
+            let val = parseInt($(this).val());
+            if (isNaN(val) || val < 1) {
+                marcarInvalido($(this), 'La cantidad debe ser al menos 1.');
+            } else {
+                marcarValido($(this));
+            }
+        });
+
+        // Precio unitario (≥ 0) — event delegation
+        $(document).on('blur', '.precio-unitario-input', function () {
+            let val = parseFloat($(this).val());
+            if (isNaN(val) || val < 0) {
+                marcarInvalido($(this), 'El precio no puede ser negativo.');
+            } else {
+                marcarValido($(this));
+            }
+        });
+
+        function validarFormularioCotizacion() {
+            let esValido = true;
+
+            // Fecha cotización (obligatoria en modo creación)
+            let $fechaCot = $('#fecha-cotizacion-field');
+            if (!$fechaCot.prop('readonly')) {
+                if (!$fechaCot.val()) {
+                    marcarInvalido($fechaCot, 'La fecha de cotización es obligatoria.');
+                    esValido = false;
+                } else {
+                    marcarValido($fechaCot);
+                }
+            }
+
+            // Fecha validez (opcional, pero si se ingresa debe ser ≥ fecha cotización)
+            let $fechaVal = $('#fecha-validez-field');
+            if ($fechaVal.val() && $fechaCot.val() && $fechaVal.val() < $fechaCot.val()) {
+                marcarInvalido($fechaVal, 'La fecha de validez no puede ser anterior a la fecha de cotización.');
+                esValido = false;
+            } else if ($fechaVal.val()) {
+                marcarValido($fechaVal);
+            }
+
+            // Al menos 1 producto
+            let $rows = $('#productos-container .product-item');
+            if ($rows.length === 0) {
+                Swal.fire({ icon: 'warning', title: 'Sin productos', text: 'Debe agregar al menos un producto a la cotización.', showConfirmButton: false, timer: 2500 });
+                return false;
+            }
+
+            // Validar cada fila de producto
+            let productoSinSeleccionar = false;
+            $rows.each(function () {
+                let $row = $(this);
+
+                if (!$row.find('.producto-id-input').val()) {
+                    productoSinSeleccionar = true;
+                }
+
+                let $cant = $row.find('.cantidad-input');
+                let cant = parseInt($cant.val());
+                if (isNaN(cant) || cant < 1) {
+                    marcarInvalido($cant, 'La cantidad debe ser al menos 1.');
+                    esValido = false;
+                } else {
+                    marcarValido($cant);
+                }
+
+                let $precio = $row.find('.precio-unitario-input');
+                let precio = parseFloat($precio.val());
+                if (isNaN(precio) || precio < 0) {
+                    marcarInvalido($precio, 'El precio no puede ser negativo.');
+                    esValido = false;
+                } else {
+                    marcarValido($precio);
+                }
+            });
+
+            if (productoSinSeleccionar) {
+                Swal.fire({ icon: 'warning', title: 'Producto no seleccionado', text: 'Cada fila de producto debe tener un producto asignado antes de guardar.', showConfirmButton: false, timer: 3000 });
+                esValido = false;
+            }
+
+            return esValido;
+        }
+
         // Envío del formulario de cotización (crear/editar)
         $('#cotizacionForm').on('submit', function (e) {
             e.preventDefault();
+            if (!validarFormularioCotizacion()) return;
             let formData = new FormData(this);
             var id = $('#id-field').val();
             var url = id ? '/cotizaciones/' + id : '/cotizaciones';
