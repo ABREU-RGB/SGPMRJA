@@ -442,6 +442,21 @@
                 table.search(this.value).draw();
             });
 
+            function formatDate(dateStr) {
+                if (!dateStr) return 'N/A';
+                if (typeof dateStr === 'string') {
+                    var parts = dateStr.trim().split(' ');
+                    var datePart = parts[0] || '';
+                    if (/^\d{2}\/\d{2}\/\d{4}$/.test(datePart)) return datePart;
+                }
+                var date = new Date(dateStr);
+                if (isNaN(date.getTime())) return dateStr;
+                var day   = String(date.getDate()).padStart(2, '0');
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var year  = date.getFullYear();
+                return day + '/' + month + '/' + year;
+            }
+
             // Ver detalles
             var tipoBadges = {
                 'Tela':     '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
@@ -461,7 +476,7 @@
                     $("#view-stock-minimo").text(parseFloat(data.stock_minimo).toFixed(2));
                     $("#view-costo-unitario").text('$/ ' + parseFloat(data.costo_unitario).toFixed(2));
                     $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor asignado');
-                    $("#view-created").text(data.created_at);
+                    $("#view-created").text(formatDate(data.created_at));
                     $("#viewModal").modal('show');
                 });
             });
