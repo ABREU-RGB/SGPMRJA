@@ -718,6 +718,40 @@
                 $(this).find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
                 $(this).find('.invalid-feedback').hide();
             });
+
+            // ====================================================
+            // FIX: Modales anidados en Bootstrap 5
+            // Bootstrap 5 no soporta modales apilados nativamente
+            // (doc oficial). Adoptamos el mismo patrón ya usado en
+            // el módulo Inventario: cuando se abre un modal sobre
+            // otro, el padre se oculta temporalmente con la clase
+            // `modal-hidden-temp` (opacity:0 + pointer-events:none).
+            // Al cerrar el hijo se restaura el padre y el scroll-lock.
+            // Esto evita conflictos de z-index, backdrops y cierres
+            // involuntarios del padre.
+            // ====================================================
+            $(document).on('show.bs.modal', '.modal', function () {
+                var $nuevo    = $(this);
+                var $abiertos = $('.modal.show').not(this);
+                if ($abiertos.length > 0) {
+                    $abiertos.addClass('modal-hidden-temp');
+                    $nuevo.data('parentModals', $abiertos);
+                }
+            });
+
+            $(document).on('hidden.bs.modal', '.modal', function () {
+                var $cerrado = $(this);
+                var $padres  = $cerrado.data('parentModals');
+                if ($padres && $padres.length > 0) {
+                    $padres.removeClass('modal-hidden-temp');
+                    $cerrado.removeData('parentModals');
+                }
+                // Bootstrap quita `modal-open` del body al cerrar CUALQUIER modal,
+                // incluso si hay padres abiertos. Lo restauramos para mantener scroll-lock.
+                if ($('.modal.show').length > 0) {
+                    $('body').addClass('modal-open');
+                }
+            });
         });
     </script>
     @stack('scripts')

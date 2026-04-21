@@ -61,12 +61,12 @@ class EmpleadoService
             }
 
             $empleado = Empleado::create([
-                'persona_id' => $persona->id,
+                'persona_id'      => $persona->id,
                 'codigo_empleado' => $codigoEmpleado,
-                'fecha_ingreso' => $data['fecha_ingreso'],
-                'cargo' => $data['cargo'],
-                'departamento' => $data['departamento'],
-                'estado' => $data['estado'],
+                'fecha_ingreso'   => $data['fecha_ingreso'],
+                'cargo_id'        => $data['cargo_id'],
+                'departamento_id' => $data['departamento_id'],
+                'estado'          => $data['estado'],
             ]);
 
             return $empleado->id;
@@ -97,10 +97,10 @@ class EmpleadoService
 
             $empleado->update([
                 'codigo_empleado' => $data['codigo_empleado'],
-                'fecha_ingreso' => $data['fecha_ingreso'],
-                'cargo' => $data['cargo'],
-                'departamento' => $data['departamento'],
-                'estado' => $data['estado'],
+                'fecha_ingreso'   => $data['fecha_ingreso'],
+                'cargo_id'        => $data['cargo_id'],
+                'departamento_id' => $data['departamento_id'],
+                'estado'          => $data['estado'],
             ]);
         });
     }

@@ -18,7 +18,9 @@ use App\Http\Controllers\LogoController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\TallaController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CargoController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\EmpleadoController;
 
 /*
@@ -74,7 +76,25 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::get('empleados-check-email', [EmpleadoController::class, 'checkEmail'])->name('empleados.check-email');
         Route::get('empleados-check-codigo', [EmpleadoController::class, 'checkCodigo'])->name('empleados.check-codigo');
         Route::get('/empleados/reporte/pdf', [EmpleadoController::class, 'reportePdf'])->name('empleados.reporte.pdf');
-        Route::post('empleados-store-departamento', [EmpleadoController::class, 'storeDepartamento'])->name('empleados.store-departamento');
+        Route::get('empleados-get-cargos', [EmpleadoController::class, 'getCargos'])->name('empleados.get-cargos');
+
+        // Departamentos (CRUD — maestro)
+        Route::get('departamentos', [DepartamentoController::class, 'index'])->name('departamentos.index');
+        Route::post('departamentos', [DepartamentoController::class, 'store'])->name('departamentos.store');
+        Route::get('departamentos/{departamento}', [DepartamentoController::class, 'show'])->name('departamentos.show');
+        Route::put('departamentos/{departamento}', [DepartamentoController::class, 'update'])->name('departamentos.update');
+        Route::delete('departamentos/{departamento}', [DepartamentoController::class, 'destroy'])->name('departamentos.destroy');
+        Route::patch('departamentos/{id}/restore', [DepartamentoController::class, 'restore'])->name('departamentos.restore');
+        Route::get('departamentos-check-nombre', [DepartamentoController::class, 'checkNombre'])->name('departamentos.check-nombre');
+
+        // Cargos (CRUD — maestro)
+        Route::get('cargos', [CargoController::class, 'index'])->name('cargos.index');
+        Route::post('cargos', [CargoController::class, 'store'])->name('cargos.store');
+        Route::get('cargos/{cargo}', [CargoController::class, 'show'])->name('cargos.show');
+        Route::put('cargos/{cargo}', [CargoController::class, 'update'])->name('cargos.update');
+        Route::delete('cargos/{cargo}', [CargoController::class, 'destroy'])->name('cargos.destroy');
+        Route::patch('cargos/{id}/restore', [CargoController::class, 'restore'])->name('cargos.restore');
+        Route::get('cargos-check-nombre', [CargoController::class, 'checkNombre'])->name('cargos.check-nombre');
 
         // Pedidos (escritura)
         Route::post('pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
