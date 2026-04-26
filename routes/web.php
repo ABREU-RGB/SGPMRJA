@@ -41,7 +41,7 @@ Route::get('/portfolio', [PagesController::class, 'portfolio'])->name('portfolio
 // ============================================
 // RUTAS PROTEGIDAS (Requieren autenticación)
 // ============================================
-Route::middleware(['auth', 'throttle:60,1'])->group(function () {
+Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->group(function () {
 
     // Dashboard - Acceso para todos los usuarios autenticados
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
@@ -49,6 +49,8 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
     // Perfil de usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/recovery-questions', [ProfileController::class, 'updateRecoveryQuestions'])
+        ->name('profile.recovery-questions.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ============================================
@@ -59,6 +61,8 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
         Route::resource('users', UserController::class);
         Route::get('users-data', [UserController::class, 'getUsers'])->name('users.data');
         Route::get('users-check-email', [UserController::class, 'checkEmail'])->name('users.check-email');
+        Route::post('users/{id}/unlock-recovery', [UserController::class, 'unlockRecovery'])->name('users.unlock-recovery');
+        Route::post('users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
 
         // Clientes
         Route::resource('clientes', ClienteController::class);

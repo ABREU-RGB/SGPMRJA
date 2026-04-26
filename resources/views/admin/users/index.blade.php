@@ -256,7 +256,21 @@
                 }
             });
 
-            function generateButtons(userId) {
+            function generateButtons(userId, recoveryLocked, isSelf) {
+                var unlockBtn = '';
+                if (recoveryLocked) {
+                    unlockBtn =
+                        '<button class="btn btn-sm btn-soft-warning unlock-recovery-btn" data-id="' + userId + '" title="Desbloquear recuperación" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-lock-unlock-line" style="font-size:13px;"></i>' +
+                        '</button>';
+                }
+                var resetPwBtn = '';
+                if (!isSelf) {
+                    resetPwBtn =
+                        '<button class="btn btn-sm btn-soft-info reset-password-btn" data-id="' + userId + '" title="Resetear contraseña" style="padding:0.2rem 0.45rem;">' +
+                        '<i class="ri-key-2-line" style="font-size:13px;"></i>' +
+                        '</button>';
+                }
                 return '<div class="d-flex gap-1 justify-content-center">' +
                     '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + userId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
@@ -264,11 +278,15 @@
                     '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + userId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
                     '</button>' +
+                    unlockBtn +
+                    resetPwBtn +
                     '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + userId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
                     '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
                     '</button>' +
                     '</div>';
             }
+
+            var currentUserId = {{ auth()->id() ?? 'null' }};
 
             function renderEllipsis(value) {
                 if (!value) return '<span class="text-muted">—</span>';
@@ -326,7 +344,7 @@
                         orderable: false,
                         searchable: false,
                         render: function (data, type, row) {
-                            return generateButtons(row.id);
+                            return generateButtons(row.id, row.recovery_locked, row.id === currentUserId);
                         }
                     }
                 ],
@@ -563,6 +581,101 @@
 
 
                     $("#showModal").modal("show");
+                });
+            });
+
+            $(document).on("click", ".reset-password-btn", function () {
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: 'Resetear contraseña',
+                    html: '<p class="text-start small text-muted mb-2">Asigna una contraseña temporal. El usuario deberá cambiarla en su próximo inicio de sesión.</p>',
+                    input: 'password',
+                    inputAttributes: {
+                        minlength: 8,
+                        maxlength: 191,
+                        autocapitalize: 'off',
+                        autocorrect: 'off',
+                        placeholder: 'Mínimo 8 caracteres'
+                    },
+                    inputValidator: function (value) {
+                        if (!value || value.length < 8) {
+                            return 'La contraseña debe tener al menos 8 caracteres';
+                        }
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Resetear',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'btn btn-primary w-xs me-2',
+                        cancelButton: 'btn btn-danger w-xs',
+                        input: 'form-control'
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                }).then(function (result) {
+                    if (!result.isConfirmed) return;
+                    $.ajax({
+                        url: "{{ url('users') }}/" + id + "/reset-password",
+                        type: "POST",
+                        data: { password: result.value },
+                        success: function (response) {
+                            table.ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Reseteada!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 2500
+                            });
+                        },
+                        error: function (xhr) {
+                            var msg = xhr.responseJSON?.message
+                                || (xhr.responseJSON?.errors?.password ? xhr.responseJSON.errors.password[0] : null)
+                                || 'No se pudo resetear la contraseña.';
+                            Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                        }
+                    });
+                });
+            });
+
+            $(document).on("click", ".unlock-recovery-btn", function () {
+                var id = $(this).data("id");
+                Swal.fire({
+                    title: '¿Desbloquear recuperación?',
+                    text: 'Se reseteará el contador de intentos fallidos y el bloqueo temporal del usuario.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, desbloquear',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'btn btn-primary w-xs me-2',
+                        cancelButton: 'btn btn-danger w-xs'
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true
+                }).then(function (result) {
+                    if (!result.isConfirmed) return;
+                    $.ajax({
+                        url: "{{ url('users') }}/" + id + "/unlock-recovery",
+                        type: "POST",
+                        success: function (response) {
+                            table.ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Desbloqueado!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1800
+                            });
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: xhr.responseJSON?.message || 'No se pudo desbloquear.'
+                            });
+                        }
+                    });
                 });
             });
 

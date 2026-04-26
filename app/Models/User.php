@@ -28,6 +28,10 @@ class User extends Authenticatable
         'email',
         'password',
         'estado',
+        'recovery_locked_until',
+        'recovery_failed_attempts',
+        'recovery_must_reset_questions',
+        'password_reset_by_admin',
     ];
 
     /**
@@ -116,7 +120,49 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'recovery_locked_until' => 'datetime',
+        'recovery_must_reset_questions' => 'boolean',
+        'password_reset_by_admin' => 'boolean',
     ];
 
+    /**
+     * Preguntas de seguridad configuradas por el usuario (1 a 3).
+     */
+    public function recoveryQuestions()
+    {
+        return $this->hasMany(UserRecoveryQuestion::class)->orderBy('orden');
+    }
 
+    /**
+     * Bitácora de intentos de recuperación.
+     */
+    public function recoveryAttempts()
+    {
+        return $this->hasMany(RecoveryAttempt::class);
+    }
+
+    /**
+     * Indica si el usuario tiene las 3 preguntas de seguridad configuradas.
+     */
+    public function hasRecoveryQuestionsConfigured(): bool
+    {
+        return $this->recoveryQuestions()->count() === 3;
+    }
+
+    /**
+     * Indica si el usuario está bajo bloqueo temporal de recuperación.
+     */
+    public function isRecoveryLocked(): bool
+    {
+        return $this->recovery_locked_until !== null
+            && $this->recovery_locked_until->isFuture();
+    }
+
+    /**
+     * Indica si el usuario alcanzó el bloqueo total (requiere admin).
+     */
+    public function isRecoveryHardLocked(): bool
+    {
+        return $this->recovery_failed_attempts >= config('recovery_questions.max_attempts_hard_lock', 10);
+    }
 }

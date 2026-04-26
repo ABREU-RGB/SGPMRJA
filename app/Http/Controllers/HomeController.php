@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RecoveryAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -73,6 +75,9 @@ class HomeController extends Controller
         $empleadosValues = array_map('intval', array_column($personalPorDepto, 'total'));
         $totalEmpleadosChart = array_sum($empleadosValues);
 
+        // Notificación: intento de recuperación reciente para el usuario actual
+        $recoveryAlert = $this->getRecoveryAlert();
+
         return view('dashboard', compact(
             'totalClientes',
             'totalProductos',
@@ -83,8 +88,39 @@ class HomeController extends Controller
             'totalPedidos',
             'empleadosLabels',
             'empleadosValues',
-            'totalEmpleadosChart'
+            'totalEmpleadosChart',
+            'recoveryAlert'
         ));
+    }
+
+    /**
+     * Devuelve el último intento de recuperación posterior al login del usuario,
+     * para mostrarlo como banner informativo. Solo se muestra una vez por sesión.
+     */
+    private function getRecoveryAlert(): ?array
+    {
+        $user = Auth::user();
+        if (!$user) return null;
+
+        if (Session::get('recovery_alert_shown')) {
+            return null;
+        }
+
+        $attempt = RecoveryAttempt::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subHours(24))
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (!$attempt) return null;
+
+        Session::put('recovery_alert_shown', true);
+
+        return [
+            'fecha'     => $attempt->created_at->format('d/m/Y H:i'),
+            'ip'        => $attempt->ip,
+            'resultado' => $attempt->resultado,
+            'tipo'      => $attempt->tipo,
+        ];
     }
 
 

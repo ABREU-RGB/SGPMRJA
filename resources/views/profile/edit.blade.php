@@ -39,6 +39,17 @@
                             </div>
 
                             <div class="col-xxl-12 col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title mb-0">Preguntas de seguridad</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        @include('profile.partials.update-recovery-questions-form')
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xxl-12 col-md-12">
                                 <div class="card border-danger">
                                     <div class="card-header bg-soft-danger">
                                         <h4 class="card-title mb-0 text-danger">Eliminar cuenta</h4>

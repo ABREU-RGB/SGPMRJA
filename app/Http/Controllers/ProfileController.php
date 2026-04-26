@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Auth\RecoveryQuestionController;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\UserRecoveryQuestion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -16,9 +21,66 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        $user->load('recoveryQuestions');
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user'              => $user,
+            'recoveryQuestions' => config('recovery_questions.questions', []),
         ]);
+    }
+
+    /**
+     * Guarda o actualiza las 3 preguntas de seguridad del usuario.
+     */
+    public function updateRecoveryQuestions(Request $request): RedirectResponse
+    {
+        $catalog = config('recovery_questions.questions', []);
+        $validIds = array_keys($catalog);
+
+        $data = $request->validate([
+            'preguntas'      => ['required', 'array', 'size:3'],
+            'preguntas.*'    => ['required', 'integer', 'in:' . implode(',', $validIds)],
+            'respuestas'     => ['required', 'array', 'size:3'],
+            'respuestas.*'   => ['required', 'string', 'min:2', 'max:255'],
+        ], [
+            'preguntas.size'   => 'Debes seleccionar 3 preguntas.',
+            'respuestas.size'  => 'Debes responder las 3 preguntas.',
+            'respuestas.*.min' => 'La respuesta debe tener al menos 2 caracteres.',
+        ]);
+
+        // Verificar que las 3 preguntas son distintas
+        if (count(array_unique($data['preguntas'])) !== 3) {
+            throw ValidationException::withMessages([
+                'preguntas' => 'No puedes repetir la misma pregunta.',
+            ]);
+        }
+
+        $user = $request->user();
+
+        DB::transaction(function () use ($user, $data) {
+            $user->recoveryQuestions()->delete();
+
+            foreach ($data['preguntas'] as $index => $preguntaId) {
+                $orden = $index + 1;
+                $respuesta = RecoveryQuestionController::normalizeAnswer($data['respuestas'][$index]);
+
+                UserRecoveryQuestion::create([
+                    'user_id'     => $user->id,
+                    'pregunta_id' => $preguntaId,
+                    'respuesta'   => Hash::make($respuesta),
+                    'orden'       => $orden,
+                ]);
+            }
+
+            // Si venía de una recuperación, limpiar la marca
+            if ($user->recovery_must_reset_questions) {
+                $user->update(['recovery_must_reset_questions' => false]);
+            }
+        });
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'recovery-questions-updated');
     }
 
     /**
