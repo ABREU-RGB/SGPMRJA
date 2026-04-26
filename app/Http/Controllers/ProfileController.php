@@ -42,17 +42,29 @@ class ProfileController extends Controller
             'preguntas'      => ['required', 'array', 'size:3'],
             'preguntas.*'    => ['required', 'integer', 'in:' . implode(',', $validIds)],
             'respuestas'     => ['required', 'array', 'size:3'],
-            'respuestas.*'   => ['required', 'string', 'min:2', 'max:255'],
+            'respuestas.*'   => ['required', 'string', 'min:3', 'max:255'],
         ], [
             'preguntas.size'   => 'Debes seleccionar 3 preguntas.',
             'respuestas.size'  => 'Debes responder las 3 preguntas.',
-            'respuestas.*.min' => 'La respuesta debe tener al menos 2 caracteres.',
+            'respuestas.*.min' => 'La respuesta debe tener al menos 3 caracteres.',
         ]);
 
         // Verificar que las 3 preguntas son distintas
         if (count(array_unique($data['preguntas'])) !== 3) {
             throw ValidationException::withMessages([
                 'preguntas' => 'No puedes repetir la misma pregunta.',
+            ]);
+        }
+
+        // Verificar que las 3 respuestas (normalizadas) son distintas entre sí.
+        // Si todas son iguales el atacante solo necesitaría adivinar una.
+        $respuestasNormalizadas = array_map(
+            fn($r) => RecoveryQuestionController::normalizeAnswer($r),
+            $data['respuestas']
+        );
+        if (count(array_unique($respuestasNormalizadas)) !== 3) {
+            throw ValidationException::withMessages([
+                'respuestas' => 'Las 3 respuestas deben ser distintas entre sí. No puedes usar la misma respuesta para dos preguntas.',
             ]);
         }
 

@@ -82,7 +82,7 @@
                         name="respuestas[]"
                         class="form-control"
                         value="{{ old('respuestas.' . $i, '') }}"
-                        minlength="2"
+                        minlength="3"
                         maxlength="255"
                         autocomplete="off"
                         required
@@ -94,7 +94,9 @@
 
         <p class="text-muted small mb-3">
             <i class="ri-information-line me-1"></i>
-            Las respuestas no son sensibles a mayúsculas. Se almacenan cifradas y nadie (ni el administrador) puede verlas.
+            Mínimo 3 caracteres por respuesta. Las 3 respuestas deben ser distintas entre sí.
+            No son sensibles a mayúsculas, tildes ni espacios extra. Se almacenan cifradas y nadie
+            (ni el administrador) puede verlas.
             @if ($configured)
                 <strong>Si guardas, las preguntas y respuestas anteriores se reemplazan.</strong>
             @endif

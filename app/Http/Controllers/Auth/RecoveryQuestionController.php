@@ -259,11 +259,20 @@ class RecoveryQuestionController extends Controller
     }
 
     /**
-     * Normaliza la respuesta para comparación: trim + lowercase.
+     * Normaliza la respuesta para comparación robusta:
+     * - Normaliza Unicode a NFC (evita problemas con tildes precompuestas vs combinadas)
+     * - Trim de espacios al inicio/final
+     * - Colapsa espacios internos múltiples a uno solo
+     * - Convierte a minúsculas
      */
     public static function normalizeAnswer(string $answer): string
     {
-        return mb_strtolower(trim($answer));
+        if (class_exists(\Normalizer::class)) {
+            $answer = \Normalizer::normalize($answer, \Normalizer::FORM_C) ?: $answer;
+        }
+        $answer = trim($answer);
+        $answer = preg_replace('/\s+/u', ' ', $answer);
+        return mb_strtolower($answer);
     }
 
     /**
