@@ -474,8 +474,7 @@
                                                     <option value="{{ $id }}">{{ $nombre }}</option>
                                                 @endforeach
                                             </select>
-                                            <button type="button" class="btn btn-outline-success"
-                                                data-bs-toggle="modal" data-bs-target="#addDepartamentoModal"
+                                            <button type="button" class="btn btn-outline-success" id="add-departamento-btn"
                                                 title="Agregar departamento">
                                                 <i class="ri-add-line"></i>
                                             </button>
@@ -492,7 +491,6 @@
                                                 <option value="">Elija un departamento</option>
                                             </select>
                                             <button type="button" class="btn btn-outline-success" id="add-cargo-btn"
-                                                data-bs-toggle="modal" data-bs-target="#addCargoModal"
                                                 title="Agregar cargo" disabled>
                                                 <i class="ri-add-line"></i>
                                             </button>
@@ -1355,6 +1353,15 @@
             }).fail(function () {
                 $cargoSel.empty().append('<option value="">Error al cargar cargos</option>');
             });
+        });
+
+        // Abrir modales hijos sin data-bs-toggle para que Bootstrap
+        // no cierre el padre (showModal) antes de abrir el hijo
+        $('#add-departamento-btn').on('click', function () {
+            $('#addDepartamentoModal').modal('show');
+        });
+        $('#add-cargo-btn').on('click', function () {
+            $('#addCargoModal').modal('show');
         });
 
         // ===== Departamento On-the-fly =====

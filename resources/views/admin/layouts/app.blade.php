@@ -721,21 +721,28 @@
 
             // ====================================================
             // FIX: Modales anidados en Bootstrap 5
-            // Bootstrap 5 no soporta modales apilados nativamente
-            // (doc oficial). Adoptamos el mismo patrón ya usado en
-            // el módulo Inventario: cuando se abre un modal sobre
-            // otro, el padre se oculta temporalmente con la clase
-            // `modal-hidden-temp` (opacity:0 + pointer-events:none).
-            // Al cerrar el hijo se restaura el padre y el scroll-lock.
-            // Esto evita conflictos de z-index, backdrops y cierres
-            // involuntarios del padre.
+            // Regla: los botones que abren modales hijos desde dentro
+            // de un modal padre NO deben usar data-bs-toggle="modal".
+            // En su lugar usan un click handler que llama .modal('show')
+            // directamente. Así Bootstrap nunca ejecuta su lógica de
+            // "cierra el modal abierto antes de abrir el nuevo".
+            //
+            // Estos handlers gestionan el z-index para que el hijo
+            // (1075) aparezca encima del padre (1055) con su backdrop
+            // (1070) entre ambos.
             // ====================================================
             $(document).on('show.bs.modal', '.modal', function () {
                 var $nuevo    = $(this);
                 var $abiertos = $('.modal.show').not(this);
                 if ($abiertos.length > 0) {
-                    $abiertos.addClass('modal-hidden-temp');
+                    $nuevo.css('z-index', 1075);
                     $nuevo.data('parentModals', $abiertos);
+                }
+            });
+
+            $(document).on('shown.bs.modal', '.modal', function () {
+                if ($(this).data('parentModals')) {
+                    $('.modal-backdrop').last().css('z-index', 1070);
                 }
             });
 
@@ -743,7 +750,7 @@
                 var $cerrado = $(this);
                 var $padres  = $cerrado.data('parentModals');
                 if ($padres && $padres.length > 0) {
-                    $padres.removeClass('modal-hidden-temp');
+                    $cerrado.css('z-index', '');
                     $cerrado.removeData('parentModals');
                 }
                 // Bootstrap quita `modal-open` del body al cerrar CUALQUIER modal,

@@ -286,8 +286,8 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                                data-bs-target="#addTipoModal" title="Agregar nuevo tipo">
+                                            <button type="button" class="btn btn-outline-primary" id="btn-add-tipo-inline"
+                                                title="Agregar nuevo tipo">
                                                 <i class="ri-add-line"></i>
                                             </button>
                                         </div>
@@ -366,7 +366,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <button type="button" class="btn btn-success" id="add-tipo-btn" data-bs-toggle="modal" data-bs-target="#addTipoModal">
+                        <button type="button" class="btn btn-success" id="add-tipo-btn">
                             <i class="ri-add-line me-1"></i>Agregar Tipo
                         </button>
                         <div class="btn-group" role="group" aria-label="Vista de tipos de producto">
@@ -1242,6 +1242,11 @@
                         $('#save-tipo-btn').prop('disabled', false);
                     }
                 });
+            });
+
+            // Abrir addTipoModal sin data-bs-toggle para no cerrar el padre
+            $('#btn-add-tipo-inline, #add-tipo-btn').on('click', function () {
+                $('#addTipoModal').modal('show');
             });
 
             // Limpiar validaciones al cerrar modal de tipo
