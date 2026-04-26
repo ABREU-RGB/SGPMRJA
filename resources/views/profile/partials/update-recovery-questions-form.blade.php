@@ -5,29 +5,9 @@
 @endphp
 
 <section>
-    <div class="mb-4 d-flex justify-content-between align-items-start flex-wrap gap-2">
-        <div>
-            <h2 class="h4 text-dark mb-1">{{ __('Preguntas de seguridad') }}</h2>
-            <p class="text-muted mb-0">
-                {{ __('Configura 3 preguntas para recuperar tu contraseña sin necesidad de internet.') }}
-            </p>
-        </div>
-        <div>
-            @if ($mustReset)
-                <span class="badge bg-soft-danger text-danger fs-6">
-                    <i class="ri-alert-line me-1"></i> Requieren actualización
-                </span>
-            @elseif ($configured)
-                <span class="badge bg-soft-success text-success fs-6">
-                    <i class="ri-shield-check-line me-1"></i> Configuradas
-                </span>
-            @else
-                <span class="badge bg-soft-warning text-warning fs-6">
-                    <i class="ri-error-warning-line me-1"></i> No configuradas
-                </span>
-            @endif
-        </div>
-    </div>
+    <p class="text-muted small mb-3">
+        Configura 3 preguntas y respuestas para recuperar tu contraseña incluso sin internet.
+    </p>
 
     @if ($mustReset)
         <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
@@ -102,22 +82,21 @@
             @endif
         </p>
 
-        <div class="d-flex align-items-center">
-            <button type="submit" class="btn btn-primary me-3">
-                <i class="ri-save-line me-1"></i>{{ __('Guardar preguntas') }}
-            </button>
-
+        <div class="d-flex align-items-center justify-content-end gap-2 pt-2 border-top">
             @if (session('status') === 'recovery-questions-updated')
-                <div
+                <span
                     x-data="{ show: true }"
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 3000)"
-                    class="text-success"
+                    class="text-success small"
                 >
-                    {{ __('Preguntas actualizadas correctamente.') }}
-                </div>
+                    <i class="ri-check-double-line"></i> Preguntas actualizadas
+                </span>
             @endif
+            <button type="submit" class="btn btn-profile-save is-questions">
+                <i class="ri-save-line me-1"></i>{{ __('Guardar preguntas') }}
+            </button>
         </div>
     </form>
 </section>

@@ -1,98 +1,94 @@
-<section class="delete-account-section">
-    <div class="mb-4">
-        <h2 class="h4 text-danger">
-            {{ __('Eliminar Cuenta') }}
-        </h2>
-
-        <p class="text-muted">
-            {{ __('Una vez que se elimine su cuenta, todos sus recursos y datos se eliminarán permanentemente. Antes de eliminar su cuenta, descargue cualquier dato o información que desee conservar.') }}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="flex-grow-1" style="min-width: 250px;">
+        <p class="mb-1 fw-semibold text-danger">
+            <i class="ri-error-warning-line me-1"></i>Esta acción es irreversible
+        </p>
+        <p class="text-muted small mb-0">
+            Una vez eliminada la cuenta, todos los recursos y datos asociados se borran permanentemente.
+            Descarga cualquier información que necesites antes de continuar.
         </p>
     </div>
-
-    <button 
-        type="button" 
-        class="btn btn-danger" 
-        data-bs-toggle="modal" 
+    <button
+        type="button"
+        class="btn btn-outline-danger"
+        data-bs-toggle="modal"
         data-bs-target="#confirmUserDeletionModal"
     >
-        {{ __('Eliminar Cuenta') }}
+        <i class="ri-delete-bin-line me-1"></i>{{ __('Eliminar mi cuenta') }}
     </button>
+</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="confirmUserDeletionModal" tabindex="-1" aria-labelledby="confirmUserDeletionModalLabel" aria-hidden="true"
-        x-data="{ show: {{ $errors->userDeletion->isNotEmpty() ? 'true' : 'false' }} }"
-        x-show="show"
-        x-init="() => {
-            if (show) {
-                new bootstrap.Modal(document.getElementById('confirmUserDeletionModal')).show();
-            }
-        }"
-    >
-        <div class="modal-dialog">
-            <form method="post" action="{{ route('profile.destroy') }}" class="modal-content needs-validation" novalidate>
-                @csrf
-                @method('delete')
+<div class="modal fade" id="confirmUserDeletionModal" tabindex="-1" aria-labelledby="confirmUserDeletionModalLabel" aria-hidden="true"
+    x-data="{ show: {{ $errors->userDeletion->isNotEmpty() ? 'true' : 'false' }} }"
+    x-init="() => {
+        if (show) {
+            new bootstrap.Modal(document.getElementById('confirmUserDeletionModal')).show();
+        }
+    }"
+    data-bs-backdrop="static"
+>
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="post" action="{{ route('profile.destroy') }}" class="modal-content needs-validation" novalidate>
+            @csrf
+            @method('delete')
 
-                <div class="modal-header">
-                    <h5 class="modal-title text-danger" id="confirmUserDeletionModalLabel">
-                        {{ __('¿Está seguro que desea eliminar su cuenta?') }}
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmUserDeletionModalLabel">
+                    <i class="ri-error-warning-line me-2"></i>Confirmar eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
 
-                <div class="modal-body">
-                    <p class="text-muted mb-4">
-                        {{ __('Una vez que se elimine su cuenta, todos sus recursos y datos se eliminarán permanentemente. Ingrese su contraseña para confirmar que desea eliminar permanentemente su cuenta.') }}
-                    </p>
+            <div class="modal-body">
+                <p class="text-muted mb-3">
+                    Ingresa tu contraseña para confirmar. Esta acción no se puede deshacer.
+                </p>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label visually-hidden">
-                            {{ __('Contraseña') }}
-                        </label>
-                        <input 
-                            id="password" 
-                            name="password" 
-                            type="password" 
-                            class="form-control @error('password', 'userDeletion') is-invalid @enderror" 
-                            placeholder="{{ __('Contraseña') }}"
+                <div class="mb-0">
+                    <label for="password" class="form-label">{{ __('Contraseña') }} <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="ri-lock-line"></i></span>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            class="form-control @error('password', 'userDeletion') is-invalid @enderror"
+                            placeholder="Tu contraseña actual"
                             required
                         >
                         @error('password', 'userDeletion')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
+            </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        {{ __('Cancelar') }}
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        {{ __('Eliminar Cuenta') }}
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>{{ __('Cancelar') }}
+                </button>
+                <button type="submit" class="btn btn-danger">
+                    <i class="ri-delete-bin-line me-1"></i>{{ __('Eliminar permanentemente') }}
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script>
-    // Validación de formulario Bootstrap
-    (function() {
-        'use strict';
-        window.addEventListener('load', function() {
-            var forms = document.getElementsByClassName('needs-validation');
-            var validation = Array.prototype.filter.call(forms, function(form) {
-                form.addEventListener('submit', function(event) {
-                    if (form.checkValidity() === false) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        }, false);
-    })();
-    </script>
-</section>
+<script>
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
