@@ -41,6 +41,127 @@
             align-items: center;
             gap: .35rem;
         }
+        .btn-hero-edit {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.35);
+            color: #fff;
+            font-weight: 500;
+            padding: .5rem 1rem;
+            border-radius: 6px;
+            transition: background .2s ease, border-color .2s ease, transform .15s ease;
+        }
+        .btn-hero-edit:hover,
+        .btn-hero-edit:focus {
+            background: #fff;
+            border-color: #fff;
+            color: #1e3c72;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-hero-edit i { transition: transform .2s ease; }
+        .btn-hero-edit:hover i { transform: rotate(-12deg); }
+
+        /* ==== Profile — Modal eliminar cuenta (danger) ==== */
+        .danger-modal {
+            border: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(220,53,69,0.25);
+        }
+        .danger-modal-header {
+            background: linear-gradient(135deg, #7f1d1d 0%, #dc3545 100%);
+            color: #fff;
+            border-bottom: 0;
+            padding: .9rem 1.25rem;
+            display: flex;
+            align-items: center;
+            min-height: 58px;
+        }
+        .danger-modal-header .modal-title {
+            color: #fff;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.4;
+            flex: 1;
+        }
+        .danger-modal-header .modal-title i {
+            color: #fff;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+        .danger-modal-header .btn-close {
+            margin: 0;
+            padding: .5rem;
+            flex-shrink: 0;
+            opacity: .85;
+            transition: opacity .15s ease;
+        }
+        .danger-modal-header .btn-close:hover { opacity: 1; }
+
+        .danger-icon-circle {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(220,53,69,0.10), rgba(220,53,69,0.20));
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            border: 2px dashed rgba(220,53,69,0.40);
+            animation: danger-pulse 2s ease-in-out infinite;
+        }
+        @keyframes danger-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220,53,69,0.20); }
+            50%      { box-shadow: 0 0 0 10px rgba(220,53,69,0); }
+        }
+
+        .danger-loss-box {
+            background: rgba(220,53,69,0.05);
+            border-left: 3px solid #dc3545;
+            border-radius: 6px;
+            padding: .75rem 1rem;
+        }
+        [data-bs-theme="dark"] .danger-loss-box {
+            background: rgba(220,53,69,0.10);
+        }
+
+        .danger-confirm-word {
+            background: rgba(220,53,69,0.10);
+            color: #dc3545;
+            padding: .15rem .45rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: .9em;
+            letter-spacing: .05em;
+        }
+        [data-bs-theme="dark"] .danger-confirm-word {
+            background: rgba(220,53,69,0.20);
+        }
+
+        /* Botón eliminar deshabilitado: pierde brillo */
+        .danger-modal #confirmDeleteBtn:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        /* ==== Profile — icono circular para sección de seguridad (resumen) ==== */
+        .security-icon-circle {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(12,74,110,0.12), rgba(14,165,233,0.18));
+            color: #0c4a6e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(14,165,233,0.20);
+        }
+        [data-bs-theme="dark"] .security-icon-circle {
+            background: linear-gradient(135deg, rgba(12,74,110,0.30), rgba(14,165,233,0.25));
+            color: #7dd3fc;
+            border-color: rgba(14,165,233,0.40);
+        }
 
         /* ==== Profile — Cards ==== */
         .profile-section-card { border: 1px solid rgba(0,0,0,0.06); }
@@ -122,6 +243,82 @@
         .btn-profile-save.is-questions { background: #064e3b; box-shadow: 0 1px 2px rgba(6,78,59,.25); }
         .btn-profile-save.is-questions:hover { box-shadow: 0 4px 12px rgba(6,78,59,.35); }
 
+        /* ==== Profile — Bloques de pregunta de seguridad ==== */
+        .recovery-question-block {
+            display: flex;
+            align-items: stretch;
+            gap: 1rem;
+            padding: 1rem 1.1rem;
+            border: 1px solid rgba(16,185,129,0.20);
+            border-left: 4px solid #10b981;
+            border-radius: 8px;
+            background: rgba(16,185,129,0.03);
+            margin-bottom: .85rem;
+            transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+        }
+        .recovery-question-block:last-child { margin-bottom: 1.25rem; }
+        .recovery-question-block:hover {
+            border-color: rgba(16,185,129,0.45);
+            background: rgba(16,185,129,0.05);
+            box-shadow: 0 2px 8px rgba(16,185,129,0.10);
+        }
+        .recovery-question-block:focus-within {
+            border-color: #10b981;
+            background: rgba(16,185,129,0.06);
+            box-shadow: 0 0 0 .15rem rgba(16,185,129,0.18);
+        }
+        .recovery-question-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #064e3b, #10b981);
+            color: #fff;
+            border-radius: 50%;
+            font-size: .95rem;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(6,78,59,0.30);
+            flex-shrink: 0;
+            align-self: center; /* centrado vertical con los inputs ahora más bajos */
+        }
+        .recovery-question-fields {
+            flex: 1;
+            min-width: 0;
+        }
+        .recovery-question-fields .input-group-text {
+            background: rgba(16,185,129,0.10);
+            border-color: rgba(16,185,129,0.30);
+            color: #064e3b;
+        }
+        [data-bs-theme="dark"] .recovery-question-fields .input-group-text {
+            background: rgba(16,185,129,0.18);
+            border-color: rgba(16,185,129,0.40);
+            color: #6ee7b7;
+        }
+
+        /* Dark mode */
+        [data-bs-theme="dark"] .recovery-question-block {
+            background: rgba(16,185,129,0.06);
+            border-color: rgba(16,185,129,0.25);
+        }
+        [data-bs-theme="dark"] .recovery-question-block:hover {
+            background: rgba(16,185,129,0.10);
+            border-color: rgba(16,185,129,0.50);
+        }
+        [data-bs-theme="dark"] .recovery-question-fields .form-label i { color: #6ee7b7; }
+
+        /* Mobile: stack vertical */
+        @media (max-width: 575.98px) {
+            .recovery-question-block {
+                flex-direction: column;
+                gap: .5rem;
+            }
+            .recovery-question-number {
+                margin-top: 0;
+                align-self: flex-start;
+            }
+        }
+
         /* Status badge for recovery questions */
         .status-pill {
             display: inline-flex;
@@ -152,8 +349,6 @@
     $roleIcon    = $user->isAdmin() ? 'ri-shield-star-line' : 'ri-shield-user-line';
     $createdAt   = $user->created_at?->format('d/m/Y');
 @endphp
-<div class="page-content">
-    <div class="container-fluid">
 
         {{-- Page header --}}
         <div class="row">
@@ -178,7 +373,14 @@
                         <div class="d-flex flex-wrap align-items-center gap-3">
                             <img src="{{ $avatarUrl }}" alt="Avatar" class="avatar-xl flex-shrink-0">
                             <div class="flex-grow-1" style="min-width: 200px;">
-                                <h4 class="mb-1 text-white">{{ $user->name }}</h4>
+                                <h4 class="mb-1 text-white d-flex align-items-center gap-2">
+                                    {{ $user->name }}
+                                    @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+                                        <span class="meta-pill" title="Correo no verificado" style="background: rgba(245,158,11,0.25); border: 1px solid rgba(245,158,11,0.5);">
+                                            <i class="ri-error-warning-line"></i>Sin verificar
+                                        </span>
+                                    @endif
+                                </h4>
                                 <div class="text-white-50 mb-2">
                                     <i class="ri-mail-line me-1"></i>{{ $user->email }}
                                 </div>
@@ -198,39 +400,88 @@
                                     @endif
                                 </div>
                             </div>
+                            <div class="flex-shrink-0">
+                                <button type="button" class="btn btn-hero-edit" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                    <i class="ri-pencil-line me-1"></i>Editar perfil
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Información personal + Contraseña --}}
+        {{-- Seguridad de acceso (full width — resumen + botón) --}}
         <div class="row g-3">
-            <div class="col-xxl-6 col-lg-6">
-                <div class="card profile-section-card section-info h-100">
-                    <div class="card-header">
-                        <span class="section-icon"><i class="ri-user-3-line"></i></span>
-                        <div>
-                            <h5 class="card-title">Información personal</h5>
-                            <p class="card-subtitle">Nombre y correo electrónico</p>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        @include('profile.partials.update-profile-information-form')
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xxl-6 col-lg-6">
-                <div class="card profile-section-card section-password h-100">
+            <div class="col-12">
+                <div class="card profile-section-card section-password">
                     <div class="card-header">
                         <span class="section-icon"><i class="ri-lock-2-line"></i></span>
                         <div>
                             <h5 class="card-title">Seguridad de acceso</h5>
-                            <p class="card-subtitle">Cambia tu contraseña</p>
+                            <p class="card-subtitle">Tu contraseña protege el acceso a la cuenta</p>
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                            <div class="flex-grow-1 d-flex align-items-center gap-3" style="min-width: 250px;">
+                                <div class="security-icon-circle">
+                                    <i class="ri-shield-keyhole-line"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 fw-semibold">Contraseña</p>
+                                    <p class="text-muted small mb-0">
+                                        Te recomendamos cambiarla periódicamente y no reutilizarla en otros sitios.
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-profile-save is-password" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="ri-key-2-line me-1"></i>Cambiar contraseña
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Modal: Editar información personal --}}
+        @php
+            $hasProfileErrors  = $errors->has('name') || $errors->has('email');
+            $hasPasswordErrors = $errors->updatePassword->isNotEmpty();
+        @endphp
+        <div class="modal fade atlantico-modal" id="editProfileModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+            x-data="{ show: {{ $hasProfileErrors ? 'true' : 'false' }} }"
+            x-init="() => { if (show) { new bootstrap.Modal(document.getElementById('editProfileModal')).show(); } }"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="ri-user-settings-line me-2"></i>Editar información personal
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        @include('profile.partials.update-profile-information-form')
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Modal: Cambiar contraseña --}}
+        <div class="modal fade atlantico-modal" id="changePasswordModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+            x-data="{ show: {{ $hasPasswordErrors ? 'true' : 'false' }} }"
+            x-init="() => { if (show) { new bootstrap.Modal(document.getElementById('changePasswordModal')).show(); } }"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="ri-key-2-line me-2"></i>Cambiar contraseña
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
                         @include('profile.partials.update-password-form')
                     </div>
                 </div>
@@ -285,13 +536,43 @@
                 </div>
             </div>
         </div>
-
-    </div>
-</div>
 @endsection
 
 @push('scripts')
 <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+
+@if (session('status') === 'profile-updated')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Información actualizada',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true
+        });
+    });
+</script>
+@endif
+
+@if (session('status') === 'password-updated')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Contraseña actualizada',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true
+        });
+    });
+</script>
+@endif
+
 @if (session('warning_recovery'))
 <script>
     document.addEventListener('DOMContentLoaded', function () {

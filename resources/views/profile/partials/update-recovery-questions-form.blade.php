@@ -43,31 +43,40 @@
                 $existingRow = $existing->firstWhere('orden', $orden);
                 $selected    = old('preguntas.' . $i, $existingRow->pregunta_id ?? '');
             @endphp
-            <div class="row g-2 mb-3 align-items-start recovery-question-row" data-index="{{ $i }}">
-                <div class="col-md-6">
-                    <label class="form-label">Pregunta {{ $orden }} <span class="text-danger">*</span></label>
-                    <select name="preguntas[]" class="form-select recovery-question-select" required>
-                        <option value="">Selecciona una pregunta...</option>
-                        @foreach ($recoveryQuestions as $id => $texto)
-                            <option value="{{ $id }}" @if ((string) $selected === (string) $id) selected @endif>
-                                {{ $texto }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Respuesta {{ $orden }} <span class="text-danger">*</span></label>
-                    <input
-                        type="text"
-                        name="respuestas[]"
-                        class="form-control"
-                        value="{{ old('respuestas.' . $i, '') }}"
-                        minlength="3"
-                        maxlength="255"
-                        autocomplete="off"
-                        required
-                        placeholder="{{ $configured && !old('respuestas.' . $i) ? '••••••••' : '' }}"
-                    >
+            <div class="recovery-question-block" data-index="{{ $i }}">
+                <div class="recovery-question-number">{{ $orden }}</div>
+                <div class="recovery-question-fields">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-7">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="ri-question-line"></i></span>
+                                <select name="preguntas[]" class="form-select recovery-question-select" required>
+                                    <option value="">Selecciona una pregunta...</option>
+                                    @foreach ($recoveryQuestions as $id => $texto)
+                                        <option value="{{ $id }}" @if ((string) $selected === (string) $id) selected @endif>
+                                            {{ $texto }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="ri-chat-3-line"></i></span>
+                                <input
+                                    type="text"
+                                    name="respuestas[]"
+                                    class="form-control"
+                                    value="{{ old('respuestas.' . $i, '') }}"
+                                    minlength="3"
+                                    maxlength="255"
+                                    autocomplete="off"
+                                    required
+                                    placeholder="{{ $configured && !old('respuestas.' . $i) ? '••••••••' : 'Tu respuesta...' }}"
+                                >
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         @endfor
