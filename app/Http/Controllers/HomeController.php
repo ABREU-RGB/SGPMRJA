@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use App\Models\Empleado;
-use App\Models\Pedido;
 
 class HomeController extends Controller
 {
@@ -61,15 +59,18 @@ class HomeController extends Controller
         ];
         $totalPedidos = array_sum($pedidosValues);
 
-        // 1 query: personal por departamento
-        $personalPorDepto = Empleado::whereNotNull('departamento')
-            ->selectRaw('departamento, COUNT(*) as total')
-            ->groupBy('departamento')
-            ->orderBy('total', 'desc')
-            ->get();
+        // 1 query: personal por departamento (join con tabla departamento normalizada)
+        $personalPorDepto = DB::select("
+            SELECT d.nombre as departamento, COUNT(e.id) as total
+            FROM empleado e
+            JOIN departamento d ON e.departamento_id = d.id
+            WHERE e.deleted_at IS NULL AND d.deleted_at IS NULL
+            GROUP BY d.id, d.nombre
+            ORDER BY total DESC
+        ");
 
-        $empleadosLabels = $personalPorDepto->pluck('departamento')->toArray();
-        $empleadosValues = $personalPorDepto->pluck('total')->toArray();
+        $empleadosLabels = array_column($personalPorDepto, 'departamento');
+        $empleadosValues = array_map('intval', array_column($personalPorDepto, 'total'));
         $totalEmpleadosChart = array_sum($empleadosValues);
 
         return view('dashboard', compact(
