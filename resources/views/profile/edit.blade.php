@@ -163,6 +163,25 @@
             border-color: rgba(14,165,233,0.40);
         }
 
+        /* ==== Profile — icono circular para preguntas de seguridad (resumen) ==== */
+        .questions-icon-circle {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(6,78,59,0.10), rgba(16,185,129,0.20));
+            color: #064e3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+        [data-bs-theme="dark"] .questions-icon-circle {
+            background: linear-gradient(135deg, rgba(6,78,59,0.30), rgba(16,185,129,0.25));
+            color: #6ee7b7;
+            border-color: rgba(16,185,129,0.40);
+        }
+
         /* ==== Profile — Cards ==== */
         .profile-section-card { border: 1px solid rgba(0,0,0,0.06); }
         .profile-section-card > .card-header {
@@ -446,8 +465,11 @@
 
         {{-- Modal: Editar información personal --}}
         @php
-            $hasProfileErrors  = $errors->has('name') || $errors->has('email');
-            $hasPasswordErrors = $errors->updatePassword->isNotEmpty();
+            $hasProfileErrors   = $errors->has('name') || $errors->has('email');
+            $hasPasswordErrors  = $errors->updatePassword->isNotEmpty();
+            $hasQuestionErrors  = $errors->has('preguntas') || $errors->has('respuestas')
+                                  || ($errors->any() && (old('preguntas') || old('respuestas')));
+            $autoOpenQuestions  = $hasQuestionErrors || (bool) session('warning_recovery');
         @endphp
         <div class="modal fade atlantico-modal" id="editProfileModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
             x-data="{ show: {{ $hasProfileErrors ? 'true' : 'false' }} }"
@@ -488,7 +510,27 @@
             </div>
         </div>
 
-        {{-- Preguntas de seguridad --}}
+        {{-- Modal: Preguntas de seguridad --}}
+        <div class="modal fade atlantico-modal" id="editRecoveryQuestionsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+            x-data="{ show: {{ $autoOpenQuestions ? 'true' : 'false' }} }"
+            x-init="() => { if (show) { new bootstrap.Modal(document.getElementById('editRecoveryQuestionsModal')).show(); } }"
+        >
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="ri-shield-keyhole-line me-2"></i>{{ $configured ? 'Actualizar preguntas de seguridad' : 'Configurar preguntas de seguridad' }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        @include('profile.partials.update-recovery-questions-form')
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Preguntas de seguridad (resumen + modal) --}}
         <div class="row g-3 mt-0">
             <div class="col-12">
                 <div class="card profile-section-card section-questions" id="recovery-questions-card">
@@ -513,7 +555,22 @@
                         @endif
                     </div>
                     <div class="card-body">
-                        @include('profile.partials.update-recovery-questions-form')
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                            <div class="flex-grow-1 d-flex align-items-center gap-3" style="min-width: 250px;">
+                                <div class="questions-icon-circle">
+                                    <i class="ri-question-answer-line"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 fw-semibold">3 preguntas y respuestas personales</p>
+                                    <p class="text-muted small mb-0">
+                                        Si olvidas tu contraseña y no tienes internet, podrás recuperar tu cuenta respondiendo correctamente a tus preguntas configuradas.
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-profile-save is-questions" data-bs-toggle="modal" data-bs-target="#editRecoveryQuestionsModal">
+                                <i class="ri-{{ $configured ? 'edit-2' : 'add' }}-line me-1"></i>{{ $configured ? 'Actualizar preguntas' : 'Configurar preguntas' }}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -576,28 +633,42 @@
 @if (session('warning_recovery'))
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // El modal ya se abre automáticamente por x-data — solo mostramos el aviso visual.
         Swal.fire({
             icon: 'warning',
             title: 'Configuración de seguridad pendiente',
-            html: '{!! addslashes(session('warning_recovery')) !!}<br><br><small class="text-muted">Te llevamos a la sección de preguntas de seguridad.</small>',
-            confirmButtonText: 'Ir a configurar',
+            html: '{!! addslashes(session('warning_recovery')) !!}',
+            confirmButtonText: 'Configurar ahora',
             customClass: { confirmButton: 'btn btn-warning w-xs' },
             buttonsStyling: false,
             allowOutsideClick: false,
             allowEscapeKey: false
         }).then(function () {
-            var card = document.getElementById('recovery-questions-card');
-            if (!card) return;
-            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            card.classList.add('border-warning');
-            card.style.transition = 'box-shadow 0.4s ease';
-            card.style.boxShadow = '0 0 0 0.25rem rgba(255,193,7,.35)';
+            var modalEl = document.getElementById('editRecoveryQuestionsModal');
+            if (!modalEl) return;
+            // Si por alguna razón aún no estaba abierto (ej. cache), lo abrimos.
+            var instance = bootstrap.Modal.getOrCreateInstance(modalEl);
+            instance.show();
             setTimeout(function () {
-                card.style.boxShadow = '';
-                card.classList.remove('border-warning');
-                var firstSelect = card.querySelector('select');
+                var firstSelect = modalEl.querySelector('select');
                 if (firstSelect) firstSelect.focus();
-            }, 2500);
+            }, 400);
+        });
+    });
+</script>
+@endif
+
+@if (session('status') === 'recovery-questions-updated')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Preguntas actualizadas',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true
         });
     });
 </script>
