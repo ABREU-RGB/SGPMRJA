@@ -163,6 +163,173 @@
             border-color: rgba(14,165,233,0.40);
         }
 
+        /* ==== Profile — Modal preguntas de seguridad (header navy + acento emerald) ==== */
+        .questions-modal .questions-modal-content {
+            border: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(30,60,114,0.20);
+        }
+        .questions-modal-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.1rem 1.25rem;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            border-bottom: 3px solid #10b981; /* línea de acento emerald sutil */
+        }
+        .questions-modal-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 90% 10%, rgba(255,255,255,0.10), transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(0,0,0,0.20), transparent 50%);
+            pointer-events: none;
+        }
+        .questions-modal-icon {
+            position: relative;
+            z-index: 1;
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.25), 0 4px 8px rgba(0,0,0,0.20);
+        }
+        .questions-modal-titles { position: relative; z-index: 1; flex: 1; min-width: 0; }
+        .questions-modal-title {
+            margin: 0;
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        .questions-modal-subtitle {
+            margin: .15rem 0 0;
+            color: rgba(255,255,255,0.85);
+            font-size: .8rem;
+        }
+        .questions-modal-header .btn-close {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            padding: .5rem;
+            opacity: .85;
+            flex-shrink: 0;
+        }
+        .questions-modal-header .btn-close:hover { opacity: 1; }
+
+        /* Footer custom (sticky bottom dentro del modal scrollable) */
+        .questions-modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: .5rem;
+            padding: .85rem 1.25rem;
+            background: rgba(16,185,129,0.04);
+            border-top: 1px solid rgba(16,185,129,0.20);
+        }
+        [data-bs-theme="dark"] .questions-modal-footer {
+            background: rgba(16,185,129,0.08);
+            border-top-color: rgba(16,185,129,0.30);
+        }
+
+        /* Animación suave entre view ↔ edit */
+        .recovery-question-block [x-cloak],
+        .recovery-question-block [x-show] {
+            transition: opacity .2s ease;
+        }
+
+        /* ==== Profile — Botones sólidos del modal de preguntas ==== */
+        .btn-recovery-edit {
+            background: #10b981;
+            border: 0;
+            color: #fff !important;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(16,185,129,.30);
+            transition: filter .15s ease, transform .12s ease, box-shadow .15s ease;
+        }
+        .btn-recovery-edit:hover,
+        .btn-recovery-edit:focus {
+            background: #10b981;
+            color: #fff !important;
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16,185,129,.40);
+        }
+        .btn-recovery-edit i { color: #fff !important; }
+
+        .btn-recovery-cancel {
+            background: #6c757d;
+            border: 0;
+            color: #fff !important;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(108,117,125,.30);
+            transition: filter .15s ease, transform .12s ease, box-shadow .15s ease;
+        }
+        .btn-recovery-cancel:hover,
+        .btn-recovery-cancel:focus {
+            background: #6c757d;
+            color: #fff !important;
+            filter: brightness(1.10);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108,117,125,.35);
+        }
+        .btn-recovery-cancel i { color: #fff !important; }
+
+        /* ==== Profile — Tip box dentro del modal ==== */
+        .recovery-tip-box {
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+            padding: .85rem 1rem;
+            background: rgba(16,185,129,0.05);
+            border-left: 3px solid #10b981;
+            border-radius: 6px;
+        }
+        .recovery-tip-box > i {
+            color: #10b981;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        [data-bs-theme="dark"] .recovery-tip-box {
+            background: rgba(16,185,129,0.10);
+        }
+        [data-bs-theme="dark"] .recovery-tip-box > i { color: #6ee7b7; }
+
+        /* ==== Profile — confirmación de identidad antes de guardar preguntas ==== */
+        .recovery-password-confirm {
+            background: rgba(245,158,11,0.06);
+            border: 1px solid rgba(245,158,11,0.20);
+            border-left: 3px solid #f59e0b;
+            border-radius: 6px;
+            padding: .85rem 1rem;
+        }
+        .recovery-password-confirm p:first-child {
+            color: #b45309;
+        }
+        .recovery-password-confirm .input-group-text {
+            background: rgba(245,158,11,0.10);
+            border-color: rgba(245,158,11,0.30);
+            color: #b45309;
+        }
+        [data-bs-theme="dark"] .recovery-password-confirm {
+            background: rgba(245,158,11,0.10);
+            border-color: rgba(245,158,11,0.30);
+        }
+        [data-bs-theme="dark"] .recovery-password-confirm p:first-child,
+        [data-bs-theme="dark"] .recovery-password-confirm .input-group-text {
+            color: #fbbf24;
+        }
+
         /* ==== Profile — icono circular para preguntas de seguridad (resumen) ==== */
         .questions-icon-circle {
             width: 48px; height: 48px;
@@ -511,20 +678,38 @@
         </div>
 
         {{-- Modal: Preguntas de seguridad --}}
-        <div class="modal fade atlantico-modal" id="editRecoveryQuestionsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        <div class="modal fade questions-modal" id="editRecoveryQuestionsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
             x-data="{ show: {{ $autoOpenQuestions ? 'true' : 'false' }} }"
             x-init="() => { if (show) { new bootstrap.Modal(document.getElementById('editRecoveryQuestionsModal')).show(); } }"
         >
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="ri-shield-keyhole-line me-2"></i>{{ $configured ? 'Actualizar preguntas de seguridad' : 'Configurar preguntas de seguridad' }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content questions-modal-content">
+                    <div class="questions-modal-header">
+                        <div class="questions-modal-icon">
+                            <i class="ri-shield-keyhole-line"></i>
+                        </div>
+                        <div class="questions-modal-titles">
+                            <h5 class="questions-modal-title">
+                                {{ $configured ? 'Actualizar preguntas de seguridad' : 'Configurar preguntas de seguridad' }}
+                            </h5>
+                            <p class="questions-modal-subtitle">
+                                {{ $configured
+                                    ? 'Edita los bloques que quieras cambiar.'
+                                    : 'Recupera tu contraseña sin necesidad de internet.' }}
+                            </p>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body p-4">
                         @include('profile.partials.update-recovery-questions-form')
+                    </div>
+                    <div class="questions-modal-footer">
+                        <button type="button" class="btn btn-recovery-cancel" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" form="recoveryQuestionsForm" class="btn btn-profile-save is-questions">
+                            <i class="ri-save-line me-1"></i>{{ $configured ? 'Guardar cambios' : 'Guardar preguntas' }}
+                        </button>
                     </div>
                 </div>
             </div>

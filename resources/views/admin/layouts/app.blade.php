@@ -154,6 +154,9 @@
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
 
+    <!-- Alpine.js (necesario para x-data, x-show, x-init en perfil y otros) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+
     <!-- Theme Persistence & Icon Sync -->
     <script>
         (function () {

@@ -31,61 +31,147 @@ class ProfileController extends Controller
     }
 
     /**
-     * Guarda o actualiza las 3 preguntas de seguridad del usuario.
+     * Guarda o actualiza las preguntas de seguridad del usuario.
+     *
+     * Modos:
+     *  - Configuración inicial (sin preguntas previas): los 3 bloques son
+     *    obligatorios. No requiere contraseña actual.
+     *  - Edición (con preguntas previas): el usuario puede editar uno o más
+     *    bloques individualmente. Requiere contraseña actual para autorizar.
+     *    Los bloques no editados conservan su valor previo.
+     *
+     * Estructura del request:
+     *  cambios[N][editing]      = "1" | "0"  (¿este bloque fue editado?)
+     *  cambios[N][pregunta_id]  = int        (id de pregunta)
+     *  cambios[N][respuesta]    = string     (respuesta sólo si editing=1)
+     *  current_password         = string     (sólo si ya estaba configurado)
      */
     public function updateRecoveryQuestions(Request $request): RedirectResponse
     {
-        $catalog = config('recovery_questions.questions', []);
-        $validIds = array_keys($catalog);
+        $user        = $request->user();
+        $configured  = $user->hasRecoveryQuestionsConfigured();
+        $catalog     = config('recovery_questions.questions', []);
+        $validIds    = array_keys($catalog);
 
-        $data = $request->validate([
-            'preguntas'      => ['required', 'array', 'size:3'],
-            'preguntas.*'    => ['required', 'integer', 'in:' . implode(',', $validIds)],
-            'respuestas'     => ['required', 'array', 'size:3'],
-            'respuestas.*'   => ['required', 'string', 'min:3', 'max:255'],
-        ], [
-            'preguntas.size'   => 'Debes seleccionar 3 preguntas.',
-            'respuestas.size'  => 'Debes responder las 3 preguntas.',
-            'respuestas.*.min' => 'La respuesta debe tener al menos 3 caracteres.',
-        ]);
-
-        // Verificar que las 3 preguntas son distintas
-        if (count(array_unique($data['preguntas'])) !== 3) {
+        $cambios = $request->input('cambios', []);
+        if (!is_array($cambios) || count($cambios) !== 3) {
             throw ValidationException::withMessages([
-                'preguntas' => 'No puedes repetir la misma pregunta.',
+                'cambios' => 'Datos inválidos. Recarga la página e intenta de nuevo.',
             ]);
         }
 
-        // Verificar que las 3 respuestas (normalizadas) son distintas entre sí.
-        // Si todas son iguales el atacante solo necesitaría adivinar una.
-        $respuestasNormalizadas = array_map(
-            fn($r) => RecoveryQuestionController::normalizeAnswer($r),
-            $data['respuestas']
-        );
-        if (count(array_unique($respuestasNormalizadas)) !== 3) {
+        // Bloques editados (editing=1)
+        $editedIndices = collect($cambios)
+            ->filter(fn($c) => ($c['editing'] ?? '0') === '1')
+            ->keys()
+            ->all();
+
+        // 1) Configuración inicial → los 3 bloques deben editarse
+        if (!$configured && count($editedIndices) !== 3) {
             throw ValidationException::withMessages([
-                'respuestas' => 'Las 3 respuestas deben ser distintas entre sí. No puedes usar la misma respuesta para dos preguntas.',
+                'cambios' => 'Debes configurar las 3 preguntas de seguridad.',
             ]);
         }
 
-        $user = $request->user();
+        // 2) Edición sin cambios → no hay nada que guardar
+        if ($configured && count($editedIndices) === 0) {
+            return Redirect::route('profile.edit')
+                ->with('warning_recovery_no_changes', '1');
+        }
 
-        DB::transaction(function () use ($user, $data) {
-            $user->recoveryQuestions()->delete();
+        // 3) Si está configurado y hay edición, exigir contraseña actual
+        if ($configured && count($editedIndices) > 0) {
+            $request->validate([
+                'current_password' => ['required', 'current_password'],
+            ], [
+                'current_password.required'         => 'Debes ingresar tu contraseña actual.',
+                'current_password.current_password' => 'La contraseña actual no es correcta.',
+            ]);
+        }
 
-            foreach ($data['preguntas'] as $index => $preguntaId) {
-                $orden = $index + 1;
-                $respuesta = RecoveryQuestionController::normalizeAnswer($data['respuestas'][$index]);
+        // 4) Validar cada bloque editado
+        $rules = [];
+        foreach ($editedIndices as $i) {
+            $rules["cambios.$i.pregunta_id"] = ['required', 'integer', 'in:' . implode(',', $validIds)];
+            $rules["cambios.$i.respuesta"]   = ['required', 'string', 'min:3', 'max:255'];
+        }
+        if (!empty($rules)) {
+            $request->validate($rules, [
+                'cambios.*.respuesta.required' => 'La respuesta es obligatoria.',
+                'cambios.*.respuesta.min'      => 'La respuesta debe tener al menos 3 caracteres.',
+                'cambios.*.pregunta_id.in'     => 'La pregunta seleccionada no es válida.',
+            ]);
+        }
 
-                UserRecoveryQuestion::create([
-                    'user_id'     => $user->id,
-                    'pregunta_id' => $preguntaId,
-                    'respuesta'   => Hash::make($respuesta),
-                    'orden'       => $orden,
-                ]);
+        // 5) Calcular el estado FINAL de las 3 preguntas (mezcla de existentes + ediciones)
+        $existingByOrden = $user->recoveryQuestions()->get()->keyBy('orden');
+        $finalQuestionIds = [];
+        foreach ([1, 2, 3] as $orden) {
+            $i = $orden - 1;
+            $editing = ($cambios[$i]['editing'] ?? '0') === '1';
+            if ($editing) {
+                $finalQuestionIds[$orden] = (int) $cambios[$i]['pregunta_id'];
+            } else {
+                $existing = $existingByOrden->get($orden);
+                $finalQuestionIds[$orden] = $existing ? (int) $existing->pregunta_id : null;
+            }
+        }
+
+        // 6) Las 3 preguntas finales deben ser distintas
+        $uniqueIds = array_unique(array_filter($finalQuestionIds));
+        if (count($uniqueIds) !== 3) {
+            throw ValidationException::withMessages([
+                'cambios' => 'No puedes repetir la misma pregunta entre los 3 bloques.',
+            ]);
+        }
+
+        // 7) Verificar que las respuestas finales sean todas distintas entre sí.
+        //    - Las nuevas (editadas) las comparamos normalizadas entre ellas
+        //    - Cada nueva la comparamos contra los hashes existentes de los bloques NO editados
+        $newAnswersByOrden = [];
+        foreach ($editedIndices as $i) {
+            $orden = $i + 1;
+            $newAnswersByOrden[$orden] = RecoveryQuestionController::normalizeAnswer($cambios[$i]['respuesta']);
+        }
+
+        // Duplicados entre las propias respuestas nuevas
+        if (count(array_unique($newAnswersByOrden)) !== count($newAnswersByOrden)) {
+            throw ValidationException::withMessages([
+                'cambios' => 'Las respuestas que estás cambiando no pueden ser iguales entre sí.',
+            ]);
+        }
+
+        // Cada nueva respuesta debe diferir de las existentes (de bloques no editados)
+        foreach ($newAnswersByOrden as $orden => $newAnswer) {
+            foreach ([1, 2, 3] as $otherOrden) {
+                if ($otherOrden === $orden) continue;
+                if (in_array($otherOrden - 1, $editedIndices, true)) continue; // ese bloque también se está editando
+                $existing = $existingByOrden->get($otherOrden);
+                if (!$existing) continue;
+                if (Hash::check($newAnswer, $existing->respuesta)) {
+                    throw ValidationException::withMessages([
+                        "cambios.$orden" => 'Esta respuesta es igual a la de otra pregunta. Las 3 respuestas deben ser distintas.',
+                    ]);
+                }
+            }
+        }
+
+        // 8) Persistir cambios en transacción
+        DB::transaction(function () use ($user, $cambios, $editedIndices, $configured) {
+            foreach ($editedIndices as $i) {
+                $orden = $i + 1;
+                $preguntaId = (int) $cambios[$i]['pregunta_id'];
+                $respuesta  = RecoveryQuestionController::normalizeAnswer($cambios[$i]['respuesta']);
+
+                UserRecoveryQuestion::updateOrCreate(
+                    ['user_id' => $user->id, 'orden' => $orden],
+                    [
+                        'pregunta_id' => $preguntaId,
+                        'respuesta'   => Hash::make($respuesta),
+                    ]
+                );
             }
 
-            // Si venía de una recuperación, limpiar la marca
             if ($user->recovery_must_reset_questions) {
                 $user->update(['recovery_must_reset_questions' => false]);
             }
