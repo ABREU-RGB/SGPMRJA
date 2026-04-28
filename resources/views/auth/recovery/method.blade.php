@@ -11,7 +11,7 @@
             </div>
             <div class="recovery-option-body">
                 <div class="recovery-option-title">Correo electrónico</div>
-                <div class="recovery-option-desc"><strong style="color:#111827;">Te enviaremos un enlace para restablecerla.</strong><br><strong style="display:block; margin-top:.25rem;">Requiere conexión a internet.</strong></div>
+                <div class="recovery-option-desc"><strong class="recovery-option-strong">Te enviaremos un enlace para restablecerla.</strong><br><strong style="display:block; margin-top:.25rem;">Requiere conexión a internet.</strong></div>
             </div>
             <i class="bx bx-chevron-right recovery-option-arrow"></i>
         </a>
@@ -22,7 +22,7 @@
             </div>
             <div class="recovery-option-body">
                 <div class="recovery-option-title">Preguntas de seguridad</div>
-                <div class="recovery-option-desc"><strong style="color:#111827;">Responde tus 3 preguntas configuradas.</strong><br><strong style="display:block; margin-top:.25rem;">No requiere conexión a internet.</strong></div>
+                <div class="recovery-option-desc"><strong class="recovery-option-strong">Responde tus 3 preguntas configuradas.</strong><br><strong style="display:block; margin-top:.25rem;">No requiere conexión a internet.</strong></div>
             </div>
             <i class="bx bx-chevron-right recovery-option-arrow"></i>
         </a>
@@ -128,6 +128,8 @@
         }
         [data-bs-theme="dark"] .recovery-option-title { color: #e5e7eb; }
         [data-bs-theme="dark"] .recovery-option-desc  { color: #9ca3af; }
+        .recovery-option-strong { color: #111827; }
+        [data-bs-theme="dark"] .recovery-option-strong { color: #f3f4f6; }
         [data-bs-theme="dark"] .recovery-option-arrow { color: #4b5568; }
         [data-bs-theme="dark"] .recovery-option-card:hover .recovery-option-arrow { color: #9ca3af; }
     </style>
