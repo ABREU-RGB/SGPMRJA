@@ -1,3 +1,4 @@
+@props(['title' => 'Bienvenido de nuevo', 'icon' => 'bx-user-circle'])
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
 <head>
@@ -354,7 +355,7 @@
         <div class="card login-card">
             <!-- Card header -->
             <div class="login-card-header">
-                <h4><i class="bx bx-user-circle"></i>Bienvenido de nuevo</h4>
+                <h4><i class="bx {{ $icon }}"></i>{{ $title }}</h4>
             </div>
 
             <!-- Card body -->
