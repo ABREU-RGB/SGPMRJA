@@ -239,6 +239,73 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Resetear Contraseña --}}
+    <div class="modal fade atlantico-modal" id="resetPasswordModal" tabindex="-1" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header p-3">
+                    <h5 class="modal-title">
+                        <i class="bx bx-lock-alt me-2"></i>Resetear contraseña
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center gap-2 p-2 mb-3 rounded"
+                        style="background:rgba(30,60,114,0.06);border-left:3px solid #1e3c72;">
+                        <i class="bx bx-user-circle fs-4 text-primary flex-shrink-0"></i>
+                        <div style="min-width:0;">
+                            <div id="rp-user-name" class="fw-semibold text-truncate" style="font-size:.875rem;"></div>
+                            <div id="rp-user-email" class="text-muted text-truncate" style="font-size:.775rem;"></div>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-3" style="font-size:.825rem;">
+                        Asigna una contraseña temporal. El usuario deberá cambiarla en su próximo inicio de sesión.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold mb-1" style="font-size:.825rem;">Contraseña temporal</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bx bx-lock-alt"></i></span>
+                            <input id="rp-password" type="password" class="form-control"
+                                placeholder="Mínimo 8 caracteres"
+                                autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="191">
+                            <button type="button" class="btn btn-outline-secondary" id="rp-toggle-pass" tabindex="-1">
+                                <i class="bx bx-show"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label fw-semibold mb-1" style="font-size:.825rem;">Confirmar contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bx bx-lock"></i></span>
+                            <input id="rp-password-confirm" type="password" class="form-control"
+                                placeholder="Repite la contraseña"
+                                autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="191">
+                            <button type="button" class="btn btn-outline-secondary" id="rp-toggle-pass-confirm" tabindex="-1">
+                                <i class="bx bx-show"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="rp-error" class="text-danger mt-2 d-none" style="font-size:.8rem;"></div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn" id="rp-submit-btn"
+                            style="background:linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);color:#fff;border:none;font-weight:600;">
+                            <span id="rp-submit-text"><i class="bx bx-check me-1"></i>Resetear</span>
+                            <span id="rp-submit-spinner" class="d-none">
+                                <span class="spinner-border spinner-border-sm me-1"></span>Reseteando…
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -256,7 +323,7 @@
                 }
             });
 
-            function generateButtons(userId, recoveryLocked, isSelf) {
+            function generateButtons(userId, recoveryLocked, isSelf, userName, userEmail) {
                 var unlockBtn = '';
                 if (recoveryLocked) {
                     unlockBtn =
@@ -267,7 +334,7 @@
                 var resetPwBtn = '';
                 if (!isSelf) {
                     resetPwBtn =
-                        '<button class="btn btn-sm btn-soft-info reset-password-btn" data-id="' + userId + '" title="Resetear contraseña" style="padding:0.2rem 0.45rem;">' +
+                        '<button class="btn btn-sm btn-soft-info reset-password-btn" data-id="' + userId + '" data-name="' + (userName || '') + '" data-email="' + (userEmail || '') + '" title="Resetear contraseña" style="padding:0.2rem 0.45rem;">' +
                         '<i class="ri-key-2-line" style="font-size:13px;"></i>' +
                         '</button>';
                 }
@@ -344,7 +411,7 @@
                         orderable: false,
                         searchable: false,
                         render: function (data, type, row) {
-                            return generateButtons(row.id, row.recovery_locked, row.id === currentUserId);
+                            return generateButtons(row.id, row.recovery_locked, row.id === currentUserId, row.name, row.email);
                         }
                     }
                 ],
@@ -585,56 +652,78 @@
             });
 
             $(document).on("click", ".reset-password-btn", function () {
-                var id = $(this).data("id");
-                Swal.fire({
-                    title: 'Resetear contraseña',
-                    html: '<p class="text-start small text-muted mb-2">Asigna una contraseña temporal. El usuario deberá cambiarla en su próximo inicio de sesión.</p>',
-                    input: 'password',
-                    inputAttributes: {
-                        minlength: 8,
-                        maxlength: 191,
-                        autocapitalize: 'off',
-                        autocorrect: 'off',
-                        placeholder: 'Mínimo 8 caracteres'
+                var id        = $(this).data("id");
+                var userName  = $(this).data("name") || '—';
+                var userEmail = $(this).data("email") || '—';
+
+                $('#rp-user-name').text(userName);
+                $('#rp-user-email').text(userEmail);
+                $('#resetPasswordModal').data('user-id', id);
+                $('#rp-password, #rp-password-confirm').val('').attr('type', 'password');
+                $('#rp-toggle-pass i, #rp-toggle-pass-confirm i').removeClass('bx-hide').addClass('bx-show');
+                $('#rp-error').addClass('d-none').text('');
+                $('#resetPasswordModal').modal('show');
+            });
+
+            $('#rp-toggle-pass, #rp-toggle-pass-confirm').on('click', function () {
+                var input = document.getElementById(this.id === 'rp-toggle-pass' ? 'rp-password' : 'rp-password-confirm');
+                var icon  = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('bx-show', 'bx-hide');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('bx-hide', 'bx-show');
+                }
+            });
+
+            $('#rp-submit-btn').on('click', function () {
+                var id      = $('#resetPasswordModal').data('user-id');
+                var pass    = $('#rp-password').val();
+                var confirm = $('#rp-password-confirm').val();
+                var errDiv  = $('#rp-error');
+
+                errDiv.addClass('d-none').text('');
+
+                if (!pass || pass.length < 8) {
+                    errDiv.removeClass('d-none').text('La contraseña debe tener al menos 8 caracteres.');
+                    return;
+                }
+                if (pass !== confirm) {
+                    errDiv.removeClass('d-none').text('Las contraseñas no coinciden.');
+                    return;
+                }
+
+                $('#rp-submit-text').addClass('d-none');
+                $('#rp-submit-spinner').removeClass('d-none');
+                $('#rp-submit-btn').prop('disabled', true);
+
+                $.ajax({
+                    url: "{{ url('users') }}/" + id + "/reset-password",
+                    type: "POST",
+                    data: { password: pass },
+                    success: function (response) {
+                        $('#resetPasswordModal').modal('hide');
+                        table.ajax.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Reseteada!',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 2500
+                        });
                     },
-                    inputValidator: function (value) {
-                        if (!value || value.length < 8) {
-                            return 'La contraseña debe tener al menos 8 caracteres';
-                        }
+                    error: function (xhr) {
+                        var msg = xhr.responseJSON?.message
+                            || (xhr.responseJSON?.errors?.password ? xhr.responseJSON.errors.password[0] : null)
+                            || 'No se pudo resetear la contraseña.';
+                        errDiv.removeClass('d-none').text(msg);
                     },
-                    showCancelButton: true,
-                    confirmButtonText: 'Resetear',
-                    cancelButtonText: 'Cancelar',
-                    customClass: {
-                        confirmButton: 'btn btn-primary w-xs me-2',
-                        cancelButton: 'btn btn-danger w-xs',
-                        input: 'form-control'
-                    },
-                    buttonsStyling: false,
-                    showCloseButton: true
-                }).then(function (result) {
-                    if (!result.isConfirmed) return;
-                    $.ajax({
-                        url: "{{ url('users') }}/" + id + "/reset-password",
-                        type: "POST",
-                        data: { password: result.value },
-                        success: function (response) {
-                            table.ajax.reload();
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Reseteada!',
-                                text: response.message,
-                                showConfirmButton: false,
-                                timer: 2500
-                            });
-                        },
-                        error: function (xhr) {
-                            var msg = xhr.responseJSON?.message
-                                || (xhr.responseJSON?.errors?.password ? xhr.responseJSON.errors.password[0] : null)
-                                || 'No se pudo resetear la contraseña.';
-                            Swal.fire({ icon: 'error', title: 'Error', text: msg });
-                        }
-                    });
+                    complete: function () {
+                        $('#rp-submit-text').removeClass('d-none');
+                        $('#rp-submit-spinner').addClass('d-none');
+                        $('#rp-submit-btn').prop('disabled', false);
+                    }
                 });
             });
 
