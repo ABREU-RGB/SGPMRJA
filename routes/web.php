@@ -22,6 +22,7 @@ use App\Http\Controllers\CargoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\PersonaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,8 +71,12 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::get('clientes-check-documento', [ClienteController::class, 'checkDocumento'])->name('clientes.check-documento');
         Route::get('clientes-check-email', [ClienteController::class, 'checkEmail'])->name('clientes.check-email');
         Route::get('clientes-search', [ClienteController::class, 'searchAjax'])->name('clientes.search');
+        Route::post('clientes/from-persona/{persona}', [ClienteController::class, 'createFromPersona'])->name('clientes.from-persona');
         Route::get('/clientes/reporte/pdf', [ClienteController::class, 'exportarPDF'])->name('clientes.reporte.pdf');
         Route::post('clientes/{id}/restore', [ClienteController::class, 'restore'])->name('clientes.restore');
+
+        // Búsqueda unificada de personas (cliente + empleado + proveedor) — usado por autocomplete de cotizaciones
+        Route::get('personas-search', [PersonaController::class, 'search'])->name('personas.search');
 
         // Empleados
         Route::resource('empleados', EmpleadoController::class);

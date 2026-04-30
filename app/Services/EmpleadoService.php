@@ -52,12 +52,20 @@ class EmpleadoService
                 $this->crearDireccion($persona->id, $data);
             }
 
-            // Auto-generar código de empleado si no se proporciona
+            // Auto-generar código de empleado si no se proporciona.
+            // Importante: incluir trashed en el cálculo, porque la UNIQUE constraint
+            // de la DB cuenta los soft-deleted aunque el modelo los oculte.
             $codigoEmpleado = $data['codigo_empleado'] ?? null;
             if (!$codigoEmpleado) {
-                $ultimoCodigo = Empleado::max('codigo_empleado');
+                $ultimoCodigo = Empleado::withTrashed()->max('codigo_empleado');
                 $numero = $ultimoCodigo ? ((int) substr($ultimoCodigo, 4) + 1) : 1;
-                $codigoEmpleado = 'EMP-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+
+                // Defensa extra contra colisiones (registros restaurados, etc.)
+                do {
+                    $codigoEmpleado = 'EMP-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+                    $existe = Empleado::withTrashed()->where('codigo_empleado', $codigoEmpleado)->exists();
+                    $numero++;
+                } while ($existe);
             }
 
             $empleado = Empleado::create([

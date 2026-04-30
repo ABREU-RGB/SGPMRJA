@@ -10,6 +10,7 @@ use App\Models\Direccion;
 use App\Http\Requests\StoreClienteRequest;
 use App\Http\Requests\UpdateClienteRequest;
 use App\Services\ClienteService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -303,5 +304,75 @@ class ClienteController extends Controller
         }
 
         return response()->json(['exists' => $query->exists()]);
+    }
+
+    /**
+     * Crear un Cliente reutilizando una Persona existente (empleado, proveedor, etc.).
+     * Usado por el autocompletado de cotizaciones para evitar duplicar identidades.
+     * El tipo_cliente se deriva del tipo_documento: V/E → natural, J → juridico, G → gubernamental.
+     */
+    public function createFromPersona(int $personaId): JsonResponse
+    {
+        $persona = Persona::with(['telefonos', 'direcciones'])->find($personaId);
+
+        if (!$persona) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Persona no encontrada.',
+            ], 404);
+        }
+
+        // Si ya existe un cliente activo vinculado, devolverlo
+        $clienteExistente = Cliente::where('persona_id', $persona->id)
+            ->where('estatus', 1)
+            ->first();
+
+        if ($clienteExistente) {
+            return response()->json([
+                'success'    => true,
+                'message'    => 'La persona ya estaba registrada como cliente activo.',
+                'cliente_id' => $clienteExistente->id,
+                'reused'     => true,
+            ]);
+        }
+
+        // Si existe pero está inhabilitado (estatus 0 o trashed), reactivar
+        $clienteInactivo = Cliente::withTrashed()
+            ->where('persona_id', $persona->id)
+            ->first();
+
+        if ($clienteInactivo) {
+            if ($clienteInactivo->trashed()) {
+                $clienteInactivo->restore();
+            }
+            $clienteInactivo->update(['estatus' => 1]);
+
+            return response()->json([
+                'success'    => true,
+                'message'    => 'Cliente reactivado correctamente.',
+                'cliente_id' => $clienteInactivo->id,
+                'reused'     => true,
+            ]);
+        }
+
+        // Detectar tipo de cliente según prefijo del documento
+        $tipoCliente = match ($persona->tipo_documento) {
+            'J-'    => 'juridico',
+            'G-'    => 'gubernamental',
+            default => 'natural', // V-, E-, sin prefijo
+        };
+
+        $cliente = Cliente::create([
+            'persona_id'   => $persona->id,
+            'tipo_cliente' => $tipoCliente,
+            'estatus'      => 1,
+        ]);
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Cliente creado a partir de la persona registrada.',
+            'cliente_id' => $cliente->id,
+            'reused'     => false,
+        ]);
     }
 }

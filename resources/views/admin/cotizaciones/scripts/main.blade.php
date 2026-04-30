@@ -2592,31 +2592,114 @@
             });
         });
 
-        // === AUTOCOMPLETADO DE CLIENTE ===
+        // === AUTOCOMPLETADO UNIFICADO DE PERSONA (cliente + empleado + proveedor) ===
+        // Busca en la tabla 'persona' para evitar duplicar identidades cuando un
+        // empleado o proveedor también compra. Si la persona no es cliente todavía,
+        // ofrece crear el cliente reutilizando los datos existentes.
         let clienteSeleccionado = null;
         let autocompleteTimeout = null;
+
+        // Mapeo de roles → etiquetas y clases de badge (estándar Bootstrap del proyecto)
+        const ROLE_BADGES = {
+            cliente:           { label: 'Cliente',   cls: 'bg-success-subtle text-success' },
+            empleado:          { label: 'Empleado',  cls: 'bg-info-subtle text-info' },
+            proveedor_natural: { label: 'Proveedor', cls: 'bg-warning-subtle text-warning' },
+            proveedor_juridico:{ label: 'Proveedor', cls: 'bg-warning-subtle text-warning' },
+        };
+
+        function renderRoleBadges(roles) {
+            // Deduplicar (ej. proveedor_natural y proveedor_juridico nunca van juntos, pero por seguridad)
+            const seen = new Set();
+            return (roles || []).map(function (r) {
+                const meta = ROLE_BADGES[r];
+                if (!meta || seen.has(meta.label)) return '';
+                seen.add(meta.label);
+                return `<span class="badge ${meta.cls} ms-1">${meta.label}</span>`;
+            }).join('');
+        }
+
+        function rolesLabelLegible(roles) {
+            const labels = [];
+            const seen = new Set();
+            (roles || []).forEach(function (r) {
+                const meta = ROLE_BADGES[r];
+                if (meta && !seen.has(meta.label)) {
+                    seen.add(meta.label);
+                    labels.push(meta.label);
+                }
+            });
+            if (labels.length === 0) return '';
+            if (labels.length === 1) return labels[0];
+            return labels.slice(0, -1).join(', ') + ' y ' + labels[labels.length - 1];
+        }
+
+        // Aplica los datos de una persona/cliente al formulario de cotización
+        function aplicarPersonaACotizacion(persona, clienteId) {
+            $('#cliente-id-field').val(clienteId || '');
+
+            const docString = String(persona.documento || '').trim();
+            let prefix = 'V-', number = '';
+            if (docString) {
+                if (/^[VJEG]-/.test(docString)) {
+                    prefix = docString.substring(0, 2);
+                    number = docString.substring(2);
+                } else {
+                    number = docString;
+                    prefix = (docString.length >= 8 && /^[2-9]/.test(docString)) ? 'J-' : 'V-';
+                }
+            }
+            $('#ci-rif-prefix-field').val(prefix);
+            $('#ci-rif-number-field').val(number);
+            $('#ci-rif-full-field').val(prefix + number);
+
+            // Para jurídicos, usar razon_social como nombre si está disponible
+            const nombreMostrar = (prefix === 'J-' || prefix === 'G-') && persona.razon_social
+                ? persona.razon_social
+                : persona.nombre;
+
+            aplicarLayoutCliente(prefix, nombreMostrar, persona.apellido || '');
+            $('#cliente-email-field').val(persona.email || '');
+            $('#cliente-telefono-field').val(persona.telefono || '');
+            $('#cliente-autocomplete-list').empty().hide();
+            clienteSeleccionado = true;
+        }
 
         $('#ci-rif-number-field').on('input', function () {
             const query = $(this).val();
             clearTimeout(autocompleteTimeout);
-            // Cambiar a 6 caracteres mínimos para búsqueda de documento
             if (query.length < 6) {
                 $('#cliente-autocomplete-list').empty().hide();
                 return;
             }
             autocompleteTimeout = setTimeout(function () {
                 $.ajax({
-                    url: '/clientes-search',
+                    url: '/personas-search',
                     data: { q: query },
-                    success: function (clientes) {
+                    success: function (personas) {
                         let html = '';
-                        if (clientes.length > 0) {
-                            clientes.forEach(function (cliente) {
-                                const nombreCompleto = cliente.apellido ? `${cliente.nombre} ${cliente.apellido}` : cliente.nombre;
-                                html += `<button type="button" class="list-group-item list-group-item-action cliente-autocomplete-item" data-id="${cliente.id}" data-nombre="${cliente.nombre}" data-apellido="${cliente.apellido || ''}" data-email="${cliente.email || ''}" data-telefono="${cliente.telefono || ''}" data-documento="${cliente.documento || ''}">${cliente.documento || 'Sin documento'} - ${nombreCompleto} <small class='text-muted'>${cliente.email || 'Sin email'}</small></button>`;
+                        if (personas.length > 0) {
+                            personas.forEach(function (p, idx) {
+                                const isJuridico = p.tipo_documento === 'J-' || p.tipo_documento === 'G-';
+                                const nombreCompleto = isJuridico && p.razon_social
+                                    ? p.razon_social
+                                    : (p.apellido ? `${p.nombre} ${p.apellido}` : p.nombre);
+                                const badges = renderRoleBadges(p.roles);
+                                html += `<button type="button" class="list-group-item list-group-item-action persona-autocomplete-item" data-idx="${idx}">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
+                                        <div>
+                                            <span class="fw-semibold">${p.documento || 'Sin documento'}</span>
+                                            <span class="text-muted">— ${nombreCompleto}</span>
+                                            <small class="text-muted d-block">${p.email || 'Sin email'}</small>
+                                        </div>
+                                        <div>${badges}</div>
+                                    </div>
+                                </button>`;
                             });
+                            // Guardar la respuesta para acceso rápido al hacer clic
+                            $('#cliente-autocomplete-list').data('personas', personas);
                         } else {
-                            html = '<div class="list-group-item disabled">No se encontraron clientes</div>';
+                            html = '<div class="list-group-item disabled">No se encontraron registros</div>';
+                            $('#cliente-autocomplete-list').removeData('personas');
                         }
                         $('#cliente-autocomplete-list').html(html).show();
                     }
@@ -2624,49 +2707,60 @@
             }, 300);
         });
 
-        // Selección de cliente de la lista
-        $(document).on('click', '.cliente-autocomplete-item', function () {
-            const $this = $(this);
-            const clienteId = $this.data('id');
-            const nombre = $this.data('nombre') || '';
-            const apellido = $this.data('apellido') || '';
-            const email = $this.data('email') || '';
-            const telefono = $this.data('telefono') || '';
-            const documento = $this.data('documento');
+        // Selección de persona de la lista
+        $(document).on('click', '.persona-autocomplete-item', function () {
+            const idx = $(this).data('idx');
+            const personas = $('#cliente-autocomplete-list').data('personas') || [];
+            const persona = personas[idx];
+            if (!persona) return;
 
-            // Guardar cliente_id
-            $('#cliente-id-field').val(clienteId);
-
-            // Procesar documento - Convertir siempre a string primero
-            let prefix = 'V-';
-            let number = '';
-            let docString = '';
-            if (documento !== undefined && documento !== null && documento !== '') {
-                docString = String(documento).trim();
+            // Caso 1: Ya es cliente → aplicar directo
+            if (persona.cliente_id) {
+                aplicarPersonaACotizacion(persona, persona.cliente_id);
+                return;
             }
-            if (docString.length > 0) {
-                if (docString.startsWith('V-') || docString.startsWith('J-') || docString.startsWith('E-') || docString.startsWith('G-')) {
-                    prefix = docString.substring(0, 2);
-                    number = docString.substring(2);
-                } else {
-                    number = docString;
-                    if (docString.length >= 8 && /^[2-9]/.test(docString)) {
-                        prefix = 'J-';
-                    } else {
-                        prefix = 'V-';
+
+            // Caso 2: No es cliente todavía → confirmar creación reutilizando datos
+            const rolesTexto = rolesLabelLegible(persona.roles);
+            const nombreMostrar = (persona.tipo_documento === 'J-' || persona.tipo_documento === 'G-') && persona.razon_social
+                ? persona.razon_social
+                : `${persona.nombre} ${persona.apellido || ''}`.trim();
+
+            Swal.fire({
+                title: '¿Crear cliente con datos existentes?',
+                html: `<strong>${nombreMostrar}</strong> está registrado en el sistema como <strong>${rolesTexto}</strong> pero aún no es cliente.<br><br>¿Deseas crear el cliente reutilizando estos datos?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<i class="ri-check-line me-1"></i>Sí, crear cliente',
+                cancelButtonText: 'Cancelar',
+                customClass: { confirmButton: 'btn btn-success w-xs me-2', cancelButton: 'btn btn-light w-xs' },
+                buttonsStyling: false
+            }).then(function (r) {
+                if (!r.isConfirmed) return;
+
+                $.ajax({
+                    url: `/clientes/from-persona/${persona.persona_id}`,
+                    method: 'POST',
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function (resp) {
+                        if (resp.success && resp.cliente_id) {
+                            aplicarPersonaACotizacion(persona, resp.cliente_id);
+                            Swal.fire({
+                                icon: 'success',
+                                title: resp.reused ? '¡Listo!' : 'Cliente creado',
+                                text: resp.message,
+                                showConfirmButton: false,
+                                timer: 1600
+                            });
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error', text: resp.message || 'No se pudo crear el cliente.' });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.message || 'Error al crear el cliente.' });
                     }
-                }
-            }
-            $('#ci-rif-prefix-field').val(prefix);
-            $('#ci-rif-number-field').val(number);
-            $('#ci-rif-full-field').val(prefix + number);
-
-            // Layout dinámico según tipo de cliente
-            aplicarLayoutCliente(prefix, nombre, apellido);
-            $('#cliente-email-field').val(email);
-            $('#cliente-telefono-field').val(telefono);
-            $('#cliente-autocomplete-list').empty().hide();
-            clienteSeleccionado = true;
+                });
+            });
         });
 
         // Ocultar lista al hacer click fuera
