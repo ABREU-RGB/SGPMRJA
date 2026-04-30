@@ -125,15 +125,20 @@
         flex: 1;
     }
 
-    /* ── Estado activo: encendido en navy ── */
+    /* ── Estado activo: píldora con gradiente navy (mismo del proyecto) ──
+       Se diferencia a propósito del patrón "barra lateral + fondo translúcido"
+       que usan los items normales activos. */
     .menu-dropdown .nav-item.menu-subtitle.is-active {
-        color: #1e3c72;
+        color: #fff;
         font-weight: 700;
-        background: rgba(30, 60, 114, 0.08);
-        border-left-color: #1e3c72;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border-left-color: transparent;
+        border-radius: 999px;
+        padding: 6px 14px 6px 14px;
+        box-shadow: 0 2px 6px rgba(30, 60, 114, 0.25);
     }
     .menu-dropdown .nav-item.menu-subtitle.is-active::before {
-        color: #1e3c72;
+        color: #fff;
     }
 
     /* ── Dark mode ── */
@@ -144,12 +149,12 @@
         color: rgba(255, 255, 255, 0.38);
     }
     [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle.is-active {
-        color: #93c5fd;
-        background: rgba(147, 197, 253, 0.10);
-        border-left-color: #93c5fd;
+        color: #fff;
+        background: linear-gradient(135deg, #2a5298 0%, #3b6cb5 100%);
+        box-shadow: 0 2px 8px rgba(147, 197, 253, 0.18);
     }
     [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle.is-active::before {
-        color: #93c5fd;
+        color: #fff;
     }
 
     /* ── Sub-maestros (Departamentos, Cargos) — hijos de Empleados ──
