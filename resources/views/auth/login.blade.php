@@ -28,10 +28,10 @@
                     autocomplete="username"
                     placeholder="correo@empresa.com"
                 >
-                @error('email')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
             </div>
+            @error('email')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
         </div>
 
         <!-- Password -->
@@ -54,11 +54,11 @@
                     <button class="btn-show-pass" type="button" id="togglePassword" tabindex="-1" aria-label="Mostrar contraseña">
                         <i class="bx bx-hide" id="toggleIcon"></i>
                     </button>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
                 </div>
             </div>
+            @error('password')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
         </div>
 
         <!-- Remember me -->

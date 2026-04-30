@@ -523,7 +523,7 @@
                             aria-haspopup="true" aria-expanded="false">
                             <span class="d-flex align-items-center">
                                 <img class="rounded-circle header-profile-user border border-2 border-light border-opacity-25"
-                                    src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('assets/images/users/avatar-1.jpg') }}"
+                                    src="{{ Auth::user()->avatar_url }}"
                                     alt="Header Avatar">
                                 <span class="text-start ms-xl-2">
                                     <span

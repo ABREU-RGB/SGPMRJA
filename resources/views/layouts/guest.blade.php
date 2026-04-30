@@ -234,6 +234,16 @@
             color: #dc3545;
         }
 
+        /* Anular el icono SVG que Bootstrap inyecta en inputs .is-invalid */
+        .form-control.is-invalid {
+            background-image: none !important;
+            padding-right: 14px;
+        }
+
+        .pass-wrapper .form-control.is-invalid {
+            padding-right: 44px;
+        }
+
         /* ── Submit button ── */
         .btn-atlantico {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);

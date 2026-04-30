@@ -65,6 +65,104 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- ============================================================
+                         FILTROS — Patrón Maestro S-07 (Colapsable)
+                         Réplica exacta del patrón de Clientes.
+                         CSS genérico en custom.css: .navy-filter-*
+                         ============================================================ --}}
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        {{-- Header: siempre visible, actúa como trigger del collapse --}}
+                        <button class="navy-filter-toggle collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                            aria-expanded="false" aria-controls="filters-collapse-body">
+                            <div class="navy-filter-title">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                            </div>
+                            <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                        </button>
+                        {{-- Body: colapsable, oculto por defecto --}}
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-2 align-items-end">
+                                    {{-- Filtro 1: Tipo de Proveedor --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-tipo-proveedor">
+                                            <i class="ri-user-settings-line"></i> Tipo de Proveedor
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tipo-proveedor">
+                                            <option value="">Todos</option>
+                                            <option value="natural">Natural</option>
+                                            <option value="juridico">Jurídico</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 2: Estatus (Activo = normal, Inactivo = trashed / SoftDelete) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estatus">
+                                            <i class="ri-shield-check-line"></i> Estatus
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estatus">
+                                            <option value="">Todos</option>
+                                            <option value="1" selected>Activo</option>
+                                            <option value="0">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 3: Estado Territorial (Venezuela) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estado-territorial">
+                                            <i class="ri-map-pin-line"></i> Estado
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estado-territorial">
+                                            <option value="">Todos</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 4: Búsqueda por Cédula/RIF --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-documento">
+                                            <i class="ri-bank-card-line"></i> Cédula / RIF
+                                        </label>
+                                        <div class="position-relative">
+                                            <input type="text" class="form-control navy-filter-input" id="filter-documento"
+                                                placeholder="Ej: J-12345678" autocomplete="off">
+                                            <i class="ri-search-line navy-filter-input-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- Botón limpiar: dentro del body colapsable --}}
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
+                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- FIN FILTROS --}}
+
                     <table id="proveedores-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
@@ -590,7 +688,6 @@
 
     <script>
         $(document).ready(function () {
-            var esHistorial = {{ $historial ? 'true' : 'false' }};
 
             function generateButtons(proveedorId, isTrashed) {
                 // Si el registro está inhabilitado (trashed), mostrar botón "Ver" + "Restaurar"
@@ -707,7 +804,17 @@
             });
 
             var table = $('#proveedores-table').DataTable({
-                ajax: { url: "{{ route('proveedores.data') }}" + (esHistorial ? '?historial=true' : ''), dataSrc: 'data' },
+                ajax: {
+                    url: "{{ route('proveedores.data') }}",
+                    dataSrc: 'data',
+                    data: function (d) {
+                        // ── Filtros avanzados: enviar valores al server ──
+                        d.filter_tipo_proveedor      = $('#filter-tipo-proveedor').val();
+                        d.filter_estatus             = $('#filter-estatus').val();
+                        d.filter_estado_territorial  = $('#filter-estado-territorial').val();
+                        d.filter_documento           = $('#filter-documento').val();
+                    }
+                },
                 columns: [
                     { data: 'documento_display', name: 'rif' },
                     { data: 'nombre_display', name: 'razon_social' },
@@ -745,9 +852,43 @@
                 language: lenguajeData
             });
 
-            // Buscador personalizado
+            // Buscador personalizado (búsqueda global)
             $('#custom-search-input').on('keyup', function () {
                 table.search(this.value).draw();
+            });
+
+            // ══════════════════════════════════════════════════════
+            // FILTROS AVANZADOS — Lógica JS (Patrón Maestro S-07)
+            // Réplica exacta del patrón de Clientes.
+            // ══════════════════════════════════════════════════════
+
+            // Aplicar filtros al cambiar cualquier select
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+            });
+
+            // Aplicar filtro de documento con debounce (300ms)
+            var filterDocTimeout = null;
+            $('#filter-documento').on('keyup', function () {
+                clearTimeout(filterDocTimeout);
+                filterDocTimeout = setTimeout(function () {
+                    table.ajax.reload();
+                }, 300);
+            });
+
+            // Si se llegó por toggle historial (?historial=true), pre-seleccionar "Inactivo"
+            @if($historial)
+                $('#filter-estatus').val('0');
+                table.ajax.reload();
+            @endif
+
+            // Botón limpiar filtros
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-tipo-proveedor').val('');
+                $('#filter-estatus').val('');
+                $('#filter-estado-territorial').val('');
+                $('#filter-documento').val('');
+                table.ajax.reload();
             });
 
             // Ver detalles
