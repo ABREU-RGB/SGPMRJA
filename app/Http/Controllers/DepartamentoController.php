@@ -10,16 +10,25 @@ class DepartamentoController extends Controller
 {
     /**
      * Listar departamentos (activos o historial) con conteo de cargos y empleados.
+     * Devuelve la vista de catálogo en peticiones de navegador y JSON en AJAX.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $query = Departamento::withCount(['cargos', 'empleados'])->orderBy('nombre');
+        $historial = $request->boolean('historial');
 
-        if ($request->boolean('historial')) {
-            $query->onlyTrashed();
+        if ($request->wantsJson() || $request->ajax()) {
+            $query = Departamento::withCount(['cargos', 'empleados'])->orderBy('nombre');
+
+            if ($historial) {
+                $query->onlyTrashed();
+            }
+
+            return response()->json($query->get());
         }
 
-        return response()->json($query->get());
+        return view('admin.departamentos.index', [
+            'historial' => $historial,
+        ]);
     }
 
     public function store(Request $request): JsonResponse

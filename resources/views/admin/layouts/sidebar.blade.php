@@ -84,6 +84,119 @@
     .menu-dropdown .nav-link::before {
         display: none !important;
     }
+
+    /* ════════════════════════════════════════════════════════════
+       Sub-grupo "Recursos Humanos" — header tipo chip + sub-maestros
+       conectados por línea guía vertical (file-tree style)
+       ════════════════════════════════════════════════════════════ */
+
+    /* ── Header del subgrupo ──
+       Estado por defecto (cuando NO estás en módulos de RRHH): neutro y sutil.
+       Estado activo (.is-active): chip navy remarcado con borde y fondo. */
+    .menu-dropdown .nav-item.menu-subtitle {
+        margin: 14px 12px 6px;
+        padding: 6px 10px 6px 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(0, 0, 0, 0.42);
+        background: transparent;
+        border-left: 3px solid transparent;
+        border-radius: 0 4px 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+        transition: color .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .menu-dropdown .nav-item.menu-subtitle::before {
+        content: "\f1ee"; /* ri-team-line */
+        font-family: "remixicon" !important;
+        font-style: normal;
+        font-size: 0.95rem;
+        line-height: 1;
+        color: rgba(0, 0, 0, 0.38);
+        font-weight: normal;
+        letter-spacing: 0;
+        transition: color .15s ease;
+    }
+    .menu-dropdown .nav-item.menu-subtitle > span {
+        flex: 1;
+    }
+
+    /* ── Estado activo: encendido en navy ── */
+    .menu-dropdown .nav-item.menu-subtitle.is-active {
+        color: #1e3c72;
+        font-weight: 700;
+        background: rgba(30, 60, 114, 0.08);
+        border-left-color: #1e3c72;
+    }
+    .menu-dropdown .nav-item.menu-subtitle.is-active::before {
+        color: #1e3c72;
+    }
+
+    /* ── Dark mode ── */
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle {
+        color: rgba(255, 255, 255, 0.42);
+    }
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle::before {
+        color: rgba(255, 255, 255, 0.38);
+    }
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle.is-active {
+        color: #93c5fd;
+        background: rgba(147, 197, 253, 0.10);
+        border-left-color: #93c5fd;
+    }
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle.is-active::before {
+        color: #93c5fd;
+    }
+
+    /* ── Sub-maestros (Departamentos, Cargos) — hijos de Empleados ──
+       Se les agrega clase .menu-subitem-child en el blade.
+       Visualmente: indentación + línea guía vertical que conecta con
+       Empleados arriba (estilo file-tree de IDE moderno).
+    */
+    .menu-dropdown .nav-item.menu-subitem-child {
+        position: relative;
+        margin-left: 18px;
+    }
+    .menu-dropdown .nav-item.menu-subitem-child > .nav-link {
+        font-size: 0.86rem;
+        padding-left: 20px !important;
+        position: relative;
+    }
+    /* Línea vertical (guide) que conecta padre→hijos.
+       Items intermedios: la línea atraviesa de top a bottom.
+       Último ítem: la línea solo llega hasta el centro (forma en L). */
+    .menu-dropdown .nav-item.menu-subitem-child::before {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: -2px;
+        bottom: 0;
+        width: 1.5px;
+        background: rgba(30, 60, 114, 0.25);
+    }
+    .menu-dropdown .nav-item.menu-subitem-child:last-child::before {
+        bottom: 50%;
+    }
+    /* Conector horizontal (de la línea vertical hacia el ítem) */
+    .menu-dropdown .nav-item.menu-subitem-child::after {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        width: 10px;
+        height: 1.5px;
+        background: rgba(30, 60, 114, 0.25);
+    }
+    /* La línea guía mantiene su color neutro incluso cuando el sub-item está activo,
+       para que solo destaque el item seleccionado y no se vea recargado. */
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subitem-child::before,
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subitem-child::after {
+        background: rgba(147, 197, 253, 0.25);
+    }
 </style>
 <div class="app-menu navbar-menu">
     <div class="navbar-brand-box">
@@ -137,13 +250,13 @@
                         {{-- ================================== --}}
                         {{-- 2. MAESTROS --}}
                         {{-- ================================== --}}
-                        <li class="nav-item section-maestros {{ request()->is('clientes*', 'productos*', 'proveedores*', 'insumos*', 'empleados*') ? 'section-is-active' : '' }}">
+                        <li class="nav-item section-maestros {{ request()->is('clientes*', 'productos*', 'proveedores*', 'insumos*', 'empleados*', 'departamentos*', 'cargos*') ? 'section-is-active' : '' }}">
                             <a class="nav-link menu-link" href="#sidebarMaestros" data-bs-toggle="collapse" role="button"
-                                aria-expanded="{{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') ? 'true' : 'false' }}"
+                                aria-expanded="{{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') || request()->is('departamentos*') || request()->is('cargos*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarMaestros">
                                 <i class="ri-database-2-line"></i> <span data-key="t-maestros">Gestión General</span>
                             </a>
-                            <div class="collapse menu-dropdown {{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') ? 'show' : '' }}"
+                            <div class="collapse menu-dropdown {{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') || request()->is('departamentos*') || request()->is('cargos*') ? 'show' : '' }}"
                                 id="sidebarMaestros">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
@@ -170,10 +283,24 @@
                                             <i class="ri-archive-line me-1"></i> Insumos
                                         </a>
                                     </li>
+                                    {{-- Subgrupo: Recursos Humanos --}}
+                                    <li class="nav-item menu-subtitle {{ request()->is('empleados*', 'departamentos*', 'cargos*') ? 'is-active' : '' }}"><span>Recursos Humanos</span></li>
                                     <li class="nav-item">
                                         <a href="{{ url('empleados') }}"
                                             class="nav-link {{ request()->is('empleados*') ? 'active' : '' }}">
                                             <i class="ri-user-settings-line me-1"></i> Empleados
+                                        </a>
+                                    </li>
+                                    <li class="nav-item menu-subitem-child">
+                                        <a href="{{ url('departamentos') }}"
+                                            class="nav-link {{ request()->is('departamentos*') ? 'active' : '' }}">
+                                            <i class="ri-building-line me-1"></i> Departamentos
+                                        </a>
+                                    </li>
+                                    <li class="nav-item menu-subitem-child">
+                                        <a href="{{ url('cargos') }}"
+                                            class="nav-link {{ request()->is('cargos*') ? 'active' : '' }}">
+                                            <i class="ri-briefcase-line me-1"></i> Cargos
                                         </a>
                                     </li>
                                 </ul>

@@ -7,6 +7,31 @@
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" rel="stylesheet"
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Botones de acceso a sub-maestros (header de Empleados) */
+        .btn-link-depto {
+            background-color: #155e75;       /* cyan-800 */
+            border-color: #155e75;
+            color: #fff;
+        }
+        .btn-link-depto:hover,
+        .btn-link-depto:focus {
+            background-color: #0e4a5d;       /* cyan-900 */
+            border-color: #0e4a5d;
+            color: #fff;
+        }
+        .btn-link-cargo {
+            background-color: #92400e;       /* amber-800 */
+            border-color: #92400e;
+            color: #fff;
+        }
+        .btn-link-cargo:hover,
+        .btn-link-cargo:focus {
+            background-color: #78350f;       /* amber-900 */
+            border-color: #78350f;
+            color: #fff;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -41,14 +66,12 @@
                                 <i class="ri-search-line search-icon"></i>
                             </div>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#gestionDepartamentosModal" title="Gestionar Departamentos">
+                                <a href="{{ url('departamentos') }}" class="btn btn-link-depto" title="Ir al catálogo de departamentos">
                                     <i class="ri-building-line align-bottom me-1"></i> Departamentos
-                                </button>
-                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#gestionCargosModal" title="Gestionar Cargos">
-                                    <i class="ri-user-star-line align-bottom me-1"></i> Cargos
-                                </button>
+                                </a>
+                                <a href="{{ url('cargos') }}" class="btn btn-link-cargo" title="Ir al catálogo de cargos">
+                                    <i class="ri-briefcase-line align-bottom me-1"></i> Cargos
+                                </a>
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                     data-bs-target="#showModal">
                                     <i class="ri-add-line align-bottom me-1"></i> Agregar Empleado
@@ -582,168 +605,8 @@
             </div>
         </div>
     </div>
+    {{-- Modales de gestión completa (CRUD) de Departamentos y Cargos movidos a /departamentos y /cargos. Los mini-modales addDepartamentoModal y addCargoModal de arriba se mantienen para creación rápida desde el form de empleado. --}}
 
-    {{-- ============================================================
-         Modal: Gestión de Departamentos (listado + CRUD)
-         ============================================================ --}}
-    <div class="modal fade atlantico-modal" id="gestionDepartamentosModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title"><i class="ri-building-line me-2"></i>Gestión de Departamentos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-primary" id="btn-deptos-activos">
-                                <i class="ri-check-line"></i> Activos
-                            </button>
-                            <button type="button" class="btn btn-outline-primary" id="btn-deptos-historial">
-                                <i class="ri-history-line"></i> Historial
-                            </button>
-                        </div>
-                        <button type="button" class="btn btn-success btn-sm" id="btn-nuevo-depto-gestion">
-                            <i class="ri-add-line"></i> Nuevo Departamento
-                        </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="deptos-gestion-table" class="table table-sm table-hover align-middle w-100">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th class="text-center">Cargos</th>
-                                    <th class="text-center">Empleados</th>
-                                    <th class="text-center" style="width:120px">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Modal: Formulario Departamento (crear/editar) --}}
-    <div class="modal fade atlantico-modal" id="formDepartamentoModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content">
-                <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title" id="formDepartamentoTitle">Nuevo Departamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="form-depto-id" />
-                    <div class="mb-0">
-                        <label class="form-label required">Nombre</label>
-                        <input type="text" id="form-depto-nombre" class="form-control"
-                            placeholder="Ej: Logística" maxlength="100" />
-                        <div id="form-depto-error" class="invalid-feedback"></div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" id="form-depto-submit">
-                        <i class="ri-check-line me-1"></i>Guardar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- ============================================================
-         Modal: Gestión de Cargos (listado + CRUD)
-         ============================================================ --}}
-    <div class="modal fade atlantico-modal" id="gestionCargosModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title"><i class="ri-user-star-line me-2"></i>Gestión de Cargos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-primary" id="btn-cargos-activos">
-                                <i class="ri-check-line"></i> Activos
-                            </button>
-                            <button type="button" class="btn btn-outline-primary" id="btn-cargos-historial">
-                                <i class="ri-history-line"></i> Historial
-                            </button>
-                        </div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <select id="filtro-cargo-depto" class="form-select form-select-sm" style="min-width:180px">
-                                <option value="">Todos los departamentos</option>
-                                @foreach($departamentos as $id => $nombre)
-                                    <option value="{{ $id }}">{{ $nombre }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn btn-success btn-sm" id="btn-nuevo-cargo-gestion">
-                                <i class="ri-add-line"></i> Nuevo Cargo
-                            </button>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="cargos-gestion-table" class="table table-sm table-hover align-middle w-100">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Departamento</th>
-                                    <th class="text-center">Empleados</th>
-                                    <th class="text-center" style="width:120px">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Modal: Formulario Cargo (crear/editar) --}}
-    <div class="modal fade atlantico-modal" id="formCargoModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content">
-                <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title" id="formCargoTitle">Nuevo Cargo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="form-cargo-id" />
-                    <div class="mb-3">
-                        <label class="form-label required">Departamento</label>
-                        <select id="form-cargo-depto" class="form-select">
-                            <option value="">Seleccione...</option>
-                            @foreach($departamentos as $id => $nombre)
-                                <option value="{{ $id }}">{{ $nombre }}</option>
-                            @endforeach
-                        </select>
-                        <div id="form-cargo-depto-error" class="invalid-feedback"></div>
-                    </div>
-                    <div class="mb-0">
-                        <label class="form-label required">Nombre del Cargo</label>
-                        <input type="text" id="form-cargo-nombre" class="form-control"
-                            placeholder="Ej: Costurera" maxlength="100" />
-                        <div id="form-cargo-error" class="invalid-feedback"></div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" id="form-cargo-submit">
-                        <i class="ri-check-line me-1"></i>Guardar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @push('scripts')
@@ -1388,7 +1251,6 @@
                     $deptoSel.append('<option value="' + dep.id + '">' + dep.nombre + '</option>');
                     $deptoSel.val(dep.id).trigger('change');
                     $('#addDepartamentoModal').modal('hide');
-                    if (typeof recargarDepartamentosGestion === 'function') recargarDepartamentosGestion();
                     Swal.fire({ icon: 'success', title: '¡Listo!', text: 'Departamento agregado.', showConfirmButton: false, timer: 1500 });
                 },
                 error: function (xhr) {
@@ -1428,7 +1290,6 @@
                     $cargoSel.append('<option value="' + cargo.id + '">' + cargo.nombre + '</option>');
                     $cargoSel.val(cargo.id);
                     $('#addCargoModal').modal('hide');
-                    if (typeof recargarCargosGestion === 'function') recargarCargosGestion();
                     Swal.fire({ icon: 'success', title: '¡Listo!', text: 'Cargo agregado.', showConfirmButton: false, timer: 1500 });
                 },
                 error: function (xhr) {
@@ -1461,375 +1322,21 @@
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, maxLen);
         });
 
-        // =================================================================
-        // GESTIÓN DE DEPARTAMENTOS (CRUD completo)
-        // =================================================================
-        var deptosHistorial = false;
 
-        function renderAccionesDepto(d) {
-            if (deptosHistorial) {
-                return '<div class="d-flex gap-1 justify-content-center">' +
-                    '<button class="btn btn-sm btn-soft-success restore-depto-btn" data-id="' + d.id + '" title="Restaurar"><i class="ri-arrow-go-back-line"></i></button>' +
-                    '</div>';
-            }
-            return '<div class="d-flex gap-1 justify-content-center">' +
-                '<button class="btn btn-sm btn-soft-primary edit-depto-btn" data-id="' + d.id + '" data-nombre="' + $('<div>').text(d.nombre).html() + '" title="Editar"><i class="ri-pencil-line"></i></button>' +
-                '<button class="btn btn-sm btn-soft-danger delete-depto-btn" data-id="' + d.id + '" title="Inhabilitar"><i class="ri-delete-bin-line"></i></button>' +
-                '</div>';
-        }
-
-        function recargarDepartamentosGestion() {
-            var url = "{{ route('departamentos.index') }}" + (deptosHistorial ? '?historial=true' : '');
-            $.get(url, function (data) {
-                var $tbody = $('#deptos-gestion-table tbody').empty();
-                if (!data.length) {
-                    $tbody.append('<tr><td colspan="4" class="text-center text-muted py-3">Sin registros</td></tr>');
-                    return;
-                }
-                data.forEach(function (d) {
-                    $tbody.append(
-                        '<tr>' +
-                        '<td>' + $('<div>').text(d.nombre).html() + '</td>' +
-                        '<td class="text-center"><span class="badge bg-info-subtle text-info">' + (d.cargos_count ?? 0) + '</span></td>' +
-                        '<td class="text-center"><span class="badge bg-success-subtle text-success">' + (d.empleados_count ?? 0) + '</span></td>' +
-                        '<td>' + renderAccionesDepto(d) + '</td>' +
-                        '</tr>'
-                    );
-                });
-            });
-        }
-
-        $('#gestionDepartamentosModal').on('shown.bs.modal', function () {
-            deptosHistorial = false;
-            $('#btn-deptos-activos').removeClass('btn-outline-primary').addClass('btn-primary');
-            $('#btn-deptos-historial').removeClass('btn-primary').addClass('btn-outline-primary');
-            recargarDepartamentosGestion();
-        });
-
-        $('#btn-deptos-activos').on('click', function () {
-            deptosHistorial = false;
-            $(this).removeClass('btn-outline-primary').addClass('btn-primary');
-            $('#btn-deptos-historial').removeClass('btn-primary').addClass('btn-outline-primary');
-            recargarDepartamentosGestion();
-        });
-
-        $('#btn-deptos-historial').on('click', function () {
-            deptosHistorial = true;
-            $(this).removeClass('btn-outline-primary').addClass('btn-primary');
-            $('#btn-deptos-activos').removeClass('btn-primary').addClass('btn-outline-primary');
-            recargarDepartamentosGestion();
-        });
-
-        $('#btn-nuevo-depto-gestion').on('click', function () {
-            $('#form-depto-id').val('');
-            $('#form-depto-nombre').val('').removeClass('is-invalid');
-            $('#form-depto-error').hide();
-            $('#formDepartamentoTitle').text('Nuevo Departamento');
-            $('#formDepartamentoModal').modal('show');
-        });
-
-        $(document).on('click', '.edit-depto-btn', function () {
-            $('#form-depto-id').val($(this).data('id'));
-            $('#form-depto-nombre').val($(this).data('nombre')).removeClass('is-invalid');
-            $('#form-depto-error').hide();
-            $('#formDepartamentoTitle').text('Editar Departamento');
-            $('#formDepartamentoModal').modal('show');
-        });
-
-        $('#formDepartamentoModal').on('shown.bs.modal', function () {
-            $('#form-depto-nombre').focus();
-        });
-
-        $('#form-depto-submit').on('click', function () {
-            var id     = $('#form-depto-id').val();
-            var nombre = $('#form-depto-nombre').val().trim();
-
-            if (nombre.length < 3) {
-                $('#form-depto-nombre').addClass('is-invalid');
-                $('#form-depto-error').text('Mínimo 3 caracteres.').show();
-                return;
-            }
-
-            var url    = id
-                ? "{{ url('departamentos') }}/" + id
-                : "{{ route('departamentos.store') }}";
-            var method = id ? 'PUT' : 'POST';
-            var $btn   = $(this).prop('disabled', true).html('<i class="ri-loader-4-line ri-spin me-1"></i>Guardando...');
-
-            $.ajax({
-                url: url,
-                method: method,
-                data: { nombre: nombre, _token: '{{ csrf_token() }}' },
-                success: function (resp) {
-                    $('#formDepartamentoModal').modal('hide');
-                    recargarDepartamentosGestion();
-                    // Sincronizar select del modal de empleado y del filtro de cargos
-                    sincronizarSelectsDepartamento();
-                    Swal.fire({ icon: 'success', title: '¡Listo!', text: resp.message, showConfirmButton: false, timer: 1500 });
-                },
-                error: function (xhr) {
-                    var msg = xhr.responseJSON?.errors?.nombre?.[0] || xhr.responseJSON?.message || 'Error al guardar.';
-                    $('#form-depto-nombre').addClass('is-invalid');
-                    $('#form-depto-error').text(msg).show();
-                },
-                complete: function () {
-                    $btn.prop('disabled', false).html('<i class="ri-check-line me-1"></i>Guardar');
-                }
-            });
-        });
-
-        $(document).on('click', '.delete-depto-btn', function () {
-            var id = $(this).data('id');
-            Swal.fire({
-                title: '¿Inhabilitar departamento?',
-                text: 'Solo se puede inhabilitar si no tiene cargos ni empleados asociados.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, inhabilitar',
-                cancelButtonText: 'Cancelar',
-                customClass: { confirmButton: 'btn btn-danger w-xs me-2', cancelButton: 'btn btn-light w-xs' },
-                buttonsStyling: false
-            }).then(function (r) {
-                if (!r.isConfirmed) return;
-                $.ajax({
-                    url: "{{ url('departamentos') }}/" + id,
-                    method: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function (resp) {
-                        recargarDepartamentosGestion();
-                        sincronizarSelectsDepartamento();
-                        Swal.fire({ icon: 'success', title: '¡Listo!', text: resp.message, showConfirmButton: false, timer: 1500 });
-                    },
-                    error: function (xhr) {
-                        Swal.fire({ icon: 'error', title: 'No se puede inhabilitar', text: xhr.responseJSON?.message || 'Error al procesar' });
-                    }
-                });
-            });
-        });
-
-        $(document).on('click', '.restore-depto-btn', function () {
-            var id = $(this).data('id');
-            $.ajax({
-                url: "{{ url('departamentos') }}/" + id + "/restore",
-                method: 'PATCH',
-                data: { _token: '{{ csrf_token() }}' },
-                success: function (resp) {
-                    recargarDepartamentosGestion();
-                    sincronizarSelectsDepartamento();
-                    Swal.fire({ icon: 'success', title: '¡Restaurado!', text: resp.message, showConfirmButton: false, timer: 1500 });
-                },
-                error: function (xhr) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.message || 'Error al restaurar' });
-                }
-            });
-        });
-
-        // Sincronizar los selects de departamento (modal empleado + filtro cargos + form cargo)
+        // Refrescar select de departamento del form de empleado tras crear uno nuevo desde el mini-modal.
         function sincronizarSelectsDepartamento() {
             $.get("{{ route('departamentos.index') }}", function (data) {
-                var selectors = ['#field-departamento_id', '#filtro-cargo-depto', '#form-cargo-depto'];
-                selectors.forEach(function (sel) {
-                    var $sel        = $(sel);
-                    if (!$sel.length) return;
-                    var currentVal  = $sel.val();
-                    var placeholder = $sel.find('option:first').clone();
-                    $sel.empty().append(placeholder);
-                    data.forEach(function (d) {
-                        $sel.append('<option value="' + d.id + '">' + $('<div>').text(d.nombre).html() + '</option>');
-                    });
-                    $sel.val(currentVal);
+                var $sel = $('#field-departamento_id');
+                if (!$sel.length) return;
+                var currentVal  = $sel.val();
+                var placeholder = $sel.find('option:first').clone();
+                $sel.empty().append(placeholder);
+                data.forEach(function (d) {
+                    $sel.append('<option value="' + d.id + '">' + $('<div>').text(d.nombre).html() + '</option>');
                 });
+                $sel.val(currentVal);
             });
         }
 
-        // =================================================================
-        // GESTIÓN DE CARGOS (CRUD completo)
-        // =================================================================
-        var cargosHistorial = false;
-
-        function renderAccionesCargo(c) {
-            if (cargosHistorial) {
-                return '<div class="d-flex gap-1 justify-content-center">' +
-                    '<button class="btn btn-sm btn-soft-success restore-cargo-btn" data-id="' + c.id + '" title="Restaurar"><i class="ri-arrow-go-back-line"></i></button>' +
-                    '</div>';
-            }
-            return '<div class="d-flex gap-1 justify-content-center">' +
-                '<button class="btn btn-sm btn-soft-primary edit-cargo-btn" data-id="' + c.id + '" title="Editar"><i class="ri-pencil-line"></i></button>' +
-                '<button class="btn btn-sm btn-soft-danger delete-cargo-btn" data-id="' + c.id + '" title="Inhabilitar"><i class="ri-delete-bin-line"></i></button>' +
-                '</div>';
-        }
-
-        function recargarCargosGestion() {
-            var params = [];
-            if (cargosHistorial) params.push('historial=true');
-            var filtroDepto = $('#filtro-cargo-depto').val();
-            if (filtroDepto) params.push('departamento_id=' + encodeURIComponent(filtroDepto));
-            var url = "{{ route('cargos.index') }}" + (params.length ? ('?' + params.join('&')) : '');
-
-            $.get(url, function (data) {
-                var $tbody = $('#cargos-gestion-table tbody').empty();
-                if (!data.length) {
-                    $tbody.append('<tr><td colspan="4" class="text-center text-muted py-3">Sin registros</td></tr>');
-                    return;
-                }
-                data.forEach(function (c) {
-                    var deptoNombre = c.departamento ? $('<div>').text(c.departamento.nombre).html() : '<span class="text-muted">—</span>';
-                    $tbody.append(
-                        '<tr data-cargo=\'' + JSON.stringify({ id: c.id, nombre: c.nombre, departamento_id: c.departamento_id }).replace(/'/g, '&#39;') + '\'>' +
-                        '<td>' + $('<div>').text(c.nombre).html() + '</td>' +
-                        '<td>' + deptoNombre + '</td>' +
-                        '<td class="text-center"><span class="badge bg-success-subtle text-success">' + (c.empleados_count ?? 0) + '</span></td>' +
-                        '<td>' + renderAccionesCargo(c) + '</td>' +
-                        '</tr>'
-                    );
-                });
-            });
-        }
-
-        $('#gestionCargosModal').on('shown.bs.modal', function () {
-            cargosHistorial = false;
-            $('#btn-cargos-activos').removeClass('btn-outline-primary').addClass('btn-primary');
-            $('#btn-cargos-historial').removeClass('btn-primary').addClass('btn-outline-primary');
-            $('#filtro-cargo-depto').val('');
-            recargarCargosGestion();
-        });
-
-        $('#btn-cargos-activos').on('click', function () {
-            cargosHistorial = false;
-            $(this).removeClass('btn-outline-primary').addClass('btn-primary');
-            $('#btn-cargos-historial').removeClass('btn-primary').addClass('btn-outline-primary');
-            recargarCargosGestion();
-        });
-
-        $('#btn-cargos-historial').on('click', function () {
-            cargosHistorial = true;
-            $(this).removeClass('btn-outline-primary').addClass('btn-primary');
-            $('#btn-cargos-activos').removeClass('btn-primary').addClass('btn-outline-primary');
-            recargarCargosGestion();
-        });
-
-        $('#filtro-cargo-depto').on('change', function () {
-            recargarCargosGestion();
-        });
-
-        $('#btn-nuevo-cargo-gestion').on('click', function () {
-            $('#form-cargo-id').val('');
-            $('#form-cargo-nombre').val('').removeClass('is-invalid');
-            $('#form-cargo-depto').val($('#filtro-cargo-depto').val() || '').removeClass('is-invalid');
-            $('#form-cargo-error').hide();
-            $('#form-cargo-depto-error').hide();
-            $('#formCargoTitle').text('Nuevo Cargo');
-            $('#formCargoModal').modal('show');
-        });
-
-        $(document).on('click', '.edit-cargo-btn', function () {
-            var cargoData = $(this).closest('tr').data('cargo');
-            $('#form-cargo-id').val(cargoData.id);
-            $('#form-cargo-nombre').val(cargoData.nombre).removeClass('is-invalid');
-            $('#form-cargo-depto').val(cargoData.departamento_id).removeClass('is-invalid');
-            $('#form-cargo-error').hide();
-            $('#form-cargo-depto-error').hide();
-            $('#formCargoTitle').text('Editar Cargo');
-            $('#formCargoModal').modal('show');
-        });
-
-        $('#formCargoModal').on('shown.bs.modal', function () {
-            $('#form-cargo-nombre').focus();
-        });
-
-        $('#form-cargo-submit').on('click', function () {
-            var id      = $('#form-cargo-id').val();
-            var nombre  = $('#form-cargo-nombre').val().trim();
-            var deptoId = $('#form-cargo-depto').val();
-            var valido  = true;
-
-            if (!deptoId) {
-                $('#form-cargo-depto').addClass('is-invalid');
-                $('#form-cargo-depto-error').text('Debe seleccionar un departamento.').show();
-                valido = false;
-            }
-            if (nombre.length < 3) {
-                $('#form-cargo-nombre').addClass('is-invalid');
-                $('#form-cargo-error').text('Mínimo 3 caracteres.').show();
-                valido = false;
-            }
-            if (!valido) return;
-
-            var url    = id ? "{{ url('cargos') }}/" + id : "{{ route('cargos.store') }}";
-            var method = id ? 'PUT' : 'POST';
-            var $btn   = $(this).prop('disabled', true).html('<i class="ri-loader-4-line ri-spin me-1"></i>Guardando...');
-
-            $.ajax({
-                url: url,
-                method: method,
-                data: { nombre: nombre, departamento_id: deptoId, _token: '{{ csrf_token() }}' },
-                success: function (resp) {
-                    $('#formCargoModal').modal('hide');
-                    recargarCargosGestion();
-                    // Si el departamento del empleado está seleccionado y coincide, refrescar cargos
-                    if ($('#field-departamento_id').val() == deptoId) {
-                        $('#field-departamento_id').trigger('change');
-                    }
-                    Swal.fire({ icon: 'success', title: '¡Listo!', text: resp.message, showConfirmButton: false, timer: 1500 });
-                },
-                error: function (xhr) {
-                    var msg = xhr.responseJSON?.errors?.nombre?.[0]
-                        || xhr.responseJSON?.errors?.departamento_id?.[0]
-                        || xhr.responseJSON?.message
-                        || 'Error al guardar.';
-                    $('#form-cargo-nombre').addClass('is-invalid');
-                    $('#form-cargo-error').text(msg).show();
-                },
-                complete: function () {
-                    $btn.prop('disabled', false).html('<i class="ri-check-line me-1"></i>Guardar');
-                }
-            });
-        });
-
-        $(document).on('click', '.delete-cargo-btn', function () {
-            var id = $(this).data('id');
-            Swal.fire({
-                title: '¿Inhabilitar cargo?',
-                text: 'Solo se puede inhabilitar si no tiene empleados asociados.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, inhabilitar',
-                cancelButtonText: 'Cancelar',
-                customClass: { confirmButton: 'btn btn-danger w-xs me-2', cancelButton: 'btn btn-light w-xs' },
-                buttonsStyling: false
-            }).then(function (r) {
-                if (!r.isConfirmed) return;
-                $.ajax({
-                    url: "{{ url('cargos') }}/" + id,
-                    method: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function (resp) {
-                        recargarCargosGestion();
-                        if ($('#field-departamento_id').val()) $('#field-departamento_id').trigger('change');
-                        Swal.fire({ icon: 'success', title: '¡Listo!', text: resp.message, showConfirmButton: false, timer: 1500 });
-                    },
-                    error: function (xhr) {
-                        Swal.fire({ icon: 'error', title: 'No se puede inhabilitar', text: xhr.responseJSON?.message || 'Error al procesar' });
-                    }
-                });
-            });
-        });
-
-        $(document).on('click', '.restore-cargo-btn', function () {
-            var id = $(this).data('id');
-            $.ajax({
-                url: "{{ url('cargos') }}/" + id + "/restore",
-                method: 'PATCH',
-                data: { _token: '{{ csrf_token() }}' },
-                success: function (resp) {
-                    recargarCargosGestion();
-                    if ($('#field-departamento_id').val()) $('#field-departamento_id').trigger('change');
-                    Swal.fire({ icon: 'success', title: '¡Restaurado!', text: resp.message, showConfirmButton: false, timer: 1500 });
-                },
-                error: function (xhr) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.message || 'Error al restaurar' });
-                }
-            });
-        });
     </script>
 @endpush

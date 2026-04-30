@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cargo;
+use App\Models\Departamento;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -11,22 +12,32 @@ class CargoController extends Controller
     /**
      * Listar cargos (activos o historial) con su departamento y conteo de empleados.
      * Filtros: ?historial=true | ?departamento_id=N
+     * Devuelve la vista de catálogo en peticiones de navegador y JSON en AJAX.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $query = Cargo::with('departamento')
-            ->withCount('empleados')
-            ->orderBy('nombre');
+        $historial = $request->boolean('historial');
 
-        if ($request->boolean('historial')) {
-            $query->onlyTrashed();
+        if ($request->wantsJson() || $request->ajax()) {
+            $query = Cargo::with('departamento')
+                ->withCount('empleados')
+                ->orderBy('nombre');
+
+            if ($historial) {
+                $query->onlyTrashed();
+            }
+
+            if ($request->filled('departamento_id')) {
+                $query->where('departamento_id', $request->departamento_id);
+            }
+
+            return response()->json($query->get());
         }
 
-        if ($request->filled('departamento_id')) {
-            $query->where('departamento_id', $request->departamento_id);
-        }
-
-        return response()->json($query->get());
+        return view('admin.cargos.index', [
+            'historial'     => $historial,
+            'departamentos' => Departamento::orderBy('nombre')->pluck('nombre', 'id'),
+        ]);
     }
 
     public function store(Request $request): JsonResponse
