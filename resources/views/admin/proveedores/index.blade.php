@@ -378,19 +378,32 @@
                             <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
 
                             <div class="row mb-0">
+                                {{-- Documento del proveedor: RIF si jurídico, Cédula si natural. Se togglea por JS según tipo. --}}
+                                <div class="col-md-6 js-tipo-juridico">
+                                    <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="9" required prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
+                                                <option value="J-">J-</option>
+                                                <option value="G-">G-</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
+                                    <input type="hidden" id="rif-field" name="rif" />
+                                </div>
+                                <div class="col-md-6 js-tipo-natural" style="display: none;">
+                                    <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="8" placeholder="Ej: 12345678" required prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="tipo-documento-field" name="tipo_documento" style="max-width: 80px;">
+                                                <option value="V-">V-</option>
+                                                <option value="E-">E-</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
+                                </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="tipo_proveedor" label="Tipo de Proveedor" required id="tipo-proveedor-field"
                                         :options="['juridico' => 'Jurídico (Empresa)', 'natural' => 'Natural (Persona)']"
                                         placeholder="" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label d-block">Estatus</label>
-                                    <div class="form-check form-switch form-switch-success mt-2">
-                                        <input type="hidden" name="estado" value="0" />
-                                        <input class="form-check-input" type="checkbox" role="switch" id="estado-field"
-                                            name="estado" value="1" checked />
-                                        <label class="form-check-label" for="estado-field" id="estado-label">Activo</label>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -400,65 +413,18 @@
                             <div class="modal-form-section">
                                 <div class="modal-form-section-title"><i class="ri-building-line"></i>Datos Empresariales</div>
 
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="9" required prependRaw="true">
-                                            <x-slot:prepend>
-                                                <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
-                                                    <option value="J-">J-</option>
-                                                    <option value="G-">G-</option>
-                                                </select>
-                                            </x-slot:prepend>
-                                        </x-forms.input>
-                                        <input type="hidden" id="rif-field" name="rif" />
-                                    </div>
+                                <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
                                         <x-forms.input name="razon_social" label="Razón Social" maxlength="200" placeholder="Nombre de la empresa" id="razon-social-field" />
                                     </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <x-forms.input name="direccion" label="Dirección" maxlength="500" placeholder="Dirección de la empresa" id="direccion-jur-field" />
-                                </div>
-
-                                <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
-                                        <label for="estado-territorial-jur-field" class="form-label">Estado</label>
-                                        <select id="estado-territorial-jur-field" name="estado_territorial" class="form-select">
-                                            <option value="">Seleccione estado</option>
-                                            <option value="Amazonas">Amazonas</option>
-                                            <option value="Anzoátegui">Anzoátegui</option>
-                                            <option value="Apure">Apure</option>
-                                            <option value="Aragua">Aragua</option>
-                                            <option value="Barinas">Barinas</option>
-                                            <option value="Bolívar">Bolívar</option>
-                                            <option value="Carabobo">Carabobo</option>
-                                            <option value="Cojedes">Cojedes</option>
-                                            <option value="Delta Amacuro">Delta Amacuro</option>
-                                            <option value="Distrito Capital">Distrito Capital</option>
-                                            <option value="Falcón">Falcón</option>
-                                            <option value="Guárico">Guárico</option>
-                                            <option value="La Guaira">La Guaira</option>
-                                            <option value="Lara">Lara</option>
-                                            <option value="Mérida">Mérida</option>
-                                            <option value="Miranda">Miranda</option>
-                                            <option value="Monagas">Monagas</option>
-                                            <option value="Nueva Esparta">Nueva Esparta</option>
-                                            <option value="Portuguesa">Portuguesa</option>
-                                            <option value="Sucre">Sucre</option>
-                                            <option value="Táchira">Táchira</option>
-                                            <option value="Trujillo">Trujillo</option>
-                                            <option value="Yaracuy">Yaracuy</option>
-                                            <option value="Zulia">Zulia</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="ciudad-jur-field" class="form-label">Municipio</label>
-                                        <select id="ciudad-jur-field" name="ciudad" class="form-select">
-                                            <option value="">Primero seleccione un estado</option>
-                                        </select>
+                                        <x-forms.input name="direccion" label="Dirección" maxlength="500" placeholder="Dirección de la empresa" id="direccion-jur-field" />
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-contacts-book-line"></i>Contacto</div>
 
                                 <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
@@ -510,6 +476,49 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="estado-territorial-jur-field" class="form-label">Estado</label>
+                                        <select id="estado-territorial-jur-field" name="estado_territorial" class="form-select">
+                                            <option value="">Seleccione estado</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ciudad-jur-field" class="form-label">Municipio</label>
+                                        <select id="ciudad-jur-field" name="ciudad" class="form-select">
+                                            <option value="">Primero seleccione un estado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- CAMPOS PARA PROVEEDOR NATURAL (PERSONA) -->
@@ -517,7 +526,7 @@
                             <div class="modal-form-section">
                                 <div class="modal-form-section-title"><i class="ri-user-3-line"></i>Datos Personales</div>
 
-                                <div class="row mb-0">
+                                <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <x-forms.input name="nombre" label="Nombre" maxlength="100" placeholder="Nombre" id="nombre-field" />
                                     </div>
@@ -525,23 +534,16 @@
                                         <x-forms.input name="apellido" label="Apellido" maxlength="100" placeholder="Apellido" id="apellido-field" />
                                     </div>
                                 </div>
+
+                                <div class="mb-0">
+                                    <x-forms.input name="direccion" label="Dirección" maxlength="255" placeholder="Dirección completa" id="direccion-nat-field" />
+                                </div>
                             </div>
 
                             <div class="modal-form-section">
                                 <div class="modal-form-section-title"><i class="ri-contacts-book-line"></i>Contacto</div>
 
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="8" placeholder="Ej: 12345678" required prependRaw="true">
-                                            <x-slot:prepend>
-                                                <select class="form-select" id="tipo-documento-field" name="tipo_documento"
-                                                    style="max-width: 80px;">
-                                                    <option value="V-">V-</option>
-                                                    <option value="E-">E-</option>
-                                                </select>
-                                            </x-slot:prepend>
-                                        </x-forms.input>
-                                    </div>
+                                <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
                                         <x-forms.input name="telefono_nat_number" label="Teléfono" id="telefono-nat-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
                                             <x-slot:prepend>
@@ -558,14 +560,9 @@
                                         </x-forms.input>
                                         <input type="hidden" id="telefono-nat-field" name="telefono" />
                                     </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <x-forms.input name="email" label="Email" type="email" placeholder="correo@email.com" id="email-nat-field" />
-                                </div>
-
-                                <div class="mb-0">
-                                    <x-forms.input name="direccion" label="Dirección" maxlength="255" placeholder="Dirección completa" id="direccion-nat-field" />
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="email" label="Email" type="email" placeholder="correo@email.com" id="email-nat-field" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -610,6 +607,16 @@
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-form-section mb-0">
+                            <div class="modal-form-section-title"><i class="ri-shield-check-line"></i>Estatus</div>
+                            <div class="form-check form-switch form-switch-success">
+                                <input type="hidden" name="estado" value="0" />
+                                <input class="form-check-input" type="checkbox" role="switch" id="estado-field"
+                                    name="estado" value="1" checked />
+                                <label class="form-check-label" for="estado-field" id="estado-label">Activo</label>
                             </div>
                         </div>
 
@@ -672,34 +679,38 @@
                     '</div>';
             }
 
-            // Toggle campos según tipo de proveedor
-            // Gestiona visibilidad Y atributos de validación HTML5 para evitar
-            // "An invalid form control with name='' is not focusable" (Obs. resuelta)
+            // Toggle campos según tipo de proveedor.
+            // Los selectores incluyen tanto los bloques grandes (#campos-juridico/#campos-natural)
+            // como los wrappers del RIF/Documento dentro de la sección Identificación
+            // (.js-tipo-juridico/.js-tipo-natural).
             function toggleCampos() {
                 var tipo = $('#tipo-proveedor-field').val();
+                var $jur = $('#campos-juridico, .js-tipo-juridico');
+                var $nat = $('#campos-natural, .js-tipo-natural');
+
                 if (tipo === 'natural') {
-                    $('#campos-juridico').hide();
-                    $('#campos-natural').show();
-                    // Desactivar validaciones del bloque JURÍDICO oculto
-                    $('#campos-juridico').find('[required]').each(function () {
+                    $jur.hide();
+                    $nat.show();
+                    // Desactivar validaciones del bloque JURÍDICO oculto (incluye RIF en Identificación)
+                    $jur.find('[required]').each(function () {
                         $(this).removeAttr('required').attr('data-required', 'true');
                     });
-                    // Restaurar validaciones del bloque NATURAL visible
-                    $('#campos-natural').find('[data-required]').each(function () {
+                    // Restaurar validaciones del bloque NATURAL visible (incluye Documento en Identificación)
+                    $nat.find('[data-required]').each(function () {
                         $(this).attr('required', 'required').removeAttr('data-required');
                     });
                     // Limpiar campos jurídicos
                     $('#rif-number-field, #razon-social-field, #direccion-jur-field, #telefono-jur-field, #email-jur-field, #contacto-field, #telefono-contacto-field, #estado-territorial-jur-field').val('');
                     $('#ciudad-jur-field').empty().append('<option value="">Primero seleccione un estado</option>');
                 } else {
-                    $('#campos-juridico').show();
-                    $('#campos-natural').hide();
-                    // Desactivar validaciones del bloque NATURAL oculto
-                    $('#campos-natural').find('[required]').each(function () {
+                    $jur.show();
+                    $nat.hide();
+                    // Desactivar validaciones del bloque NATURAL oculto (incluye Documento en Identificación)
+                    $nat.find('[required]').each(function () {
                         $(this).removeAttr('required').attr('data-required', 'true');
                     });
-                    // Restaurar validaciones del bloque JURÍDICO visible
-                    $('#campos-juridico').find('[data-required]').each(function () {
+                    // Restaurar validaciones del bloque JURÍDICO visible (incluye RIF en Identificación)
+                    $jur.find('[data-required]').each(function () {
                         $(this).attr('required', 'required').removeAttr('data-required');
                     });
                     // Limpiar campos naturales
