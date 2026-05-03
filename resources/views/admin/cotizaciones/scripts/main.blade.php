@@ -4200,12 +4200,14 @@
                 if (n === 1) {
                     var clienteId = $('#cliente-id-field').val();
                     var fecha = $('#fecha-cotizacion-field').val();
+                    var validez = $('#fecha-validez-field').val();
                     if (!clienteId) {
                         Swal.fire({
                             icon: 'warning', title: 'Cliente requerido',
                             text: 'Debes seleccionar o crear un cliente antes de continuar.',
                             timer: 2200, showConfirmButton: false
                         });
+                        $('#ci-rif-number-field').trigger('focus');
                         return false;
                     }
                     if (!fecha) {
@@ -4217,6 +4219,26 @@
                         $('#fecha-cotizacion-field').trigger('focus');
                         return false;
                     }
+                    if (validez && validez < fecha) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Fechas inconsistentes',
+                            text: 'La fecha de validez no puede ser anterior a la fecha de emisión.',
+                            timer: 2400, showConfirmButton: false
+                        });
+                        $('#fecha-validez-field').trigger('focus');
+                        return false;
+                    }
+                    // Si cualquier campo del paso 1 está marcado is-invalid, frenar
+                    var $invalid = $('#cot-step-1 .is-invalid:visible');
+                    if ($invalid.length) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Corrige los errores',
+                            text: 'Revisa los campos marcados en rojo antes de continuar.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        $invalid.first().trigger('focus');
+                        return false;
+                    }
                     return true;
                 }
                 if (n === 2) {
@@ -4224,8 +4246,28 @@
                     if (!rows) {
                         Swal.fire({
                             icon: 'warning', title: 'Sin productos',
-                            text: 'Agrega al menos un producto para continuar.',
-                            timer: 2200, showConfirmButton: false
+                            text: 'Agrega al menos un producto desde el catálogo para continuar.',
+                            timer: 2400, showConfirmButton: false
+                        });
+                        return false;
+                    }
+                    // Validar que cada línea tenga producto, color, talla y cantidad>0
+                    var problemas = [];
+                    $('#productos-container .product-item').each(function (i) {
+                        var $c = $(this);
+                        if (!$c.find('.producto-id-input').val()) problemas.push('línea ' + (i + 1) + ': producto');
+                        if (!$c.find('.talla-input-value').val()) problemas.push('línea ' + (i + 1) + ': talla');
+                        var qty = parseInt($c.find('.cantidad-input').val(), 10) || 0;
+                        if (qty <= 0) problemas.push('línea ' + (i + 1) + ': cantidad');
+                        var precio = parseFloat($c.find('.precio-unitario-input').val()) || 0;
+                        if (precio <= 0) problemas.push('línea ' + (i + 1) + ': precio');
+                    });
+                    if (problemas.length) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Datos incompletos',
+                            html: 'Faltan datos en:<br><strong>' + problemas.slice(0, 6).join('<br>') +
+                                  (problemas.length > 6 ? '<br>…' : '') + '</strong>',
+                            timer: 3500, showConfirmButton: true
                         });
                         return false;
                     }
