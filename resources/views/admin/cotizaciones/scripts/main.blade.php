@@ -4020,34 +4020,60 @@
                 }
             });
 
-            // Bordados — dispara el modal de bordados (legacy) sobre la 1ra card del bloque
-            // sin exponer las cards al usuario. Al cerrar, se replica al resto del bloque.
+            // Bordados — abre directamente el modal de bordados (legacy) apuntando a la
+            // 1ra card del bloque. Sin trigger sintético: setea currentBordadoCard y muestra
+            // el modal de Bootstrap, robusto frente al display:none del productos-container.
             $(document).on('click', '.cot-action-bordado', function () {
                 var $blk = $(this).closest('.cot-grouped-row');
-                var indices = String($blk.data('card-indices') || '').split(',').filter(Boolean);
-                if (!indices.length) return;
+                var indicesAttr = $blk.attr('data-card-indices') || '';
+                var indices = indicesAttr.split(',').filter(Boolean);
+                if (!indices.length) {
+                    Swal.fire({ icon: 'warning', title: 'Sin líneas en este bloque',
+                        timer: 1800, showConfirmButton: false, toast: true, position: 'top-end' });
+                    return;
+                }
                 var firstIdx = indices[0];
                 var $card = $('#productos-container .product-item[data-product-index="' + firstIdx + '"]');
-                if (!$card.length) return;
+                if (!$card.length) {
+                    Swal.fire({ icon: 'error', title: 'No se encontró la línea',
+                        text: 'Index buscado: ' + firstIdx,
+                        timer: 1800, showConfirmButton: false });
+                    return;
+                }
 
-                // Activar checkbox lleva-bordado si no lo está (el modal lo necesita)
+                // Activar checkbox lleva-bordado para que el container interno se prepare
                 var $chk = $card.find('.lleva-bordado-checkbox');
                 if (!$chk.is(':checked')) {
                     $chk.prop('checked', true).trigger('change');
                 }
 
-                // Disparar click en el botón de configurar bordados de la card oculta;
-                // el modal Bootstrap es global y se abre normalmente aunque la card no se vea.
-                setTimeout(function () {
-                    $card.find('.configurar-bordados-trigger').trigger('click');
-                }, 60);
+                // Set currentBordadoCard (variable global del módulo de bordados) y abrir modal
+                if (typeof currentBordadoCard !== 'undefined') {
+                    currentBordadoCard = $card;
+                }
+                window.__cotBordadoSourceCard = $card;
 
                 // Marcar el bloque para replicar al cerrar el modal de bordados
                 window.__cotBordadoReplicateGroup = {
-                    productoId: parseInt($blk.data('product-id'), 10),
-                    colorId: parseInt($blk.data('color-id'), 10),
+                    productoId: parseInt($blk.attr('data-product-id'), 10),
+                    colorId: parseInt($blk.attr('data-color-id'), 10),
                     sourceIndex: firstIdx
                 };
+
+                // Abrir el modal de ubicaciones (bordados) directamente
+                if (typeof ubicacionModal !== 'undefined' && ubicacionModal && typeof ubicacionModal.show === 'function') {
+                    ubicacionModal.show();
+                } else {
+                    var modalEl = document.getElementById('ubicacionCatalogoModal');
+                    if (modalEl) {
+                        var inst = bootstrap.Modal.getOrCreateInstance(modalEl);
+                        inst.show();
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Modal de bordados no disponible',
+                            text: 'El sistema de bordados no se cargó correctamente.',
+                            timer: 2200, showConfirmButton: false });
+                    }
+                }
             });
 
             // Replicación de bordados al guardar config en una card → replicar a hermanas del bloque
