@@ -2320,10 +2320,25 @@ header#page-topbar,
 .cot-grouped-tablewrap {
     border: 1px solid rgba(30, 60, 114, 0.12);
     border-radius: 12px;
-    overflow: hidden;
+    overflow: auto;
     background: #ffffff;
     box-shadow: 0 4px 12px -8px rgba(30, 60, 114, 0.18);
+    /* Tope dinámico: 380px o 45% de la altura del viewport, lo menor.
+       Si hay más bloques que el alto disponible, aparece scroll
+       vertical interno con header sticky. */
+    max-height: min(380px, 45vh);
 }
+/* Scrollbar estilizado dentro de la tabla (consistente con el resto del proyecto) */
+.cot-grouped-tablewrap::-webkit-scrollbar { width: 8px; height: 8px; }
+.cot-grouped-tablewrap::-webkit-scrollbar-track { background: transparent; }
+.cot-grouped-tablewrap::-webkit-scrollbar-thumb {
+    background: rgba(30, 60, 114, 0.18);
+    border-radius: 4px;
+}
+.cot-grouped-tablewrap::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 60, 114, 0.32);
+}
+
 .cot-grouped-table {
     width: 100%;
     border-collapse: separate;
@@ -2342,6 +2357,10 @@ header#page-topbar,
     border: 0;
     text-align: left;
     white-space: nowrap;
+    /* Header sticky: queda fijo arriba mientras se hace scroll de los items */
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 .cot-grouped-table thead th.cot-cell-num,
 .cot-grouped-table thead th.cot-col-num,
@@ -2527,6 +2546,12 @@ header#page-topbar,
 [data-bs-theme="dark"] .cot-grouped-tablewrap {
     background: #1f2937;
     border-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .cot-grouped-tablewrap::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+}
+[data-bs-theme="dark"] .cot-grouped-tablewrap::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.28);
 }
 [data-bs-theme="dark"] .cot-grouped-table tbody tr:nth-child(even) {
     background: #11151f;
