@@ -2972,6 +2972,79 @@ header#page-topbar,
     font-variant-numeric: tabular-nums;
 }
 
+/* ── Precio (sección 3) ──────────────────────────────────────── */
+.cfg-precio-reset {
+    color: #00b88c;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.cfg-precio-reset:hover { color: #008f6c; }
+
+.cfg-precio-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.cfg-precio-input-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 0 4px 0 12px;
+    transition: all 0.15s;
+    min-width: 180px;
+}
+.cfg-precio-input-wrap:focus-within {
+    border-color: #00d9a5;
+    box-shadow: 0 0 0 3px rgba(0, 217, 165, 0.15);
+}
+.cfg-precio-prefix {
+    color: #94a3b8;
+    font-weight: 600;
+    margin-right: 4px;
+    font-size: 0.95rem;
+}
+.cfg-precio-input {
+    border: 0;
+    background: transparent;
+    outline: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e3c72;
+    font-variant-numeric: tabular-nums;
+    padding: 9px 6px 9px 0;
+    width: 130px;
+}
+.cfg-precio-input::-webkit-outer-spin-button,
+.cfg-precio-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.cfg-precio-input { appearance: textfield; -moz-appearance: textfield; }
+
+.cfg-precio-base-hint {
+    font-size: 0.78rem;
+    color: #64748b;
+}
+.cfg-precio-base-hint strong {
+    color: #1e3c72;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .cfg-precio-input-wrap {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .cfg-precio-input-wrap:focus-within {
+    border-color: #00d9a5;
+}
+[data-bs-theme="dark"] .cfg-precio-prefix { color: #64748b; }
+[data-bs-theme="dark"] .cfg-precio-input { color: #ffffff; }
+[data-bs-theme="dark"] .cfg-precio-base-hint { color: #94a3b8; }
+[data-bs-theme="dark"] .cfg-precio-base-hint strong { color: #cbd5e1; }
+
 /* ── Footer sticky con resumen y acciones ─────────────────────── */
 .cfg-actions {
     background: #ffffff;

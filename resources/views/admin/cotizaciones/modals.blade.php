@@ -416,10 +416,10 @@
                                     <button type="button" class="btn btn-atlantico-brand" id="btn-explorar-catalogo">
                                         <i class="ri-layout-grid-line me-1"></i>Explorar catálogo
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm cot-legacy-add-btn"
-                                        id="add-producto-item" title="Agregar línea manual (modo legacy)">
-                                        <i class="ri-add-line me-1"></i>Agregar manual
-                                    </button>
+                                    {{-- Botón legacy "Agregar manual" eliminado: el catálogo + configurador
+                                         es el único punto de entrada. Se preserva el ID #add-producto-item
+                                         oculto para no romper handlers existentes que aún lo referencian. --}}
+                                    <button type="button" id="add-producto-item" hidden tabindex="-1"></button>
                                 </div>
                             </div>
                         </div>
@@ -793,6 +793,31 @@
                             <div class="cfg-tallas-summary" id="cfg-tallas-summary">
                                 <span>Total unidades</span>
                                 <strong id="cfg-tallas-total">0</strong>
+                            </div>
+                        </section>
+
+                        {{-- 3. Precio unitario --}}
+                        <section class="cfg-section">
+                            <header class="cfg-section-header">
+                                <span class="cfg-section-num">3</span>
+                                <div>
+                                    <h6 class="cfg-section-title">Precio unitario</h6>
+                                    <p class="cfg-section-desc">Por defecto usa el precio base del producto. Modifícalo si negociaste otro precio con el cliente.</p>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link cfg-precio-reset"
+                                    id="cfg-precio-reset" title="Restaurar al precio base">
+                                    <i class="ri-refresh-line me-1"></i>Restaurar
+                                </button>
+                            </header>
+                            <div class="cfg-precio-row">
+                                <div class="cfg-precio-input-wrap">
+                                    <span class="cfg-precio-prefix">$</span>
+                                    <input type="number" id="cfg-precio-input" class="cfg-precio-input"
+                                        min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+                                </div>
+                                <span class="cfg-precio-base-hint">
+                                    Precio base: <strong id="cfg-precio-base-hint-value">$0,00</strong>
+                                </span>
                             </div>
                         </section>
 

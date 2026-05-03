@@ -3368,6 +3368,7 @@
                 colorNombre: '',
                 colorHex: null,
                 tallas: {},             // { tallaId: cantidad }
+                precioUnitario: null,   // precio editable, default = producto.precio_base
                 cartItemId: null        // si edita un item existente del carrito
             };
             var cfgModalInstance = null;
@@ -3402,21 +3403,26 @@
                 // Estado inicial — si edita un item existente, carga sus datos
                 cfgState.producto = p;
                 cfgState.cartItemId = opts.cartItemId || null;
+                var basePrice = parseFloat(p.precio_base || 0) || 0;
                 if (opts.existing) {
                     cfgState.colorId = opts.existing.colorId || null;
                     cfgState.colorNombre = opts.existing.colorNombre || '';
                     cfgState.colorHex = opts.existing.colorHex || null;
                     cfgState.tallas = Object.assign({}, opts.existing.tallas || {});
+                    cfgState.precioUnitario = (opts.existing.precioUnitario != null)
+                        ? parseFloat(opts.existing.precioUnitario) : basePrice;
                 } else {
                     cfgState.colorId = null;
                     cfgState.colorNombre = '';
                     cfgState.colorHex = null;
                     cfgState.tallas = {};
+                    cfgState.precioUnitario = basePrice;
                 }
 
                 renderInfo();
                 renderColorGrid();
                 renderTallasGrid();
+                renderPrecio();
                 refreshSummary();
 
                 // Cambiar texto del botón si es edición
@@ -3518,9 +3524,18 @@
                 }, 0);
             }
 
+            function renderPrecio() {
+                var basePrice = parseFloat(cfgState.producto ? cfgState.producto.precio_base : 0) || 0;
+                $('#cfg-precio-base-hint-value').text(formatMoney(basePrice));
+                var current = (cfgState.precioUnitario != null) ? cfgState.precioUnitario : basePrice;
+                $('#cfg-precio-input').val(parseFloat(current).toFixed(2));
+            }
+
             function refreshSummary() {
                 var qty = totalTallas();
-                var unit = parseFloat(cfgState.producto ? cfgState.producto.precio_base : 0) || 0;
+                var unit = (cfgState.precioUnitario != null && !isNaN(cfgState.precioUnitario))
+                    ? parseFloat(cfgState.precioUnitario)
+                    : (parseFloat(cfgState.producto ? cfgState.producto.precio_base : 0) || 0);
                 var subtotal = qty * unit;
 
                 $('#cfg-tallas-total').text(qty);
@@ -3528,7 +3543,7 @@
                 $('#cfg-summary-unit').text(formatMoney(unit));
                 $('#cfg-summary-subtotal').text(formatMoney(subtotal));
 
-                $('#cfg-save-btn').prop('disabled', !(cfgState.colorId && qty > 0));
+                $('#cfg-save-btn').prop('disabled', !(cfgState.colorId && qty > 0 && unit > 0));
             }
 
             // Click en chip de color
@@ -3591,6 +3606,21 @@
                 });
             });
 
+            // Cambio en el precio unitario
+            $(document).on('input', '#cfg-precio-input', function () {
+                var v = parseFloat($(this).val());
+                cfgState.precioUnitario = isNaN(v) ? 0 : v;
+                refreshSummary();
+            });
+
+            // Restaurar precio base
+            $(document).on('click', '#cfg-precio-reset', function () {
+                if (!cfgState.producto) return;
+                cfgState.precioUnitario = parseFloat(cfgState.producto.precio_base || 0) || 0;
+                $('#cfg-precio-input').val(cfgState.precioUnitario.toFixed(2));
+                refreshSummary();
+            });
+
             // Volver al catálogo
             $(document).on('click', '#cfg-back-to-catalog', function () {
                 if (cfgModalInstance) cfgModalInstance.hide();
@@ -3611,7 +3641,9 @@
                 }).filter(function (x) { return x.qty > 0; });
 
                 var totalQty = tallasItems.reduce(function (a, x) { return a + x.qty; }, 0);
-                var unit = parseFloat(p.precio_base || 0);
+                var basePrice = parseFloat(p.precio_base || 0);
+                var unit = (cfgState.precioUnitario != null && cfgState.precioUnitario > 0)
+                    ? parseFloat(cfgState.precioUnitario) : basePrice;
                 var subtotal = totalQty * unit;
 
                 var item = {
@@ -3620,16 +3652,18 @@
                     productoCodigo: p.codigo || '',
                     productoModelo: p.modelo || '',
                     productoTipo: p.tipo_producto ? p.tipo_producto.nombre : '',
-                    productoPrecio: unit,
+                    productoPrecio: basePrice,
                     colorId: cfgState.colorId,
                     colorNombre: cfgState.colorNombre,
                     colorHex: cfgState.colorHex,
                     tallas: tallasItems,
                     totalQty: totalQty,
-                    unitPrice: unit,   // sin recargo de bordados (Fase 4 los maneja por línea)
+                    unitPrice: unit,                 // precio efectivo (puede diferir del precio_base)
+                    precioCustom: unit !== basePrice,
                     subtotal: subtotal,
                     summary: cfgState.colorNombre + ' · ' +
-                             tallasItems.map(function (x) { return x.tallaLabel + '×' + x.qty; }).join(' · ')
+                             tallasItems.map(function (x) { return x.tallaLabel + '×' + x.qty; }).join(' · ') +
+                             (unit !== basePrice ? ' · @' + formatMoney(unit) : '')
                 };
 
                 window.cotCart = window.cotCart || [];
@@ -3945,8 +3979,9 @@
                 var colorId = parseInt($blk.data('color-id'), 10);
                 var groupKey = $blk.data('group-key');
 
-                // Reconstruir tallas del bloque
+                // Reconstruir tallas y precio del bloque
                 var tallasMap = {};
+                var precioFromCards = null;
                 $('#productos-container .product-item').each(function () {
                     var $c = $(this);
                     var pid = parseInt($c.find('.producto-id-input').val(), 10);
@@ -3955,6 +3990,8 @@
                     var tid = parseInt($c.find('.talla-input-value').val(), 10);
                     var qty = parseInt($c.find('.cantidad-input').val(), 10) || 0;
                     if (tid && qty > 0) tallasMap[tid] = qty;
+                    var price = parseFloat($c.find('.precio-unitario-input').val());
+                    if (precioFromCards == null && !isNaN(price)) precioFromCards = price;
                 });
 
                 var color = (typeof getColorById === 'function') ? getColorById(colorId) : null;
@@ -3966,7 +4003,8 @@
                             colorId: colorId,
                             colorNombre: color ? color.nombre : '',
                             colorHex: color ? color.hex_referencial : null,
-                            tallas: tallasMap
+                            tallas: tallasMap,
+                            precioUnitario: precioFromCards
                         },
                         cartItemId: 'edit_' + groupKey  // marca de edición
                     });
