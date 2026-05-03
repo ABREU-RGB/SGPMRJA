@@ -2312,34 +2312,51 @@ header#page-topbar,
    Bloques agrupados por producto+color sobre el productos-container.
    ════════════════════════════════════════════════════════════════════ */
 
+/* Grilla de productos agregados — 2 columnas en desktop, 1 en mobile */
 .cot-grouped-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 14px;
     margin-top: 4px;
     margin-bottom: 12px;
 }
 
+/* Card vertical en la grilla */
 .cot-grouped-block {
     background: #ffffff;
     border: 1px solid rgba(30, 60, 114, 0.1);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 14px 16px;
-    display: grid;
-    grid-template-columns: 36px minmax(0, 1fr) auto auto;
-    gap: 14px;
-    align-items: center;
-    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    position: relative;
+}
+.cot-grouped-block::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+    background: linear-gradient(90deg, #1e3c72 0%, #00d9a5 100%);
+    opacity: 0.85;
 }
 .cot-grouped-block:hover {
     border-color: #00d9a5;
-    box-shadow: 0 6px 14px -8px rgba(0, 217, 165, 0.4);
-    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -12px rgba(0, 217, 165, 0.4);
+    transform: translateY(-2px);
 }
 
+.cot-grouped-block-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
 .cot-grouped-block-num {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     color: #ffffff;
@@ -2347,18 +2364,9 @@ header#page-topbar,
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.78rem;
     box-shadow: 0 4px 8px -4px rgba(30, 60, 114, 0.5);
     flex-shrink: 0;
-}
-
-.cot-grouped-block-info { min-width: 0; }
-.cot-grouped-block-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    flex-wrap: wrap;
 }
 .cot-grouped-tipo-badge {
     background: rgba(30, 60, 114, 0.1);
@@ -2367,19 +2375,36 @@ header#page-topbar,
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 700;
-    padding: 2px 8px;
+    padding: 3px 9px;
     border-radius: 999px;
+    flex-shrink: 0;
 }
-.cot-grouped-prod-label {
-    font-size: 0.95rem;
+.cot-grouped-codigo {
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: #94a3b8;
     font-weight: 600;
-    color: #1e3c72;
-    line-height: 1.2;
+    letter-spacing: 0.04em;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.cot-grouped-block-meta {
+
+.cot-grouped-prod-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e3c72;
+    line-height: 1.25;
+    margin: 0;
+    word-break: break-word;
+}
+
+.cot-grouped-meta-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 14px;
+    gap: 6px 12px;
     align-items: center;
     font-size: 0.78rem;
 }
@@ -2388,6 +2413,7 @@ header#page-topbar,
     align-items: center;
     gap: 6px;
     color: #334155;
+    font-weight: 500;
 }
 .cot-grouped-color-dot {
     width: 14px;
@@ -2395,10 +2421,11 @@ header#page-topbar,
     border-radius: 50%;
     border: 1.5px solid rgba(0, 0, 0, 0.12);
     display: inline-block;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .cot-grouped-tallas {
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     gap: 5px;
 }
@@ -2409,7 +2436,7 @@ header#page-topbar,
     background: #f1f5f9;
     color: #1e3c72;
     border-radius: 999px;
-    padding: 3px 9px;
+    padding: 3px 10px;
     font-size: 0.74rem;
     font-weight: 500;
     line-height: 1;
@@ -2430,7 +2457,7 @@ header#page-topbar,
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     padding: 3px 9px;
     border-radius: 999px;
     font-weight: 600;
@@ -2445,50 +2472,48 @@ header#page-topbar,
     font-weight: 500;
 }
 
-.cot-grouped-block-totals {
+.cot-grouped-block-foot {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-    flex-shrink: 0;
-    min-width: 110px;
-    padding-left: 10px;
-    border-left: 1px dashed rgba(30, 60, 114, 0.12);
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(30, 60, 114, 0.12);
 }
-.cot-grouped-qty {
+.cot-grouped-foot-qty {
     display: flex;
     align-items: baseline;
     gap: 4px;
 }
-.cot-grouped-qty-num {
-    font-size: 1.15rem;
+.cot-grouped-foot-qty strong {
+    font-size: 1.05rem;
     font-weight: 700;
     color: #1e3c72;
     font-variant-numeric: tabular-nums;
 }
-.cot-grouped-qty-label {
-    font-size: 0.7rem;
+.cot-grouped-foot-qty span {
+    font-size: 0.72rem;
     color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
+    font-weight: 500;
 }
-.cot-grouped-subtotal {
+.cot-grouped-foot-subtotal {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     line-height: 1.1;
 }
 .cot-grouped-subtotal-label {
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: #94a3b8;
     font-weight: 600;
+    margin-bottom: 1px;
 }
 .cot-grouped-subtotal-value {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 800;
     color: #00b88c;
     font-variant-numeric: tabular-nums;
 }
@@ -2496,21 +2521,23 @@ header#page-topbar,
 .cot-grouped-block-actions {
     display: flex;
     gap: 4px;
+    margin-left: auto;
     flex-shrink: 0;
 }
 .cot-grouped-action-btn {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border: 1px solid rgba(30, 60, 114, 0.12);
     background: #ffffff;
-    border-radius: 7px;
+    border-radius: 6px;
     color: #64748b;
     cursor: pointer;
     transition: all 0.15s;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    padding: 0;
 }
 .cot-grouped-action-btn:hover {
     border-color: #1e3c72;
@@ -2594,12 +2621,13 @@ header#page-topbar,
 }
 [data-bs-theme="dark"] .cot-grouped-block:hover {
     border-color: #00d9a5;
-    box-shadow: 0 6px 14px -8px rgba(0, 217, 165, 0.5);
+    box-shadow: 0 10px 22px -12px rgba(0, 217, 165, 0.5);
 }
 [data-bs-theme="dark"] .cot-grouped-tipo-badge {
     background: rgba(255, 255, 255, 0.08);
     color: #cbd5e1;
 }
+[data-bs-theme="dark"] .cot-grouped-codigo { color: #64748b; }
 [data-bs-theme="dark"] .cot-grouped-prod-label { color: #e2e8f0; }
 [data-bs-theme="dark"] .cot-grouped-color { color: #cbd5e1; }
 [data-bs-theme="dark"] .cot-chip {
@@ -2614,9 +2642,9 @@ header#page-topbar,
     background: #11151f;
     color: #64748b;
 }
-[data-bs-theme="dark"] .cot-grouped-block-totals { border-left-color: rgba(255, 255, 255, 0.1); }
-[data-bs-theme="dark"] .cot-grouped-qty-num { color: #ffffff; }
-[data-bs-theme="dark"] .cot-grouped-qty-label { color: #64748b; }
+[data-bs-theme="dark"] .cot-grouped-block-foot { border-top-color: rgba(255, 255, 255, 0.08); }
+[data-bs-theme="dark"] .cot-grouped-foot-qty strong { color: #ffffff; }
+[data-bs-theme="dark"] .cot-grouped-foot-qty span { color: #64748b; }
 [data-bs-theme="dark"] .cot-grouped-subtotal-label { color: #64748b; }
 [data-bs-theme="dark"] .cot-grouped-subtotal-value { color: #34d399; }
 
@@ -2641,17 +2669,10 @@ header#page-topbar,
 }
 [data-bs-theme="dark"] .cot-detailed-toggle-hint { color: #64748b; }
 
-@media (max-width: 720px) {
-    .cot-grouped-block {
-        grid-template-columns: 36px minmax(0, 1fr) auto;
-        gap: 10px;
-    }
-    .cot-grouped-block-actions {
-        grid-column: 1 / -1;
-        justify-content: flex-end;
-        padding-top: 6px;
-        border-top: 1px dashed rgba(30, 60, 114, 0.1);
-    }
+@media (max-width: 600px) {
+    .cot-grouped-list { grid-template-columns: 1fr; }
+    .cot-grouped-block-foot { flex-wrap: wrap; }
+    .cot-grouped-block-actions { width: 100%; justify-content: flex-end; }
 }
 
 /* ════════════════════════════════════════════════════════════════════

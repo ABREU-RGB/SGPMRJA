@@ -3883,9 +3883,8 @@
                 $toggleWrap.removeAttr('hidden');
 
                 var html = groups.map(function (g, idx) {
-                    var prodLabel = g.producto
-                        ? ((g.producto.codigo ? g.producto.codigo + ' · ' : '') + (g.producto.modelo || ''))
-                        : '(producto sin definir)';
+                    var prodCodigo = g.producto && g.producto.codigo ? g.producto.codigo : '—';
+                    var prodModelo = g.producto && g.producto.modelo ? g.producto.modelo : '(producto sin definir)';
                     var tipoLabel = g.producto && g.producto.tipo_producto ? g.producto.tipo_producto.nombre : '';
                     var colorName = g.color ? g.color.nombre : (g.colorId ? '#' + g.colorId : 'Sin color');
                     var colorHex = g.color ? g.color.hex_referencial : '#cccccc';
@@ -3905,40 +3904,40 @@
                         : '<span class="cot-grouped-bordado-off"><i class="ri-scissors-cut-line"></i> Sin bordado</span>';
 
                     var indices = g.cards.map(function (c) { return c.productIndex; }).join(',');
+                    var unitDisplay = formatMoney(g.unitWithBordado);
 
                     return (
-                        '<div class="cot-grouped-block" data-group-key="' + escForHtml(g.key) + '" data-product-id="' + escForHtml(g.productoId) + '" data-color-id="' + escForHtml(g.colorId) + '" data-card-indices="' + escForHtml(indices) + '">' +
-                            '<div class="cot-grouped-block-num">' + (idx + 1) + '</div>' +
-                            '<div class="cot-grouped-block-info">' +
-                                '<div class="cot-grouped-block-title">' +
-                                    (tipoLabel ? '<span class="cot-grouped-tipo-badge">' + escForHtml(tipoLabel) + '</span>' : '') +
-                                    '<span class="cot-grouped-prod-label">' + escForHtml(prodLabel) + '</span>' +
+                        '<article class="cot-grouped-block" data-group-key="' + escForHtml(g.key) + '" data-product-id="' + escForHtml(g.productoId) + '" data-color-id="' + escForHtml(g.colorId) + '" data-card-indices="' + escForHtml(indices) + '">' +
+                            '<header class="cot-grouped-block-head">' +
+                                '<span class="cot-grouped-block-num">' + (idx + 1) + '</span>' +
+                                (tipoLabel ? '<span class="cot-grouped-tipo-badge">' + escForHtml(tipoLabel) + '</span>' : '') +
+                                '<span class="cot-grouped-codigo">' + escForHtml(prodCodigo) + '</span>' +
+                                '<div class="cot-grouped-block-actions">' +
+                                    '<button type="button" class="cot-grouped-action-btn cot-action-edit" title="Editar"><i class="ri-edit-2-line"></i></button>' +
+                                    '<button type="button" class="cot-grouped-action-btn cot-action-bordado" title="Configurar bordado"><i class="ri-scissors-cut-line"></i></button>' +
+                                    '<button type="button" class="cot-grouped-action-btn cot-action-delete" title="Eliminar"><i class="ri-delete-bin-line"></i></button>' +
                                 '</div>' +
-                                '<div class="cot-grouped-block-meta">' +
-                                    '<span class="cot-grouped-color">' +
-                                        '<span class="cot-grouped-color-dot" style="background:' + colorHex + ';' + (lightHex ? 'border-color:#cbd5e1;' : '') + '"></span>' +
-                                        escForHtml(colorName) +
-                                    '</span>' +
-                                    '<span class="cot-grouped-tallas">' + tallasChips + '</span>' +
-                                    bordadoBadge +
-                                '</div>' +
+                            '</header>' +
+                            '<h6 class="cot-grouped-prod-label">' + escForHtml(prodModelo) + '</h6>' +
+                            '<div class="cot-grouped-meta-row">' +
+                                '<span class="cot-grouped-color">' +
+                                    '<span class="cot-grouped-color-dot" style="background:' + colorHex + ';' + (lightHex ? 'border-color:#cbd5e1;' : '') + '"></span>' +
+                                    escForHtml(colorName) +
+                                '</span>' +
+                                bordadoBadge +
                             '</div>' +
-                            '<div class="cot-grouped-block-totals">' +
-                                '<div class="cot-grouped-qty">' +
-                                    '<span class="cot-grouped-qty-num">' + g.totalQty + '</span>' +
-                                    '<span class="cot-grouped-qty-label">unid.</span>' +
+                            '<div class="cot-grouped-tallas">' + tallasChips + '</div>' +
+                            '<footer class="cot-grouped-block-foot">' +
+                                '<div class="cot-grouped-foot-qty">' +
+                                    '<strong>' + g.totalQty + '</strong>' +
+                                    '<span>unid · ' + unitDisplay + '/u</span>' +
                                 '</div>' +
-                                '<div class="cot-grouped-subtotal">' +
+                                '<div class="cot-grouped-foot-subtotal">' +
                                     '<span class="cot-grouped-subtotal-label">Subtotal</span>' +
                                     '<span class="cot-grouped-subtotal-value">' + formatMoney(g.totalSubtotal) + '</span>' +
                                 '</div>' +
-                            '</div>' +
-                            '<div class="cot-grouped-block-actions">' +
-                                '<button type="button" class="cot-grouped-action-btn cot-action-edit" data-group-key="' + escForHtml(g.key) + '" title="Editar tallas/color"><i class="ri-edit-2-line"></i></button>' +
-                                '<button type="button" class="cot-grouped-action-btn cot-action-bordado" data-group-key="' + escForHtml(g.key) + '" title="Configurar bordado"><i class="ri-scissors-cut-line"></i></button>' +
-                                '<button type="button" class="cot-grouped-action-btn cot-action-delete" data-group-key="' + escForHtml(g.key) + '" title="Eliminar bloque"><i class="ri-delete-bin-line"></i></button>' +
-                            '</div>' +
-                        '</div>'
+                            '</footer>' +
+                        '</article>'
                     );
                 }).join('');
                 $list.html(html);
