@@ -38,9 +38,9 @@ class InsumoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta,Otro',
-            'unidad_medida' => 'required|string|max:20',
-            'costo_unitario' => 'required|numeric|min:0',
+            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
+            'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
+            'costo_unitario' => 'required|numeric|min:0.01',
             'stock_actual' => 'required|numeric|min:0',
             'stock_minimo' => 'required|numeric|min:0',
             'proveedor_id' => 'nullable|exists:proveedor,id',
@@ -71,9 +71,9 @@ class InsumoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta,Otro',
-            'unidad_medida' => 'required|string|max:20',
-            'costo_unitario' => 'required|numeric|min:0',
+            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
+            'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
+            'costo_unitario' => 'required|numeric|min:0.01',
             'stock_actual' => 'required|numeric|min:0',
             'stock_minimo' => 'required|numeric|min:0',
             'proveedor_id' => 'nullable|exists:proveedor,id',
@@ -100,6 +100,19 @@ class InsumoController extends Controller
         $insumo = Insumo::findOrFail($id);
         $insumo->delete();
         return response()->json(['success' => 'Insumo eliminado exitosamente.']);
+    }
+
+    public function checkNombre(Request $request)
+    {
+        $nombre = $request->input('nombre');
+        $excludeId = $request->input('exclude_id');
+        if (!$nombre) return response()->json(['exists' => false]);
+
+        $query = Insumo::whereRaw('LOWER(nombre) = ?', [strtolower($nombre)]);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        return response()->json(['exists' => $query->exists()]);
     }
 
     public function reportePdf()

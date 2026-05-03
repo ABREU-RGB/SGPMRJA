@@ -24,7 +24,7 @@ class StoreClienteRequest extends FormRequest
             'nombre' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'apellido' => 'nullable|string|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/',
             'tipo_cliente' => 'required|in:natural,juridico',
-            'email' => 'nullable|string|email:rfc,dns|max:255|unique:persona,email',
+            'email' => 'nullable|string|email:rfc,dns|max:255',
             'telefono' => 'required|string|regex:/^[0-9]{4}-[0-9]{7}$/',
             'documento' => [
                 'required',
@@ -37,9 +37,13 @@ class StoreClienteRequest extends FormRequest
                     if (strlen($numeroDocumento) < 6) {
                         $fail('El documento debe tener al menos 6 dígitos.');
                     }
-                    $exists = \App\Models\Persona::where('documento_identidad', $numeroDocumento)->exists();
+                    // Solo bloquear si ya existe un CLIENTE con ese documento.
+                    // Una persona puede ser empleado y cliente al mismo tiempo.
+                    $exists = \App\Models\Persona::where('documento_identidad', $numeroDocumento)
+                        ->whereHas('cliente')
+                        ->exists();
                     if ($exists) {
-                        $fail('Este documento ya está registrado en el sistema.');
+                        $fail('Este documento ya está registrado como cliente.');
                     }
                 },
             ],

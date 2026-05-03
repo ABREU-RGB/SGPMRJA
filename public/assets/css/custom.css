@@ -2595,6 +2595,7 @@ header#page-topbar,
     color: #ffffff !important;
 }
 
+/* Fallback genérico (Dashboard / items sin sección) */
 [data-bs-theme="dark"] .nav-link.active {
     background: rgba(59, 130, 246, 0.2) !important;
     color: #60a5fa !important;
@@ -2604,6 +2605,52 @@ header#page-topbar,
 [data-bs-theme="dark"] .nav-link.active i {
     color: #60a5fa !important;
 }
+
+/* ── SIDEBAR — Colores por sección (Dark Mode) ──────────────
+   Misma paleta que cards y DataTables de cada área
+──────────────────────────────────────────────────────────── */
+
+/* Gestión General — Navy */
+[data-bs-theme="dark"] .section-maestros .nav-link.active {
+    background: rgba(30, 60, 114, 0.28) !important;
+    color: #4e7ac7 !important;
+    border-left-color: #4e7ac7 !important;
+}
+[data-bs-theme="dark"] .section-maestros .nav-link.active i { color: #4e7ac7 !important; }
+[data-bs-theme="dark"] .section-maestros.section-is-active > .menu-link {
+    color: #4e7ac7 !important;
+    border-left-color: #4e7ac7 !important;
+    background: rgba(30, 60, 114, 0.18) !important;
+}
+[data-bs-theme="dark"] .section-maestros.section-is-active > .menu-link i { color: #4e7ac7 !important; }
+
+/* Gestión Operativa — Emerald */
+[data-bs-theme="dark"] .section-operativa .nav-link.active {
+    background: rgba(16, 185, 129, 0.22) !important;
+    color: #10b981 !important;
+    border-left-color: #10b981 !important;
+}
+[data-bs-theme="dark"] .section-operativa .nav-link.active i { color: #10b981 !important; }
+[data-bs-theme="dark"] .section-operativa.section-is-active > .menu-link {
+    color: #10b981 !important;
+    border-left-color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.15) !important;
+}
+[data-bs-theme="dark"] .section-operativa.section-is-active > .menu-link i { color: #10b981 !important; }
+
+/* Consultas y Reportes — Sky */
+[data-bs-theme="dark"] .section-reportes .nav-link.active {
+    background: rgba(14, 165, 233, 0.20) !important;
+    color: #38bdf8 !important;
+    border-left-color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .section-reportes .nav-link.active i { color: #38bdf8 !important; }
+[data-bs-theme="dark"] .section-reportes.section-is-active > .menu-link {
+    color: #38bdf8 !important;
+    border-left-color: #38bdf8 !important;
+    background: rgba(14, 165, 233, 0.13) !important;
+}
+[data-bs-theme="dark"] .section-reportes.section-is-active > .menu-link i { color: #38bdf8 !important; }
 
 [data-bs-theme="dark"] .menu-dropdown {
     background-color: #1f2229 !important;
@@ -3051,4 +3098,270 @@ header#page-topbar,
     background-color: rgba(110, 231, 183, 0.15);
     color: #6ee7b7;
     border-color: rgba(110, 231, 183, 0.25);
+}
+
+/* ── Header unificado: Search + Toggle (variante integrada S-07) ── */
+.navy-filter-header {
+    display: flex;
+    align-items: center;
+    border-radius: 7px 8px 0 0;
+    background: rgba(30, 60, 114, 0.03);
+    transition: background-color 0.15s ease;
+    border-bottom: 1px solid rgba(30, 60, 114, 0.1);
+}
+
+.navy-filter-header.is-collapsed {
+    border-radius: 7px 8px 8px 0;
+    border-bottom: none;
+}
+
+/* Search section (left, flex-grow) */
+.navy-header-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    padding: 0.4rem 0.85rem;
+    background: #ffffff;
+    border-radius: 6px 0 0 0;
+    transition: background-color 0.2s ease;
+}
+
+.navy-header-search:hover {
+    background: #f5f7fb;
+}
+
+.navy-header-search > i {
+    font-size: 0.95rem;
+    color: rgba(30, 60, 114, 0.45);
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.navy-header-search:focus-within > i {
+    color: #1e3c72;
+}
+
+.navy-search-input {
+    flex: 1;
+    border: none !important;
+    background: transparent !important;
+    font-size: 0.84rem !important;
+    color: #2c3e50 !important;
+    padding: 0 !important;
+    height: auto !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.navy-search-input::placeholder {
+    color: rgba(44, 62, 80, 0.4);
+    font-style: italic;
+}
+
+/* Divisor vertical */
+.navy-header-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(30, 60, 114, 0.18);
+    flex-shrink: 0;
+}
+
+/* Filter toggle button (right) */
+.navy-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 0 8px 0 0;
+    transition: background-color 0.15s ease;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1e3c72;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.navy-filter-btn:hover {
+    background: rgba(30, 60, 114, 0.06);
+}
+
+.navy-filter-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.navy-filter-btn > i.ri-filter-3-line {
+    font-size: 1rem;
+}
+
+.navy-filter-btn .navy-filter-chevron {
+    font-size: 1.05rem;
+    color: #1e3c72;
+    transition: transform 0.25s ease;
+}
+
+.navy-filter-btn.collapsed .navy-filter-chevron {
+    transform: rotate(0deg);
+}
+
+.navy-filter-btn:not(.collapsed) .navy-filter-chevron {
+    transform: rotate(180deg);
+}
+
+/* Badge de filtros activos */
+.navy-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: #1e3c72;
+    color: #ffffff;
+    border-radius: 9px;
+    line-height: 1;
+}
+
+/* ── DARK MODE — Header unificado ─────────────────────────────── */
+[data-bs-theme="dark"] .navy-filter-header {
+    background: rgba(78, 122, 199, 0.05);
+    border-bottom-color: rgba(78, 122, 199, 0.15);
+}
+
+[data-bs-theme="dark"] .navy-filter-header.is-collapsed {
+    border-bottom: none;
+}
+
+[data-bs-theme="dark"] .navy-header-search {
+    background: #1f2229;
+    transition: background-color 0.2s ease;
+}
+
+[data-bs-theme="dark"] .navy-header-search:hover {
+    background: #252931;
+}
+
+[data-bs-theme="dark"] .navy-header-search > i {
+    color: rgba(147, 197, 253, 0.45);
+}
+
+[data-bs-theme="dark"] .navy-header-search:focus-within > i {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .navy-search-input {
+    color: #c8cbd0 !important;
+}
+
+[data-bs-theme="dark"] .navy-search-input::placeholder {
+    color: rgba(200, 203, 208, 0.38);
+}
+
+[data-bs-theme="dark"] .navy-header-divider {
+    background: rgba(78, 122, 199, 0.25);
+}
+
+[data-bs-theme="dark"] .navy-filter-btn {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .navy-filter-btn:hover {
+    background: rgba(78, 122, 199, 0.1);
+}
+
+[data-bs-theme="dark"] .navy-filter-btn .navy-filter-chevron {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .navy-filter-badge {
+    background: #4e7ac7;
+}
+
+/* ── Botón toggle Historial — Patrón Maestro ─────────────────── */
+.btn-historial {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.15px;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+/* "Ver Historial" — amber/slate, sugiere explorar el pasado */
+.btn-historial-ver {
+    border: 1.5px solid rgba(217, 119, 6, 0.35);
+    background: rgba(251, 191, 36, 0.07);
+    color: #92400e !important;
+}
+
+.btn-historial-ver i {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.btn-historial-ver:hover {
+    border-color: rgba(217, 119, 6, 0.65);
+    background: rgba(251, 191, 36, 0.15);
+    color: #78350f !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.18);
+}
+
+/* "Solo Activos" — navy, sugiere volver a la vista normal */
+.btn-historial-volver {
+    border: 1.5px solid rgba(30, 60, 114, 0.35);
+    background: rgba(30, 60, 114, 0.07);
+    color: #1e3c72 !important;
+}
+
+.btn-historial-volver i {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.btn-historial-volver:hover {
+    border-color: rgba(30, 60, 114, 0.65);
+    background: rgba(30, 60, 114, 0.14);
+    color: #1e3c72 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(30, 60, 114, 0.18);
+}
+
+/* ── DARK MODE — Toggle Historial ────────────────────────────── */
+[data-bs-theme="dark"] .btn-historial-ver {
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.06);
+    color: #fbbf24 !important;
+}
+
+[data-bs-theme="dark"] .btn-historial-ver:hover {
+    border-color: rgba(251, 191, 36, 0.6);
+    background: rgba(251, 191, 36, 0.12);
+    color: #fde68a !important;
+    box-shadow: 0 3px 10px rgba(251, 191, 36, 0.12);
+}
+
+[data-bs-theme="dark"] .btn-historial-volver {
+    border-color: rgba(147, 197, 253, 0.28);
+    background: rgba(78, 122, 199, 0.08);
+    color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] .btn-historial-volver:hover {
+    border-color: rgba(147, 197, 253, 0.55);
+    background: rgba(78, 122, 199, 0.16);
+    color: #bfdbfe !important;
+    box-shadow: 0 3px 10px rgba(78, 122, 199, 0.15);
 }

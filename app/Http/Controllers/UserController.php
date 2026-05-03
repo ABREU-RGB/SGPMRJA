@@ -22,6 +22,12 @@ class UserController extends Controller
             ->editColumn('avatar', function ($user) {
                 return $user->avatar ? asset('storage/' . $user->avatar) : null;
             })
+            ->addColumn('recovery_locked', function ($user) {
+                return $user->isRecoveryLocked() || $user->isRecoveryHardLocked();
+            })
+            ->addColumn('recovery_failed_attempts', function ($user) {
+                return (int) $user->recovery_failed_attempts;
+            })
             ->make(true);
     }
 
@@ -143,8 +149,65 @@ class UserController extends Controller
         $email = $request->input('email');
         if (!$email)
             return response()->json(['exists' => false]);
-        $exists = User::where('email', $email)->exists();
-        return response()->json(['exists' => $exists]);
+
+        $query = User::where('email', $email);
+
+        $excludeId = $request->input('exclude_id');
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        return response()->json(['exists' => $query->exists()]);
+    }
+
+    /**
+     * Desbloquea la recuperación de contraseña del usuario (admin).
+     * Limpia el contador de intentos fallidos y el bloqueo temporal.
+     */
+    public function unlockRecovery($id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->update([
+            'recovery_failed_attempts' => 0,
+            'recovery_locked_until'    => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Recuperación desbloqueada correctamente.',
+        ]);
+    }
+
+    /**
+     * Reset de contraseña por admin: asigna una contraseña temporal y
+     * marca al usuario para que la cambie en su próximo login.
+     */
+    public function resetPassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => ['required', 'string', 'min:8', 'max:191'],
+        ]);
+
+        $user = User::findOrFail($id);
+
+        if (auth()->id() === $user->id) {
+            return response()->json([
+                'message' => 'No puedes resetear tu propia contraseña desde este panel.',
+            ], 422);
+        }
+
+        $user->forceFill([
+            'password'                      => Hash::make($request->password),
+            'remember_token'                => null,
+            'password_reset_by_admin'       => true,
+            'recovery_must_reset_questions' => true,
+            'recovery_failed_attempts'      => 0,
+            'recovery_locked_until'         => null,
+        ])->save();
+
+        return response()->json([
+            'message' => 'Contraseña reseteada. El usuario deberá cambiarla en su próximo inicio de sesión.',
+        ]);
     }
 }
 

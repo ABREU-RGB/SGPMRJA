@@ -220,10 +220,18 @@ class ProveedorController extends Controller
     public function checkEmail(Request $request)
     {
         $email = $request->input('email');
+        $excludeId = $request->input('exclude_id'); // ID del proveedor en edición
         if (!$email)
             return response()->json(['exists' => false]);
 
-        $exists = Persona::where('email', $email)->exists();
+        $query = Persona::where('email', $email);
+        if ($excludeId) {
+            $proveedor = Proveedor::find($excludeId);
+            if ($proveedor) {
+                $query->where('id', '!=', $proveedor->persona_id);
+            }
+        }
+        $exists = $query->exists();
         return response()->json(['exists' => $exists]);
     }
 

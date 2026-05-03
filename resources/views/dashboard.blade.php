@@ -18,6 +18,34 @@
         </div>
     </div>
 
+    @if (!empty($recoveryAlert))
+        @php
+            $isExito  = $recoveryAlert['resultado'] === 'exito';
+            $isFallo  = in_array($recoveryAlert['resultado'], ['fallo', 'bloqueado']);
+            $alertCls = $isExito ? 'alert-success' : ($isFallo ? 'alert-warning' : 'alert-info');
+            $icon     = $isExito ? 'ri-shield-check-line' : 'ri-shield-keyhole-line';
+            $titulo   = $isExito
+                ? 'Recuperación de contraseña exitosa'
+                : 'Intento de recuperación detectado';
+        @endphp
+        <div class="alert {{ $alertCls }} alert-dismissible fade show d-flex align-items-start gap-2" role="alert">
+            <i class="{{ $icon }} fs-4"></i>
+            <div class="flex-grow-1">
+                <strong>{{ $titulo }}</strong><br>
+                <small>
+                    Fecha: <strong>{{ $recoveryAlert['fecha'] }}</strong> ·
+                    Método: <strong>{{ $recoveryAlert['tipo'] === 'preguntas' ? 'Preguntas de seguridad' : 'Correo electrónico' }}</strong>
+                    @if ($recoveryAlert['ip'])
+                        · IP: <code>{{ $recoveryAlert['ip'] }}</code>
+                    @endif
+                    <br>
+                    Si no fuiste tú, contacta al administrador de inmediato.
+                </small>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    @endif
+
     <!-- Widgets de Maestros -->
     <div class="row">
         <!-- Total Clientes -->

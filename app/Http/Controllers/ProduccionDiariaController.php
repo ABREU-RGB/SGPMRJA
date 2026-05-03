@@ -75,8 +75,10 @@ class ProduccionDiariaController extends Controller
             'empleado_id' => 'required|exists:empleado,id',
             'fecha_produccion' => 'required|date|before_or_equal:today',
             'cantidad_producida' => 'required|numeric|min:1',
-            'cantidad_defectuosa' => 'required|numeric|min:0',
+            'cantidad_defectuosa' => 'required|numeric|min:0|lte:cantidad_producida',
             'observaciones' => 'nullable|string|max:500'
+        ], [
+            'cantidad_defectuosa.lte' => 'La cantidad defectuosa no puede superar la cantidad producida.',
         ]);
 
         $orden = OrdenProduccion::find($request->orden_id);
@@ -135,8 +137,10 @@ class ProduccionDiariaController extends Controller
         $request->validate([
             'fecha_produccion' => 'required|date|before_or_equal:today',
             'cantidad_producida' => 'required|numeric|min:1',
-            'cantidad_defectuosa' => 'required|numeric|min:0',
+            'cantidad_defectuosa' => 'required|numeric|min:0|lte:cantidad_producida',
             'observaciones' => 'nullable|string|max:500'
+        ], [
+            'cantidad_defectuosa.lte' => 'La cantidad defectuosa no puede superar la cantidad producida.',
         ]);
 
         try {

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Code Review — Santiago S-05, S-06, S-07</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #1f2937;
+    background: #fff;
+    padding: 40px 52px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .doc-header {
+    text-align: center;
+    border-bottom: 4px solid #16a34a;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  .doc-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #16a34a;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .doc-header .subtitle { font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  .doc-header .meta { font-size: 12px; color: #6b7280; }
+  .doc-header .meta span { margin: 0 8px; }
+
+  /* ── Secciones ── */
+  .section {
+    margin-bottom: 32px;
+    page-break-inside: avoid;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #16a34a;
+    border-bottom: 2px solid #bbf7d0;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+  .subsection-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #14532d;
+    margin: 18px 0 8px;
+  }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px;
+    font-size: 12.5px;
+  }
+  thead th {
+    background: #16a34a;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  tbody td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #f0fdf4; }
+
+  code {
+    background: #f3f4f6;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11.5px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    color: #16a34a;
+  }
+
+  /* ── Callouts ── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .callout-positive {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+  }
+  .callout-positive .callout-label { color: #16a34a; font-weight: 700; }
+  .callout-warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+  }
+  .callout-warning .callout-label { color: #d97706; font-weight: 700; }
+  .callout-error {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+  }
+  .callout-error .callout-label { color: #dc2626; font-weight: 700; }
+  .callout-info {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+  }
+  .callout-info .callout-label { color: #16a34a; font-weight: 700; }
+  .callout-conflict {
+    background: #fff7ed;
+    border-left: 4px solid #ea580c;
+  }
+  .callout-conflict .callout-label { color: #c2410c; font-weight: 700; }
+
+  /* ── Diagrams / Code blocks ── */
+  .diagram-box {
+    background: #1e1b2e;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    margin: 12px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .diagram-box .label-bad  { color: #f87171; font-weight: 700; }
+  .diagram-box .label-good { color: #4ade80; font-weight: 700; }
+  .diagram-box .highlight  { color: #4ade80; }
+  .diagram-box .branch     { color: #86efac; }
+  .diagram-box .dim        { color: #64748b; }
+  .diagram-box .accent     { color: #facc15; }
+  .diagram-box .warn       { color: #fb923c; }
+
+  .code-block {
+    background: #1e1b2e;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    margin: 10px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code-block .comment { color: #64748b; }
+  .code-block .cmd     { color: #4ade80; }
+  .code-block .flag    { color: #facc15; }
+  .code-block .file    { color: #93c5fd; }
+  .code-block .add     { color: #4ade80; }
+  .code-block .remove  { color: #f87171; }
+
+  /* ── Listas ── */
+  ul, ol { margin: 6px 0 10px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .badge-ok      { background: #dcfce7; color: #166534; }
+  .badge-warn    { background: #fef3c7; color: #92400e; }
+  .badge-fail    { background: #fee2e2; color: #991b1b; }
+  .badge-conflict { background: #ffedd5; color: #9a3412; }
+
+  /* ── Rules card ── */
+  .rules-card {
+    background: linear-gradient(135deg, #14532d, #16a34a);
+    color: #fff;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 16px 0;
+  }
+  .rules-card h3 {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: #fff;
+  }
+  .rules-card .rule {
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .rules-card .rule strong { color: #fde68a; }
+  .rules-card .rule code {
+    background: rgba(255,255,255,0.2);
+    color: #fde68a;
+    font-size: 11px;
+  }
+
+  /* ── Closing card ── */
+  .closing-card {
+    background: #f0fdf4;
+    border: 2px solid #22c55e;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .closing-card h3 { color: #166534; font-size: 15px; margin-bottom: 10px; }
+  .closing-card p { font-size: 12.5px; margin-bottom: 6px; }
+
+  /* ── Order card ── */
+  .order-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .order-step:last-child { border-bottom: none; }
+  .order-num {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    background: #16a34a;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+  }
+  .order-content strong { color: #14532d; display: block; margin-bottom: 2px; }
+  .order-content span { font-size: 12px; color: #6b7280; }
+
+  /* ── Conflict table ── */
+  .conflict-row { background: #fff7ed !important; }
+
+  /* ── hr ── */
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+
+  /* ── Print ── */
+  @media print {
+    body { padding: 20px 30px; }
+    .section { page-break-inside: avoid; }
+    .diagram-box, .code-block { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .rules-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .order-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- HEADER                                       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="doc-header">
+  <h1>Feedback de Code Review</h1>
+  <p class="subtitle">Ramas S-05, S-06 y S-07 — Sprint de Calidad</p>
+  <p class="meta">
+    <span><strong>Para:</strong> Santiago</span>
+    <span><strong>De:</strong> Emmanuel (Tech Lead)</span>
+    <span><strong>Fecha:</strong> 27 de marzo de 2026</span>
+  </p>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- RESULTADO GENERAL                            -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Resultado General</h2>
+
+  <table>
+    <thead>
+      <tr><th>Rama</th><th>Tarea</th><th>Veredicto</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>feat/santiago/s-05-proveedores-juridicos-ubicacion</code></td>
+        <td>Estado/Municipio en Proveedores Jurídicos</td>
+        <td><span class="badge badge-ok">✅ Aprobada</span></td>
+      </tr>
+      <tr>
+        <td><code>feat/santiago/s-06-softdeletes-inhabilitacion-ui</code></td>
+        <td>SoftDeletes UI: Inhabilitar + Historial</td>
+        <td><span class="badge badge-warn">⚠️ Aprobada con observación</span></td>
+      </tr>
+      <tr>
+        <td><code>feat/santiago/s-07-clientes-filtros-busqueda</code></td>
+        <td>Filtros Avanzados en Clientes</td>
+        <td><span class="badge badge-conflict">🔀 Aprobada — requiere resolución de conflictos</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-positive">
+    <span class="callout-label">📌 Visión general</span><br>
+    El código de las tres ramas es funcionalmente correcto. S-05 entra limpia. S-06 tiene una observación de cobertura menor. S-07 es la más compleja y presenta <strong>conflictos de merge</strong> con S-06 y con cambios del TL — se resuelven juntos antes del merge.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- S-05                                         -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">S-05 — Estado/Municipio en Proveedores Jurídicos &nbsp;<span class="badge badge-ok">✅ Aprobada</span></h2>
+
+  <p>Agrega los dropdowns de Estado y Municipio al formulario de alta y edición de proveedores jurídicos, usando el mismo patrón dependiente ya existente en el formulario natural.</p>
+
+  <div class="callout callout-positive">
+    <span class="callout-label">✅ Lo que está bien</span>
+    <ul style="margin-top: 6px;">
+      <li>Se reutiliza <code>crearDireccion()</code> y <code>actualizarDireccion()</code> en <code>ProveedorService</code> — no se duplicó lógica</li>
+      <li>Ambos métodos ya manejan <code>estado_territorial</code> y <code>ciudad</code> correctamente</li>
+      <li>El formulario de edición carga el estado y luego dispara el <code>change</code> para poblar los municipios</li>
+      <li>La limpieza del formulario al cambiar entre tipo Natural/Jurídico incluye los nuevos campos</li>
+      <li>Los datos se envían correctamente en el <code>formData</code> del submit</li>
+      <li>Se eliminó correctamente el BOM UTF-8 del inicio del archivo</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-warning">
+    <span class="callout-label">⚠️ Observación menor (no bloquea el merge)</span><br>
+    Al editar un proveedor jurídico, el municipio se carga usando <code>setTimeout(100ms)</code>. Esto funciona, pero depende de una espera arbitraria. Si la red o el navegador está bajo carga, el municipio podría no seleccionarse. Es una deuda técnica menor — no hay que corregirla ahora.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- S-06                                         -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">S-06 — SoftDeletes UI: Inhabilitar + Historial &nbsp;<span class="badge badge-warn">⚠️ Aprobada con observación</span></h2>
+
+  <p>Implementa la UI de inhabilitación lógica (SoftDelete) con vista de historial en los módulos de Clientes, Proveedores y Productos.</p>
+
+  <div class="callout callout-positive">
+    <span class="callout-label">✅ Lo que está bien</span>
+    <ul style="margin-top: 6px;">
+      <li>Los tres módulos cubiertos: Clientes, Proveedores y Productos</li>
+      <li><code>onlyTrashed()</code> correctamente aplicado en los tres controllers</li>
+      <li>Botones de acción ocultos para registros inhabilitados (solo queda "Ver") — correcto</li>
+      <li>La imagen del producto <strong>no se elimina</strong> al inhabilitar — bien pensado, se conserva por si se restaura</li>
+      <li>Los imports de <code>Illuminate\Http\Request</code> estaban presentes en todos los controllers</li>
+      <li>Los textos de SweetAlert actualizados de "eliminar" → "inhabilitar" en todas las vistas</li>
+    </ul>
+  </div>
+
+  <h3 class="subsection-title">Observación: Catálogos maestros no cubiertos</h3>
+  <p>La migración <strong>BA-02</strong> (ejecutada durante la auditoría DB) agregó <code>SoftDeletes</code> a 6 catálogos maestros:</p>
+
+  <table>
+    <thead>
+      <tr><th>Modelo</th><th>Tabla</th><th>UI de historial en S-06</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Cliente</code></td><td><code>cliente</code></td><td><span class="badge badge-ok">✅ Cubierto</span></td></tr>
+      <tr><td><code>Proveedor</code></td><td><code>proveedor</code></td><td><span class="badge badge-ok">✅ Cubierto</span></td></tr>
+      <tr><td><code>Producto</code></td><td><code>producto</code></td><td><span class="badge badge-ok">✅ Cubierto</span></td></tr>
+      <tr class="conflict-row"><td><code>Banco</code></td><td><code>banco</code></td><td><span class="badge badge-warn">⚠️ No cubierto</span></td></tr>
+      <tr class="conflict-row"><td><code>Color</code></td><td><code>color</code></td><td><span class="badge badge-warn">⚠️ No cubierto</span></td></tr>
+      <tr class="conflict-row"><td><code>Talla</code></td><td><code>talla</code></td><td><span class="badge badge-warn">⚠️ No cubierto</span></td></tr>
+      <tr class="conflict-row"><td><code>TipoProducto</code></td><td><code>tipo_producto</code></td><td><span class="badge badge-warn">⚠️ No cubierto</span></td></tr>
+      <tr class="conflict-row"><td><code>Logo</code></td><td><code>logo</code></td><td><span class="badge badge-warn">⚠️ No cubierto</span></td></tr>
+      <tr class="conflict-row"><td><code>BordadoUbicacion</code></td><td><code>bordado_ubicacion</code></td><td><span class="badge badge-warn">⚠️ No cubierto</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <span class="callout-label">⚠️ ¿Era parte del scope?</span><br>
+    Los catálogos maestros (Banco, Color, Talla, etc.) son tablas de configuración simples — no tienen el mismo flujo operacional que Clientes, Proveedores y Productos. Por eso <strong>posiblemente el scope de S-06 no los incluía</strong>. El Tech Lead aclarará si hace falta una S-06b para cubrirlos o si queda para un sprint posterior.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- S-07                                         -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">S-07 — Filtros Avanzados en Clientes &nbsp;<span class="badge badge-conflict">🔀 Aprobada — requiere resolución de conflictos</span></h2>
+
+  <p>Implementa un panel de filtros avanzados colapsables (Tipo de Cliente, Estatus, Estado Territorial, Documento) con procesamiento server-side en el módulo de Clientes.</p>
+
+  <div class="callout callout-positive">
+    <span class="callout-label">✅ Lo que está bien</span>
+    <ul style="margin-top: 6px;">
+      <li>El facade <code>DB</code> está importado correctamente en <code>ClienteController</code></li>
+      <li>Los 4 filtros son server-side — correcto, no se carga toda la tabla para filtrar</li>
+      <li>Debounce de 300ms en el filtro de documento — bien aplicado</li>
+      <li>Las clases CSS son genéricas (<code>.navy-filter-*</code>) y reutilizables en otros módulos</li>
+      <li>Dark mode incluido en el CSS de los filtros — consistente con el estándar del proyecto</li>
+      <li>El <code>filter_estatus=0</code> usa <code>onlyTrashed()</code> correctamente</li>
+      <li>El panel es colapsable y cerrado por defecto — no ocupa espacio innecesario</li>
+    </ul>
+  </div>
+
+  <h3 class="subsection-title">Problema: 3 conflictos de merge</h3>
+  <p>S-07 fue creada desde una versión de <code>enmanuel</code> anterior a S-06 y a cambios del TL. Cuando se intente mergear, git detectará conflictos en estos archivos:</p>
+
+  <table>
+    <thead>
+      <tr><th>Archivo</th><th>Causa del conflicto</th><th>Resolución</th></tr>
+    </thead>
+    <tbody>
+      <tr class="conflict-row">
+        <td><code>app/Http/Controllers/ClienteController.php</code></td>
+        <td>S-06 modificó <code>getClientes()</code> para añadir historial. S-07 reescribe el mismo método completo con los filtros.</td>
+        <td>Merge manual: combinar los filtros de S-07 con la columna <code>trashed</code> de S-06</td>
+      </tr>
+      <tr class="conflict-row">
+        <td><code>resources/views/admin/clientes/index.blade.php</code></td>
+        <td>S-06 añadió el toggle historial y los botones de trashed. S-07 reescribe el bloque DataTable y añade el panel de filtros.</td>
+        <td>Merge manual: mantener ambas funcionalidades</td>
+      </tr>
+      <tr class="conflict-row">
+        <td><code>public/assets/css/custom.css</code></td>
+        <td>S-07 añade el CSS de filtros al final del archivo. El TL también modificó ese archivo esta misma semana (migración de dark mode).</td>
+        <td>Merge manual: conservar ambas secciones, una debajo de la otra</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-conflict">
+    <span class="callout-label">🔀 Superposición de diseño en Clientes</span><br>
+    Tanto S-06 como S-07 implementan una forma de ver registros inactivos en Clientes:
+    <ul style="margin-top: 6px;">
+      <li><strong>S-06:</strong> Toggle de URL <code>?historial=true</code> → página separada con solo inactivos</li>
+      <li><strong>S-07:</strong> Filtro <code>filter_estatus=Inactivo</code> → inactivos dentro de la misma tabla</li>
+    </ul>
+    Son dos mecanismos distintos para lo mismo. El Tech Lead decidirá cuál prevalece en Clientes al resolver el conflicto. Para Proveedores y Productos, solo existe el mecanismo de S-06 (S-07 no los toca).
+  </div>
+
+  <h3 class="subsection-title">¿Qué causa los conflictos?</h3>
+  <p>Cuando dos ramas tocan el mismo archivo en las mismas líneas, git no puede decidir solo qué versión usar. Esto ocurre cuando:</p>
+
+<div class="diagram-box"><span class="dim">Punto de partida: enmanuel en el momento que creaste S-07</span>
+
+<span class="highlight">enmanuel</span> ──●──────────────────────────────────────────
+           │
+           ├── <span class="branch">S-06</span>  <span class="dim">(modifica ClienteController + clientes/index)</span>
+           │
+           └── <span class="branch">S-07</span>  <span class="dim">(modifica los MISMOS archivos)</span>
+
+<span class="dim">──────────────────────────────────────────────────────────</span>
+<span class="warn">Conflicto: git no sabe cuál de las dos versiones usar</span>
+<span class="dim">           El TL resuelve manualmente, combinando ambas</span></div>
+
+  <div class="callout callout-info">
+    <span class="callout-label">📌 Importante</span><br>
+    Que haya conflictos no significa que hayas hecho algo mal. Es una consecuencia natural de dos ramas que tocan el mismo módulo. <strong>El Tech Lead resuelve los conflictos</strong> — tú no tienes que hacer nada adicional con estas ramas.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ORDEN DE MERGE                               -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Orden de Merge (lo hará el Tech Lead)</h2>
+
+  <div class="order-step">
+    <div class="order-num">1</div>
+    <div class="order-content">
+      <strong>S-05 — Merge limpio</strong>
+      <span>No tiene conflictos con ninguna otra rama. Entra directamente a <code>enmanuel</code>.</span>
+    </div>
+  </div>
+  <div class="order-step">
+    <div class="order-num">2</div>
+    <div class="order-content">
+      <strong>S-06 — Merge limpio</strong>
+      <span>Tampoco tiene conflictos con el estado actual de <code>enmanuel</code>. Entra tras S-05.</span>
+    </div>
+  </div>
+  <div class="order-step">
+    <div class="order-num">3</div>
+    <div class="order-content">
+      <strong>S-07 — Merge con resolución manual</strong>
+      <span>El TL combina los 3 archivos en conflicto, unificando la lógica de S-06 y S-07 en <code>ClienteController</code> y en la vista de clientes.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- PATRÓN RECURRENTE                            -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Patrón que seguimos observando</h2>
+
+  <p>Al revisar tus ramas anteriores (S-01, S-02, S-03) y estas nuevas, vemos un patrón que es importante corregir:</p>
+
+  <table>
+    <thead>
+      <tr><th>Patrón</th><th>Ejemplos anteriores</th><th>En estas ramas</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Cobertura incompleta</strong><br><span style="font-size:11.5px;color:#6b7280;">Implementas el cambio en algunos módulos, pero no en todos los que lo necesitan</span></td>
+        <td>S-01: solo cubrió Clientes, faltaban Empleados y Pedidos</td>
+        <td>S-06: cubrió Clientes, Proveedores y Productos, pero los 6 catálogos maestros con SoftDeletes (BA-02) no tienen UI de historial</td>
+      </tr>
+      <tr>
+        <td><strong>Fix parcial</strong><br><span style="font-size:11.5px;color:#6b7280;">Corriges algunas instancias del problema, pero quedan otras del mismo tipo</span></td>
+        <td>S-03: corrigió 5 strings con encoding roto, pero quedaban ~12 más</td>
+        <td>No presente en estas ramas ✅</td>
+      </tr>
+      <tr>
+        <td><strong>Código huérfano</strong><br><span style="font-size:11.5px;color:#6b7280;">Al eliminar un elemento, se deja el código JS/PHP asociado sin limpiar</span></td>
+        <td>S-02: al quitar el botón se dejaron ~85 líneas de JS que lo manejaban</td>
+        <td>No presente en estas ramas ✅</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <span class="callout-label">💡 Recomendación</span><br>
+    Antes de marcar una tarea como "terminada", hacerse estas preguntas:<br>
+    <ul style="margin-top: 6px;">
+      <li>¿Esta funcionalidad aplica a otros módulos además del que toqué? Si sí, ¿los cubrí todos?</li>
+      <li>¿El bug que arreglé aparece en otros lugares del mismo archivo? ¿Los revisé?</li>
+      <li>¿Al eliminar algo del HTML quedó algún listener o función JS que ya no tiene referencia?</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- REGLAS                                       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">Reglas para las Próximas Tareas</h2>
+
+  <div class="rules-card">
+    <h3>📋 Recuerda siempre</h3>
+    <div class="rule">
+      <strong>1. Verificar cobertura completa antes de marcar como terminado</strong><br>
+      Si la tarea dice "en todos los módulos", buscar con grep todos los archivos afectados. No asumir que con cubrir uno o dos ya está.
+    </div>
+    <div class="rule">
+      <strong>2. Buscar ocurrencias del mismo patrón en todo el archivo</strong><br>
+      Si corriges un bug, usar <code>Ctrl+F</code> o grep para encontrar otras instancias del mismo problema. No hacer fix de una sola línea si hay 10 iguales.
+    </div>
+    <div class="rule">
+      <strong>3. Al eliminar HTML, limpiar el JS asociado</strong><br>
+      Si quitás un botón o modal, buscar sus event listeners (<code>data-id</code>, <code>$('.remove-item-btn')</code>, etc.) y eliminarlos también.
+    </div>
+    <div class="rule">
+      <strong>4. Mantener ramas actualizadas con <code>enmanuel</code></strong><br>
+      Antes de empezar una tarea larga, hacer <code>git pull origin enmanuel</code> desde la rama de feature para reducir conflictos futuros.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- CIERRE                                       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+  <h2 class="section-title">¿Qué pasa ahora?</h2>
+
+  <div class="closing-card">
+    <h3>✅ Las tres ramas se mergean — no hay que rehacer nada</h3>
+    <p>El Tech Lead va a:</p>
+    <ol style="margin: 8px 0 8px 20px;">
+      <li>Mergear S-05 y S-06 directamente a <code>enmanuel</code> (sin conflictos)</li>
+      <li>Resolver manualmente los 3 conflictos de S-07, unificando la lógica de historial e inhabilitación en Clientes</li>
+      <li>Si corresponde, crear una tarea S-06b para la UI de historial de los catálogos maestros</li>
+    </ol>
+    <p style="margin-top: 10px;"><strong>Tu trabajo en las tres ramas está aprobado.</strong> Los conflictos son una consecuencia del orden de desarrollo, no errores de tu parte.</p>
+    <p>Para S-09 (Estándar Reportes PDF), que es tu próxima tarea de alta complejidad: arrancá desde <code>enmanuel</code> actualizado (<code>git pull</code>) y acordate de las preguntas de cobertura completa antes de hacer push.</p>
+  </div>
+</div>
+
+</body>
+</html>

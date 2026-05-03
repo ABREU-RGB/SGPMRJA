@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cargo;
+use App\Models\Cliente;
+use App\Models\Departamento;
 use App\Models\Empleado;
 use App\Models\Persona;
 use App\Services\EmpleadoService;
@@ -16,57 +19,48 @@ class EmpleadoController extends Controller
         private EmpleadoService $empleadoService
     ) {
     }
+
     public function index()
     {
-        // Departamentos dinámicos para el select del modal
-        $departamentos = Empleado::whereNotNull('departamento')
-            ->pluck('departamento')
-            ->unique()
-            ->mapWithKeys(fn($d) => [$d => $d])
-            ->toArray();
-
+        $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id');
         return view('admin.empleados.index', compact('departamentos'));
     }
 
-    /**
-     * Mostrar formulario de creación de empleado
-     */
     public function create()
     {
-        // Obtener departamentos existentes para el dropdown
-        $departamentos = Empleado::whereNotNull('departamento')
-            ->pluck('departamento')
-            ->unique()
-            ->mapWithKeys(fn($d) => [$d => $d])
-            ->toArray();
-
+        $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id');
         return view('admin.empleados.create', compact('departamentos'));
     }
 
     public function getEmpleados()
     {
-        // Cargar persona con telefonos y direcciones normalizadas
-        $empleados = Empleado::with(['persona.telefonos', 'persona.direcciones'])->get();
+        $empleados = Empleado::with(['persona.telefonos', 'persona.direcciones', 'cargo', 'departamento'])->get();
 
         return DataTables::of($empleados)
-            ->addColumn('nombre_completo', function ($empleado) {
-                return $empleado->persona ? $empleado->persona->nombre_completo : 'N/A';
+            ->addColumn('nombre_completo', function ($emp) {
+                return $emp->persona ? $emp->persona->nombre_completo : 'N/A';
             })
-            ->addColumn('documento', function ($empleado) {
-                return $empleado->documento ?? 'N/A'; // Usa accessor
+            ->addColumn('cargo', function ($emp) {
+                return $emp->cargo ? $emp->cargo->nombre : 'N/A';
             })
-            ->addColumn('email', function ($empleado) {
-                return $empleado->email ?? 'N/A'; // Usa accessor
+            ->addColumn('departamento', function ($emp) {
+                return $emp->departamento ? $emp->departamento->nombre : 'N/A';
             })
-            ->addColumn('telefono', function ($empleado) {
-                return $empleado->telefono ?? 'N/A'; // Usa accessor que obtiene telefono_principal
+            ->addColumn('documento', function ($emp) {
+                return $emp->documento ?? 'N/A';
             })
-            ->addColumn('actions', function ($empleado) {
+            ->addColumn('email', function ($emp) {
+                return $emp->email ?? 'N/A';
+            })
+            ->addColumn('telefono', function ($emp) {
+                return $emp->telefono ?? 'N/A';
+            })
+            ->addColumn('actions', function ($emp) {
                 return '
                     <div class="d-flex gap-2 justify-content-center">
-                        <button class="btn btn-sm btn-soft-info view-btn" data-id="' . $empleado->id . '" title="Ver"><i class="ri-eye-fill"></i></button>
-                        <button class="btn btn-sm btn-soft-success edit-btn" data-id="' . $empleado->id . '" title="Editar"><i class="ri-pencil-fill"></i></button>
-                        <button class="btn btn-sm btn-soft-danger remove-btn" data-id="' . $empleado->id . '" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
+                        <button class="btn btn-sm btn-soft-info view-btn" data-id="' . $emp->id . '" title="Ver"><i class="ri-eye-fill"></i></button>
+                        <button class="btn btn-sm btn-soft-success edit-btn" data-id="' . $emp->id . '" title="Editar"><i class="ri-pencil-fill"></i></button>
+                        <button class="btn btn-sm btn-soft-danger remove-btn" data-id="' . $emp->id . '" title="Eliminar"><i class="ri-delete-bin-fill"></i></button>
                     </div>
                 ';
             })
@@ -77,46 +71,48 @@ class EmpleadoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'apellido' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'documento_identidad' => 'required|string|min:6|max:15|regex:/^[0-9]+$/|unique:persona,documento_identidad',
-            'tipo_documento' => 'required|in:V-,E-,J-,G-',
-            'email' => 'nullable|email:rfc,dns|max:255|unique:persona,email',
-            'telefono' => 'nullable|string|regex:/^[0-9]{4}-[0-9]{7}$/',
-            'direccion' => 'nullable|string|max:500',
-            'ciudad' => 'nullable|string|max:100',
-            'estado_geografico' => 'nullable|string|max:100',
-            'fecha_nacimiento' => 'nullable|date|before:-18 years',
-            'genero' => 'nullable|in:M,F',
-            'codigo_empleado' => 'nullable|string|max:50|unique:empleado,codigo_empleado',
-            'fecha_ingreso' => 'required|date|before_or_equal:today',
-            'cargo' => 'required|string|min:3|max:100',
-            'departamento' => 'required|string|in:Administracion,Produccion',
-            'estado' => 'required|boolean',
+            'nombre'              => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'apellido'            => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'documento_identidad' => 'required|string|min:6|max:15|regex:/^[0-9]+$/',
+            'tipo_documento'      => 'required|in:V-,E-,J-,G-',
+            'email'               => 'nullable|email:rfc,dns|max:255',
+            'telefono'            => 'nullable|string|regex:/^[0-9]{4}-[0-9]{7}$/',
+            'direccion'           => 'nullable|string|max:500',
+            'ciudad'              => 'nullable|string|max:100',
+            'estado_geografico'   => 'nullable|string|max:100',
+            'fecha_nacimiento'    => 'nullable|date|before:-18 years',
+            'genero'              => 'nullable|in:M,F',
+            'codigo_empleado'     => 'nullable|string|max:50|unique:empleado,codigo_empleado',
+            'fecha_ingreso'       => 'required|date|before_or_equal:today',
+            'departamento_id'     => 'required|exists:departamento,id',
+            'cargo_id'            => ['required', 'exists:cargo,id', function ($attr, $value, $fail) use ($request) {
+                $cargo = Cargo::find($value);
+                if ($cargo && (int) $cargo->departamento_id !== (int) $request->departamento_id) {
+                    $fail('El cargo seleccionado no pertenece al departamento elegido.');
+                }
+            }],
+            'estado'              => 'required|boolean',
         ], [
-            // Mensajes personalizados
-            'nombre.required' => 'El nombre es obligatorio',
-            'nombre.min' => 'El nombre debe tener al menos 2 caracteres',
-            'nombre.regex' => 'El nombre solo puede contener letras y espacios',
-            'apellido.required' => 'El apellido es obligatorio',
-            'apellido.min' => 'El apellido debe tener al menos 2 caracteres',
-            'apellido.regex' => 'El apellido solo puede contener letras y espacios',
+            'nombre.required'              => 'El nombre es obligatorio',
+            'nombre.min'                   => 'El nombre debe tener al menos 2 caracteres',
+            'nombre.regex'                 => 'El nombre solo puede contener letras y espacios',
+            'apellido.required'            => 'El apellido es obligatorio',
+            'apellido.min'                 => 'El apellido debe tener al menos 2 caracteres',
+            'apellido.regex'               => 'El apellido solo puede contener letras y espacios',
             'documento_identidad.required' => 'El documento de identidad es obligatorio',
-            'documento_identidad.min' => 'El documento debe tener al menos 6 dígitos',
-            'documento_identidad.regex' => 'El documento solo puede contener números',
-            'documento_identidad.unique' => 'Este documento ya está registrado',
-            'tipo_documento.required' => 'Debe seleccionar el tipo de documento',
-            'email.email' => 'El email debe ser una dirección válida',
-            'email.unique' => 'Este email ya está registrado',
-            'telefono.regex' => 'El teléfono debe tener el formato 0424-1234567',
-            'fecha_nacimiento.before' => 'El empleado debe ser mayor de 18 años',
-            'fecha_ingreso.required' => 'La fecha de ingreso es obligatoria',
+            'documento_identidad.min'      => 'El documento debe tener al menos 6 dígitos',
+            'documento_identidad.regex'    => 'El documento solo puede contener números',
+            'tipo_documento.required'      => 'Debe seleccionar el tipo de documento',
+            'email.email'                  => 'El email debe ser una dirección válida',
+            'telefono.regex'               => 'El teléfono debe tener el formato 0424-1234567',
+            'fecha_nacimiento.before'      => 'El empleado debe ser mayor de 18 años',
+            'fecha_ingreso.required'       => 'La fecha de ingreso es obligatoria',
             'fecha_ingreso.before_or_equal' => 'La fecha de ingreso no puede ser futura',
-            'cargo.required' => 'El cargo es obligatorio',
-            'cargo.min' => 'El cargo debe tener al menos 3 caracteres',
-            'departamento.required' => 'El departamento es obligatorio',
-            'departamento.in' => 'Debe seleccionar un departamento válido (Administracion o Produccion)',
-            'estado.required' => 'Debe seleccionar el estado del empleado',
+            'departamento_id.required'     => 'El departamento es obligatorio',
+            'departamento_id.exists'       => 'El departamento seleccionado no es válido',
+            'cargo_id.required'            => 'El cargo es obligatorio',
+            'cargo_id.exists'              => 'El cargo seleccionado no es válido',
+            'estado.required'              => 'Debe seleccionar el estado del empleado',
         ]);
 
         $this->empleadoService->crear($request->all());
@@ -126,22 +122,22 @@ class EmpleadoController extends Controller
 
     public function show($id)
     {
-        $empleado = Empleado::with(['persona.telefonos', 'persona.direcciones'])->findOrFail($id);
+        $empleado = Empleado::with(['persona.telefonos', 'persona.direcciones', 'cargo', 'departamento'])->findOrFail($id);
 
-        // Convertir a array y agregar campos normalizados
-        $data = $empleado->toArray();
-        $data['telefono'] = $empleado->telefono;
-        $data['direccion'] = $empleado->direccion;
-        $data['ciudad'] = $empleado->ciudad;
+        $data                = $empleado->toArray();
+        $data['telefono']    = $empleado->telefono;
+        $data['direccion']   = $empleado->direccion;
+        $data['ciudad']      = $empleado->ciudad;
+        $data['cargo']       = $empleado->cargo ? $empleado->cargo->nombre : null;
+        $data['departamento'] = $empleado->departamento ? $empleado->departamento->nombre : null;
 
         return response()->json($data);
     }
 
     public function edit($id)
     {
-        $empleado = Empleado::with(['persona.telefonos', 'persona.direcciones'])->findOrFail($id);
+        $empleado = Empleado::with(['persona.telefonos', 'persona.direcciones', 'cargo', 'departamento'])->findOrFail($id);
 
-        // Formatear fechas para los campos input type="date"
         $data = $empleado->toArray();
         $data['persona']['fecha_nacimiento'] = $empleado->persona->fecha_nacimiento
             ? $empleado->persona->fecha_nacimiento->format('Y-m-d')
@@ -150,10 +146,17 @@ class EmpleadoController extends Controller
             ? \Carbon\Carbon::parse($empleado->fecha_ingreso)->format('Y-m-d')
             : null;
 
-        // Agregar datos de telefono/direccion usando accessors (tablas normalizadas)
-        $data['telefono'] = $empleado->telefono;
-        $data['direccion'] = $empleado->direccion;
-        $data['ciudad'] = $empleado->ciudad;
+        $data['telefono']         = $empleado->telefono;
+        $data['direccion']        = $empleado->direccion;
+        $data['ciudad']           = $empleado->ciudad;
+        $data['cargo']            = $empleado->cargo ? $empleado->cargo->nombre : null;
+        $data['departamento']     = $empleado->departamento ? $empleado->departamento->nombre : null;
+        $data['cargo_id']         = $empleado->cargo_id;
+        $data['departamento_id']  = $empleado->departamento_id;
+
+        $data['other_role'] = Cliente::where('persona_id', $empleado->persona_id)->exists()
+            ? 'cliente'
+            : null;
 
         return response()->json($data);
     }
@@ -161,49 +164,53 @@ class EmpleadoController extends Controller
     public function update(Request $request, $id)
     {
         $empleado = Empleado::findOrFail($id);
-        $persona = $empleado->persona;
+        $persona  = $empleado->persona;
 
         $request->validate([
-            'nombre' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'apellido' => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'nombre'              => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'apellido'            => 'required|string|min:2|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'documento_identidad' => 'required|string|min:6|max:15|regex:/^[0-9]+$/|unique:persona,documento_identidad,' . $persona->id,
-            'tipo_documento' => 'required|in:V-,E-,J-,G-',
-            'email' => 'nullable|email:rfc,dns|max:255|unique:persona,email,' . $persona->id,
-            'telefono' => 'nullable|string|regex:/^[0-9]{4}-[0-9]{7}$/',
-            'direccion' => 'nullable|string|max:500',
-            'ciudad' => 'nullable|string|max:100',
-            'estado_geografico' => 'nullable|string|max:100',
-            'fecha_nacimiento' => 'nullable|date|before:-18 years',
-            'genero' => 'nullable|in:M,F',
-            'codigo_empleado' => 'required|string|max:50|unique:empleado,codigo_empleado,' . $id,
-            'fecha_ingreso' => 'required|date|before_or_equal:today',
-            'cargo' => 'required|string|min:3|max:100',
-            'departamento' => 'required|string|in:Administracion,Produccion',
-            'estado' => 'required|boolean',
+            'tipo_documento'      => 'required|in:V-,E-,J-,G-',
+            'email'               => 'nullable|email:rfc,dns|max:255|unique:persona,email,' . $persona->id,
+            'telefono'            => 'nullable|string|regex:/^[0-9]{4}-[0-9]{7}$/',
+            'direccion'           => 'nullable|string|max:500',
+            'ciudad'              => 'nullable|string|max:100',
+            'estado_geografico'   => 'nullable|string|max:100',
+            'fecha_nacimiento'    => 'nullable|date|before:-18 years',
+            'genero'              => 'nullable|in:M,F',
+            'codigo_empleado'     => 'required|string|max:50|unique:empleado,codigo_empleado,' . $id,
+            'fecha_ingreso'       => 'required|date|before_or_equal:today',
+            'departamento_id'     => 'required|exists:departamento,id',
+            'cargo_id'            => ['required', 'exists:cargo,id', function ($attr, $value, $fail) use ($request) {
+                $cargo = Cargo::find($value);
+                if ($cargo && (int) $cargo->departamento_id !== (int) $request->departamento_id) {
+                    $fail('El cargo seleccionado no pertenece al departamento elegido.');
+                }
+            }],
+            'estado'              => 'required|boolean',
         ], [
-            // Mensajes personalizados
-            'nombre.required' => 'El nombre es obligatorio',
-            'nombre.min' => 'El nombre debe tener al menos 2 caracteres',
-            'nombre.regex' => 'El nombre solo puede contener letras y espacios',
-            'apellido.required' => 'El apellido es obligatorio',
-            'apellido.min' => 'El apellido debe tener al menos 2 caracteres',
-            'apellido.regex' => 'El apellido solo puede contener letras y espacios',
-            'documento_identidad.required' => 'El documento de identidad es obligatorio',
-            'documento_identidad.min' => 'El documento debe tener al menos 6 dígitos',
-            'documento_identidad.regex' => 'El documento solo puede contener números',
-            'documento_identidad.unique' => 'Este documento ya está registrado',
-            'tipo_documento.required' => 'Debe seleccionar el tipo de documento',
-            'email.email' => 'El email debe ser una dirección válida',
-            'email.unique' => 'Este email ya está registrado',
-            'telefono.regex' => 'El teléfono debe tener el formato 0424-1234567',
-            'fecha_nacimiento.before' => 'El empleado debe ser mayor de 18 años',
-            'fecha_ingreso.required' => 'La fecha de ingreso es obligatoria',
+            'nombre.required'               => 'El nombre es obligatorio',
+            'nombre.min'                    => 'El nombre debe tener al menos 2 caracteres',
+            'nombre.regex'                  => 'El nombre solo puede contener letras y espacios',
+            'apellido.required'             => 'El apellido es obligatorio',
+            'apellido.min'                  => 'El apellido debe tener al menos 2 caracteres',
+            'apellido.regex'                => 'El apellido solo puede contener letras y espacios',
+            'documento_identidad.required'  => 'El documento de identidad es obligatorio',
+            'documento_identidad.min'       => 'El documento debe tener al menos 6 dígitos',
+            'documento_identidad.regex'     => 'El documento solo puede contener números',
+            'documento_identidad.unique'    => 'Este documento ya está registrado',
+            'tipo_documento.required'       => 'Debe seleccionar el tipo de documento',
+            'email.email'                   => 'El email debe ser una dirección válida',
+            'email.unique'                  => 'Este email ya está registrado',
+            'telefono.regex'                => 'El teléfono debe tener el formato 0424-1234567',
+            'fecha_nacimiento.before'       => 'El empleado debe ser mayor de 18 años',
+            'fecha_ingreso.required'        => 'La fecha de ingreso es obligatoria',
             'fecha_ingreso.before_or_equal' => 'La fecha de ingreso no puede ser futura',
-            'cargo.required' => 'El cargo es obligatorio',
-            'cargo.min' => 'El cargo debe tener al menos 3 caracteres',
-            'departamento.required' => 'El departamento es obligatorio',
-            'departamento.in' => 'Debe seleccionar un departamento válido (Administracion o Produccion)',
-            'estado.required' => 'Debe seleccionar el estado del empleado',
+            'departamento_id.required'      => 'El departamento es obligatorio',
+            'departamento_id.exists'        => 'El departamento seleccionado no es válido',
+            'cargo_id.required'             => 'El cargo es obligatorio',
+            'cargo_id.exists'               => 'El cargo seleccionado no es válido',
+            'estado.required'               => 'Debe seleccionar el estado del empleado',
         ]);
 
         $this->empleadoService->actualizar($empleado, $request->all());
@@ -218,9 +225,6 @@ class EmpleadoController extends Controller
         return response()->json(['message' => 'Empleado eliminado exitosamente.']);
     }
 
-    /**
-     * Verificar si un documento ya existe (AJAX)
-     */
     public function checkDocumento(Request $request)
     {
         $numero = $request->input('numero');
@@ -228,22 +232,40 @@ class EmpleadoController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        // Buscar coincidencia exacta en la tabla 'persona'
-        $exists = \App\Models\Persona::where('documento_identidad', $numero)->exists();
+        $persona = Persona::with(['telefonos', 'direcciones'])->where('documento_identidad', $numero)->first();
+        $exists  = $persona && Empleado::where('persona_id', $persona->id)->exists();
 
-        return response()->json(['exists' => $exists]);
+        $otherRole  = null;
+        $personaData = null;
+        if ($persona && !$exists) {
+            if (Cliente::where('persona_id', $persona->id)->exists()) {
+                $otherRole = 'cliente';
+                $dir = $persona->direccionPrincipal;
+                $personaData = [
+                    'nombre'            => $persona->nombre,
+                    'apellido'          => $persona->apellido ?? '',
+                    'tipo_documento'    => $persona->tipo_documento,
+                    'email'             => $persona->email ?? '',
+                    'telefono'          => $persona->telefonoPrincipal ?? '',
+                    'genero'            => $persona->genero ?? '',
+                    'fecha_nacimiento'  => $persona->fecha_nacimiento?->format('Y-m-d') ?? '',
+                    'estado_geografico' => $persona->estado_geografico ?? ($dir?->estado ?? ''),
+                    'ciudad'            => $dir?->ciudad ?? '',
+                    'direccion'         => $dir?->direccion ?? '',
+                ];
+            }
+        }
+
+        return response()->json(['exists' => $exists, 'other_role' => $otherRole, 'persona' => $personaData]);
     }
 
     public function reportePdf()
     {
-        // Obtener todos los empleados con sus datos de persona
-        $empleados = Empleado::with('persona')->orderBy('codigo_empleado', 'asc')->get();
+        $empleados = Empleado::with(['persona', 'cargo', 'departamento'])->orderBy('codigo_empleado', 'asc')->get();
 
-        // Cargar la vista y generar el PDF (A4 horizontal para más columnas)
         $pdf = \PDF::loadView('admin.empleados.reporte_pdf', compact('empleados'))
             ->setPaper('a4', 'landscape');
 
-        // Descargar el archivo con una marca de tiempo
         return $pdf->download('reporte_empleados_' . now()->format('Ymd_His') . '.pdf');
     }
 
@@ -252,8 +274,18 @@ class EmpleadoController extends Controller
         $email = $request->input('email');
         if (!$email)
             return response()->json(['exists' => false]);
-        $exists = \App\Models\Persona::where('email', $email)->exists();
-        return response()->json(['exists' => $exists]);
+
+        $query = Persona::where('email', $email);
+
+        $excludeEmpleadoId = $request->input('exclude_id');
+        if ($excludeEmpleadoId) {
+            $empleado = Empleado::find($excludeEmpleadoId);
+            if ($empleado && $empleado->persona_id) {
+                $query->where('id', '!=', $empleado->persona_id);
+            }
+        }
+
+        return response()->json(['exists' => $query->exists()]);
     }
 
     public function checkCodigo(Request $request)
@@ -266,22 +298,20 @@ class EmpleadoController extends Controller
     }
 
     /**
-     * Guardar un nuevo departamento on-the-fly (AJAX)
+     * AJAX: Retorna cargos activos filtrados por departamento_id
      */
-    public function storeDepartamento(Request $request)
+    public function getCargos(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|min:3|max:100',
-        ]);
-
-        $nombre = trim($request->nombre);
-
-        // Verificar si ya existe
-        $existe = Empleado::whereRaw('LOWER(departamento) = ?', [strtolower($nombre)])->exists();
-        if ($existe) {
-            return response()->json(['message' => 'Este departamento ya existe.'], 422);
+        $departamentoId = $request->input('departamento_id');
+        if (!$departamentoId) {
+            return response()->json([]);
         }
 
-        return response()->json(['departamento' => $nombre]);
+        $cargos = Cargo::where('departamento_id', $departamentoId)
+            ->orderBy('nombre')
+            ->get(['id', 'nombre']);
+
+        return response()->json($cargos);
     }
+
 }

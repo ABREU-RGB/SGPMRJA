@@ -69,8 +69,8 @@
 
         <!-- Actions -->
         <div class="d-flex justify-content-between align-items-center">
-            @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="link-atlantico">
+            @if (Route::has('recovery.method'))
+                <a href="{{ route('recovery.method') }}" class="link-atlantico">
                     <i class="bx bx-help-circle me-1"></i>¿Olvidaste tu contraseña?
                 </a>
             @endif
