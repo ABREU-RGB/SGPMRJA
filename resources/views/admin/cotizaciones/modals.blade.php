@@ -454,8 +454,21 @@
                             </button>
                         </div>
 
-                        {{-- Container de productos (gestionado por scripts/main.blade.php) --}}
-                        <div id="productos-container"></div>
+                        {{-- Tabla agrupada — bloques por (producto + color + bordados) --}}
+                        <div id="cot-grouped-list" class="cot-grouped-list"></div>
+
+                        {{-- Toggle vista detallada — revela productos-container con cards legacy --}}
+                        <div class="cot-detailed-toggle" id="cot-detailed-toggle" hidden>
+                            <button type="button" class="cot-detailed-toggle-btn" id="btn-cot-detailed-toggle" aria-expanded="false">
+                                <i class="ri-arrow-right-s-line cot-detailed-toggle-chevron"></i>
+                                <span>Vista detallada por línea</span>
+                                <span class="cot-detailed-toggle-hint">Para configurar bordados, ajustar precios o editar líneas individualmente</span>
+                            </button>
+                        </div>
+
+                        {{-- Container de productos (gestionado por scripts/main.blade.php).
+                             Visible solo cuando se expande la "Vista detallada". --}}
+                        <div id="productos-container" class="cot-productos-container is-collapsed"></div>
                     </section>
 
                     {{-- ═════════════════════════ PASO 3 — RESUMEN ═════════════════════════ --}}

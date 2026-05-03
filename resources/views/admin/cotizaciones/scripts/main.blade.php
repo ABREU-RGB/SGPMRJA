@@ -3684,6 +3684,431 @@
         })();
 
         // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — CARRITO → LÍNEAS + TABLA AGRUPADA  (Fase 4)
+        // ║ Convierte cada item del carrito en N llamadas a addProductItem
+        // ║ (una por talla con qty>0). Renderiza una vista agrupada por
+        // ║ (producto + color) sobre el productos-container que se mantiene
+        // ║ oculto como fuente de verdad para FormData.
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            // === Confirmación del carrito ====================================
+            window.cotCartConfirmar = function () {
+                var cart = window.cotCart || [];
+                if (!cart.length) return;
+
+                var totalLineas = 0;
+                cart.forEach(function (item) {
+                    var unit = parseFloat(item.unitPrice || item.productoPrecio || 0) || 0;
+                    item.tallas.forEach(function (t) {
+                        if (!t.qty || t.qty <= 0) return;
+                        addProductItem(
+                            item.productoId,
+                            t.qty,
+                            unit,
+                            '',                 // descripcion
+                            false,              // lleva_bordado: el usuario lo activa después por línea/bloque
+                            '',                 // _unused
+                            item.colorId,
+                            t.tallaId,
+                            []                  // bordados vacíos
+                        );
+                        totalLineas++;
+                    });
+                });
+
+                // Limpiar carrito
+                window.cotCart = [];
+                if (window.cotCatalog) {
+                    window.cotCatalog.renderCart();
+                    window.cotCatalog.renderGrid();
+                }
+
+                // Cerrar catálogo
+                var catEl = document.getElementById('catalogoProductosModal');
+                var catInst = catEl ? bootstrap.Modal.getInstance(catEl) : null;
+                if (catInst) catInst.hide();
+
+                // Refrescar wizard
+                if (window.cotWizard) window.cotWizard.refreshKPIs();
+                refreshGroupedList();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Productos agregados',
+                    text: totalLineas + ' línea(s) agregada(s) a la cotización.',
+                    toast: true, position: 'top-end',
+                    showConfirmButton: false, timer: 1900
+                });
+            };
+
+            // === Render de la tabla agrupada =================================
+            function escForHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            // Hash compacto del array de bordados para agrupar líneas con misma config
+            function bordadosKey(bordados) {
+                if (!Array.isArray(bordados) || !bordados.length) return 'sb';
+                return bordados.map(function (b) {
+                    return [
+                        b.ubicacion_bordado_id || 'p',
+                        b.logo_id || '0',
+                        b.nombre_aplicado || '',
+                        parseFloat(b.precio_aplicado || 0).toFixed(2),
+                        parseInt(b.cantidad || 1, 10)
+                    ].join('|');
+                }).sort().join(';');
+            }
+
+            function readGroupsFromContainer() {
+                var groups = [];
+                var byKey = {};
+                $('#productos-container .product-item').each(function () {
+                    var $card = $(this);
+                    var prodId = $card.find('.producto-id-input').val();
+                    var colorId = $card.find('.color-id-input').val() || '';
+                    var bordados = (typeof getCardBordados === 'function') ? getCardBordados($card) : [];
+                    var llevaBordado = parseInt($card.find('.lleva-bordado-value').val() || 0, 10) === 1;
+                    var bKey = llevaBordado ? bordadosKey(bordados) : 'sb';
+                    var key = (prodId || 'x') + '|' + (colorId || 'x') + '|' + bKey;
+
+                    if (!byKey[key]) {
+                        var producto = (typeof products !== 'undefined' && Array.isArray(products))
+                            ? products.find(function (p) { return p.id == prodId; }) : null;
+                        var colorObj = (typeof getColorById === 'function') ? getColorById(parseInt(colorId, 10) || 0) : null;
+                        byKey[key] = {
+                            key: key,
+                            productoId: prodId,
+                            producto: producto,
+                            colorId: colorId,
+                            color: colorObj,
+                            llevaBordado: llevaBordado,
+                            bordados: bordados,
+                            cards: [],
+                            totalQty: 0,
+                            totalSubtotal: 0,
+                            unitBase: 0,
+                            unitWithBordado: 0
+                        };
+                        groups.push(byKey[key]);
+                    }
+                    var qty = parseFloat($card.find('.cantidad-input').val()) || 0;
+                    var base = parseFloat($card.find('.precio-unitario-input').val()) || 0;
+                    var recargo = llevaBordado && typeof calcularRecargoUnitarioBordadoDesdeLista === 'function'
+                        ? calcularRecargoUnitarioBordadoDesdeLista(bordados) : 0;
+                    var unit = base + recargo;
+                    var tallaId = $card.find('.talla-input-value').val() || '';
+                    var tallaLabel = $card.find('.talla-input-display').val() || '';
+                    byKey[key].cards.push({
+                        $card: $card,
+                        productIndex: $card.data('product-index'),
+                        tallaId: tallaId,
+                        tallaLabel: tallaLabel,
+                        qty: qty,
+                        base: base,
+                        unit: unit
+                    });
+                    byKey[key].totalQty += qty;
+                    byKey[key].totalSubtotal += qty * unit;
+                    byKey[key].unitBase = base;
+                    byKey[key].unitWithBordado = unit;
+                });
+                return groups;
+            }
+
+            function refreshGroupedList() {
+                var groups = readGroupsFromContainer();
+                var $list = $('#cot-grouped-list');
+                var $empty = $('#cot-empty-state');
+                var $toggleWrap = $('#cot-detailed-toggle');
+
+                if (!groups.length) {
+                    $list.empty();
+                    $empty.show();
+                    $toggleWrap.attr('hidden', true);
+                    $('#productos-container').addClass('is-collapsed');
+                    return;
+                }
+                $empty.hide();
+                $toggleWrap.removeAttr('hidden');
+
+                var html = groups.map(function (g, idx) {
+                    var prodLabel = g.producto
+                        ? ((g.producto.codigo ? g.producto.codigo + ' · ' : '') + (g.producto.modelo || ''))
+                        : '(producto sin definir)';
+                    var tipoLabel = g.producto && g.producto.tipo_producto ? g.producto.tipo_producto.nombre : '';
+                    var colorName = g.color ? g.color.nombre : (g.colorId ? '#' + g.colorId : 'Sin color');
+                    var colorHex = g.color ? g.color.hex_referencial : '#cccccc';
+                    var lightHex = (String(colorHex).toUpperCase() === '#FFFFFF' || String(colorHex).toUpperCase() === '#FFFDD0');
+
+                    var tallasChips = g.cards.map(function (c) {
+                        return '<span class="cot-chip cot-chip-talla">' +
+                                    escForHtml(c.tallaLabel || '?') + '<span class="cot-chip-x">×</span>' +
+                                    '<strong>' + c.qty + '</strong>' +
+                               '</span>';
+                    }).join('');
+
+                    var bordadoBadge = g.llevaBordado
+                        ? ('<span class="cot-grouped-bordado-on"><i class="ri-scissors-cut-line"></i>' +
+                                ' ' + g.bordados.length + ' bordado' + (g.bordados.length === 1 ? '' : 's') +
+                                ' · +' + formatMoney((g.unitWithBordado - g.unitBase)) + '/u</span>')
+                        : '<span class="cot-grouped-bordado-off"><i class="ri-scissors-cut-line"></i> Sin bordado</span>';
+
+                    var indices = g.cards.map(function (c) { return c.productIndex; }).join(',');
+
+                    return (
+                        '<div class="cot-grouped-block" data-group-key="' + escForHtml(g.key) + '" data-product-id="' + escForHtml(g.productoId) + '" data-color-id="' + escForHtml(g.colorId) + '" data-card-indices="' + escForHtml(indices) + '">' +
+                            '<div class="cot-grouped-block-num">' + (idx + 1) + '</div>' +
+                            '<div class="cot-grouped-block-info">' +
+                                '<div class="cot-grouped-block-title">' +
+                                    (tipoLabel ? '<span class="cot-grouped-tipo-badge">' + escForHtml(tipoLabel) + '</span>' : '') +
+                                    '<span class="cot-grouped-prod-label">' + escForHtml(prodLabel) + '</span>' +
+                                '</div>' +
+                                '<div class="cot-grouped-block-meta">' +
+                                    '<span class="cot-grouped-color">' +
+                                        '<span class="cot-grouped-color-dot" style="background:' + colorHex + ';' + (lightHex ? 'border-color:#cbd5e1;' : '') + '"></span>' +
+                                        escForHtml(colorName) +
+                                    '</span>' +
+                                    '<span class="cot-grouped-tallas">' + tallasChips + '</span>' +
+                                    bordadoBadge +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="cot-grouped-block-totals">' +
+                                '<div class="cot-grouped-qty">' +
+                                    '<span class="cot-grouped-qty-num">' + g.totalQty + '</span>' +
+                                    '<span class="cot-grouped-qty-label">unid.</span>' +
+                                '</div>' +
+                                '<div class="cot-grouped-subtotal">' +
+                                    '<span class="cot-grouped-subtotal-label">Subtotal</span>' +
+                                    '<span class="cot-grouped-subtotal-value">' + formatMoney(g.totalSubtotal) + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="cot-grouped-block-actions">' +
+                                '<button type="button" class="cot-grouped-action-btn cot-action-edit" data-group-key="' + escForHtml(g.key) + '" title="Editar tallas/color"><i class="ri-edit-2-line"></i></button>' +
+                                '<button type="button" class="cot-grouped-action-btn cot-action-bordado" data-group-key="' + escForHtml(g.key) + '" title="Configurar bordado"><i class="ri-scissors-cut-line"></i></button>' +
+                                '<button type="button" class="cot-grouped-action-btn cot-action-delete" data-group-key="' + escForHtml(g.key) + '" title="Eliminar bloque"><i class="ri-delete-bin-line"></i></button>' +
+                            '</div>' +
+                        '</div>'
+                    );
+                }).join('');
+                $list.html(html);
+            }
+
+            window.cotRefreshGroupedList = refreshGroupedList;
+
+            // === Acciones de bloque ==========================================
+            // Eliminar bloque entero
+            $(document).on('click', '.cot-action-delete', function () {
+                var $blk = $(this).closest('.cot-grouped-block');
+                var indices = String($blk.data('card-indices') || '').split(',').filter(Boolean);
+                Swal.fire({
+                    icon: 'warning',
+                    title: '¿Eliminar bloque?',
+                    text: 'Se quitarán todas las líneas asociadas a este producto y color.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#c0392b'
+                }).then(function (res) {
+                    if (!res.isConfirmed) return;
+                    indices.forEach(function (idx) {
+                        $('#productos-container .product-item[data-product-index="' + idx + '"]').remove();
+                    });
+                    if (typeof reindexProductItems === 'function') reindexProductItems();
+                    if (typeof calculateCotizacionTotals === 'function') calculateCotizacionTotals();
+                    refreshGroupedList();
+                    if (window.cotWizard) window.cotWizard.refreshKPIs();
+                });
+            });
+
+            // Editar bloque → reabre configurador con datos cargados
+            $(document).on('click', '.cot-action-edit', function () {
+                var $blk = $(this).closest('.cot-grouped-block');
+                var prodId = parseInt($blk.data('product-id'), 10);
+                var colorId = parseInt($blk.data('color-id'), 10);
+                var groupKey = $blk.data('group-key');
+
+                // Reconstruir tallas del bloque
+                var tallasMap = {};
+                $('#productos-container .product-item').each(function () {
+                    var $c = $(this);
+                    var pid = parseInt($c.find('.producto-id-input').val(), 10);
+                    var cid = parseInt($c.find('.color-id-input').val(), 10);
+                    if (pid !== prodId || cid !== colorId) return;
+                    var tid = parseInt($c.find('.talla-input-value').val(), 10);
+                    var qty = parseInt($c.find('.cantidad-input').val(), 10) || 0;
+                    if (tid && qty > 0) tallasMap[tid] = qty;
+                });
+
+                var color = (typeof getColorById === 'function') ? getColorById(colorId) : null;
+
+                window.__cotEditGroupKey = groupKey;
+                if (typeof window.cotConfiguradorAbrir === 'function') {
+                    window.cotConfiguradorAbrir(prodId, {
+                        existing: {
+                            colorId: colorId,
+                            colorNombre: color ? color.nombre : '',
+                            colorHex: color ? color.hex_referencial : null,
+                            tallas: tallasMap
+                        },
+                        cartItemId: 'edit_' + groupKey  // marca de edición
+                    });
+                }
+            });
+
+            // Bordados — abre la lógica legacy expandiendo la card y disparando el modal
+            $(document).on('click', '.cot-action-bordado', function () {
+                var $blk = $(this).closest('.cot-grouped-block');
+                var indices = String($blk.data('card-indices') || '').split(',').filter(Boolean);
+                if (!indices.length) return;
+                var firstIdx = indices[0];
+                var $card = $('#productos-container .product-item[data-product-index="' + firstIdx + '"]');
+                if (!$card.length) return;
+
+                // Expandir vista detallada para que el modal de bordado pueda interactuar
+                $('#productos-container').removeClass('is-collapsed');
+                $('#btn-cot-detailed-toggle').attr('aria-expanded', 'true').addClass('is-open');
+
+                // Activar checkbox lleva-bordado si no lo está
+                var $chk = $card.find('.lleva-bordado-checkbox');
+                if (!$chk.is(':checked')) {
+                    $chk.prop('checked', true).trigger('change');
+                }
+
+                // Después de un beat, click en configurar bordados
+                setTimeout(function () {
+                    var $btn = $card.find('.configurar-bordados-trigger');
+                    $card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    $btn.trigger('click');
+                }, 120);
+
+                // Marcar el bloque para replicar bordados al cerrar el modal de bordado
+                window.__cotBordadoReplicateGroup = {
+                    productoId: parseInt($blk.data('product-id'), 10),
+                    colorId: parseInt($blk.data('color-id'), 10),
+                    sourceIndex: firstIdx
+                };
+            });
+
+            // Toggle vista detallada
+            $(document).on('click', '#btn-cot-detailed-toggle', function () {
+                var $btn = $(this);
+                var open = $btn.attr('aria-expanded') === 'true';
+                $btn.attr('aria-expanded', open ? 'false' : 'true');
+                $btn.toggleClass('is-open', !open);
+                $('#productos-container').toggleClass('is-collapsed', open);
+            });
+
+            // Replicación de bordados al guardar config en una card → replicar a hermanas del bloque
+            $(document).on('click', '#aplicar-ubicaciones-bordado-btn, .aplicar-bordados-btn', function () {
+                // El click no bloquea; usamos un setTimeout corto para esperar que se aplique al card.
+                if (!window.__cotBordadoReplicateGroup) return;
+                var grp = window.__cotBordadoReplicateGroup;
+                setTimeout(function () {
+                    var $source = $('#productos-container .product-item[data-product-index="' + grp.sourceIndex + '"]');
+                    if (!$source.length) { window.__cotBordadoReplicateGroup = null; return; }
+                    var sourceBordados = (typeof getCardBordados === 'function') ? getCardBordados($source) : [];
+                    var sourceLleva = parseInt($source.find('.lleva-bordado-value').val() || 0, 10) === 1;
+
+                    $('#productos-container .product-item').each(function () {
+                        var $c = $(this);
+                        if ($c.is($source)) return;
+                        var pid = parseInt($c.find('.producto-id-input').val(), 10);
+                        var cid = parseInt($c.find('.color-id-input').val(), 10);
+                        if (pid !== grp.productoId || cid !== grp.colorId) return;
+
+                        // Sincronizar checkbox lleva-bordado
+                        var $chk = $c.find('.lleva-bordado-checkbox');
+                        if (sourceLleva && !$chk.is(':checked')) $chk.prop('checked', true).trigger('change');
+
+                        if (typeof setCardBordados === 'function') setCardBordados($c, sourceBordados);
+                        if (typeof sincronizarCamposOcultosBordados === 'function') sincronizarCamposOcultosBordados($c);
+                        if (typeof actualizarResumenBordadosEnCard === 'function') actualizarResumenBordadosEnCard($c);
+                    });
+
+                    window.__cotBordadoReplicateGroup = null;
+                    if (typeof calculateCotizacionTotals === 'function') calculateCotizacionTotals();
+                    if (window.cotWizard) window.cotWizard.refreshKPIs();
+                    refreshGroupedList();
+                }, 250);
+            });
+
+            // Hook configurador en modo edición → reemplazar bloque viejo por el nuevo
+            // Interceptamos el guardado mediante override del listener; pero como el listener original
+            // ya empuja al cart, aquí en modo edit el cartItemId arranca con "edit_" → manejamos especial.
+            (function patchCfgSaveForEdit() {
+                $(document).on('click', '#cfg-save-btn', function () {
+                    // Diferimos un poco para que el push al cart suceda primero
+                    setTimeout(function () {
+                        if (!window.cotConfigurador) return;
+                        var lastItem = (window.cotCart || []).slice(-1)[0];
+                        if (!lastItem || !lastItem.id || String(lastItem.id).indexOf('edit_') !== 0) return;
+
+                        // Es una edición de un bloque existente:
+                        // 1) Eliminar las cards viejas del bloque (todas las que comparten producto+color)
+                        var prodId = lastItem.productoId;
+                        var colorId = lastItem.colorId;
+                        $('#productos-container .product-item').each(function () {
+                            var $c = $(this);
+                            var pid = parseInt($c.find('.producto-id-input').val(), 10);
+                            var cid = parseInt($c.find('.color-id-input').val(), 10);
+                            if (pid === prodId && cid === colorId) $c.remove();
+                        });
+
+                        // 2) Insertar nuevas cards del item editado (una por talla)
+                        var unit = parseFloat(lastItem.unitPrice || lastItem.productoPrecio || 0) || 0;
+                        lastItem.tallas.forEach(function (t) {
+                            if (!t.qty || t.qty <= 0) return;
+                            addProductItem(
+                                lastItem.productoId, t.qty, unit, '', false, '',
+                                lastItem.colorId, t.tallaId, []
+                            );
+                        });
+
+                        // 3) Quitar el item del carrito (era una edición, no debe quedar como item nuevo)
+                        window.cotCart = (window.cotCart || []).filter(function (it) {
+                            return it.id !== lastItem.id;
+                        });
+                        if (window.cotCatalog) window.cotCatalog.renderCart();
+
+                        // 4) Reindex y refresh
+                        if (typeof reindexProductItems === 'function') reindexProductItems();
+                        if (typeof calculateCotizacionTotals === 'function') calculateCotizacionTotals();
+                        if (window.cotWizard) window.cotWizard.refreshKPIs();
+                        refreshGroupedList();
+
+                        Swal.fire({
+                            icon: 'success', title: 'Bloque actualizado',
+                            toast: true, position: 'top-end',
+                            showConfirmButton: false, timer: 1500
+                        });
+                    }, 60);
+                });
+            })();
+
+            // Refrescar cuando algo cambie en productos-container
+            $(document).on('change keyup', '#productos-container .cantidad-input, #productos-container .precio-unitario-input', function () {
+                clearTimeout(window.__cotGroupedDebounce);
+                window.__cotGroupedDebounce = setTimeout(refreshGroupedList, 220);
+            });
+            $(document).on('change', '#productos-container .lleva-bordado-checkbox', function () {
+                setTimeout(refreshGroupedList, 80);
+            });
+            $(document).on('click', '#productos-container .remove-producto-item', function () {
+                setTimeout(refreshGroupedList, 80);
+            });
+
+            // También refrescar cuando se carga edit (Fase 6) o se agrega manual
+            $(document).on('click', '#add-producto-item', function () {
+                setTimeout(refreshGroupedList, 100);
+            });
+        })();
+
+        // ╔══════════════════════════════════════════════════════════════════
         // ║ COTIZACIONES — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
         // ║ Fase 1: navegación, validación mínima, sincronización footer,
         // ║ refresco de KPIs (paso 2) y resumen visual (paso 3).
