@@ -3899,6 +3899,7 @@
             }
 
             window.cotRefreshGroupedList = refreshGroupedList;
+            window.cotReadGroups = readGroupsFromContainer;
 
             // === Acciones de bloque ==========================================
             // Eliminar bloque entero
@@ -4250,30 +4251,66 @@
             }
 
             function refreshResumen() {
-                var $items = $('#productos-container .product-item');
                 var subtotal = 0;
                 var rows = [];
-                $items.each(function () {
-                    var $c = $(this);
-                    var s = readLineState($c);
-                    var rowSubtotal = s.qty * s.unit;
-                    subtotal += rowSubtotal;
 
-                    var prodName = $c.find('.producto-text-display').val() || 'Producto sin definir';
-                    var colorName = $c.find('.color-display').val() || '';
-                    var tallaName = $c.find('.talla-input-display').val() || '';
-                    var bits = [colorName, tallaName].filter(Boolean).join(' · ');
-                    var label = prodName + (bits ? ' — ' + bits : '');
+                if (typeof window.cotReadGroups === 'function') {
+                    // Vista agrupada (Fase 4): una fila por bloque
+                    var groups = window.cotReadGroups();
+                    groups.forEach(function (g, idx) {
+                        subtotal += g.totalSubtotal;
+                        var prodLabel = g.producto
+                            ? ((g.producto.codigo ? g.producto.codigo + ' · ' : '') + (g.producto.modelo || ''))
+                            : '(producto sin definir)';
+                        var colorName = g.color ? g.color.nombre : (g.colorId ? '#' + g.colorId : '');
+                        var tallasTxt = g.cards.map(function (c) { return c.tallaLabel + '×' + c.qty; }).join(' · ');
+                        var bordadoBadge = g.llevaBordado
+                            ? ' <span class="cot-resumen-bordado-pill"><i class="ri-scissors-cut-line"></i> bordado</span>'
+                            : '';
+                        var unitDisplay = formatMoney(g.unitWithBordado);
+                        var unitNote = (g.llevaBordado && g.unitWithBordado !== g.unitBase)
+                            ? '<small class="cot-resumen-unit-note">' + formatMoney(g.unitBase) + ' + ' + formatMoney(g.unitWithBordado - g.unitBase) + '</small>'
+                            : '';
 
-                    rows.push(
-                        '<tr>' +
-                            '<td class="text-truncate" style="max-width:0;" title="' + escHtmlW(label) + '">' + escHtmlW(label) + '</td>' +
-                            '<td class="text-center">' + s.qty + '</td>' +
-                            '<td class="text-end font-monospace">' + formatMoney(s.unit) + '</td>' +
-                            '<td class="text-end font-monospace fw-semibold">' + formatMoney(rowSubtotal) + '</td>' +
-                        '</tr>'
-                    );
-                });
+                        rows.push(
+                            '<tr>' +
+                                '<td>' +
+                                    '<div class="cot-resumen-row-prod">' + escHtmlW(prodLabel) + bordadoBadge + '</div>' +
+                                    '<div class="cot-resumen-row-meta">' +
+                                        (colorName ? '<span>' + escHtmlW(colorName) + '</span>' : '') +
+                                        '<span class="cot-resumen-row-tallas">' + escHtmlW(tallasTxt) + '</span>' +
+                                    '</div>' +
+                                '</td>' +
+                                '<td class="text-center align-middle"><strong>' + g.totalQty + '</strong></td>' +
+                                '<td class="text-end font-monospace align-middle">' + unitDisplay + unitNote + '</td>' +
+                                '<td class="text-end font-monospace fw-semibold align-middle">' + formatMoney(g.totalSubtotal) + '</td>' +
+                            '</tr>'
+                        );
+                    });
+                } else {
+                    // Fallback línea-por-línea (vista antigua, por si los grupos no están)
+                    var $items = $('#productos-container .product-item');
+                    $items.each(function () {
+                        var $c = $(this);
+                        var s = readLineState($c);
+                        var rowSubtotal = s.qty * s.unit;
+                        subtotal += rowSubtotal;
+                        var prodName = $c.find('.producto-text-display').val() || 'Producto sin definir';
+                        var colorName = $c.find('.color-display').val() || '';
+                        var tallaName = $c.find('.talla-input-display').val() || '';
+                        var bits = [colorName, tallaName].filter(Boolean).join(' · ');
+                        var label = prodName + (bits ? ' — ' + bits : '');
+                        rows.push(
+                            '<tr>' +
+                                '<td class="text-truncate" style="max-width:0;" title="' + escHtmlW(label) + '">' + escHtmlW(label) + '</td>' +
+                                '<td class="text-center">' + s.qty + '</td>' +
+                                '<td class="text-end font-monospace">' + formatMoney(s.unit) + '</td>' +
+                                '<td class="text-end font-monospace fw-semibold">' + formatMoney(rowSubtotal) + '</td>' +
+                            '</tr>'
+                        );
+                    });
+                }
+
                 if (!rows.length) {
                     rows.push('<tr><td colspan="4" class="text-center text-muted py-3 small">Sin productos agregados</td></tr>');
                 }

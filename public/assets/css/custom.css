@@ -1597,6 +1597,56 @@ header#page-topbar,
     border-bottom: 1px dashed rgba(30, 60, 114, 0.08);
     font-size: 0.88rem;
 }
+.cot-resumen-row-prod {
+    font-weight: 600;
+    color: #1e3c72;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.cot-resumen-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: 3px;
+    font-size: 0.78rem;
+    color: #64748b;
+}
+.cot-resumen-row-tallas {
+    font-family: 'JetBrains Mono', monospace, monospace;
+    font-size: 0.74rem;
+    color: #1e3c72;
+}
+.cot-resumen-bordado-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(0, 217, 165, 0.14);
+    color: #006b52;
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+}
+.cot-resumen-unit-note {
+    display: block;
+    font-size: 0.66rem;
+    color: #94a3b8;
+    font-weight: 400;
+    margin-top: 2px;
+}
+
+[data-bs-theme="dark"] .cot-resumen-row-prod { color: #e2e8f0; }
+[data-bs-theme="dark"] .cot-resumen-row-meta { color: #94a3b8; }
+[data-bs-theme="dark"] .cot-resumen-row-tallas { color: #cbd5e1; }
+[data-bs-theme="dark"] .cot-resumen-bordado-pill {
+    background: rgba(0, 217, 165, 0.20);
+    color: #34d399;
+}
+[data-bs-theme="dark"] .cot-resumen-unit-note { color: #64748b; }
 
 /* ── Footer del wizard ─────────────────────────────────────────── */
 .cot-wizard-footer {
