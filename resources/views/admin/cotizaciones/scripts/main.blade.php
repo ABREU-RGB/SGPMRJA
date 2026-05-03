@@ -2671,6 +2671,11 @@
             $('#cliente-telefono-field').val(persona.telefono || '');
             $('#cliente-autocomplete-list').empty().hide();
             clienteSeleccionado = true;
+
+            // Wizard UX: mostrar tarjeta visual del cliente seleccionado
+            if (typeof window.cotMostrarTarjetaCliente === 'function') {
+                window.cotMostrarTarjetaCliente(persona, clienteId);
+            }
         }
 
         $('#ci-rif-number-field').on('input', function () {
@@ -2678,12 +2683,20 @@
             clearTimeout(autocompleteTimeout);
             if (query.length < 6) {
                 $('#cliente-autocomplete-list').empty().hide();
+                if (typeof window.cotShowLoading === 'function') window.cotShowLoading(false);
                 return;
+            }
+            // Mostrar skeleton si no hay cliente cargado
+            if (!$('#cliente-id-field').val() && typeof window.cotShowLoading === 'function') {
+                window.cotShowLoading(true);
             }
             autocompleteTimeout = setTimeout(function () {
                 $.ajax({
                     url: '/personas-search',
                     data: { q: query },
+                    complete: function () {
+                        if (typeof window.cotShowLoading === 'function') window.cotShowLoading(false);
+                    },
                     success: function (personas) {
                         let html = '';
                         if (personas.length > 0) {
@@ -3059,6 +3072,206 @@
                 }
             });
         });
+
+        // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — STEP 1 UX  (cliente card visual + chips + dates)
+        // ║ Tarjeta del cliente seleccionado, prioridad/estado como chips,
+        // ║ atajos de fecha, empty state y skeleton loading.
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            // === Avatar: iniciales + color basado en hash ====================
+            var AVATAR_COLORS = [
+                { bg: '#1e3c72', fg: '#ffffff' },
+                { bg: '#00b88c', fg: '#ffffff' },
+                { bg: '#0c4a6e', fg: '#ffffff' },
+                { bg: '#6b21a8', fg: '#ffffff' },
+                { bg: '#b45309', fg: '#ffffff' },
+                { bg: '#be123c', fg: '#ffffff' },
+                { bg: '#0e7490', fg: '#ffffff' },
+                { bg: '#365314', fg: '#ffffff' }
+            ];
+
+            function hashStr(s) {
+                var h = 0;
+                for (var i = 0; i < s.length; i++) {
+                    h = ((h << 5) - h) + s.charCodeAt(i);
+                    h |= 0;
+                }
+                return Math.abs(h);
+            }
+
+            function buildIniciales(persona) {
+                if (!persona) return '—';
+                var docPrefix = String(persona.tipo_documento || '').toUpperCase();
+                var esJuridico = docPrefix === 'J-' || docPrefix === 'G-';
+                if (esJuridico && persona.razon_social) {
+                    var rs = persona.razon_social.trim();
+                    var parts = rs.split(/\s+/).filter(Boolean);
+                    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+                    return rs.substring(0, 2).toUpperCase();
+                }
+                var n = (persona.nombre || '').trim();
+                var a = (persona.apellido || '').trim();
+                if (n && a) return (n[0] + a[0]).toUpperCase();
+                if (n) return n.substring(0, 2).toUpperCase();
+                return '—';
+            }
+
+            function pickAvatarColor(key) {
+                var idx = hashStr(String(key || 'default')) % AVATAR_COLORS.length;
+                return AVATAR_COLORS[idx];
+            }
+
+            // === Roles → badges ==============================================
+            var ROLE_LABELS = {
+                cliente:            { label: 'Cliente',   cls: 'cot-role-pill cot-role-cliente' },
+                empleado:           { label: 'Empleado',  cls: 'cot-role-pill cot-role-empleado' },
+                proveedor_natural:  { label: 'Proveedor', cls: 'cot-role-pill cot-role-proveedor' },
+                proveedor_juridico: { label: 'Proveedor', cls: 'cot-role-pill cot-role-proveedor' }
+            };
+
+            function buildRolesBadges(roles) {
+                if (!Array.isArray(roles) || !roles.length) return '';
+                var seen = {};
+                return roles.map(function (r) {
+                    var meta = ROLE_LABELS[r];
+                    if (!meta || seen[meta.label]) return '';
+                    seen[meta.label] = true;
+                    return '<span class="' + meta.cls + '">' + meta.label + '</span>';
+                }).filter(Boolean).join('');
+            }
+
+            // === Tarjeta del cliente =========================================
+            window.cotMostrarTarjetaCliente = function (persona, clienteId) {
+                if (!persona) return;
+                var docPrefix = String(persona.tipo_documento || '').toUpperCase();
+                var esJuridico = docPrefix === 'J-' || docPrefix === 'G-';
+                var nombre = esJuridico && persona.razon_social
+                    ? persona.razon_social
+                    : (persona.apellido ? persona.nombre + ' ' + persona.apellido : (persona.nombre || ''));
+
+                var iniciales = buildIniciales(persona);
+                var color = pickAvatarColor(persona.documento || persona.persona_id || nombre);
+
+                $('#cot-cliente-empty').hide();
+                $('#cot-cliente-loading').attr('hidden', true);
+                $('#cot-cliente-card').removeAttr('hidden').show();
+
+                var $av = $('#cot-cliente-avatar');
+                $av.text(iniciales).css({ background: color.bg, color: color.fg });
+
+                $('#cot-cliente-name-display').text(nombre || '—');
+                $('#cot-cliente-doc-display').text(persona.documento || '—');
+
+                var tel = persona.telefono || '';
+                var email = persona.email || '';
+                $('#cot-cliente-tel-wrap').toggle(!!tel);
+                $('#cot-cliente-tel-display').text(tel || '—');
+                $('#cot-cliente-email-wrap').toggle(!!email);
+                $('#cot-cliente-email-display').text(email || '—');
+
+                $('#cot-cliente-roles').html(buildRolesBadges(persona.roles));
+
+                var count = parseInt(persona.cotizaciones_count, 10);
+                if (clienteId && !isNaN(count) && count > 0) {
+                    $('#cot-cliente-stat-count').text(count);
+                    var lastDate = persona.cotizaciones_last_date || '';
+                    if (lastDate) {
+                        var parts = String(lastDate).split('T')[0].split('-');
+                        var pretty = parts.length === 3 ? (parts[2] + '/' + parts[1] + '/' + parts[0]) : lastDate;
+                        $('#cot-cliente-stat-last').text(pretty);
+                        $('#cot-cliente-stat-last-wrap').removeAttr('hidden').show();
+                    } else {
+                        $('#cot-cliente-stat-last-wrap').attr('hidden', true).hide();
+                    }
+                    $('#cot-cliente-stats').removeAttr('hidden').show();
+                } else {
+                    $('#cot-cliente-stats').attr('hidden', true).hide();
+                }
+            };
+
+            window.cotResetearCliente = function () {
+                $('#cot-cliente-card').attr('hidden', true).hide();
+                $('#cot-cliente-loading').attr('hidden', true).hide();
+                $('#cot-cliente-empty').show();
+                $('#cliente-id-field').val('');
+                $('#cliente-nombre-field').val('');
+                $('#cliente-apellido-field').val('');
+                $('#cliente-telefono-field').val('');
+                $('#cliente-email-field').val('');
+                $('#cliente-razon-social-display').val('');
+                if (typeof clienteSeleccionado !== 'undefined') clienteSeleccionado = false;
+            };
+
+            window.cotShowLoading = function (show) {
+                if (show) {
+                    if ($('#cliente-id-field').val()) return;
+                    $('#cot-cliente-empty').hide();
+                    $('#cot-cliente-loading').removeAttr('hidden').show();
+                } else {
+                    $('#cot-cliente-loading').attr('hidden', true).hide();
+                    if (!$('#cliente-id-field').val()) $('#cot-cliente-empty').show();
+                }
+            };
+
+            // Botón "Cambiar cliente"
+            $(document).on('click', '#cot-cliente-change-btn', function (e) {
+                e.preventDefault();
+                window.cotResetearCliente();
+                $('#ci-rif-number-field').val('').trigger('focus');
+            });
+
+            // === Chips de prioridad ==========================================
+            $(document).on('click', '.cot-priority-chip', function () {
+                var $b = $(this);
+                var val = $b.data('value');
+                $('.cot-priority-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $b.addClass('is-active').attr('aria-checked', 'true');
+                $('#prioridad-field').val(val).trigger('change');
+            });
+            $(document).on('change', '#prioridad-field', function () {
+                var val = $(this).val() || 'Normal';
+                $('.cot-priority-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $('.cot-priority-chip[data-value="' + val + '"]').addClass('is-active').attr('aria-checked', 'true');
+            });
+
+            // === Chips de estado =============================================
+            $(document).on('click', '.cot-estado-chip', function () {
+                var $b = $(this);
+                var val = $b.data('value');
+                $('.cot-estado-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $b.addClass('is-active').attr('aria-checked', 'true');
+                $('#estado-field').val(val).trigger('change');
+            });
+            $(document).on('change', '#estado-field', function () {
+                var val = $(this).val();
+                if (!val) return;
+                $('.cot-estado-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $('.cot-estado-chip[data-value="' + val + '"]').addClass('is-active').attr('aria-checked', 'true');
+            });
+
+            // === Atajos de fecha (validez) ==================================
+            $(document).on('click', '.cot-date-chip', function () {
+                var days = parseInt($(this).data('days'), 10) || 0;
+                var emisionVal = $('#fecha-cotizacion-field').val();
+                var base = emisionVal ? new Date(emisionVal + 'T00:00:00') : new Date();
+                if (isNaN(base.getTime())) base = new Date();
+                base.setDate(base.getDate() + days);
+                var iso = base.toISOString().split('T')[0];
+                $('#fecha-validez-field').val(iso).trigger('change').trigger('blur');
+                $('.cot-date-chip').removeClass('is-active');
+                $(this).addClass('is-active');
+            });
+
+            // Reset al abrir modal en modo crear
+            $('#showModal').on('show.bs.modal', function () {
+                if (!$('#id-field').val()) {
+                    window.cotResetearCliente();
+                }
+            });
+        })();
 
         // ╔══════════════════════════════════════════════════════════════════
         // ║ COTIZACIONES — CATÁLOGO DE PRODUCTOS  (Fase 2)

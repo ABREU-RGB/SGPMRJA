@@ -30,7 +30,9 @@ class PersonaController extends Controller
         $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $query);
 
         $personas = Persona::with([
-                'cliente'   => fn ($q) => $q->where('estatus', 1),
+                'cliente'   => fn ($q) => $q->where('estatus', 1)
+                    ->withCount('cotizaciones')
+                    ->withMax('cotizaciones', 'fecha_cotizacion'),
                 'empleado',
                 'proveedor' => fn ($q) => $q->where('estado', 1),
                 'telefonos',
@@ -75,6 +77,9 @@ class PersonaController extends Controller
                 'estado'          => $direccion?->estado ?? ($persona->estado_geografico ?? ''),
                 'ciudad'          => $direccion?->ciudad ?? '',
                 'roles'           => $roles,
+                // Mini-stats del cliente (null si la persona aún no es cliente)
+                'cotizaciones_count'    => $persona->cliente?->cotizaciones_count ?? null,
+                'cotizaciones_last_date' => $persona->cliente?->cotizaciones_max_fecha_cotizacion ?? null,
             ];
         })->filter()->values();
 

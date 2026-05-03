@@ -1747,6 +1747,462 @@ header#page-topbar,
 [data-bs-theme="dark"] .cot-wizard-step-info::before { color: #64748b; }
 
 /* ════════════════════════════════════════════════════════════════════
+   STEP 1 — UX MEJORADA
+   Tarjeta cliente · empty/loading states · chips prioridad/estado · fechas
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Buscador documento con icono de lupa ───────────────────────── */
+.cot-search-doc-wrap { margin-bottom: 14px; }
+.cot-search-doc-group {
+    box-shadow: 0 1px 3px rgba(30, 60, 114, 0.06);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.cot-search-doc-icon {
+    background: #f3f6fc;
+    border-color: #e2e8f0;
+    color: #1e3c72;
+    font-size: 1rem;
+}
+
+/* ── Empty state cuando no hay cliente ─────────────────────────── */
+.cot-cliente-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 28px 18px;
+    background: #fafbfd;
+    border: 2px dashed rgba(30, 60, 114, 0.15);
+    border-radius: 12px;
+    margin-top: 6px;
+}
+.cot-cliente-empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(30, 60, 114, 0.08);
+    color: #1e3c72;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    margin-bottom: 12px;
+}
+.cot-cliente-empty-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin: 0 0 4px;
+}
+.cot-cliente-empty-desc {
+    font-size: 0.82rem;
+    color: #64748b;
+    max-width: 360px;
+    margin: 0 0 14px;
+    line-height: 1.45;
+}
+.cot-btn-create-cliente {
+    border-width: 1.5px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 8px;
+}
+
+/* ── Skeleton loading ───────────────────────────────────────── */
+.cot-cliente-loading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    background: #fafbfd;
+    border: 1px solid rgba(30, 60, 114, 0.08);
+    border-radius: 12px;
+    margin-top: 6px;
+}
+.cot-skeleton {
+    background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
+    background-size: 200% 100%;
+    border-radius: 6px;
+    animation: cotSkeletonShimmer 1.6s ease-in-out infinite;
+}
+.cot-skeleton-circle { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; }
+.cot-skeleton-line { height: 12px; margin-bottom: 8px; }
+.cot-skeleton-line-md { width: 60%; }
+.cot-skeleton-line-sm { width: 40%; height: 10px; margin-bottom: 0; }
+@keyframes cotSkeletonShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── Tarjeta de cliente seleccionado ─────────────────────────── */
+.cot-cliente-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f3f6fc 0%, #ffffff 100%);
+    border: 1.5px solid rgba(0, 217, 165, 0.4);
+    border-radius: 12px;
+    margin-top: 6px;
+    box-shadow: 0 4px 12px -8px rgba(0, 217, 165, 0.3);
+    position: relative;
+}
+.cot-cliente-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(90deg, #1e3c72 0%, #00d9a5 100%);
+}
+.cot-cliente-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1e3c72;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px -4px rgba(30, 60, 114, 0.45);
+}
+.cot-cliente-info { min-width: 0; }
+.cot-cliente-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+.cot-cliente-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin: 0;
+    line-height: 1.2;
+}
+.cot-cliente-roles {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.cot-role-pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    line-height: 1.4;
+}
+.cot-role-cliente   { background: rgba(0, 217, 165, 0.16); color: #006b52; }
+.cot-role-empleado  { background: rgba(30, 60, 114, 0.12); color: #1e3c72; }
+.cot-role-proveedor { background: rgba(180, 83, 9, 0.14); color: #92400e; }
+
+.cot-cliente-doc {
+    margin: 0 0 6px;
+    color: #1e3c72;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace, monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.cot-cliente-doc i { color: #94a3b8; font-size: 0.95rem; }
+.cot-cliente-contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 6px;
+}
+.cot-cliente-contact-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.cot-cliente-contact-item i { color: #94a3b8; font-size: 0.95rem; }
+.cot-cliente-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: center;
+    font-size: 0.74rem;
+    color: #64748b;
+    padding-top: 6px;
+    margin-top: 4px;
+    border-top: 1px dashed rgba(30, 60, 114, 0.1);
+}
+.cot-cliente-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.cot-cliente-stat strong { color: #1e3c72; font-weight: 700; }
+.cot-cliente-stat i { color: #94a3b8; }
+.cot-cliente-stat-sep { color: #cbd5e1; }
+.cot-cliente-change-btn {
+    color: #64748b;
+    font-size: 0.78rem;
+    text-decoration: none;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 4px 10px;
+    align-self: flex-start;
+}
+.cot-cliente-change-btn:hover {
+    color: #1e3c72;
+    background: rgba(30, 60, 114, 0.06);
+    border-radius: 6px;
+}
+
+/* ── Chips de prioridad ─────────────────────────────────────── */
+.cot-priority-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.cot-priority-chip {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+}
+.cot-priority-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px -4px rgba(30, 60, 114, 0.15);
+}
+.cot-priority-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #94a3b8;
+}
+.cot-priority-chip--normal .cot-priority-dot  { background: #94a3b8; }
+.cot-priority-chip--alta .cot-priority-dot    { background: #f59e0b; }
+.cot-priority-chip--urgente .cot-priority-dot { background: #dc2626; }
+
+.cot-priority-chip.is-active.cot-priority-chip--normal {
+    background: rgba(100, 116, 139, 0.10);
+    border-color: #64748b;
+    color: #475569;
+}
+.cot-priority-chip.is-active.cot-priority-chip--alta {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: #f59e0b;
+    color: #92400e;
+}
+.cot-priority-chip.is-active.cot-priority-chip--urgente {
+    background: rgba(220, 38, 38, 0.12);
+    border-color: #dc2626;
+    color: #991b1b;
+}
+.cot-priority-chip.is-active { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04); }
+
+/* ── Chips de estado ─────────────────────────────────────────── */
+.cot-estado-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.cot-estado-chip {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex: 1;
+    text-align: center;
+}
+.cot-estado-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px -4px rgba(30, 60, 114, 0.15);
+}
+.cot-estado-chip.is-active.cot-estado-chip--pendiente {
+    background: rgba(30, 60, 114, 0.10);
+    border-color: #1e3c72;
+    color: #1e3c72;
+}
+.cot-estado-chip.is-active.cot-estado-chip--aprobada {
+    background: rgba(0, 217, 165, 0.12);
+    border-color: #00d9a5;
+    color: #006b52;
+}
+.cot-estado-chip.is-active.cot-estado-chip--cancelada {
+    background: rgba(220, 38, 38, 0.12);
+    border-color: #dc2626;
+    color: #991b1b;
+}
+
+/* ── Atajos de fecha (validez) ──────────────────────────────── */
+.cot-date-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    margin-top: 4px;
+}
+.cot-date-shortcuts-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-right: 4px;
+}
+.cot-date-chip {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #1e3c72;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.cot-date-chip:hover {
+    border-color: #00d9a5;
+    background: rgba(0, 217, 165, 0.08);
+    color: #006b52;
+}
+.cot-date-chip.is-active {
+    background: rgba(0, 217, 165, 0.15);
+    border-color: #00d9a5;
+    color: #006b52;
+    box-shadow: 0 0 0 2px rgba(0, 217, 165, 0.18);
+}
+
+/* ── Dark mode — Step 1 UX ───────────────────────────────────── */
+[data-bs-theme="dark"] .cot-search-doc-icon {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+}
+[data-bs-theme="dark"] .cot-cliente-empty {
+    background: #11151f;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+[data-bs-theme="dark"] .cot-cliente-empty-icon {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+}
+[data-bs-theme="dark"] .cot-cliente-empty-title { color: #e2e8f0; }
+[data-bs-theme="dark"] .cot-cliente-empty-desc { color: #94a3b8; }
+
+[data-bs-theme="dark"] .cot-cliente-loading {
+    background: #11151f;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+[data-bs-theme="dark"] .cot-skeleton {
+    background: linear-gradient(90deg, #1f2937 0%, #2a3344 50%, #1f2937 100%);
+    background-size: 200% 100%;
+}
+
+[data-bs-theme="dark"] .cot-cliente-card {
+    background: linear-gradient(135deg, #1f2937 0%, #11151f 100%);
+    border-color: rgba(0, 217, 165, 0.35);
+}
+[data-bs-theme="dark"] .cot-cliente-name { color: #e2e8f0; }
+[data-bs-theme="dark"] .cot-cliente-doc { color: #cbd5e1; }
+[data-bs-theme="dark"] .cot-cliente-contact-row { color: #94a3b8; }
+[data-bs-theme="dark"] .cot-cliente-stats {
+    color: #94a3b8;
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+[data-bs-theme="dark"] .cot-cliente-stat strong { color: #e2e8f0; }
+[data-bs-theme="dark"] .cot-cliente-change-btn { color: #94a3b8; }
+[data-bs-theme="dark"] .cot-cliente-change-btn:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.06);
+}
+[data-bs-theme="dark"] .cot-role-cliente   { background: rgba(0, 217, 165, 0.20); color: #34d399; }
+[data-bs-theme="dark"] .cot-role-empleado  { background: rgba(255, 255, 255, 0.10); color: #cbd5e1; }
+[data-bs-theme="dark"] .cot-role-proveedor { background: rgba(245, 158, 11, 0.20); color: #fbbf24; }
+
+[data-bs-theme="dark"] .cot-priority-chip {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+}
+[data-bs-theme="dark"] .cot-priority-chip.is-active.cot-priority-chip--normal {
+    background: rgba(148, 163, 184, 0.15);
+    border-color: #94a3b8;
+    color: #cbd5e1;
+}
+[data-bs-theme="dark"] .cot-priority-chip.is-active.cot-priority-chip--alta {
+    background: rgba(245, 158, 11, 0.18);
+    border-color: #f59e0b;
+    color: #fbbf24;
+}
+[data-bs-theme="dark"] .cot-priority-chip.is-active.cot-priority-chip--urgente {
+    background: rgba(220, 38, 38, 0.20);
+    border-color: #dc2626;
+    color: #f87171;
+}
+
+[data-bs-theme="dark"] .cot-estado-chip {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+}
+[data-bs-theme="dark"] .cot-estado-chip.is-active.cot-estado-chip--pendiente {
+    background: rgba(30, 60, 114, 0.30);
+    border-color: #3b82f6;
+    color: #93c5fd;
+}
+[data-bs-theme="dark"] .cot-estado-chip.is-active.cot-estado-chip--aprobada {
+    background: rgba(0, 217, 165, 0.18);
+    border-color: #00d9a5;
+    color: #34d399;
+}
+[data-bs-theme="dark"] .cot-estado-chip.is-active.cot-estado-chip--cancelada {
+    background: rgba(220, 38, 38, 0.18);
+    border-color: #dc2626;
+    color: #f87171;
+}
+
+[data-bs-theme="dark"] .cot-date-shortcuts-label { color: #64748b; }
+[data-bs-theme="dark"] .cot-date-chip {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+}
+[data-bs-theme="dark"] .cot-date-chip:hover {
+    border-color: #00d9a5;
+    background: rgba(0, 217, 165, 0.10);
+    color: #34d399;
+}
+[data-bs-theme="dark"] .cot-date-chip.is-active {
+    background: rgba(0, 217, 165, 0.18);
+    border-color: #00d9a5;
+    color: #34d399;
+}
+
+/* ════════════════════════════════════════════════════════════════════
    COTIZACIÓN — CATÁLOGO DE PRODUCTOS  (Fase 2)
    Modal anidado: sidebar filtros · grilla cards · carrito lateral.
    ════════════════════════════════════════════════════════════════════ */
