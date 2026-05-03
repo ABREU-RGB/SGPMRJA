@@ -1883,8 +1883,8 @@
         });
         $('#abono-field').on('change keyup', updateCotizacionRemaining);
         // Reset al abrir el modal en modo creación (wizard 3 pasos)
-        // El usuario agregará productos desde el paso 2 vía botón "Agregar Producto" (Fase 1)
-        // o desde "Explorar Catálogo" (Fase 2). El empty-state aparece si no hay productos.
+        // El usuario agregará productos desde el paso 2 vía catálogo (Fase 2)
+        // o "Agregar manual" (legacy). El empty-state aparece si no hay productos.
         $('#create-btn').on('click', function () {
             $('#modalTitle').text('Nueva Cotización');
             $('#cotizacionForm')[0].reset();
@@ -1894,8 +1894,12 @@
             $('#prioridad-field').val('Normal');
             $('#estado-field-wrapper').hide();
             $('#productos-container').empty();
+            $('#productos-container').addClass('is-collapsed');
+            $('#btn-cot-detailed-toggle').attr('aria-expanded', 'false').removeClass('is-open');
+            window.cotCart = [];
+            if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             calculateCotizacionTotals();
-            // showStep(1) y la visibilidad de add-btn / edit-btn se ajustan en el handler show.bs.modal
+            // showStep(1) y visibilidad de add-btn/edit-btn se ajustan en show.bs.modal
         });
 
 
@@ -2080,6 +2084,10 @@
             $('#edit-btn').show();
             $('#estado-field-wrapper').show();
             $('#productos-container').empty();
+            $('#productos-container').addClass('is-collapsed');
+            $('#btn-cot-detailed-toggle').attr('aria-expanded', 'false').removeClass('is-open');
+            window.cotCart = [];
+            if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             $.ajax({
                 url: '/cotizaciones/' + id,
                 method: 'GET',
@@ -2107,6 +2115,7 @@
                     $('#fecha-cotizacion-field').val(fechaCotizacion).prop('readonly', true).addClass('campo-protegido');
                     $('#fecha-validez-field').val(fechaValidez);
                     $('#estado-field').val(data.estado);
+                    $('#prioridad-field').val(data.prioridad || 'Normal');
                     $('#notas-field').val(data.notas || '');
                     // Cargar productos existentes
                     $('#productos-container').empty();
@@ -2137,6 +2146,9 @@
                     // Esperar un momento para que todos los elementos se rendericen
                     setTimeout(function () {
                         calculateCotizacionTotals();
+                        // Wizard: regenerar tabla agrupada y KPIs con los datos cargados
+                        if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
+                        if (window.cotWizard) window.cotWizard.refreshKPIs();
 
                         // Intentar inicializar Select2, pero no detener la ejecución si falla
                         try {
