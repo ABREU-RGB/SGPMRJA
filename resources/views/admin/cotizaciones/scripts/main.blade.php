@@ -3378,8 +3378,10 @@
 
             function openConfigurador(productoId, opts) {
                 opts = opts || {};
-                var products = (typeof window.products !== 'undefined') ? window.products : (typeof products !== 'undefined' ? products : []);
-                var p = products.find(function (x) { return x.id == productoId; });
+                // products vive en el closure del $(document).ready exterior;
+                // accederlo directamente evita el shadowing del var hoisting.
+                var prodList = (typeof products !== 'undefined' && Array.isArray(products)) ? products : [];
+                var p = prodList.find(function (x) { return x.id == productoId; });
                 if (!p) {
                     Swal.fire({ icon: 'error', title: 'Producto no encontrado', timer: 1800, showConfirmButton: false });
                     return;
