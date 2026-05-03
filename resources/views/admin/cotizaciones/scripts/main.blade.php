@@ -3053,6 +3053,293 @@
         });
 
         // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — CATÁLOGO DE PRODUCTOS  (Fase 2)
+        // ║ Modal anidado sobre el wizard que ofrece:
+        // ║   · sidebar de filtros (búsqueda, tipos, precio)
+        // ║   · grilla central de cards
+        // ║   · carrito lateral (estructura, lleno en Fase 4)
+        // ║ Click en card → abre Configurador (placeholder Fase 3).
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            var catState = {
+                search: '',
+                tipos: new Set(),
+                priceMin: null,
+                priceMax: null,
+                sort: 'relevance'
+            };
+            var catModalInstance = null;
+
+            function getProductsList() {
+                return (typeof products !== 'undefined' && Array.isArray(products)) ? products : [];
+            }
+
+            function getTipoCount(tipoId) {
+                return getProductsList().filter(function (p) {
+                    return p.tipo_producto && p.tipo_producto.id == tipoId;
+                }).length;
+            }
+
+            function uniqueTipos() {
+                var byId = {};
+                getProductsList().forEach(function (p) {
+                    if (p.tipo_producto && !byId[p.tipo_producto.id]) {
+                        byId[p.tipo_producto.id] = p.tipo_producto;
+                    }
+                });
+                return Object.values(byId).sort(function (a, b) {
+                    return String(a.nombre || '').localeCompare(String(b.nombre || ''));
+                });
+            }
+
+            function renderFilterTipos() {
+                var $cont = $('#cat-filter-tipos');
+                var tipos = uniqueTipos();
+                if (!tipos.length) {
+                    $cont.html('<p class="text-muted small mb-0 ps-1"><em>Sin tipos disponibles</em></p>');
+                    return;
+                }
+                var html = tipos.map(function (t) {
+                    var checked = catState.tipos.has(t.id) ? 'checked' : '';
+                    var count = getTipoCount(t.id);
+                    return (
+                        '<label class="cat-filter-item">' +
+                            '<input type="checkbox" class="form-check-input cat-tipo-check" value="' + t.id + '" ' + checked + '>' +
+                            '<span class="cat-filter-item-label">' + escapeForHtml(t.nombre) + '</span>' +
+                            '<span class="cat-filter-item-count">' + count + '</span>' +
+                        '</label>'
+                    );
+                }).join('');
+                $cont.html(html);
+            }
+
+            function escapeForHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            function getFilteredProducts() {
+                var list = getProductsList().slice();
+                var q = (catState.search || '').toLowerCase().trim();
+                list = list.filter(function (p) {
+                    if (q) {
+                        var hay = ((p.codigo || '') + ' ' + (p.modelo || '') + ' ' +
+                                   (p.tipo_producto ? p.tipo_producto.nombre : '')).toLowerCase();
+                        if (!hay.includes(q)) return false;
+                    }
+                    if (catState.tipos.size && !catState.tipos.has(p.tipo_producto ? p.tipo_producto.id : null)) {
+                        return false;
+                    }
+                    var price = parseFloat(p.precio_base || 0);
+                    if (catState.priceMin != null && price < catState.priceMin) return false;
+                    if (catState.priceMax != null && price > catState.priceMax) return false;
+                    return true;
+                });
+                if (catState.sort === 'price-asc') list.sort(function (a, b) { return (parseFloat(a.precio_base) || 0) - (parseFloat(b.precio_base) || 0); });
+                else if (catState.sort === 'price-desc') list.sort(function (a, b) { return (parseFloat(b.precio_base) || 0) - (parseFloat(a.precio_base) || 0); });
+                else if (catState.sort === 'name') list.sort(function (a, b) {
+                    return String(a.modelo || '').localeCompare(String(b.modelo || ''));
+                });
+                return list;
+            }
+
+            function renderGrid() {
+                var $grid = $('#cat-grid');
+                var $empty = $('#cat-grid-empty');
+                var items = getFilteredProducts();
+                $('#cat-results-count').text(items.length);
+
+                if (!items.length) {
+                    $grid.html('');
+                    $empty.removeClass('d-none');
+                    return;
+                }
+                $empty.addClass('d-none');
+
+                $grid.html(items.map(function (p) {
+                    var tipoNombre = p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo';
+                    var precio = parseFloat(p.precio_base || 0);
+                    var hasImg = !!p.imagen;
+                    var inCart = catCartHas(p.id);
+                    var imgBlock = hasImg
+                        ? '<img src="' + escapeForHtml(p.imagen) + '" alt="" class="cat-card-img">'
+                        : '<div class="cat-card-img-placeholder"><i class="ri-t-shirt-2-line"></i></div>';
+                    return (
+                        '<button type="button" class="cat-card' + (inCart ? ' is-incart' : '') + '" data-producto-id="' + p.id + '">' +
+                            '<div class="cat-card-media">' + imgBlock +
+                                '<span class="cat-card-tipo-badge">' + escapeForHtml(tipoNombre) + '</span>' +
+                            '</div>' +
+                            '<div class="cat-card-body">' +
+                                '<p class="cat-card-codigo">' + escapeForHtml(p.codigo || '—') + '</p>' +
+                                '<h6 class="cat-card-modelo">' + escapeForHtml(p.modelo || 'Sin modelo') + '</h6>' +
+                                '<div class="cat-card-foot">' +
+                                    '<span class="cat-card-price">' + formatMoney(precio) + '</span>' +
+                                    '<span class="cat-card-cta">' + (inCart ? '<i class="ri-check-line"></i> Configurado' : 'Configurar <i class="ri-arrow-right-line"></i>') + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</button>'
+                    );
+                }).join(''));
+            }
+
+            // === Carrito (Fase 2: estructura; Fase 4 implementa la lógica completa) ====
+            window.cotCart = window.cotCart || []; // [{productoId, colorId, tallasMap, bordados, ...}]
+
+            function catCartHas(productoId) {
+                return window.cotCart.some(function (it) { return it.productoId == productoId; });
+            }
+
+            function renderCart() {
+                var list = window.cotCart || [];
+                $('#cat-cart-count').text(list.length);
+                var $list = $('#cat-cart-list');
+                var $empty = $('#cat-cart-empty');
+                var $btn = $('#btn-cat-confirmar');
+
+                if (!list.length) {
+                    $list.html('').hide();
+                    $empty.show();
+                    $('#cat-cart-total').text(formatMoney(0));
+                    $btn.prop('disabled', true);
+                    return;
+                }
+                $empty.hide();
+                $list.show();
+
+                var total = 0;
+                $list.html(list.map(function (it) {
+                    var p = getProductsList().find(function (x) { return x.id == it.productoId; });
+                    if (!p) return '';
+                    var sub = parseFloat(it.subtotal || 0);
+                    total += sub;
+                    return (
+                        '<div class="cat-cart-item">' +
+                            '<div class="cat-cart-item-info">' +
+                                '<p class="cat-cart-item-name">' + escapeForHtml(p.modelo || '—') + '</p>' +
+                                '<p class="cat-cart-item-meta">' + escapeForHtml(it.summary || '') + '</p>' +
+                            '</div>' +
+                            '<div class="cat-cart-item-actions">' +
+                                '<span class="cat-cart-item-price">' + formatMoney(sub) + '</span>' +
+                                '<button type="button" class="cat-cart-item-remove" data-producto-id="' + p.id + '" title="Quitar"><i class="ri-close-line"></i></button>' +
+                            '</div>' +
+                        '</div>'
+                    );
+                }).join(''));
+                $('#cat-cart-total').text(formatMoney(total));
+                $btn.prop('disabled', false);
+            }
+
+            function clearFilters() {
+                catState.search = '';
+                catState.tipos.clear();
+                catState.priceMin = null;
+                catState.priceMax = null;
+                catState.sort = 'relevance';
+                $('#cat-search').val('');
+                $('#cat-price-min').val('');
+                $('#cat-price-max').val('');
+                $('#cat-sort').val('relevance');
+                renderFilterTipos();
+                renderGrid();
+            }
+
+            function openCatalog() {
+                if (!catModalInstance) {
+                    var el = document.getElementById('catalogoProductosModal');
+                    if (!el) return;
+                    catModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+                }
+                $('#cat-eyebrow').text('Catálogo · ' + getProductsList().length + ' productos disponibles');
+                renderFilterTipos();
+                renderGrid();
+                renderCart();
+                catModalInstance.show();
+                setTimeout(function () { $('#cat-search').trigger('focus'); }, 250);
+            }
+
+            // === LISTENERS ====================================================
+            $(document).on('click', '#btn-explorar-catalogo', openCatalog);
+
+            $(document).on('input', '#cat-search', function () {
+                catState.search = $(this).val();
+                renderGrid();
+            });
+            $(document).on('change', '.cat-tipo-check', function () {
+                var id = parseInt($(this).val(), 10);
+                if (this.checked) catState.tipos.add(id);
+                else catState.tipos.delete(id);
+                renderGrid();
+            });
+            $(document).on('input', '#cat-price-min', function () {
+                var v = parseFloat($(this).val());
+                catState.priceMin = isNaN(v) ? null : v;
+                renderGrid();
+            });
+            $(document).on('input', '#cat-price-max', function () {
+                var v = parseFloat($(this).val());
+                catState.priceMax = isNaN(v) ? null : v;
+                renderGrid();
+            });
+            $(document).on('change', '#cat-sort', function () {
+                catState.sort = $(this).val();
+                renderGrid();
+            });
+            $(document).on('click', '#cat-clear-filters', clearFilters);
+
+            // Click en card → en Fase 2 abrimos un placeholder; Fase 3 conecta el configurador real
+            $(document).on('click', '#cat-grid .cat-card', function () {
+                var pid = parseInt(this.dataset.productoId, 10);
+                if (typeof window.cotConfiguradorAbrir === 'function') {
+                    window.cotConfiguradorAbrir(pid);
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Configurador en construcción',
+                        text: 'En la próxima fase podrás configurar color, tallas y bordados desde aquí.',
+                        timer: 2200,
+                        showConfirmButton: false
+                    });
+                }
+            });
+
+            // Quitar item del carrito (delegado)
+            $(document).on('click', '.cat-cart-item-remove', function () {
+                var pid = parseInt(this.dataset.productoId, 10);
+                window.cotCart = (window.cotCart || []).filter(function (it) { return it.productoId !== pid; });
+                renderCart();
+                renderGrid();
+            });
+
+            // Confirmar carrito → trigger Fase 4 hook
+            $(document).on('click', '#btn-cat-confirmar', function () {
+                if (typeof window.cotCartConfirmar === 'function') {
+                    window.cotCartConfirmar();
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Próximamente',
+                        text: 'La conversión carrito → líneas de cotización llega en la Fase 4.',
+                        timer: 2200,
+                        showConfirmButton: false
+                    });
+                }
+            });
+
+            // Reset de filtros al cerrar
+            $('#catalogoProductosModal').on('hidden.bs.modal', function () { /* mantener filtros entre aperturas */ });
+
+            // Exponer
+            window.cotCatalog = {
+                open: openCatalog,
+                renderGrid: renderGrid,
+                renderCart: renderCart
+            };
+        })();
+
+        // ╔══════════════════════════════════════════════════════════════════
         // ║ COTIZACIONES — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
         // ║ Fase 1: navegación, validación mínima, sincronización footer,
         // ║ refresco de KPIs (paso 2) y resumen visual (paso 3).

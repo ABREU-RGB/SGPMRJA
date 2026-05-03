@@ -412,13 +412,13 @@
                                     <h4 class="cot-step-title">Productos de la cotización</h4>
                                     <p class="cot-step-desc">Explora el catálogo y configura cada prenda con sus colores, tallas y bordados.</p>
                                 </div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-atlantico-brand" id="btn-explorar-catalogo" disabled
-                                        title="Disponible en la siguiente fase">
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button type="button" class="btn btn-atlantico-brand" id="btn-explorar-catalogo">
                                         <i class="ri-layout-grid-line me-1"></i>Explorar catálogo
                                     </button>
-                                    <button type="button" class="btn btn-soft-success" id="add-producto-item">
-                                        <i class="ri-add-line me-1"></i>Agregar producto
+                                    <button type="button" class="btn btn-outline-secondary btn-sm cot-legacy-add-btn"
+                                        id="add-producto-item" title="Agregar línea manual (modo legacy)">
+                                        <i class="ri-add-line me-1"></i>Agregar manual
                                     </button>
                                 </div>
                             </div>
@@ -448,9 +448,9 @@
                                 <i class="ri-shopping-bag-3-line"></i>
                             </div>
                             <h5 class="cot-empty-title">Aún no hay productos</h5>
-                            <p class="cot-empty-desc">Comienza agregando una prenda. Pronto podrás explorar el catálogo completo.</p>
-                            <button type="button" class="btn btn-atlantico-brand" onclick="document.getElementById('add-producto-item').click()">
-                                <i class="ri-add-line me-1"></i>Agregar primer producto
+                            <p class="cot-empty-desc">Explora el catálogo para seleccionar prendas y configurar sus colores, tallas y bordados.</p>
+                            <button type="button" class="btn btn-atlantico-brand" onclick="document.getElementById('btn-explorar-catalogo').click()">
+                                <i class="ri-layout-grid-line me-1"></i>Abrir catálogo
                             </button>
                         </div>
 
@@ -573,6 +573,124 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+{{-- ════════════════════════════════════════════════════════════════════
+     Modal Catálogo de Productos — anidado sobre el wizard
+     Fase 2: grilla con filtros + carrito lateral.
+     Fase 3 conectará el click en card → modal Configurador.
+     ════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade atlantico-modal atlantico-modal--op cot-catalog-modal" id="catalogoProductosModal"
+    tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="cat-icon-square">
+                        <i class="ri-layout-grid-line"></i>
+                    </div>
+                    <div>
+                        <p class="cat-eyebrow mb-0" id="cat-eyebrow">Catálogo de productos</p>
+                        <h5 class="modal-title m-0" id="catalogoProductosLabel">Selecciona productos</h5>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body p-0 cat-body">
+
+                {{-- Sidebar filtros --}}
+                <aside class="cat-filters" id="cat-filters">
+                    <div class="cat-filters-header">
+                        <span>Filtros</span>
+                        <button type="button" class="cat-clear-btn" id="cat-clear-filters">Limpiar</button>
+                    </div>
+
+                    <div class="cat-filter-group">
+                        <label class="cat-filter-label" for="cat-search">Buscar</label>
+                        <div class="position-relative">
+                            <i class="ri-search-line cat-search-icon"></i>
+                            <input type="text" id="cat-search" class="cat-search-input"
+                                placeholder="Código, modelo o tipo...">
+                        </div>
+                    </div>
+
+                    <div class="cat-filter-group">
+                        <label class="cat-filter-label">Tipo de producto</label>
+                        <div id="cat-filter-tipos" class="cat-filter-list">
+                            {{-- Renderizado por JS --}}
+                        </div>
+                    </div>
+
+                    <div class="cat-filter-group">
+                        <label class="cat-filter-label">Rango de precio</label>
+                        <div class="cat-price-range">
+                            <input type="number" id="cat-price-min" class="form-control form-control-sm"
+                                placeholder="Min" min="0" step="0.01">
+                            <span class="cat-price-sep">—</span>
+                            <input type="number" id="cat-price-max" class="form-control form-control-sm"
+                                placeholder="Max" min="0" step="0.01">
+                        </div>
+                    </div>
+                </aside>
+
+                {{-- Grilla central --}}
+                <main class="cat-grid-wrap">
+                    <div class="cat-grid-toolbar">
+                        <span class="cat-results-count">
+                            <strong id="cat-results-count">0</strong> resultados
+                        </span>
+                        <select id="cat-sort" class="form-select form-select-sm cat-sort-select">
+                            <option value="relevance">Más relevantes</option>
+                            <option value="price-asc">Precio: menor a mayor</option>
+                            <option value="price-desc">Precio: mayor a menor</option>
+                            <option value="name">Nombre A–Z</option>
+                        </select>
+                    </div>
+
+                    <div class="cat-grid" id="cat-grid">
+                        {{-- Renderizado por JS --}}
+                    </div>
+
+                    <div class="cat-grid-empty d-none" id="cat-grid-empty">
+                        <div class="cat-grid-empty-icon"><i class="ri-search-2-line"></i></div>
+                        <p class="cat-grid-empty-title">Sin resultados</p>
+                        <p class="cat-grid-empty-desc">Ajusta los filtros o cambia la búsqueda.</p>
+                    </div>
+                </main>
+
+                {{-- Carrito lateral --}}
+                <aside class="cat-cart">
+                    <div class="cat-cart-header">
+                        <p class="cat-cart-eyebrow">Selección actual</p>
+                        <h6 class="cat-cart-title">
+                            <span id="cat-cart-count">0</span> productos
+                        </h6>
+                    </div>
+
+                    <div class="cat-cart-list" id="cat-cart-list">
+                        {{-- Items configurados por el usuario (Fase 3+) --}}
+                    </div>
+
+                    <div class="cat-cart-empty" id="cat-cart-empty">
+                        <i class="ri-shopping-cart-2-line"></i>
+                        <p>Configura productos del catálogo<br>para agregarlos a la cotización.</p>
+                    </div>
+
+                    <div class="cat-cart-footer">
+                        <div class="cat-cart-total-row">
+                            <span class="cat-cart-total-label">Estimado</span>
+                            <span class="cat-cart-total-value" id="cat-cart-total">$0,00</span>
+                        </div>
+                        <button type="button" class="btn btn-atlantico-brand w-100" id="btn-cat-confirmar" disabled>
+                            <i class="ri-check-line me-1"></i>Agregar a la cotización
+                        </button>
+                    </div>
+                </aside>
+
+            </div>
         </div>
     </div>
 </div>
