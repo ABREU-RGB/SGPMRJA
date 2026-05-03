@@ -1894,8 +1894,6 @@
             $('#prioridad-field').val('Normal');
             $('#estado-field-wrapper').hide();
             $('#productos-container').empty();
-            $('#productos-container').addClass('is-collapsed');
-            $('#btn-cot-detailed-toggle').attr('aria-expanded', 'false').removeClass('is-open');
             window.cotCart = [];
             if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             calculateCotizacionTotals();
@@ -2084,8 +2082,6 @@
             $('#edit-btn').show();
             $('#estado-field-wrapper').show();
             $('#productos-container').empty();
-            $('#productos-container').addClass('is-collapsed');
-            $('#btn-cot-detailed-toggle').attr('aria-expanded', 'false').removeClass('is-open');
             window.cotCart = [];
             if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             $.ajax({
@@ -3870,17 +3866,13 @@
                 var groups = readGroupsFromContainer();
                 var $list = $('#cot-grouped-list');
                 var $empty = $('#cot-empty-state');
-                var $toggleWrap = $('#cot-detailed-toggle');
 
                 if (!groups.length) {
                     $list.empty();
                     $empty.show();
-                    $toggleWrap.attr('hidden', true);
-                    $('#productos-container').addClass('is-collapsed');
                     return;
                 }
                 $empty.hide();
-                $toggleWrap.removeAttr('hidden');
 
                 var rowsHtml = groups.map(function (g, idx) {
                     var prodCodigo = g.producto && g.producto.codigo ? g.producto.codigo : '—';
@@ -3967,7 +3959,7 @@
             // === Acciones de bloque ==========================================
             // Eliminar bloque entero
             $(document).on('click', '.cot-action-delete', function () {
-                var $blk = $(this).closest('.cot-grouped-block');
+                var $blk = $(this).closest('.cot-grouped-row');
                 var indices = String($blk.data('card-indices') || '').split(',').filter(Boolean);
                 Swal.fire({
                     icon: 'warning',
@@ -3991,7 +3983,7 @@
 
             // Editar bloque → reabre configurador con datos cargados
             $(document).on('click', '.cot-action-edit', function () {
-                var $blk = $(this).closest('.cot-grouped-block');
+                var $blk = $(this).closest('.cot-grouped-row');
                 var prodId = parseInt($blk.data('product-id'), 10);
                 var colorId = parseInt($blk.data('color-id'), 10);
                 var groupKey = $blk.data('group-key');
@@ -4028,47 +4020,34 @@
                 }
             });
 
-            // Bordados — abre la lógica legacy expandiendo la card y disparando el modal
+            // Bordados — dispara el modal de bordados (legacy) sobre la 1ra card del bloque
+            // sin exponer las cards al usuario. Al cerrar, se replica al resto del bloque.
             $(document).on('click', '.cot-action-bordado', function () {
-                var $blk = $(this).closest('.cot-grouped-block');
+                var $blk = $(this).closest('.cot-grouped-row');
                 var indices = String($blk.data('card-indices') || '').split(',').filter(Boolean);
                 if (!indices.length) return;
                 var firstIdx = indices[0];
                 var $card = $('#productos-container .product-item[data-product-index="' + firstIdx + '"]');
                 if (!$card.length) return;
 
-                // Expandir vista detallada para que el modal de bordado pueda interactuar
-                $('#productos-container').removeClass('is-collapsed');
-                $('#btn-cot-detailed-toggle').attr('aria-expanded', 'true').addClass('is-open');
-
-                // Activar checkbox lleva-bordado si no lo está
+                // Activar checkbox lleva-bordado si no lo está (el modal lo necesita)
                 var $chk = $card.find('.lleva-bordado-checkbox');
                 if (!$chk.is(':checked')) {
                     $chk.prop('checked', true).trigger('change');
                 }
 
-                // Después de un beat, click en configurar bordados
+                // Disparar click en el botón de configurar bordados de la card oculta;
+                // el modal Bootstrap es global y se abre normalmente aunque la card no se vea.
                 setTimeout(function () {
-                    var $btn = $card.find('.configurar-bordados-trigger');
-                    $card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    $btn.trigger('click');
-                }, 120);
+                    $card.find('.configurar-bordados-trigger').trigger('click');
+                }, 60);
 
-                // Marcar el bloque para replicar bordados al cerrar el modal de bordado
+                // Marcar el bloque para replicar al cerrar el modal de bordados
                 window.__cotBordadoReplicateGroup = {
                     productoId: parseInt($blk.data('product-id'), 10),
                     colorId: parseInt($blk.data('color-id'), 10),
                     sourceIndex: firstIdx
                 };
-            });
-
-            // Toggle vista detallada
-            $(document).on('click', '#btn-cot-detailed-toggle', function () {
-                var $btn = $(this);
-                var open = $btn.attr('aria-expanded') === 'true';
-                $btn.attr('aria-expanded', open ? 'false' : 'true');
-                $btn.toggleClass('is-open', !open);
-                $('#productos-container').toggleClass('is-collapsed', open);
             });
 
             // Replicación de bordados al guardar config en una card → replicar a hermanas del bloque
