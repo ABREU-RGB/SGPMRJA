@@ -3340,6 +3340,348 @@
         })();
 
         // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — CONFIGURADOR DE PRODUCTO  (Fase 3)
+        // ║ Modal anidado sobre el catálogo. Selección de:
+        // ║   1. Color (chips)
+        // ║   2. Tallas con cantidades (matrix)
+        // ║ Bordados se configuran por línea en el paso 2 (Fase 4).
+        // ║ Al guardar, agrega al carrito (window.cotCart) e invoca render.
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            var cfgState = {
+                producto: null,         // referencia al producto del catálogo
+                colorId: null,
+                colorNombre: '',
+                colorHex: null,
+                tallas: {},             // { tallaId: cantidad }
+                cartItemId: null        // si edita un item existente del carrito
+            };
+            var cfgModalInstance = null;
+
+            function $cfg(id) { return document.getElementById(id); }
+
+            function getColorByIdLocal(id) {
+                if (typeof coloresArray === 'undefined' || !Array.isArray(coloresArray)) return null;
+                return coloresArray.find(function (c) { return c.id == id; }) || null;
+            }
+            function getTallasArray() {
+                return (typeof tallasArray !== 'undefined' && Array.isArray(tallasArray)) ? tallasArray : [];
+            }
+
+            function escForHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            function openConfigurador(productoId, opts) {
+                opts = opts || {};
+                var products = (typeof window.products !== 'undefined') ? window.products : (typeof products !== 'undefined' ? products : []);
+                var p = products.find(function (x) { return x.id == productoId; });
+                if (!p) {
+                    Swal.fire({ icon: 'error', title: 'Producto no encontrado', timer: 1800, showConfirmButton: false });
+                    return;
+                }
+
+                // Estado inicial — si edita un item existente, carga sus datos
+                cfgState.producto = p;
+                cfgState.cartItemId = opts.cartItemId || null;
+                if (opts.existing) {
+                    cfgState.colorId = opts.existing.colorId || null;
+                    cfgState.colorNombre = opts.existing.colorNombre || '';
+                    cfgState.colorHex = opts.existing.colorHex || null;
+                    cfgState.tallas = Object.assign({}, opts.existing.tallas || {});
+                } else {
+                    cfgState.colorId = null;
+                    cfgState.colorNombre = '';
+                    cfgState.colorHex = null;
+                    cfgState.tallas = {};
+                }
+
+                renderInfo();
+                renderColorGrid();
+                renderTallasGrid();
+                refreshSummary();
+
+                // Cambiar texto del botón si es edición
+                $('#cfg-save-btn-label').text(opts.cartItemId ? 'Actualizar selección' : 'Agregar al carrito');
+
+                if (!cfgModalInstance) {
+                    var el = document.getElementById('cotConfiguradorModal');
+                    if (!el) return;
+                    cfgModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+                }
+                cfgModalInstance.show();
+            }
+            window.cotConfiguradorAbrir = openConfigurador;
+
+            function renderInfo() {
+                var p = cfgState.producto;
+                if (!p) return;
+                $('#cfg-eyebrow').text((p.tipo_producto ? p.tipo_producto.nombre : 'Producto') + ' · ' + (p.codigo || '—'));
+                $('#cfg-title').text(p.modelo || 'Sin modelo');
+                $('#cfg-info-codigo').text(p.codigo || '—');
+                $('#cfg-info-modelo').text(p.modelo || 'Sin modelo');
+                $('#cfg-info-tipo').text(p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo');
+                $('#cfg-info-precio').text(formatMoney(parseFloat(p.precio_base || 0)));
+
+                var $media = $('#cfg-media-inner');
+                if (p.imagen) {
+                    $media.html('<img src="' + escForHtml(p.imagen) + '" alt="" class="cfg-media-img">');
+                } else {
+                    $media.html('<i class="ri-t-shirt-2-line"></i>');
+                }
+            }
+
+            function renderColorGrid() {
+                var colors = (typeof coloresArray !== 'undefined' && Array.isArray(coloresArray)) ? coloresArray : [];
+                var $grid = $('#cfg-color-grid');
+                if (!colors.length) {
+                    $grid.html('<p class="text-muted small mb-0"><em>Cargando colores…</em></p>');
+                    return;
+                }
+
+                // Agrupar por categoría
+                var byGroup = {};
+                colors.forEach(function (c) {
+                    var g = c.grupo || 'Otros';
+                    (byGroup[g] = byGroup[g] || []).push(c);
+                });
+
+                var html = '';
+                Object.keys(byGroup).sort().forEach(function (g) {
+                    html += '<div class="cfg-color-group-title">' + escForHtml(g) + '</div>';
+                    html += '<div class="cfg-color-group-items">';
+                    byGroup[g].forEach(function (c) {
+                        var hex = c.hex_referencial || '#cccccc';
+                        var sel = cfgState.colorId == c.id;
+                        var lightHex = (hex.toUpperCase() === '#FFFFFF' || hex.toUpperCase() === '#FFFDD0');
+                        html += (
+                            '<button type="button" class="cfg-color-chip' + (sel ? ' is-selected' : '') + (lightHex ? ' is-light' : '') + '"' +
+                                ' data-color-id="' + c.id + '" data-color-nombre="' + escForHtml(c.nombre) + '" data-color-hex="' + escForHtml(hex) + '"' +
+                                ' title="' + escForHtml(c.nombre) + '">' +
+                                '<span class="cfg-color-chip-swatch" style="background:' + hex + ';"></span>' +
+                                '<span class="cfg-color-chip-label">' + escForHtml(c.nombre) + '</span>' +
+                            '</button>'
+                        );
+                    });
+                    html += '</div>';
+                });
+                $grid.html(html);
+
+                // Indicador de color seleccionado en el header
+                $('#cfg-color-selected').text(cfgState.colorNombre || 'Sin seleccionar');
+            }
+
+            function renderTallasGrid() {
+                var tallas = getTallasArray();
+                var $grid = $('#cfg-tallas-grid');
+                if (!tallas.length) {
+                    $grid.html('<p class="text-muted small mb-0"><em>Cargando tallas…</em></p>');
+                    return;
+                }
+
+                var html = tallas.map(function (t) {
+                    var label = t.etiqueta || t.nombre || '—';
+                    var qty = cfgState.tallas[t.id] || '';
+                    return (
+                        '<div class="cfg-talla-cell" data-talla-id="' + t.id + '" data-talla-label="' + escForHtml(label) + '">' +
+                            '<span class="cfg-talla-cell-label">' + escForHtml(label) + '</span>' +
+                            '<input type="number" class="cfg-talla-cell-input" min="0" step="1" placeholder="0"' +
+                                ' value="' + qty + '" data-talla-id="' + t.id + '">' +
+                        '</div>'
+                    );
+                }).join('');
+
+                $grid.html(html);
+            }
+
+            function totalTallas() {
+                return Object.keys(cfgState.tallas).reduce(function (acc, k) {
+                    return acc + (parseInt(cfgState.tallas[k] || 0, 10) || 0);
+                }, 0);
+            }
+
+            function refreshSummary() {
+                var qty = totalTallas();
+                var unit = parseFloat(cfgState.producto ? cfgState.producto.precio_base : 0) || 0;
+                var subtotal = qty * unit;
+
+                $('#cfg-tallas-total').text(qty);
+                $('#cfg-summary-qty').text(qty);
+                $('#cfg-summary-unit').text(formatMoney(unit));
+                $('#cfg-summary-subtotal').text(formatMoney(subtotal));
+
+                $('#cfg-save-btn').prop('disabled', !(cfgState.colorId && qty > 0));
+            }
+
+            // Click en chip de color
+            $(document).on('click', '#cfg-color-grid .cfg-color-chip', function () {
+                var $b = $(this);
+                cfgState.colorId = parseInt($b.data('color-id'), 10);
+                cfgState.colorNombre = $b.data('color-nombre');
+                cfgState.colorHex = $b.data('color-hex');
+                $('#cfg-color-grid .cfg-color-chip').removeClass('is-selected');
+                $b.addClass('is-selected');
+                $('#cfg-color-selected').text(cfgState.colorNombre || 'Sin seleccionar');
+                refreshSummary();
+            });
+
+            // Cambio en cantidad por talla
+            $(document).on('input', '#cfg-tallas-grid .cfg-talla-cell-input', function () {
+                var tid = parseInt($(this).data('talla-id'), 10);
+                var v = parseInt($(this).val(), 10);
+                if (isNaN(v) || v <= 0) {
+                    delete cfgState.tallas[tid];
+                } else {
+                    cfgState.tallas[tid] = v;
+                }
+                // Resaltar la celda con valor
+                $(this).closest('.cfg-talla-cell').toggleClass('is-active', !!cfgState.tallas[tid]);
+                refreshSummary();
+            });
+
+            // Distribuir uniforme
+            $(document).on('click', '#cfg-distribute-btn', function () {
+                Swal.fire({
+                    title: 'Distribuir uniforme',
+                    text: '¿Cuántas unidades en total?',
+                    input: 'number',
+                    inputAttributes: { min: 1, step: 1 },
+                    inputValue: 50,
+                    showCancelButton: true,
+                    confirmButtonText: 'Distribuir',
+                    cancelButtonText: 'Cancelar',
+                    customClass: { container: 'swal-over-modal' }
+                }).then(function (res) {
+                    if (!res.isConfirmed) return;
+                    var total = parseInt(res.value, 10);
+                    if (!total || total < 1) return;
+                    var tallas = getTallasArray();
+                    if (!tallas.length) return;
+                    var per = Math.floor(total / tallas.length);
+                    var rem = total % tallas.length;
+                    cfgState.tallas = {};
+                    tallas.forEach(function (t, i) {
+                        var v = per + (i < rem ? 1 : 0);
+                        if (v > 0) cfgState.tallas[t.id] = v;
+                    });
+                    renderTallasGrid();
+                    // Restaurar visual de inputs activos
+                    Object.keys(cfgState.tallas).forEach(function (tid) {
+                        $('#cfg-tallas-grid .cfg-talla-cell[data-talla-id="' + tid + '"]').addClass('is-active');
+                    });
+                    refreshSummary();
+                });
+            });
+
+            // Volver al catálogo
+            $(document).on('click', '#cfg-back-to-catalog', function () {
+                if (cfgModalInstance) cfgModalInstance.hide();
+            });
+
+            // Guardar (agregar al carrito)
+            $(document).on('click', '#cfg-save-btn', function () {
+                if (!cfgState.colorId || totalTallas() === 0) return;
+                var p = cfgState.producto;
+
+                var tallasItems = Object.keys(cfgState.tallas).map(function (tid) {
+                    var t = getTallasArray().find(function (x) { return x.id == tid; });
+                    return {
+                        tallaId: parseInt(tid, 10),
+                        tallaLabel: t ? (t.etiqueta || t.nombre) : '—',
+                        qty: parseInt(cfgState.tallas[tid], 10) || 0
+                    };
+                }).filter(function (x) { return x.qty > 0; });
+
+                var totalQty = tallasItems.reduce(function (a, x) { return a + x.qty; }, 0);
+                var unit = parseFloat(p.precio_base || 0);
+                var subtotal = totalQty * unit;
+
+                var item = {
+                    id: cfgState.cartItemId || ('cit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),
+                    productoId: p.id,
+                    productoCodigo: p.codigo || '',
+                    productoModelo: p.modelo || '',
+                    productoTipo: p.tipo_producto ? p.tipo_producto.nombre : '',
+                    productoPrecio: unit,
+                    colorId: cfgState.colorId,
+                    colorNombre: cfgState.colorNombre,
+                    colorHex: cfgState.colorHex,
+                    tallas: tallasItems,
+                    totalQty: totalQty,
+                    unitPrice: unit,   // sin recargo de bordados (Fase 4 los maneja por línea)
+                    subtotal: subtotal,
+                    summary: cfgState.colorNombre + ' · ' +
+                             tallasItems.map(function (x) { return x.tallaLabel + '×' + x.qty; }).join(' · ')
+                };
+
+                window.cotCart = window.cotCart || [];
+                if (cfgState.cartItemId) {
+                    var idx = window.cotCart.findIndex(function (c) { return c.id === cfgState.cartItemId; });
+                    if (idx >= 0) window.cotCart[idx] = item;
+                    else window.cotCart.push(item);
+                } else {
+                    window.cotCart.push(item);
+                }
+
+                if (cfgModalInstance) cfgModalInstance.hide();
+
+                if (window.cotCatalog) {
+                    window.cotCatalog.renderCart();
+                    window.cotCatalog.renderGrid();
+                }
+
+                // Toast suave
+                Swal.fire({
+                    icon: 'success',
+                    title: cfgState.cartItemId ? 'Actualizado' : 'Añadido al carrito',
+                    text: p.modelo + ' · ' + cfgState.colorNombre + ' · ' + totalQty + ' unidades',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1700
+                });
+            });
+
+            // Cargar colores/tallas si aún no están cargados al abrir
+            $('#cotConfiguradorModal').on('show.bs.modal', function () {
+                if (typeof coloresArray !== 'undefined' && (!coloresArray || coloresArray.length === 0)) {
+                    $.get("{{ route('colores.data') }}", function (data) {
+                        coloresArray = data;
+                        renderColorGrid();
+                    });
+                }
+                if (typeof tallasArray !== 'undefined' && (!tallasArray || tallasArray.length === 0)) {
+                    if (typeof cargarTallasCatalogo === 'function') {
+                        cargarTallasCatalogo(renderTallasGrid);
+                    }
+                }
+            });
+
+            // Reset al cerrar
+            $('#cotConfiguradorModal').on('hidden.bs.modal', function () {
+                cfgState = { producto: null, colorId: null, colorNombre: '', colorHex: null, tallas: {}, cartItemId: null };
+            });
+
+            // Permitir editar item del carrito (lateral) — abrir configurador con datos cargados
+            $(document).on('click', '.cat-cart-item', function (e) {
+                if ($(e.target).closest('.cat-cart-item-remove').length) return;
+                var $info = $(this).find('.cat-cart-item-info');
+                if (!$info.length) return;
+                // El item id se almacena en el li padre via data-cart-item-id (lo agregaré en Fase 4)
+                // Por ahora doble-click no hace nada en Fase 3.
+            });
+
+            window.cotConfigurador = {
+                open: openConfigurador,
+                state: cfgState
+            };
+        })();
+
+        // ╔══════════════════════════════════════════════════════════════════
         // ║ COTIZACIONES — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
         // ║ Fase 1: navegación, validación mínima, sincronización footer,
         // ║ refresco de KPIs (paso 2) y resumen visual (paso 3).

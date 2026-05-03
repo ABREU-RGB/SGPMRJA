@@ -695,6 +695,128 @@
     </div>
 </div>
 
+{{-- ════════════════════════════════════════════════════════════════════
+     Modal Configurador de Producto — Fase 3
+     Se abre al clickear una card del catálogo. Color + tallas matrix.
+     Los bordados se configuran por línea desde el paso 2 (Fase 4).
+     ════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade atlantico-modal atlantico-modal--op cot-config-modal" id="cotConfiguradorModal"
+    tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <button type="button" class="btn btn-sm cfg-back-btn" id="cfg-back-to-catalog"
+                        title="Volver al catálogo">
+                        <i class="ri-arrow-left-line"></i>
+                    </button>
+                    <div>
+                        <p class="cfg-eyebrow mb-0" id="cfg-eyebrow">Configurar producto</p>
+                        <h5 class="modal-title m-0" id="cfg-title">—</h5>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body p-0 cfg-body">
+                <div class="cfg-grid">
+
+                    {{-- Columna izquierda: ficha del producto --}}
+                    <aside class="cfg-info">
+                        <div class="cfg-media">
+                            <div class="cfg-media-inner" id="cfg-media-inner">
+                                <i class="ri-t-shirt-2-line"></i>
+                            </div>
+                        </div>
+                        <div class="cfg-info-body">
+                            <p class="cfg-info-codigo" id="cfg-info-codigo">—</p>
+                            <h6 class="cfg-info-modelo" id="cfg-info-modelo">—</h6>
+                            <p class="cfg-info-tipo" id="cfg-info-tipo">—</p>
+                            <div class="cfg-info-price-block">
+                                <span class="cfg-info-price-label">Precio base</span>
+                                <span class="cfg-info-price-value" id="cfg-info-precio">$0,00</span>
+                            </div>
+                            <p class="cfg-info-help">
+                                <i class="ri-information-line me-1"></i>El bordado se configura por
+                                línea en el paso 2 después de confirmar el carrito.
+                            </p>
+                        </div>
+                    </aside>
+
+                    {{-- Columna derecha: configuración --}}
+                    <main class="cfg-form">
+
+                        {{-- 1. Color --}}
+                        <section class="cfg-section">
+                            <header class="cfg-section-header">
+                                <span class="cfg-section-num">1</span>
+                                <div>
+                                    <h6 class="cfg-section-title">Color</h6>
+                                    <p class="cfg-section-desc">Selecciona el color para esta configuración.</p>
+                                </div>
+                                <span class="cfg-color-selected" id="cfg-color-selected">Sin seleccionar</span>
+                            </header>
+                            <div class="cfg-color-grid" id="cfg-color-grid">
+                                {{-- Renderizado por JS --}}
+                            </div>
+                        </section>
+
+                        {{-- 2. Tallas y cantidades --}}
+                        <section class="cfg-section">
+                            <header class="cfg-section-header">
+                                <span class="cfg-section-num">2</span>
+                                <div>
+                                    <h6 class="cfg-section-title">Tallas y cantidades</h6>
+                                    <p class="cfg-section-desc">Indica cuántas unidades de cada talla.</p>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link cfg-distribute-btn"
+                                    id="cfg-distribute-btn">
+                                    <i class="ri-equalizer-line me-1"></i>Distribuir uniforme
+                                </button>
+                            </header>
+                            <div class="cfg-tallas-grid" id="cfg-tallas-grid">
+                                {{-- Renderizado por JS --}}
+                            </div>
+                            <div class="cfg-tallas-summary" id="cfg-tallas-summary">
+                                <span>Total unidades</span>
+                                <strong id="cfg-tallas-total">0</strong>
+                            </div>
+                        </section>
+
+                    </main>
+                </div>
+
+                {{-- Footer sticky con resumen y acciones --}}
+                <div class="cfg-actions">
+                    <div class="cfg-actions-summary">
+                        <div class="cfg-summary-item">
+                            <span class="cfg-summary-label">Unidades</span>
+                            <span class="cfg-summary-value" id="cfg-summary-qty">0</span>
+                        </div>
+                        <div class="cfg-summary-item">
+                            <span class="cfg-summary-label">Precio unitario</span>
+                            <span class="cfg-summary-value" id="cfg-summary-unit">$0,00</span>
+                        </div>
+                        <div class="cfg-summary-item cfg-summary-item--total">
+                            <span class="cfg-summary-label">Subtotal</span>
+                            <span class="cfg-summary-value" id="cfg-summary-subtotal">$0,00</span>
+                        </div>
+                    </div>
+                    <div class="cfg-actions-buttons">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-atlantico-brand" id="cfg-save-btn" disabled>
+                            <i class="ri-shopping-cart-2-line me-1"></i>
+                            <span id="cfg-save-btn-label">Agregar al carrito</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Agregar/Editar Cliente (reutilizado) -->
 <div class="modal fade atlantico-modal atlantico-modal--op" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
