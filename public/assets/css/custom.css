@@ -1297,6 +1297,405 @@ header#page-topbar,
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   COTIZACIÓN — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
+   Componentes: stepper, step-content, kpis, empty-state, resumen-card,
+   tabla resumen, footer del wizard. Light + dark mode.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Stepper visual ─────────────────────────────────────────────── */
+.cot-stepper-wrapper {
+    background: linear-gradient(180deg, #f6f9fd 0%, #ffffff 100%);
+    padding: 18px 24px 16px;
+    border-bottom: 1px solid rgba(30, 60, 114, 0.08);
+}
+
+.cot-stepper {
+    display: flex;
+    align-items: flex-start;
+    max-width: 540px;
+    margin: 0 auto;
+    gap: 4px;
+}
+
+.cot-step-marker {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 0;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: #94a3b8;
+    transition: color 0.2s ease;
+}
+
+.cot-step-marker:hover { color: #1e3c72; }
+
+.cot-step-marker .cot-step-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 2px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #64748b;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.cot-step-marker .cot-step-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: inherit;
+}
+
+.cot-step-marker.is-active {
+    color: #1e3c72;
+}
+.cot-step-marker.is-active .cot-step-label { color: #1e3c72; }
+.cot-step-marker.is-active .cot-step-dot {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-color: #1e3c72;
+    color: #ffffff;
+    box-shadow: 0 4px 12px -2px rgba(30, 60, 114, 0.45);
+    transform: scale(1.05);
+}
+
+.cot-step-marker.is-complete .cot-step-dot {
+    background: #00d9a5;
+    border-color: #00d9a5;
+    color: transparent;
+}
+.cot-step-marker.is-complete .cot-step-dot::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.cot-step-marker.is-complete { color: #006b52; }
+.cot-step-marker.is-complete .cot-step-label { color: #006b52; }
+
+.cot-step-line {
+    flex: 1 1 auto;
+    height: 2px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    position: relative;
+    margin-top: 17px;
+    overflow: hidden;
+}
+
+.cot-step-line-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #1e3c72 0%, #00d9a5 100%);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Wizard body & step content ─────────────────────────────────── */
+.cot-wizard-body {
+    padding: 24px 28px !important;
+    min-height: 460px;
+    background: #fafbfd;
+}
+
+.cot-step-content { display: none; }
+.cot-step-content.is-active {
+    display: block;
+    animation: cotStepIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cotStepIn {
+    from { opacity: 0; transform: translateX(14px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.cot-step-header { margin-bottom: 22px; }
+.cot-step-tag {
+    display: inline-block;
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #00b88c;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.cot-step-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin: 0 0 4px;
+    line-height: 1.2;
+}
+.cot-step-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+    max-width: 620px;
+}
+
+/* ── KPIs (paso 2) ─────────────────────────────────────────────── */
+.cot-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+.cot-kpi {
+    background: #ffffff;
+    border: 1px solid rgba(30, 60, 114, 0.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.cot-kpi:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -8px rgba(30, 60, 114, 0.18);
+}
+.cot-kpi-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    font-weight: 600;
+}
+.cot-kpi-value {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #1e3c72;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+.cot-kpi--total {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-color: transparent;
+    box-shadow: 0 8px 20px -10px rgba(30, 60, 114, 0.55);
+}
+.cot-kpi--total .cot-kpi-label { color: rgba(255, 255, 255, 0.72); }
+.cot-kpi--total .cot-kpi-value { color: #ffffff; }
+
+/* ── Empty state (paso 2) ──────────────────────────────────────── */
+.cot-empty-state {
+    margin: 28px 0;
+    padding: 36px 24px;
+    text-align: center;
+    background: #ffffff;
+    border: 2px dashed rgba(30, 60, 114, 0.18);
+    border-radius: 14px;
+}
+.cot-empty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: rgba(0, 217, 165, 0.12);
+    color: #00b88c;
+    font-size: 1.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cot-empty-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e3c72;
+    margin-bottom: 6px;
+}
+.cot-empty-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0 auto 16px;
+    max-width: 360px;
+}
+
+/* ── Resumen (paso 3) ──────────────────────────────────────────── */
+.cot-resumen-card {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 70%, #0d6efd 220%);
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 0;
+    box-shadow: 0 16px 32px -16px rgba(30, 60, 114, 0.55);
+    overflow: hidden;
+}
+.cot-resumen-card-header {
+    padding: 14px 20px;
+    background: rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+}
+.cot-resumen-card-header i { font-size: 1.05rem; color: #00d9a5; }
+.cot-resumen-card-body { padding: 18px 22px 22px; }
+
+.cot-resumen-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 9px 0;
+    font-size: 0.95rem;
+}
+.cot-resumen-row-label { color: rgba(255, 255, 255, 0.78); }
+.cot-resumen-row-value {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: #ffffff;
+}
+.cot-resumen-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 6px 0 4px;
+}
+.cot-resumen-row--total .cot-resumen-row-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.7);
+}
+.cot-resumen-row--total .cot-resumen-row-value {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.cot-resumen-tabla-wrap { max-height: 220px; overflow-y: auto; }
+.cot-resumen-tabla thead th {
+    background: #f3f6fc;
+    color: #1e3c72;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(30, 60, 114, 0.1);
+    padding: 9px 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.cot-resumen-tabla tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px dashed rgba(30, 60, 114, 0.08);
+    font-size: 0.88rem;
+}
+
+/* ── Footer del wizard ─────────────────────────────────────────── */
+.cot-wizard-footer {
+    background: #f8fafc !important;
+    border-top: 1px solid rgba(30, 60, 114, 0.1) !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px !important;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.cot-wizard-footer-info { color: #64748b; font-size: 0.78rem; }
+.cot-wizard-step-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+    border: 1px solid rgba(30, 60, 114, 0.1);
+    color: #1e3c72;
+    font-variant-numeric: tabular-nums;
+}
+.cot-wizard-step-info::before {
+    content: "PASO";
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.12em;
+    margin-right: 2px;
+}
+.cot-wizard-footer-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ── Dark mode — Wizard cotización ───────────────────────────── */
+[data-bs-theme="dark"] .cot-stepper-wrapper {
+    background: linear-gradient(180deg, #161b26 0%, #0f1521 100%);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+[data-bs-theme="dark"] .cot-step-marker { color: #64748b; }
+[data-bs-theme="dark"] .cot-step-marker:hover { color: #cbd5e1; }
+[data-bs-theme="dark"] .cot-step-marker .cot-step-dot {
+    background: #1f2937;
+    border-color: #334155;
+    color: #94a3b8;
+}
+[data-bs-theme="dark"] .cot-step-marker.is-active .cot-step-label { color: #cbd5e1; }
+[data-bs-theme="dark"] .cot-step-marker.is-complete .cot-step-label { color: #34d399; }
+[data-bs-theme="dark"] .cot-step-line { background: #334155; }
+
+[data-bs-theme="dark"] .cot-wizard-body { background: #0f1521; }
+[data-bs-theme="dark"] .cot-step-title { color: #e2e8f0; }
+[data-bs-theme="dark"] .cot-step-desc { color: #94a3b8; }
+[data-bs-theme="dark"] .cot-step-tag { color: #34d399; }
+
+[data-bs-theme="dark"] .cot-kpi {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+[data-bs-theme="dark"] .cot-kpi-label { color: #64748b; }
+[data-bs-theme="dark"] .cot-kpi-value { color: #e2e8f0; }
+[data-bs-theme="dark"] .cot-kpi--total {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+[data-bs-theme="dark"] .cot-empty-state {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+[data-bs-theme="dark"] .cot-empty-title { color: #e2e8f0; }
+[data-bs-theme="dark"] .cot-empty-desc { color: #94a3b8; }
+
+[data-bs-theme="dark"] .cot-resumen-tabla thead th {
+    background: #1f2937;
+    color: #e2e8f0;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .cot-resumen-tabla tbody td {
+    color: #cbd5e1;
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .cot-wizard-footer {
+    background: #0f1521 !important;
+    border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+[data-bs-theme="dark"] .cot-wizard-footer-info { color: #64748b; }
+[data-bs-theme="dark"] .cot-wizard-step-info {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+}
+[data-bs-theme="dark"] .cot-wizard-step-info::before { color: #64748b; }
+
 /* ============================================
    MÓDULO PEDIDOS
    ============================================ */

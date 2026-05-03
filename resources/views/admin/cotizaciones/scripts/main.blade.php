@@ -1882,19 +1882,20 @@
             calculateCotizacionTotals();
         });
         $('#abono-field').on('change keyup', updateCotizacionRemaining);
-        // Inicializar con un producto vacío al abrir el modal de creación
+        // Reset al abrir el modal en modo creación (wizard 3 pasos)
+        // El usuario agregará productos desde el paso 2 vía botón "Agregar Producto" (Fase 1)
+        // o desde "Explorar Catálogo" (Fase 2). El empty-state aparece si no hay productos.
         $('#create-btn').on('click', function () {
-            $('#modalTitle').text('Agregar Cotización');
+            $('#modalTitle').text('Nueva Cotización');
             $('#cotizacionForm')[0].reset();
             $('#id-field').val('');
             $('#cliente-id-field').val('').prop('disabled', false).removeClass('campo-protegido');
             $('#fecha-cotizacion-field').val('').prop('readonly', false).removeClass('campo-protegido');
-            $('#add-btn').show();
-            $('#edit-btn').hide();
+            $('#prioridad-field').val('Normal');
             $('#estado-field-wrapper').hide();
             $('#productos-container').empty();
-            addProductItem();
             calculateCotizacionTotals();
+            // showStep(1) y la visibilidad de add-btn / edit-btn se ajustan en el handler show.bs.modal
         });
 
 
@@ -3050,5 +3051,224 @@
                 }
             });
         });
+
+        // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
+        // ║ Fase 1: navegación, validación mínima, sincronización footer,
+        // ║ refresco de KPIs (paso 2) y resumen visual (paso 3).
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+            var TOTAL_STEPS = 3;
+            var IVA_RATE = 0.16;
+            var currentStep = 1;
+
+            function isEditMode() { return !!$('#id-field').val(); }
+
+            function escHtmlW(str) {
+                return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            function showStep(n) {
+                n = Math.max(1, Math.min(TOTAL_STEPS, n));
+                currentStep = n;
+
+                document.querySelectorAll('#showModal .cot-step-content').forEach(function (sec) {
+                    var step = parseInt(sec.dataset.step, 10);
+                    var active = step === n;
+                    sec.classList.toggle('is-active', active);
+                    sec.hidden = !active;
+                });
+
+                document.querySelectorAll('#showModal .cot-step-marker').forEach(function (mk) {
+                    var step = parseInt(mk.dataset.step, 10);
+                    mk.classList.toggle('is-active', step === n);
+                    mk.classList.toggle('is-complete', step < n);
+                    mk.setAttribute('aria-selected', step === n ? 'true' : 'false');
+                });
+
+                document.querySelectorAll('#showModal .cot-step-line-fill').forEach(function (lf) {
+                    var line = parseInt(lf.dataset.line, 10);
+                    lf.style.width = (line < n) ? '100%' : '0%';
+                });
+
+                var ind = document.getElementById('cot-step-current');
+                if (ind) ind.textContent = String(n);
+
+                var $prev = $('#btn-cot-prev');
+                var $next = $('#btn-cot-next');
+                var $add = $('#add-btn');
+                var $edit = $('#edit-btn');
+
+                $prev.toggle(n > 1);
+
+                if (n === TOTAL_STEPS) {
+                    $next.hide();
+                    if (isEditMode()) { $add.hide(); $edit.show(); }
+                    else { $edit.hide(); $add.show(); }
+                    refreshResumen();
+                } else {
+                    $next.show();
+                    $add.hide(); $edit.hide();
+                }
+
+                if (n === 2) refreshKPIs();
+            }
+
+            function nextStep() {
+                if (currentStep < TOTAL_STEPS) {
+                    if (!validateStep(currentStep)) return;
+                    showStep(currentStep + 1);
+                }
+            }
+            function prevStep() {
+                if (currentStep > 1) showStep(currentStep - 1);
+            }
+
+            function validateStep(n) {
+                if (n === 1) {
+                    var clienteId = $('#cliente-id-field').val();
+                    var fecha = $('#fecha-cotizacion-field').val();
+                    if (!clienteId) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Cliente requerido',
+                            text: 'Debes seleccionar o crear un cliente antes de continuar.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        return false;
+                    }
+                    if (!fecha) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Fecha requerida',
+                            text: 'La fecha de emisión es obligatoria.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        $('#fecha-cotizacion-field').trigger('focus');
+                        return false;
+                    }
+                    return true;
+                }
+                if (n === 2) {
+                    var rows = $('#productos-container .product-item').length;
+                    if (!rows) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Sin productos',
+                            text: 'Agrega al menos un producto para continuar.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        return false;
+                    }
+                    return true;
+                }
+                return true;
+            }
+
+            function readLineState($card) {
+                var qty = parseFloat($card.find('.cantidad-input').val()) || 0;
+                var base = parseFloat($card.find('.precio-unitario-input').val()) || 0;
+                var lleva = parseInt($card.find('.lleva-bordado-value').val() || 0, 10) === 1;
+                var recargo = lleva && typeof calcularRecargoUnitarioBordadoDesdeLista === 'function'
+                    ? calcularRecargoUnitarioBordadoDesdeLista(getCardBordados($card))
+                    : 0;
+                return { qty: qty, unit: base + recargo };
+            }
+
+            function refreshEmptyState() {
+                var hasItems = $('#productos-container .product-item').length > 0;
+                $('#cot-empty-state').toggle(!hasItems);
+            }
+
+            function refreshKPIs() {
+                refreshEmptyState();
+                var $items = $('#productos-container .product-item');
+                var subtotal = 0;
+                $items.each(function () {
+                    var s = readLineState($(this));
+                    subtotal += s.qty * s.unit;
+                });
+                $('#cot-kpi-items').text($items.length);
+                $('#cot-kpi-subtotal').text(formatMoney(subtotal));
+                $('#cot-kpi-total').text(formatMoney(subtotal));
+            }
+
+            function refreshResumen() {
+                var $items = $('#productos-container .product-item');
+                var subtotal = 0;
+                var rows = [];
+                $items.each(function () {
+                    var $c = $(this);
+                    var s = readLineState($c);
+                    var rowSubtotal = s.qty * s.unit;
+                    subtotal += rowSubtotal;
+
+                    var prodName = $c.find('.producto-text-display').val() || 'Producto sin definir';
+                    var colorName = $c.find('.color-display').val() || '';
+                    var tallaName = $c.find('.talla-input-display').val() || '';
+                    var bits = [colorName, tallaName].filter(Boolean).join(' · ');
+                    var label = prodName + (bits ? ' — ' + bits : '');
+
+                    rows.push(
+                        '<tr>' +
+                            '<td class="text-truncate" style="max-width:0;" title="' + escHtmlW(label) + '">' + escHtmlW(label) + '</td>' +
+                            '<td class="text-center">' + s.qty + '</td>' +
+                            '<td class="text-end font-monospace">' + formatMoney(s.unit) + '</td>' +
+                            '<td class="text-end font-monospace fw-semibold">' + formatMoney(rowSubtotal) + '</td>' +
+                        '</tr>'
+                    );
+                });
+                if (!rows.length) {
+                    rows.push('<tr><td colspan="4" class="text-center text-muted py-3 small">Sin productos agregados</td></tr>');
+                }
+                var iva = subtotal * IVA_RATE;
+                var total = subtotal + iva;
+                $('#cot-resumen-lineas').html(rows.join(''));
+                $('#cot-resumen-subtotal').text(formatMoney(subtotal));
+                $('#cot-resumen-iva').text(formatMoney(iva));
+                $('#cot-resumen-total').text(formatMoney(total));
+            }
+
+            // === LISTENERS =====================================================
+            $('#btn-cot-next').on('click', nextStep);
+            $('#btn-cot-prev').on('click', prevStep);
+
+            // Click en marker del stepper: retroceder libre, avanzar con validación
+            $(document).on('click', '#showModal .cot-step-marker', function () {
+                var target = parseInt(this.dataset.step, 10);
+                if (target === currentStep) return;
+                if (target < currentStep) { showStep(target); return; }
+                for (var s = currentStep; s < target; s++) {
+                    if (!validateStep(s)) return;
+                }
+                showStep(target);
+            });
+
+            // KPIs en vivo en paso 2
+            $(document).on('change keyup',
+                '#productos-container .cantidad-input, #productos-container .precio-unitario-input',
+                function () { if (currentStep === 2) setTimeout(refreshKPIs, 0); });
+            $(document).on('change', '#productos-container .lleva-bordado-checkbox', function () {
+                if (currentStep === 2) setTimeout(refreshKPIs, 30);
+            });
+            $(document).on('click', '#add-producto-item, #productos-container .remove-producto-item', function () {
+                setTimeout(refreshKPIs, 60);
+            });
+            // Cambios en los selectores de producto/color/talla
+            $(document).on('click', '#productos-container .producto-selector-trigger, #productos-container .buscar-color-trigger, #productos-container .buscar-talla-trigger', function () {
+                setTimeout(refreshKPIs, 600);
+            });
+
+            // Reset al abrir el modal
+            $('#showModal').on('show.bs.modal', function () { showStep(1); refreshKPIs(); });
+            $('#showModal').on('shown.bs.modal', function () { showStep(currentStep); });
+            $('#showModal').on('hidden.bs.modal', function () { currentStep = 1; });
+
+            // API global por si otras funciones quieren usarlo
+            window.cotWizard = {
+                show: showStep, next: nextStep, prev: prevStep,
+                refreshKPIs: refreshKPIs, refreshResumen: refreshResumen
+            };
+        })();
     });
 </script>
