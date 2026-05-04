@@ -2926,6 +2926,54 @@
             $('.invalid-feedback').hide();
         });
 
+        // === Lógica dinámica: Natural vs Jurídico/Gubernamental (modal cliente cotización) ===
+        function toggleClienteFieldsCotizacion() {
+            var tipo = $('#tipo_cliente-field-cliente').val();
+            var $prefixSelect = $('#documento-prefix-field-cliente');
+            var $docInput = $('#documento-number-field-cliente');
+
+            if (tipo === 'natural' || tipo === '') {
+                $('#campos-persona-natural-cliente').removeClass('d-none');
+                $('#nombre-field-cliente').prop('required', true).prop('disabled', false);
+                $('#apellido-field-cliente').prop('required', true).prop('disabled', false);
+
+                $('#campos-razon-social-cliente').addClass('d-none');
+                $('#razon-social-field-cliente').prop('required', false).prop('disabled', true).val('');
+
+                $prefixSelect.html('<option value="V-">V-</option><option value="E-">E-</option>');
+                $prefixSelect.prop('disabled', false);
+                $docInput.attr('maxlength', '8');
+                if ($docInput.val().length > 8) $docInput.val($docInput.val().slice(0, 8));
+
+            } else if (tipo === 'juridico') {
+                $('#campos-persona-natural-cliente').addClass('d-none');
+                $('#nombre-field-cliente').prop('required', false).prop('disabled', true).val('');
+                $('#apellido-field-cliente').prop('required', false).prop('disabled', true).val('');
+
+                $('#campos-razon-social-cliente').removeClass('d-none');
+                $('#razon-social-field-cliente').prop('required', true).prop('disabled', false);
+
+                $prefixSelect.html('<option value="J-">J-</option>');
+                $prefixSelect.prop('disabled', true);
+                $docInput.attr('maxlength', '9');
+                if ($docInput.val().length > 9) $docInput.val($docInput.val().slice(0, 9));
+
+            } else if (tipo === 'gubernamental') {
+                $('#campos-persona-natural-cliente').addClass('d-none');
+                $('#nombre-field-cliente').prop('required', false).prop('disabled', true).val('');
+                $('#apellido-field-cliente').prop('required', false).prop('disabled', true).val('');
+
+                $('#campos-razon-social-cliente').removeClass('d-none');
+                $('#razon-social-field-cliente').prop('required', true).prop('disabled', false);
+
+                $prefixSelect.html('<option value="G-">G-</option>');
+                $prefixSelect.prop('disabled', true);
+                $docInput.attr('maxlength', '9');
+                if ($docInput.val().length > 9) $docInput.val($docInput.val().slice(0, 9));
+            }
+        }
+        $(document).on('change', '#tipo_cliente-field-cliente', toggleClienteFieldsCotizacion);
+
         // Abrir modal de agregar cliente
         $('#open-add-cliente-modal').on('click', function () {
             $('#clienteFormCotizacion')[0].reset();
@@ -2939,6 +2987,8 @@
             $('#estatus-field-cliente').prop('checked', true);
             $('#estatus-label-cliente').text('Activo');
             $('#ciudad-field-cliente').html('<option value="">Primero seleccione un estado</option>');
+            $('#tipo_cliente-field-cliente').val('');
+            toggleClienteFieldsCotizacion();
             $('#modalAddCliente').modal('show');
         });
 

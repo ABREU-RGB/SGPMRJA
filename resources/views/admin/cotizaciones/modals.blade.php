@@ -912,24 +912,33 @@
     </div>
 </div>
 
-<!-- Modal Agregar/Editar Cliente (reutilizado) -->
-<div class="modal fade atlantico-modal atlantico-modal--op" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-    data-bs-keyboard="false">
+{{-- ════════════════════════════════════════════════════════════════════
+     Modal Agregar/Editar Cliente — réplica visual del estándar /clientes
+     IDs preservan sufijo "-cliente" para no chocar con el modal padre.
+     ════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade atlantico-modal" id="modalAddCliente" tabindex="-1" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+        <form id="clienteFormCotizacion" class="modal-content" novalidate>
+            <div class="modal-header bg-light p-3">
                 <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="clienteFormCotizacion">
-                <div class="modal-body">
-                    <input type="hidden" id="id-field-cliente" />
+            <div class="modal-body">
+                <input type="hidden" id="id-field-cliente" />
 
-                    <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
-                    <div class="row mb-3">
-                        <div class="col-md-5">
-                            <label for="documento-field-cliente" class="form-label required">Documento (Cédula o
-                                RIF)</label>
+                {{-- 1. Identificación: Documento + Tipo Cliente --}}
+                <div class="modal-form-section">
+                    <div class="section-header-compact">
+                        <div class="modal-form-section-title">
+                            <i class="ri-fingerprint-line"></i>Identificación
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-0">
+                        <div class="col-md-6">
+                            <label for="documento-number-field-cliente" class="form-label required">
+                                Documento (Cédula o RIF)
+                            </label>
                             <div class="input-group">
                                 <select class="form-select" id="documento-prefix-field-cliente"
                                     style="max-width: 70px;">
@@ -942,31 +951,29 @@
                                     placeholder="Nro. documento" maxlength="10" required />
                             </div>
                             <input type="hidden" id="documento-field-cliente" name="documento" />
-                            <small class="text-muted">Máximo 10 dígitos</small>
-                            <div id="documento-error-cliente" class="invalid-feedback"></div>
+                            <small class="text-muted"
+                                style="margin-top: -6px; display: block; margin-bottom: 6px;">Máximo 10 dígitos</small>
+                            <div id="documento-error-cliente" class="invalid-feedback" style="display: none;"></div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="tipo_cliente-field-cliente" class="form-label required">Tipo de Cliente</label>
                             <select id="tipo_cliente-field-cliente" name="tipo_cliente" class="form-select" required>
                                 <option value="">Seleccione</option>
                                 <option value="natural">Natural</option>
                                 <option value="juridico">Jurídico</option>
+                                <option value="gubernamental">Gubernamental</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label d-block">Estatus</label>
-                            <div class="form-check form-switch form-switch-success mt-2">
-                                <input type="hidden" name="estatus" value="0" />
-                                <input class="form-check-input" type="checkbox" role="switch" id="estatus-field-cliente"
-                                    name="estatus" value="1" checked />
-                                <label class="form-check-label" for="estatus-field-cliente"
-                                    id="estatus-label-cliente">Activo</label>
-                            </div>
-                        </div>
+                    </div>
+                </div>
+
+                {{-- 2. Datos del Cliente: Nombre+Apellido (natural) / Razón Social (jurídico/gubernamental) --}}
+                <div class="modal-form-section">
+                    <div class="modal-form-section-title">
+                        <i class="ri-user-3-line"></i>Datos del Cliente
                     </div>
 
-                    <!-- Fila 2: Nombre + Apellido -->
-                    <div class="row mb-3">
+                    <div id="campos-persona-natural-cliente" class="row g-2 mb-0">
                         <div class="col-md-6">
                             <label for="nombre-field-cliente" class="form-label required">Nombre</label>
                             <input type="text" id="nombre-field-cliente" name="nombre" class="form-control"
@@ -981,8 +988,21 @@
                         </div>
                     </div>
 
-                    <!-- Fila 3: Email + Teléfono -->
-                    <div class="row mb-3">
+                    <div id="campos-razon-social-cliente" class="row g-2 mb-0 d-none">
+                        <div class="col-12">
+                            <label for="razon-social-field-cliente" class="form-label">Razón Social</label>
+                            <input type="text" id="razon-social-field-cliente" name="nombre" class="form-control"
+                                placeholder="Razón Social de la empresa" maxlength="200" />
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 3. Contacto: Email + Teléfono + Dirección --}}
+                <div class="modal-form-section">
+                    <div class="modal-form-section-title">
+                        <i class="ri-contacts-book-2-line"></i>Contacto
+                    </div>
+                    <div class="row g-2 mb-2">
                         <div class="col-md-6">
                             <label for="email-field-cliente" class="form-label">Email</label>
                             <input type="email" id="email-field-cliente" name="email" class="form-control"
@@ -990,7 +1010,7 @@
                             <div id="email-error-cliente" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="telefono-field-cliente" class="form-label required">Teléfono</label>
+                            <label for="telefono-number-field-cliente" class="form-label required">Teléfono</label>
                             <div class="input-group">
                                 <select class="form-select" id="telefono-prefix-field-cliente"
                                     style="max-width: 100px; min-width: 100px;">
@@ -1005,26 +1025,29 @@
                                     placeholder="1234567" maxlength="7" required />
                             </div>
                             <input type="hidden" id="telefono-field-cliente" name="telefono" />
-                            <div id="telefono-error-cliente" class="invalid-feedback"></div>
+                            <div id="telefono-error-cliente" class="invalid-feedback" style="display: none;"></div>
                         </div>
                     </div>
-
-                    <!-- Fila 4: Dirección -->
-                    <div class="row mb-3">
+                    <div class="row g-2 mb-0">
                         <div class="col-12">
                             <label for="direccion-field-cliente" class="form-label required">Dirección</label>
-                            <input type="text" id="direccion-field-cliente" name="direccion" class="form-control"
-                                placeholder="Dirección completa" maxlength="500" required />
+                            <textarea id="direccion-field-cliente" name="direccion" class="form-control"
+                                placeholder="Dirección completa" maxlength="500" rows="2" required></textarea>
                             <div id="direccion-error-cliente" class="invalid-feedback"></div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Fila 5: Estado (Territorio) + Ciudad -->
-                    <div class="row">
+                {{-- 4. Ubicación: Estado + Municipio --}}
+                <div class="modal-form-section">
+                    <div class="modal-form-section-title">
+                        <i class="ri-map-pin-2-line"></i>Ubicación
+                    </div>
+                    <div class="row g-2">
                         <div class="col-md-6">
                             <label for="estado_territorial-field-cliente" class="form-label required">Estado</label>
-                            <select name="estado_territorial" id="estado_territorial-field-cliente" class="form-select"
-                                required>
+                            <select name="estado_territorial" id="estado_territorial-field-cliente"
+                                class="form-select" required>
                                 <option value="">Seleccione estado</option>
                                 <option value="Amazonas">Amazonas</option>
                                 <option value="Anzoátegui">Anzoátegui</option>
@@ -1059,23 +1082,37 @@
                             </select>
                         </div>
                     </div>
-
                 </div>
-                <div class="modal-footer bg-light border-0">
-                    <div class="hstack gap-2 justify-content-end">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                            <i class="ri-close-line me-1"></i>Cerrar
-                        </button>
-                        <button type="button" class="btn btn-success" id="add-btn-cliente">
-                            <i class="ri-add-line me-1"></i>Agregar
-                        </button>
-                        <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
-                            <i class="ri-save-line me-1"></i>Actualizar
-                        </button>
+
+                {{-- 5. Estatus --}}
+                <div class="modal-form-section mb-0">
+                    <div class="modal-form-section-title">
+                        <i class="ri-shield-check-line"></i>Estatus
+                    </div>
+                    <div class="form-check form-switch form-switch-success">
+                        <input type="hidden" name="estatus" value="0" />
+                        <input class="form-check-input" type="checkbox" role="switch" id="estatus-field-cliente"
+                            name="estatus" value="1" checked />
+                        <label class="form-check-label" for="estatus-field-cliente"
+                            id="estatus-label-cliente">Activo</label>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="modal-footer bg-light border-0">
+                <div class="hstack gap-2 justify-content-end">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cerrar
+                    </button>
+                    <button type="button" class="btn btn-success" id="add-btn-cliente">
+                        <i class="ri-add-line me-1"></i>Agregar
+                    </button>
+                    <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
+                        <i class="ri-save-line me-1"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
