@@ -951,8 +951,7 @@
                                     placeholder="Nro. documento" maxlength="10" required />
                             </div>
                             <input type="hidden" id="documento-field-cliente" name="documento" />
-                            <small class="text-muted"
-                                style="margin-top: -6px; display: block; margin-bottom: 6px;">Máximo 10 dígitos</small>
+                            <small class="text-muted d-block mt-1 mb-1">Máximo 10 dígitos</small>
                             <div id="documento-error-cliente" class="invalid-feedback" style="display: none;"></div>
                         </div>
                         <div class="col-md-6">
