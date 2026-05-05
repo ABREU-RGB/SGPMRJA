@@ -4428,15 +4428,15 @@
                 window.__cotGroupedDebounce = setTimeout(refreshGroupedList, 220);
             });
             $(document).on('change', '#productos-container .lleva-bordado-checkbox', function () {
-                setTimeout(refreshGroupedList, 80);
+                refreshGroupedList();
             });
             $(document).on('click', '#productos-container .remove-producto-item', function () {
-                setTimeout(refreshGroupedList, 80);
+                refreshGroupedList();
             });
 
             // También refrescar cuando se carga edit (Fase 6) o se agrega manual
             $(document).on('click', '#add-producto-item', function () {
-                setTimeout(refreshGroupedList, 100);
+                refreshGroupedList();
             });
         })();
 
@@ -4713,12 +4713,12 @@
             // KPIs en vivo en paso 2
             $(document).on('change keyup',
                 '#productos-container .cantidad-input, #productos-container .precio-unitario-input',
-                function () { if (currentStep === 2) setTimeout(refreshKPIs, 0); });
+                function () { if (currentStep === 2) refreshKPIs(); });
             $(document).on('change', '#productos-container .lleva-bordado-checkbox', function () {
-                if (currentStep === 2) setTimeout(refreshKPIs, 30);
+                if (currentStep === 2) refreshKPIs();
             });
             $(document).on('click', '#add-producto-item, #productos-container .remove-producto-item', function () {
-                setTimeout(refreshKPIs, 60);
+                refreshKPIs();
             });
             // Cambios en los selectores de producto/color/talla
             $(document).on('click', '#productos-container .producto-selector-trigger, #productos-container .buscar-color-trigger, #productos-container .buscar-talla-trigger', function () {

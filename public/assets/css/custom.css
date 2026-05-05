@@ -705,6 +705,10 @@ header#page-topbar,
    Uso: clase "card-maestros" en el <div class="card"> padre.
    ================================================================ */
 
+/* Botones de acción en celdas de DataTable (compartido entre módulos) */
+.dt-action-btn  { padding: 0.2rem 0.45rem !important; }
+.dt-action-icon { font-size: 13px; }
+
 /* ── Card accent — borde izquierdo Navy en card de maestros ── */
 .card-maestros > .card-header {
     border-left: 4px solid #1e3c72;
@@ -4300,6 +4304,31 @@ header#page-topbar,
 [data-bs-theme="dark"] #viewModal .card-header    { background: rgba(78, 122, 199, 0.10) !important; }
 [data-bs-theme="dark"] #viewModal .card-header h6 { color: #93c5fd !important; }
 
+/* Botones sub-maestros (header de Empleados) */
+.btn-link-depto { background-color: #155e75; border-color: #155e75; color: #fff; }
+.btn-link-depto:hover, .btn-link-depto:focus { background-color: #0e4a5d; border-color: #0e4a5d; color: #fff; }
+.btn-link-cargo { background-color: #92400e; border-color: #92400e; color: #fff; }
+.btn-link-cargo:hover, .btn-link-cargo:focus { background-color: #78350f; border-color: #78350f; color: #fff; }
+
+/* Iconos circulares en viewModal de Empleados */
+.emp-icon-box { width: 32px; height: 32px; }
+.emp-icon-box--teal  { background: rgba(0, 217, 165, 0.1); }
+.emp-icon-box--green { background: rgba(46, 204, 113, 0.1); }
+.emp-icon-box--navy  { background: rgba(30, 60, 114, 0.1); }
+.emp-icon--teal  { color: #00d9a5; }
+.emp-icon--green { color: #2ecc71; }
+.emp-icon--navy  { color: #1e3c72; }
+
+/* Persona lookup card en showModal de Empleados */
+.emp-persona-card { border: 1px solid rgba(8, 145, 178, 0.35); background: rgba(8, 145, 178, 0.06); padding: 10px 12px; }
+.emp-persona-card-title { font-size: 0.78rem; font-weight: 600; color: #0891b2; margin-bottom: 4px; }
+.emp-persona-card-data { font-size: 0.8rem; line-height: 1.8; margin-bottom: 8px; }
+.emp-persona-vincular-btn { background: #0891b2 !important; color: #fff !important; font-size: 0.75rem; padding: 3px 12px; border-radius: 20px; }
+.emp-shared-notice { background: rgba(8, 145, 178, 0.08); border: 1px solid rgba(8, 145, 178, 0.3); border-radius: 8px; font-size: 0.82rem; color: #0891b2; }
+.emp-persona-notice-text { font-size: 0.78rem; color: #0891b2; }
+.tipo-doc-select     { max-width: 80px; }
+.phone-prefix-select { max-width: 100px; min-width: 100px; }
+
 /* ============================================
    MÓDULO INSUMOS — Anchos de columna
    ============================================ */
@@ -4450,8 +4479,41 @@ header#page-topbar,
 /* Colores de ícono dictados por el círculo contenedor */
 .inv-icon-circle-navy i    { color: #1e3c72; }
 .inv-icon-circle-teal i    { color: #00d9a5; }
+.inv-icon-circle-green i   { color: #198754; }
+.inv-icon-circle-red i     { color: #dc3545; }
+.inv-icon-circle-teal-strong i { color: #00d9a5; }
 [data-bs-theme="dark"] .inv-icon-circle-navy i { color: #93c5fd; }
 [data-bs-theme="dark"] .inv-icon-circle-teal i { color: #6ee7b7; }
+
+/* Variantes adicionales de color para inv-icon-circle */
+.inv-icon-circle-red         { background: rgba(220, 53, 69, 0.1); }
+.inv-icon-circle-teal-strong { background: rgba(0, 217, 165, 0.2); }
+
+/* Card header teal (Historial de Movimientos) */
+.inv-card-header-teal { background: rgba(0, 217, 165, 0.1) !important; }
+.inv-card-header-teal h6 { color: #00d9a5; }
+
+/* ── Historial de Movimientos — vista standalone ── */
+.info-icon-circle {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.hist-hero-card { background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%); }
+.hist-hero-avatar { width: 50px; height: 50px; }
+.hist-stock-container {
+    background: linear-gradient(135deg, rgba(30, 60, 114, 0.1) 0%, rgba(0, 217, 165, 0.1) 100%);
+}
+.hist-stock-value { color: #1e3c72; }
+.hist-entradas-card { background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%); }
+.hist-salidas-card  { background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%); }
+.hist-kpi-circle { width: 60px; height: 60px; }
+.hist-kpi-circle--entry { background: #198754; }
+.hist-kpi-circle--exit  { background: #dc3545; }
+.historial-motivo { max-width: 200px; }
 
 /* ============================================================
    MÓDULO ÓRDENES DE PRODUCCIÓN — INDEX

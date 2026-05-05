@@ -4,16 +4,6 @@
 
 @push('styles')
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    <style>
-        .info-icon-circle {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -36,13 +26,11 @@
         <!-- Header del Insumo con gradiente -->
         <div class="row mb-3">
             <div class="col-12">
-                <div class="card border-0 shadow-sm"
-                    style="background: linear-gradient(135deg, #1e3c72 0%, #2ecc71 50%, #00d9a5 100%);">
+                <div class="card border-0 shadow-sm hist-hero-card">
                     <div class="card-body py-3">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
-                                <div class="rounded-circle bg-white bg-opacity-25 me-3 d-flex align-items-center justify-content-center"
-                                    style="width: 50px; height: 50px;">
+                                <div class="rounded-circle bg-white bg-opacity-25 me-3 d-flex align-items-center justify-content-center hist-hero-avatar">
                                     <i class="ri-archive-line text-white fs-3"></i>
                                 </div>
                                 <div>
@@ -64,8 +52,8 @@
             <!-- Card de Información del Insumo -->
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                        <h6 class="mb-0" style="color: #1e3c72;">
+                    <div class="card-header border-0 inv-card-header-navy">
+                        <h6 class="mb-0">
                             <i class="ri-information-line me-2"></i>Información del Insumo
                         </h6>
                     </div>
@@ -73,8 +61,8 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="info-icon-circle me-2" style="background: rgba(30, 60, 114, 0.1);">
-                                        <i class="ri-price-tag-3-line" style="color: #1e3c72;"></i>
+                                    <div class="info-icon-circle me-2 inv-icon-circle-navy">
+                                        <i class="ri-price-tag-3-line"></i>
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Proveedor</small>
@@ -85,8 +73,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="info-icon-circle me-2" style="background: rgba(46, 204, 113, 0.1);">
-                                        <i class="ri-money-dollar-circle-line" style="color: #2ecc71;"></i>
+                                    <div class="info-icon-circle me-2 inv-icon-circle-green">
+                                        <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Costo Unitario</small>
@@ -96,8 +84,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="info-icon-circle me-2" style="background: rgba(220, 53, 69, 0.1);">
-                                        <i class="ri-alert-line" style="color: #dc3545;"></i>
+                                    <div class="info-icon-circle me-2 inv-icon-circle-red">
+                                        <i class="ri-alert-line"></i>
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Stock Mínimo</small>
@@ -110,14 +98,13 @@
                         <hr class="my-3">
                         <div class="row">
                             <div class="col-12">
-                                <div class="d-flex align-items-center justify-content-center p-3 rounded"
-                                    style="background: linear-gradient(135deg, rgba(30, 60, 114, 0.1) 0%, rgba(0, 217, 165, 0.1) 100%);">
-                                    <div class="info-icon-circle me-3" style="background: rgba(0, 217, 165, 0.2);">
-                                        <i class="ri-archive-fill fs-4" style="color: #00d9a5;"></i>
+                                <div class="d-flex align-items-center justify-content-center p-3 rounded hist-stock-container">
+                                    <div class="info-icon-circle me-3 inv-icon-circle-teal-strong">
+                                        <i class="ri-archive-fill fs-4"></i>
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">STOCK ACTUAL</small>
-                                        <h3 class="mb-0 fw-bold" style="color: #1e3c72;">
+                                        <h3 class="mb-0 fw-bold hist-stock-value">
                                             {{ number_format($insumo->stock_actual, 2) }} <small
                                                 class="fs-6">{{ $insumo->unidad_medida }}</small></h3>
                                     </div>
@@ -132,11 +119,9 @@
             <div class="col-lg-5">
                 <div class="row h-100">
                     <div class="col-12 mb-3">
-                        <div class="card border-0 shadow-sm h-100"
-                            style="background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%);">
+                        <div class="card border-0 shadow-sm h-100 hist-entradas-card">
                             <div class="card-body d-flex align-items-center">
-                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                    style="width: 60px; height: 60px; background: #198754;">
+                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center hist-kpi-circle hist-kpi-circle--entry">
                                     <i class="ri-arrow-down-line text-white fs-2"></i>
                                 </div>
                                 <div>
@@ -150,11 +135,9 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm h-100"
-                            style="background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);">
+                        <div class="card border-0 shadow-sm h-100 hist-salidas-card">
                             <div class="card-body d-flex align-items-center">
-                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                    style="width: 60px; height: 60px; background: #dc3545;">
+                                <div class="rounded-circle me-3 d-flex align-items-center justify-content-center hist-kpi-circle hist-kpi-circle--exit">
                                     <i class="ri-arrow-up-line text-white fs-2"></i>
                                 </div>
                                 <div>
@@ -175,8 +158,8 @@
         <div class="row">
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                        <h6 class="mb-0" style="color: #00d9a5;">
+                    <div class="card-header border-0 inv-card-header-teal">
+                        <h6 class="mb-0">
                             <i class="ri-history-line me-2"></i>Historial de Movimientos ({{ $movimientos->count() }}
                             registros)
                         </h6>
@@ -212,7 +195,7 @@
                                             <td class="fw-semibold">{{ number_format($movimiento->cantidad, 2) }}</td>
                                             <td class="text-muted">{{ number_format($movimiento->stock_anterior, 2) }}</td>
                                             <td class="fw-semibold">{{ number_format($movimiento->stock_nuevo, 2) }}</td>
-                                            <td><span class="text-truncate d-inline-block" style="max-width: 200px;"
+                                            <td><span class="text-truncate d-inline-block historial-motivo"
                                                     title="{{ $movimiento->motivo }}">{{ $movimiento->motivo }}</span></td>
                                             <td>{{ $movimiento->creadoPor->name }}</td>
                                             <td>{{ $movimiento->created_at->format('d/m/Y H:i') }}</td>
