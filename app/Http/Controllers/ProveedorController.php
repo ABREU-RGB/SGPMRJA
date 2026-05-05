@@ -23,27 +23,53 @@ class ProveedorController extends Controller
 
     public function getProveedores(Request $request)
     {
-        if ($request->has('historial')) {
-            $proveedores = Proveedor::onlyTrashed()->with('persona.telefonos', 'persona.direcciones')->get();
-        } else {
-            $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
+        // ── Base query con relaciones ──
+        $query = Proveedor::with(['persona.telefonos', 'persona.direcciones']);
+
+        // ══════════════════════════════════════════════════════════
+        // FILTROS AVANZADOS — Server-Side (Patrón Maestro S-07)
+        // Réplica exacta del patrón de ClienteController.
+        // ══════════════════════════════════════════════════════════
+
+        // Filtro: Tipo de Proveedor (natural, juridico)
+        if ($request->filled('filter_tipo_proveedor')) {
+            $query->where('tipo_proveedor', $request->input('filter_tipo_proveedor'));
         }
 
-        $data = $proveedores->map(function ($proveedor) {
-            return [
-                'id' => $proveedor->id,
-                'tipo_proveedor' => $proveedor->tipo_proveedor ?? 'juridico',
-                'tipo_display' => ($proveedor->tipo_proveedor ?? 'juridico') === 'natural' ? 'Natural' : 'Jurídico',
-                'nombre_display' => $proveedor->nombre_completo,
-                'documento_display' => $proveedor->documento,
-                'telefono_display' => $proveedor->telefono_unificado,
-                'email_display' => $proveedor->email_unificado,
-                'estado' => $proveedor->estado,
-                'trashed' => $proveedor->trashed(),
-            ];
-        });
+        // Filtro: Estatus (1 = activo, 0 = inactivo/trashed)
+        if ($request->filled('filter_estatus')) {
+            $estatus = $request->input('filter_estatus');
+            if ($estatus === '0') {
+                $query->onlyTrashed();
+            }
+        }
 
-        return response()->json(['data' => $data]);
+        // Filtro: Estado Territorial
+        if ($request->filled('filter_estado_territorial')) {
+            $estado = $request->input('filter_estado_territorial');
+            $query->whereHas('persona.direcciones', function ($q) use ($estado) {
+                $q->where('estado', $estado);
+            });
+        }
+
+        // Filtro: Documento (búsqueda parcial por cédula/RIF)
+        if ($request->filled('filter_documento')) {
+            $doc = $request->input('filter_documento');
+            $query->whereHas('persona', function ($q) use ($doc) {
+                $q->where(DB::raw("CONCAT(tipo_documento, documento_identidad)"), 'LIKE', "%{$doc}%");
+            });
+        }
+
+        return DataTables::of($query)
+            ->addColumn('nombre_display', fn($p) => $p->nombre_completo ?? 'N/A')
+            ->addColumn('documento_display', fn($p) => $p->documento ?? 'N/A')
+            ->addColumn('tipo_proveedor', fn($p) => $p->tipo_proveedor ?? 'juridico')
+            ->addColumn('tipo_display', fn($p) => ($p->tipo_proveedor ?? 'juridico') === 'natural' ? 'Natural' : 'Jurídico')
+            ->addColumn('telefono_display', fn($p) => $p->telefono_unificado)
+            ->addColumn('email_display', fn($p) => $p->email_unificado)
+            ->addColumn('estado', fn($p) => $p->estado)
+            ->addColumn('trashed', fn($p) => $p->trashed())
+            ->make(true);
     }
 
     public function store(Request $request)
