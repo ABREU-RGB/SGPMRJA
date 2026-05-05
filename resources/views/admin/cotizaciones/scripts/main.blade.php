@@ -175,6 +175,157 @@
         font-size: 0.72rem;
         line-height: 1.2;
     }
+
+    /* ─── Overlay difuminador del wizard cuando el offcanvas está abierto ── */
+    #bordado-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1065;
+        background: rgba(10, 18, 40, 0.45);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.28s ease;
+    }
+
+    #bordado-modal-overlay.is-active {
+        opacity: 1;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    /* ─── Offcanvas configurador de bordados ─────────────────────────────── */
+    #bordadoOffcanvas {
+        width: 480px !important;
+        max-width: 95vw;
+        z-index: 1070;
+    }
+
+    .bordado-oc-header {
+        background: linear-gradient(135deg, #132649 0%, #1e3c72 100%);
+        border-bottom: 2px solid rgba(0, 217, 165, 0.30);
+        padding: 1rem 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-icon {
+        width: 38px;
+        height: 38px;
+        background: rgba(0, 217, 165, 0.16);
+        border: 1.5px solid rgba(0, 217, 165, 0.4);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--atlantico-cyan);
+        font-size: 1.1rem;
+    }
+
+    .bordado-oc-eyebrow {
+        font-size: 0.66rem;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+    }
+
+    #bordadoOffcanvas .offcanvas-title {
+        color: #fff !important;
+        font-size: 0.88rem;
+    }
+
+    .bordado-oc-color-badge {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.74rem;
+        color: rgba(255, 255, 255, 0.65);
+        margin-top: 2px;
+    }
+
+    .bordado-oc-color-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-search {
+        background: #f8f9fa;
+        border-bottom: 1px solid rgba(30, 60, 114, 0.08);
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-search .bordado-oc-search-icon {
+        background: rgba(30, 60, 114, 0.08);
+        border-color: rgba(30, 60, 114, 0.2);
+        color: #1e3c72;
+    }
+
+    .bordado-oc-search .form-control {
+        border-color: rgba(30, 60, 114, 0.2);
+    }
+
+    .bordado-oc-hint {
+        font-size: 0.75rem;
+        color: #6c7a94;
+    }
+
+    .bordado-oc-section-label {
+        font-size: 0.69rem;
+        font-weight: 700;
+        color: #5a6a85;
+        text-transform: uppercase;
+        letter-spacing: 0.045em;
+    }
+
+    .bordado-oc-divider {
+        border-color: rgba(30, 60, 114, 0.1);
+    }
+
+    .bordado-oc-footer {
+        padding: 0.85rem 1rem;
+        background: #fff;
+        border-top: 1px solid rgba(30, 60, 114, 0.1);
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.07);
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-recargo-value {
+        color: var(--atlantico-dark-blue);
+        font-size: 1.05rem;
+    }
+
+    /* Dark mode — offcanvas bordados */
+    [data-bs-theme="dark"] #bordadoOffcanvas .offcanvas-body {
+        background: #1a2035;
+    }
+
+    [data-bs-theme="dark"] .bordado-oc-search {
+        background: #151c2e;
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-bs-theme="dark"] .bordado-oc-search .form-control {
+        background: #1e2840;
+        color: #c8cfe0;
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    [data-bs-theme="dark"] .bordado-oc-footer {
+        background: #1a2035;
+        border-top-color: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-bs-theme="dark"] .ubicacion-std-row,
+    [data-bs-theme="dark"] .ubicacion-personalizada-row {
+        background: #1e2840;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
 </style>
 <script>
     // Validación onblur: fecha_validez debe ser >= fecha_cotizacion
@@ -576,7 +727,7 @@
         // Preparar capas antes de animar el modal de logos (evita parpadeos)
         document.getElementById('logoSearchModal').addEventListener('show.bs.modal', function () {
             var zIndex = 1085;
-            if ($('#ubicacionCatalogoModal').hasClass('show')) {
+            if ($('#bordadoOffcanvas').hasClass('show')) {
                 zIndex = 1105;
             } else if ($('#showModal').hasClass('show')) {
                 zIndex = 1095;
@@ -1039,14 +1190,14 @@
         // === INICIO LÓGICA MODAL DE UBICACIÓN DE BORDADO ===
         // ============================================================
         var ubicacionModal = null;
-        var ubicacionModalEl = document.getElementById('ubicacionCatalogoModal');
+        var ubicacionModalEl = document.getElementById('bordadoOffcanvas');
         var currentBordadoCard = null;       // legacy fallback: card DOM ref
         var currentBordadoGroupKey = null;   // fuente de verdad: "productoId|colorId"
         var ubicacionesBordadoArray = [];
         window.cotGroupBordadosState = window.cotGroupBordadosState || {};
 
         if (ubicacionModalEl) {
-            ubicacionModal = new bootstrap.Modal(ubicacionModalEl);
+            ubicacionModal = new bootstrap.Offcanvas(ubicacionModalEl);
         }
 
         function cargarUbicacionesBordado(callback) {
@@ -1396,12 +1547,14 @@
 
         function actualizarResumenRecargoModal() {
             var recargo = 0;
+            var activeCount = 0;
 
             $('#ubicacionesCatalogoGrid .ubicacion-std-check:checked').each(function () {
                 var row = $(this).closest('.ubicacion-std-row');
                 var precio = parseFloat(row.find('.ubicacion-std-precio').val()) || 0;
                 var cantidad = Math.max(1, parseInt(row.find('.ubicacion-std-cantidad').val() || 1, 10));
                 recargo += (precio * cantidad);
+                activeCount++;
             });
 
             $('#ubicacionesPersonalizadasContainer .ubicacion-personalizada-row').each(function () {
@@ -1410,9 +1563,11 @@
                 var precio = parseFloat($(this).find('.ubicacion-personalizada-precio').val()) || 0;
                 var cantidad = Math.max(1, parseInt($(this).find('.ubicacion-personalizada-cantidad').val() || 1, 10));
                 recargo += (precio * cantidad);
+                activeCount++;
             });
 
             $('#resumenRecargoBordadoModal').text(formatMoney(recargo));
+            $('#bordado-oc-active-count').text(activeCount);
         }
 
         function aplicarBordadosDesdeModal() {
@@ -1500,7 +1655,21 @@
         }
 
         if (ubicacionModalEl) {
-            ubicacionModalEl.addEventListener('shown.bs.modal', function () {
+            var $bordadoOverlay = $('#bordado-modal-overlay');
+
+            ubicacionModalEl.addEventListener('show.bs.offcanvas', function () {
+                $bordadoOverlay.addClass('is-active');
+            });
+
+            ubicacionModalEl.addEventListener('hidden.bs.offcanvas', function () {
+                $bordadoOverlay.removeClass('is-active');
+            });
+
+            $bordadoOverlay.on('click', function () {
+                if (ubicacionModal) ubicacionModal.hide();
+            });
+
+            ubicacionModalEl.addEventListener('shown.bs.offcanvas', function () {
                 $('#buscarUbicacionModal').val('').trigger('focus');
 
                 if (!ubicacionesBordadoArray.length) {
@@ -1514,16 +1683,6 @@
 
                 renderizarUbicacionesPersonalizadasModal();
                 renderizarUbicacionesModal('');
-            });
-
-            ubicacionModalEl.addEventListener('hidden.bs.modal', function () {
-                if ($('#showModal').hasClass('show')) {
-                    $('body').addClass('modal-open');
-                    var backdrops = $('.modal-backdrop');
-                    if (backdrops.length > 1) {
-                        backdrops.not(backdrops.first()).remove();
-                    }
-                }
             });
         }
 
@@ -4357,13 +4516,27 @@
 
                 currentBordadoGroupKey = groupKey;
 
-                var modalEl = document.getElementById('ubicacionCatalogoModal');
+                // Poblar el header del offcanvas con identidad del producto y color
+                var prodObj = (typeof products !== 'undefined' && Array.isArray(products))
+                    ? products.find(function (p) { return p.id == productoId; }) : null;
+                var colorObj = (typeof getColorById === 'function') ? getColorById(parseInt(colorId, 10) || 0) : null;
+                var prodLabel = prodObj
+                    ? ((prodObj.modelo || prodObj.descripcion || '') + (prodObj.codigo ? ' · ' + prodObj.codigo : ''))
+                    : '(producto)';
+                var colorName = colorObj ? colorObj.nombre : (colorId ? 'Color #' + colorId : 'Sin color');
+                var colorHex  = colorObj ? (colorObj.hex_referencial || '#ccc') : '#ccc';
+
+                $('#bordado-oc-producto').text(prodLabel);
+                $('#bordado-oc-color-name').text(colorName);
+                $('#bordado-oc-color-dot').css('background', colorHex);
+
+                var offcanvasEl = document.getElementById('bordadoOffcanvas');
                 if (typeof ubicacionModal !== 'undefined' && ubicacionModal && typeof ubicacionModal.show === 'function') {
                     ubicacionModal.show();
-                } else if (modalEl) {
-                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                } else if (offcanvasEl) {
+                    bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl).show();
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Modal de bordados no disponible',
+                    Swal.fire({ icon: 'error', title: 'Panel de bordados no disponible',
                         text: 'El sistema de bordados no se cargó correctamente.',
                         timer: 2200, showConfirmButton: false });
                 }
