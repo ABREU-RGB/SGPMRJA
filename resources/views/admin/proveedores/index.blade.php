@@ -66,16 +66,28 @@
                     CSS genérico en custom.css: .navy-filter-*
                     ============================================================ --}}
                     <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
-                        {{-- Header: siempre visible, actúa como trigger del collapse --}}
-                        <button class="navy-filter-toggle collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#filters-collapse-body" aria-expanded="false"
-                            aria-controls="filters-collapse-body">
-                            <div class="navy-filter-title">
+                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
+                        <div class="navy-filter-header is-collapsed">
+                            {{-- Búsqueda global (siempre visible) --}}
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" id="custom-search-input"
+                                    class="navy-search-input"
+                                    placeholder="Buscar proveedor..."
+                                    autocomplete="off">
+                            </div>
+                            {{-- Divisor vertical --}}
+                            <div class="navy-header-divider"></div>
+                            {{-- Trigger del collapse de filtros --}}
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
                                 <i class="ri-filter-3-line"></i>
                                 <span>Filtros</span>
-                            </div>
-                            <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
-                        </button>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
                         {{-- Body: colapsable, oculto por defecto --}}
                         <div class="collapse" id="filters-collapse-body">
                             <div class="navy-filter-body">
@@ -882,43 +894,75 @@
                 language: lenguajeData
             });
 
-            // Buscador personalizado (búsqueda global)
-            $('#custom-search-input').on('keyup', function () {
-                table.search(this.value).draw();
+            // ══════════════════════════════════════════════════════
+            // BÚSQUEDA + FILTROS AVANZADOS — Patrón Maestro S-07
+            // Header unificado: búsqueda global + panel colapsable
+            // ══════════════════════════════════════════════════════
+
+            // ── Badge: actualizar contador de filtros activos ──
+            function updateFilterBadge() {
+                var count = 0;
+                if ($('#filter-tipo-proveedor').val() !== '')        count++;
+                if ($('#filter-estatus').val() !== '1')              count++;
+                if ($('#filter-estado-territorial').val() !== '')    count++;
+                if ($('#filter-documento').val() !== '')             count++;
+                var $badge = $('#active-filter-count');
+                if (count > 0) {
+                    $badge.text(count).removeClass('d-none');
+                } else {
+                    $badge.addClass('d-none');
+                }
+            }
+
+            // ── Sincronizar clase is-collapsed con el estado del collapse ──
+            $('#filters-collapse-body').on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            }).on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
             });
 
-            // ══════════════════════════════════════════════════════
-            // FILTROS AVANZADOS — Lógica JS (Patrón Maestro S-07)
-            // Réplica exacta del patrón de Clientes.
-            // ══════════════════════════════════════════════════════
+            // ── Búsqueda global (debounce 300ms) ──
+            var searchTimeout = null;
+            $('#custom-search-input').on('keyup', function () {
+                clearTimeout(searchTimeout);
+                var val = this.value;
+                searchTimeout = setTimeout(function () {
+                    table.search(val).draw();
+                }, 300);
+            });
 
-            // Aplicar filtros al cambiar cualquier select
+            // ── Filtros de select: recargar al cambiar ──
             $('.navy-filter-select').on('change', function () {
                 table.ajax.reload();
+                updateFilterBadge();
             });
 
-            // Aplicar filtro de documento con debounce (300ms)
+            // ── Filtro documento con debounce (300ms) ──
             var filterDocTimeout = null;
             $('#filter-documento').on('keyup', function () {
                 clearTimeout(filterDocTimeout);
                 filterDocTimeout = setTimeout(function () {
                     table.ajax.reload();
+                    updateFilterBadge();
                 }, 300);
             });
 
-            // Si se llegó por toggle historial (?historial=true), pre-seleccionar "Inactivo"
+            // ── Si se llegó por toggle historial (?historial=true) ──
             @if($historial)
                 $('#filter-estatus').val('0');
                 table.ajax.reload();
+                updateFilterBadge();
             @endif
 
-            // Botón limpiar filtros
+            // ── Botón limpiar: resetea búsqueda + filtros ──
             $('#btn-clear-filters').on('click', function () {
                 $('#filter-tipo-proveedor').val('');
                 $('#filter-estatus').val('');
                 $('#filter-estado-territorial').val('');
                 $('#filter-documento').val('');
-                table.ajax.reload();
+                $('#custom-search-input').val('');
+                table.search('').ajax.reload();
+                updateFilterBadge();
             });
 
             // Ver detalles

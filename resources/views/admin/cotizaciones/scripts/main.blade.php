@@ -1040,8 +1040,10 @@
         // ============================================================
         var ubicacionModal = null;
         var ubicacionModalEl = document.getElementById('ubicacionCatalogoModal');
-        var currentBordadoCard = null;
+        var currentBordadoCard = null;       // legacy fallback: card DOM ref
+        var currentBordadoGroupKey = null;   // fuente de verdad: "productoId|colorId"
         var ubicacionesBordadoArray = [];
+        window.cotGroupBordadosState = window.cotGroupBordadosState || {};
 
         if (ubicacionModalEl) {
             ubicacionModal = new bootstrap.Modal(ubicacionModalEl);
@@ -1075,6 +1077,32 @@
             }) : [];
 
             $card.data('bordados', normalized);
+        }
+
+        function getGroupBordados(key) {
+            var st = window.cotGroupBordadosState || {};
+            return (st[key] && Array.isArray(st[key].bordados)) ? st[key].bordados : [];
+        }
+
+        function setGroupBordados(key, bordados) {
+            window.cotGroupBordadosState = window.cotGroupBordadosState || {};
+            window.cotGroupBordadosState[key] = { bordados: bordados };
+            var parts = String(key).split('|');
+            var pid = parts[0];
+            var cid = parts[1] || '';
+            $('#productos-container .product-item').each(function () {
+                var $c = $(this);
+                if (String($c.find('.producto-id-input').val()) === String(pid) &&
+                    String($c.find('.color-id-input').val() || '') === String(cid)) {
+                    setCardBordados($c, bordados);
+                    sincronizarCamposOcultosBordados($c);
+                    actualizarResumenBordadosEnCard($c);
+                    var $chk = $c.find('.lleva-bordado-checkbox');
+                    if (bordados.length > 0 && !$chk.is(':checked')) {
+                        $chk.prop('checked', true).trigger('change');
+                    }
+                }
+            });
         }
 
         function calcularRecargoUnitarioBordadoDesdeLista(bordados) {
@@ -1173,7 +1201,9 @@
             grid.empty();
             filtro = (filtro || '').toLowerCase().trim();
 
-            var bordadosActivos = currentBordadoCard ? getCardBordados(currentBordadoCard) : [];
+            var bordadosActivos = currentBordadoGroupKey
+                ? getGroupBordados(currentBordadoGroupKey)
+                : (currentBordadoCard ? getCardBordados(currentBordadoCard) : []);
             var grouped = {};
             ubicacionesBordadoArray.forEach(function (item) {
                 var nombre = String(item.nombre || '').trim();
@@ -1246,9 +1276,12 @@
             var container = $('#ubicacionesPersonalizadasContainer');
             container.empty();
 
-            if (!currentBordadoCard) return;
+            if (!currentBordadoGroupKey && !currentBordadoCard) return;
 
-            var customItems = getCardBordados(currentBordadoCard).filter(function (item) {
+            var _bordados = currentBordadoGroupKey
+                ? getGroupBordados(currentBordadoGroupKey)
+                : getCardBordados(currentBordadoCard);
+            var customItems = _bordados.filter(function (item) {
                 return !!item.es_personalizada;
             });
 
@@ -1453,9 +1486,15 @@
                 return;
             }
 
-            setCardBordados(currentBordadoCard, bordados);
-            actualizarResumenBordadosEnCard(currentBordadoCard);
+            if (currentBordadoGroupKey) {
+                setGroupBordados(currentBordadoGroupKey, bordados);
+                currentBordadoGroupKey = null;
+            } else if (currentBordadoCard) {
+                setCardBordados(currentBordadoCard, bordados);
+                actualizarResumenBordadosEnCard(currentBordadoCard);
+            }
             calculateCotizacionTotals();
+            if (typeof refreshGroupedList === 'function') refreshGroupedList();
 
             if (ubicacionModal) ubicacionModal.hide();
         }
@@ -1505,12 +1544,16 @@
 
         $('#productos-container').on('click', '.configurar-bordados-trigger', function (e) {
             e.preventDefault();
-            currentBordadoCard = $(this).closest('.product-item');
+            var $c = $(this).closest('.product-item');
+            currentBordadoCard = $c;
+            currentBordadoGroupKey = $c.find('.producto-id-input').val() + '|' + ($c.find('.color-id-input').val() || '');
             if (ubicacionModal) ubicacionModal.show();
         });
 
         $('#productos-container').on('click', '.bordados-summary-input', function () {
-            currentBordadoCard = $(this).closest('.product-item');
+            var $c = $(this).closest('.product-item');
+            currentBordadoCard = $c;
+            currentBordadoGroupKey = $c.find('.producto-id-input').val() + '|' + ($c.find('.color-id-input').val() || '');
             if (ubicacionModal) ubicacionModal.show();
         });
 
@@ -1895,6 +1938,7 @@
             $('#estado-field-wrapper').hide();
             $('#productos-container').empty();
             window.cotCart = [];
+            window.cotGroupBordadosState = {};
             if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             calculateCotizacionTotals();
             // showStep(1) y visibilidad de add-btn/edit-btn se ajustan en show.bs.modal
@@ -2083,6 +2127,7 @@
             $('#estado-field-wrapper').show();
             $('#productos-container').empty();
             window.cotCart = [];
+            window.cotGroupBordadosState = {};
             if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             $.ajax({
                 url: '/cotizaciones/' + id,
@@ -2136,6 +2181,14 @@
                                 detalle.talla_id || null,
                                 detalle.bordados || []
                             );
+
+                            // Poblar cotGroupBordadosState con bordados del server
+                            if ((detalle.bordados || []).length > 0) {
+                                var gKey = String(detalle.producto_id) + '|' + String(detalle.color_id || '');
+                                if (!window.cotGroupBordadosState[gKey]) {
+                                    window.cotGroupBordadosState[gKey] = { bordados: detalle.bordados };
+                                }
+                            }
                         });
                     }
 
@@ -4283,94 +4336,37 @@
                 }
             });
 
-            // Bordados — abre directamente el modal de bordados (legacy) apuntando a la
-            // 1ra card del bloque. Sin trigger sintético: setea currentBordadoCard y muestra
-            // el modal de Bootstrap, robusto frente al display:none del productos-container.
+            // Bordados — usa cotGroupBordadosState como fuente de verdad (desacoplado de DOM)
             $(document).on('click', '.cot-action-bordado', function () {
                 var $blk = $(this).closest('.cot-grouped-row');
+                var productoId = $blk.attr('data-product-id') || '';
+                var colorId = $blk.attr('data-color-id') || '';
+                var groupKey = productoId + '|' + colorId;
+
+                // Asegurar que el checkbox esté activo en la primera card del bloque
                 var indicesAttr = $blk.attr('data-card-indices') || '';
-                var indices = indicesAttr.split(',').filter(Boolean);
-                if (!indices.length) {
-                    Swal.fire({ icon: 'warning', title: 'Sin líneas en este bloque',
-                        timer: 1800, showConfirmButton: false, toast: true, position: 'top-end' });
-                    return;
-                }
-                var firstIdx = indices[0];
-                var $card = $('#productos-container .product-item[data-product-index="' + firstIdx + '"]');
-                if (!$card.length) {
-                    Swal.fire({ icon: 'error', title: 'No se encontró la línea',
-                        text: 'Index buscado: ' + firstIdx,
-                        timer: 1800, showConfirmButton: false });
-                    return;
-                }
-
-                // Activar checkbox lleva-bordado para que el container interno se prepare
-                var $chk = $card.find('.lleva-bordado-checkbox');
-                if (!$chk.is(':checked')) {
-                    $chk.prop('checked', true).trigger('change');
-                }
-
-                // Set currentBordadoCard (variable global del módulo de bordados) y abrir modal
-                if (typeof currentBordadoCard !== 'undefined') {
-                    currentBordadoCard = $card;
-                }
-                window.__cotBordadoSourceCard = $card;
-
-                // Marcar el bloque para replicar al cerrar el modal de bordados
-                window.__cotBordadoReplicateGroup = {
-                    productoId: parseInt($blk.attr('data-product-id'), 10),
-                    colorId: parseInt($blk.attr('data-color-id'), 10),
-                    sourceIndex: firstIdx
-                };
-
-                // Abrir el modal de ubicaciones (bordados) directamente
-                if (typeof ubicacionModal !== 'undefined' && ubicacionModal && typeof ubicacionModal.show === 'function') {
-                    ubicacionModal.show();
-                } else {
-                    var modalEl = document.getElementById('ubicacionCatalogoModal');
-                    if (modalEl) {
-                        var inst = bootstrap.Modal.getOrCreateInstance(modalEl);
-                        inst.show();
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'Modal de bordados no disponible',
-                            text: 'El sistema de bordados no se cargó correctamente.',
-                            timer: 2200, showConfirmButton: false });
+                var firstIdx = indicesAttr.split(',').filter(Boolean)[0];
+                if (firstIdx) {
+                    var $firstCard = $('#productos-container .product-item[data-product-index="' + firstIdx + '"]');
+                    if ($firstCard.length) {
+                        currentBordadoCard = $firstCard;
+                        var $chk = $firstCard.find('.lleva-bordado-checkbox');
+                        if (!$chk.is(':checked')) $chk.prop('checked', true).trigger('change');
                     }
                 }
-            });
 
-            // Replicación de bordados al guardar config en una card → replicar a hermanas del bloque
-            $(document).on('click', '#aplicar-ubicaciones-bordado-btn, .aplicar-bordados-btn', function () {
-                // El click no bloquea; usamos un setTimeout corto para esperar que se aplique al card.
-                if (!window.__cotBordadoReplicateGroup) return;
-                var grp = window.__cotBordadoReplicateGroup;
-                setTimeout(function () {
-                    var $source = $('#productos-container .product-item[data-product-index="' + grp.sourceIndex + '"]');
-                    if (!$source.length) { window.__cotBordadoReplicateGroup = null; return; }
-                    var sourceBordados = (typeof getCardBordados === 'function') ? getCardBordados($source) : [];
-                    var sourceLleva = parseInt($source.find('.lleva-bordado-value').val() || 0, 10) === 1;
+                currentBordadoGroupKey = groupKey;
 
-                    $('#productos-container .product-item').each(function () {
-                        var $c = $(this);
-                        if ($c.is($source)) return;
-                        var pid = parseInt($c.find('.producto-id-input').val(), 10);
-                        var cid = parseInt($c.find('.color-id-input').val(), 10);
-                        if (pid !== grp.productoId || cid !== grp.colorId) return;
-
-                        // Sincronizar checkbox lleva-bordado
-                        var $chk = $c.find('.lleva-bordado-checkbox');
-                        if (sourceLleva && !$chk.is(':checked')) $chk.prop('checked', true).trigger('change');
-
-                        if (typeof setCardBordados === 'function') setCardBordados($c, sourceBordados);
-                        if (typeof sincronizarCamposOcultosBordados === 'function') sincronizarCamposOcultosBordados($c);
-                        if (typeof actualizarResumenBordadosEnCard === 'function') actualizarResumenBordadosEnCard($c);
-                    });
-
-                    window.__cotBordadoReplicateGroup = null;
-                    if (typeof calculateCotizacionTotals === 'function') calculateCotizacionTotals();
-                    if (window.cotWizard) window.cotWizard.refreshKPIs();
-                    refreshGroupedList();
-                }, 250);
+                var modalEl = document.getElementById('ubicacionCatalogoModal');
+                if (typeof ubicacionModal !== 'undefined' && ubicacionModal && typeof ubicacionModal.show === 'function') {
+                    ubicacionModal.show();
+                } else if (modalEl) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Modal de bordados no disponible',
+                        text: 'El sistema de bordados no se cargó correctamente.',
+                        timer: 2200, showConfirmButton: false });
+                }
             });
 
             // Hook configurador en modo edición → reemplazar bloque viejo por el nuevo
