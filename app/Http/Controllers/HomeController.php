@@ -92,6 +92,10 @@ class HomeController extends Controller
         $empleadosValues = array_map('intval', array_column($personalPorDepto, 'total'));
         $totalEmpleadosChart = array_sum($empleadosValues);
 
+        } catch (\Exception $e) {
+            \Log::warning('Dashboard: error al consultar datos de pedidos/empleados — ' . $e->getMessage());
+        }
+
         // Notificación: intento de recuperación reciente para el usuario actual
         $recoveryAlert = $this->getRecoveryAlert();
 
