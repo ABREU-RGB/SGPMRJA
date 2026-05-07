@@ -250,11 +250,15 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="mb-3">
-                                        <label for="codigo-field" class="form-label">Código</label>
+                                        <label for="codigo-field" class="form-label">
+                                            Código
+                                            <i class="ri-information-line text-muted" data-bs-toggle="tooltip"
+                                               title="2-8 caracteres (mayúsculas/números). No se puede modificar después de guardar. Recomendado para Telas: forma parte del código del producto."
+                                               style="cursor: help;"></i>
+                                        </label>
                                         <input type="text" id="codigo-field" name="codigo" class="form-control text-uppercase"
-                                            maxlength="8" placeholder="Ej: OXF, DAC"
+                                            maxlength="8" placeholder="Ej: OXF"
                                             style="font-family: monospace;" />
-                                        <small class="text-muted">2-8 letras/números. Inmutable. Recomendado para Telas (forma parte del SKU).</small>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -656,6 +660,15 @@
                 $("#edit-btn").hide();
                 $('#insumoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
                 $('#insumoForm').find('.invalid-feedback').hide();
+            });
+
+            // Inicializar tooltips dentro del modal cuando se abre
+            $("#showModal").on("shown.bs.modal", function () {
+                $('#showModal [data-bs-toggle="tooltip"]').each(function () {
+                    if (!bootstrap.Tooltip.getInstance(this)) {
+                        new bootstrap.Tooltip(this);
+                    }
+                });
             });
 
             // ══════════════════════════════════════════════════════
