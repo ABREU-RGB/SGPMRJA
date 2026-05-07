@@ -20,14 +20,14 @@ class ProductoService
      * Genera el SKU determinístico para una combinación tipo + tela + valores de atributos.
      *
      * Formato: PREFIJO[-TELA][-ATR1[-ATR2...]]-NNN
-     *   - PREFIJO: tipo_producto.codigo_prefijo
+     *   - PREFIJO: tipo_producto.prefijo
      *   - TELA: insumo.codigo (omitido si tipo no requiere tela y no se asignó)
      *   - ATRn: atributo_valor.codigo en el orden definido por tipo_producto_atributo.orden
      *   - NNN: secuencial 001+ por combinación, con withTrashed() y loop defensivo.
      */
     public function generarCodigo(TipoProducto $tipo, ?Insumo $tela, array $valoresOrdenados): string
     {
-        $partes = [$tipo->codigo_prefijo];
+        $partes = [$tipo->prefijo];
 
         if ($tela && $tela->codigo) {
             $partes[] = $tela->codigo;
@@ -110,7 +110,7 @@ class ProductoService
      * Crea un producto completo (variante) con tela y atributos.
      *
      * @param  array $data  ['tipo_producto_id', 'insumo_tela_id'?, 'atributo_valor_ids' => [],
-     *                       'modelo'?, 'descripcion'?, 'precio_base', 'estado'?]
+     *                       'descripcion'?, 'precio_base', 'estado'?]
      * @return Producto
      */
     public function crear(array $data): Producto
@@ -128,7 +128,6 @@ class ProductoService
             $producto->tipo_producto_id   = $tipo->id;
             $producto->insumo_tela_id     = $tela?->id;
             $producto->codigo             = $this->generarCodigo($tipo, $tela, $valoresOrdenados->all());
-            $producto->modelo             = $data['modelo'] ?? null;
             $producto->descripcion        = $data['descripcion'] ?? null;
             $producto->precio_base        = $data['precio_base'];
             $producto->atributos_snapshot = $this->buildAtributosSnapshot($valoresOrdenados);
@@ -166,7 +165,6 @@ class ProductoService
 
             $producto->tipo_producto_id   = $tipoNuevo->id;
             $producto->insumo_tela_id     = $telaNueva?->id;
-            $producto->modelo             = $data['modelo'] ?? $producto->modelo;
             $producto->descripcion        = $data['descripcion'] ?? null;
             $producto->precio_base        = $data['precio_base'];
             $producto->atributos_snapshot = $this->buildAtributosSnapshot($valoresOrdenados);

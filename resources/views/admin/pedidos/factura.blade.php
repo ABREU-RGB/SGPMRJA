@@ -215,8 +215,7 @@
             <thead>
                 <tr>
                     <th style="width: 7%;">Cant.</th>
-                    <th style="width: 35%;">Concepto o Descripción del Producto</th>
-                    <th style="width: 10%;">Modelo</th>
+                    <th style="width: 45%;">Concepto o Descripción del Producto</th>
                     <th style="width: 7%;">Color</th>
                     <th style="width: 7%;">Talla</th>
                     <th style="width: 15%;">Logo</th>
@@ -265,7 +264,6 @@
                                 <br><small>{{ $detalle->descripcion }}</small>
                             @endif
                         </td>
-                        <td>{{ $detalle->producto->modelo ?? '-' }}</td>
                         <td>{{ $detalle->color?->nombre ?? '-' }}</td>
                         <td>{{ $detalle->talla?->etiqueta ?? '-' }}</td>
                         <td>

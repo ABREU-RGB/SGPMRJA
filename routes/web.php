@@ -189,7 +189,6 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::put('tipo-productos/{tipoProducto}', [App\Http\Controllers\TipoProductoController::class, 'update'])->name('tipo-productos.update');
         Route::delete('tipo-productos/{tipoProducto}', [App\Http\Controllers\TipoProductoController::class, 'destroy'])->name('tipo-productos.destroy');
         Route::patch('tipo-productos/{id}/restore', [App\Http\Controllers\TipoProductoController::class, 'restore'])->name('tipo-productos.restore');
-        Route::get('tipo-productos/{tipoProducto}/proximo-codigo', [App\Http\Controllers\TipoProductoController::class, 'proximoCodigo'])->name('tipo-productos.proximo-codigo');
         Route::get('tipo-productos-check-nombre', [App\Http\Controllers\TipoProductoController::class, 'checkNombre'])->name('tipo-productos.check-nombre');
         Route::get('tipo-productos-check-codigo', [App\Http\Controllers\TipoProductoController::class, 'checkCodigoPrefijo'])->name('tipo-productos.check-codigo');
 

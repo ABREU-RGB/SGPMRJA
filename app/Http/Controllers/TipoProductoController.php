@@ -30,7 +30,7 @@ class TipoProductoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100|unique:tipo_producto,nombre',
-            'codigo_prefijo' => 'required|string|max:5|unique:tipo_producto,codigo_prefijo|alpha',
+            'prefijo' => 'required|string|max:5|unique:tipo_producto,prefijo|alpha',
             'descripcion' => 'nullable|string|max:500',
             'precio_confeccion' => 'nullable|numeric|min:0|max:99999.99',
             'requiere_tela' => 'nullable|boolean',
@@ -40,15 +40,15 @@ class TipoProductoController extends Controller
         ], [
             'nombre.required' => 'El nombre es obligatorio',
             'nombre.unique' => 'Ya existe un tipo con este nombre',
-            'codigo_prefijo.required' => 'El prefijo de código es obligatorio',
-            'codigo_prefijo.unique' => 'Ya existe un tipo con este prefijo',
-            'codigo_prefijo.alpha' => 'El prefijo solo puede contener letras',
-            'codigo_prefijo.max' => 'El prefijo no puede tener más de 5 caracteres',
+            'prefijo.required' => 'El prefijo de código es obligatorio',
+            'prefijo.unique' => 'Ya existe un tipo con este prefijo',
+            'prefijo.alpha' => 'El prefijo solo puede contener letras',
+            'prefijo.max' => 'El prefijo no puede tener más de 5 caracteres',
         ]);
 
         $tipo = TipoProducto::create([
             'nombre' => $request->nombre,
-            'codigo_prefijo' => strtoupper($request->codigo_prefijo),
+            'prefijo' => strtoupper($request->prefijo),
             'descripcion' => $request->descripcion,
             'precio_confeccion' => $request->input('precio_confeccion', 0),
             'requiere_tela' => $request->boolean('requiere_tela', true),
@@ -85,7 +85,7 @@ class TipoProductoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100|unique:tipo_producto,nombre,' . $tipoProducto->id,
-            'codigo_prefijo' => 'required|string|max:5|unique:tipo_producto,codigo_prefijo,' . $tipoProducto->id . '|alpha',
+            'prefijo' => 'required|string|max:5|unique:tipo_producto,prefijo,' . $tipoProducto->id . '|alpha',
             'descripcion' => 'nullable|string|max:500',
             'precio_confeccion' => 'nullable|numeric|min:0|max:99999.99',
             'requiere_tela' => 'nullable|boolean',
@@ -96,7 +96,7 @@ class TipoProductoController extends Controller
 
         $tipoProducto->update([
             'nombre' => $request->nombre,
-            'codigo_prefijo' => strtoupper($request->codigo_prefijo),
+            'prefijo' => strtoupper($request->prefijo),
             'descripcion' => $request->descripcion,
             'precio_confeccion' => $request->input('precio_confeccion', $tipoProducto->precio_confeccion),
             'requiere_tela' => $request->boolean('requiere_tela', $tipoProducto->requiere_tela),
@@ -172,19 +172,6 @@ class TipoProductoController extends Controller
         ]);
     }
 
-    /**
-     * Obtener el próximo código para un tipo (con preview del modelo)
-     */
-    public function proximoCodigo(Request $request, TipoProducto $tipoProducto): JsonResponse
-    {
-        $modelo = $request->query('modelo', '');
-
-        return response()->json([
-            'codigo' => $tipoProducto->proximoCodigo($modelo),
-            'abreviatura' => $modelo ? TipoProducto::abreviarModelo($modelo) : 'XXX',
-        ]);
-    }
-
     public function checkNombre(Request $request)
     {
         $nombre = $request->input('nombre');
@@ -199,7 +186,7 @@ class TipoProductoController extends Controller
         $codigo = $request->input('codigo');
         if (!$codigo)
             return response()->json(['exists' => false]);
-        $exists = TipoProducto::where('codigo_prefijo', $codigo)->exists();
+        $exists = TipoProducto::where('prefijo', $codigo)->exists();
         return response()->json(['exists' => $exists]);
     }
 }

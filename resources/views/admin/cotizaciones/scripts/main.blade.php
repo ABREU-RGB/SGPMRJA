@@ -1030,7 +1030,7 @@
                 // EDITAR ITEM EXISTENTE
                 var card = $(`.product-item[data-product-index="${currentProductIndex}"]`);
                 var tipoNombre = producto.tipo_producto ? producto.tipo_producto.nombre : 'Sin tipo';
-                var displayName = (producto.codigo || '') + ' - ' + tipoNombre + ' ' + producto.modelo;
+                var displayName = (producto.codigo || '') + ' - ' + tipoNombre;
 
                 // Actualizar valores visuales y ocultos
                 card.find('.producto-text-display').val(displayName);
@@ -2489,7 +2489,7 @@
                                                 <i class="ri-t-shirt-2-line text-white fs-5"></i>
                                             </div>
                                             <div>
-                                                <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto ? (item.producto.nombre_completo || item.producto.modelo || 'Producto') : 'Sin producto'}</h6>
+                                                <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto ? (item.producto.nombre_completo || item.producto.codigo || 'Producto') : 'Sin producto'}</h6>
                                                 <small class="text-muted">Producto #${index + 1}</small>
                                             </div>
                                             <div class="ms-auto">
@@ -5120,7 +5120,7 @@
                     groups.forEach(function (g, idx) {
                         subtotal += g.totalSubtotal;
                         var prodLabel = g.producto
-                            ? ((g.producto.codigo ? g.producto.codigo + ' · ' : '') + (g.producto.modelo || ''))
+                            ? ((g.producto.codigo ? g.producto.codigo + ' · ' : '') + (g.producto.tipo_producto ? g.producto.tipo_producto.nombre : ''))
                             : '(producto sin definir)';
                         var variantLabel = (typeof window.cotBuildVariantLabel === 'function')
                             ? window.cotBuildVariantLabel(g.producto)

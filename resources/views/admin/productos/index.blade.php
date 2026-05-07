@@ -134,7 +134,6 @@
                                 <th>Tipo</th>
                                 <th>Tela</th>
                                 <th>Atributos</th>
-                                <th>Modelo</th>
                                 <th>Precio Base</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -191,18 +190,6 @@
                                         <div>
                                             <small class="text-muted d-block">Nombre</small>
                                             <span class="fw-semibold" id="view-nombre">-</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-center producto-info-item">
-                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                            style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                            <i class="ri-hashtag" style="color: #1e3c72;"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block">Modelo</small>
-                                            <span class="fw-semibold" id="view-modelo">-</span>
                                         </div>
                                     </div>
                                 </div>
@@ -283,7 +270,7 @@
                                                 required>
                                                 <option value="">Seleccione un tipo...</option>
                                                 @foreach($tiposProducto as $tipo)
-                                                    <option value="{{ $tipo->id }}" data-prefijo="{{ $tipo->codigo_prefijo }}">
+                                                    <option value="{{ $tipo->id }}" data-prefijo="{{ $tipo->prefijo }}">
                                                         {{ $tipo->nombre }}
                                                     </option>
                                                 @endforeach
@@ -318,10 +305,6 @@
                                         </small>
                                     </div>
 
-                                    <x-forms.input name="modelo" label="Modelo (alias comercial)"
-                                        placeholder="Opcional: ej. Premium 2026, Línea Ejecutiva"
-                                        hint="Nombre comercial. El SKU se genera de tipo + tela + atributos."
-                                        id="modelo-field" />
                                     <x-forms.input name="codigo" label="Código (SKU)" readonly class="bg-light fw-bold"
                                         placeholder="Se genera al seleccionar tipo, tela y atributos"
                                         hint="Determinístico: prefijo-tela-atributos-secuencial." id="codigo-field" />
@@ -478,7 +461,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="tipo-prefijo-field" class="form-label required">Prefijo de Código</label>
-                                <input type="text" id="tipo-prefijo-field" name="codigo_prefijo" class="form-control"
+                                <input type="text" id="tipo-prefijo-field" name="prefijo" class="form-control"
                                     placeholder="Ej: CHM, FRN, PNT (máx 5 letras)" maxlength="5" required
                                     style="text-transform: uppercase;" />
                                 <div id="tipo-prefijo-error" class="invalid-feedback"></div>
@@ -659,13 +642,6 @@
                         }
                     },
                     {
-                        data: 'modelo',
-                        name: 'modelo',
-                        render: function (data) {
-                            return renderEllipsis(data);
-                        }
-                    },
-                    {
                         data: 'precio_base',
                         name: 'precio_base',
                         render: function (data) {
@@ -705,7 +681,7 @@
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [2, 3, 4, 5, 6] // Excluir imagen (0), código (1) y acciones; incluir tipo, tela, atributos, modelo, precio
+                            columns: [2, 3, 4, 5] // Excluir imagen (0), código (1) y acciones; incluir tipo, tela, atributos, precio
                         }
                     }
                 ],
@@ -790,7 +766,6 @@
 
                     $("#view-nombre").text(data.nombre);
                     $("#view-descripcion").text(data.descripcion || 'Sin descripción');
-                    $("#view-modelo").text(data.modelo);
                     $("#view-precio").text('$ ' + parseFloat(data.precio_base).toFixed(2));
                     $("#view-created").text(data.created_at);
                     $("#viewModal").modal('show');
@@ -807,7 +782,6 @@
                     $("#tela-field").val(data.insumo_tela_id || '');
                     $("#codigo-field").val(data.codigo);
                     $("#descripcion-field").val(data.descripcion);
-                    $("#modelo-field").val(data.modelo);
                     $("#precio-base-field").val(data.precio_base);
                     var isActivo = data.estado ? true : false;
                     $("#estado-switch").prop('checked', isActivo);
@@ -1001,11 +975,6 @@
                 var v = $(this).data('valor');
                 if (v) $('#precio-base-field').val(parseFloat(v).toFixed(2)).trigger('blur');
             });
-
-            // Compatibilidad: el campo modelo ya no es obligatorio para el SKU,
-            // pero se mantiene por si el usuario quiere un alias comercial.
-            // (Reemplazada actualizarCodigoPreview por actualizarCodigoYPrecio.)
-            function actualizarCodigoPreview() { actualizarCodigoYPrecio(); }
 
             // Enviar formulario
             $("#productoForm").on("submit", function (e) {
@@ -1215,16 +1184,6 @@
                     esValido = false;
                 } else { marcarValido($tipo); }
 
-                let $modelo = $('#modelo-field');
-                let modelo = $modelo.val().trim();
-                if (!modelo) {
-                    marcarInvalido($modelo, 'El modelo es obligatorio.');
-                    esValido = false;
-                } else if (modelo.length < 3) {
-                    marcarInvalido($modelo, 'El modelo debe tener al menos 3 caracteres.');
-                    esValido = false;
-                } else { marcarValido($modelo); }
-
                 let $desc = $('#descripcion-field');
                 let desc = $desc.val().trim();
                 if (!desc) {
@@ -1320,7 +1279,7 @@
                     columns: [
                         { data: 'nombre' },
                         {
-                            data: 'codigo_prefijo',
+                            data: 'prefijo',
                             render: function (data) {
                                 return `<span class="badge bg-secondary">${data}</span>`;
                             }
@@ -1348,7 +1307,7 @@
                                     <button class="btn btn-sm btn-outline-primary edit-tipo-btn" 
                                         data-id="${row.id}" 
                                         data-nombre="${row.nombre}" 
-                                        data-prefijo="${row.codigo_prefijo}"
+                                        data-prefijo="${row.prefijo}"
                                         data-descripcion="${row.descripcion || ''}">
                                         <i class="ri-pencil-line"></i>
                                     </button>
@@ -1396,18 +1355,6 @@
             $(document).on('blur', '#tipo-producto-field', function () {
                 if (!$(this).val()) {
                     marcarInvalido($(this), 'El tipo de producto es obligatorio.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Modelo — mín. 3 chars
-            $(document).on('blur', '#modelo-field', function () {
-                let val = $(this).val().trim();
-                if (!val) {
-                    marcarInvalido($(this), 'El modelo es obligatorio.');
-                } else if (val.length < 3) {
-                    marcarInvalido($(this), 'Mínimo 3 caracteres.');
                 } else {
                     marcarValido($(this));
                 }
@@ -1635,7 +1582,7 @@
                 $.getJSON("{{ url('tipo-productos') }}/" + id, function (tipo) {
                     $("#tipo-id-field").val(tipo.id);
                     $("#tipo-nombre-field").val(tipo.nombre);
-                    $("#tipo-prefijo-field").val(tipo.codigo_prefijo);
+                    $("#tipo-prefijo-field").val(tipo.prefijo);
                     $("#tipo-descripcion-field").val(tipo.descripcion || '');
                     $("#tipo-precio-confeccion").val(tipo.precio_confeccion || 0);
                     $("#tipo-requiere-tela").prop('checked', !!tipo.requiere_tela);
@@ -1787,7 +1734,7 @@
                     method: method,
                     data: {
                         nombre: $("#tipo-nombre-field").val(),
-                        codigo_prefijo: $("#tipo-prefijo-field").val().toUpperCase(),
+                        prefijo: $("#tipo-prefijo-field").val().toUpperCase(),
                         descripcion: $("#tipo-descripcion-field").val(),
                         precio_confeccion: parseFloat($("#tipo-precio-confeccion").val()) || 0,
                         requiere_tela: $("#tipo-requiere-tela").is(':checked') ? 1 : 0,
@@ -1843,7 +1790,7 @@
                     select.find("option:not(:first)").remove();
 
                     tipos.forEach(function (tipo) {
-                        select.append(`<option value="${tipo.id}" data-prefijo="${tipo.codigo_prefijo}">${tipo.nombre}</option>`);
+                        select.append(`<option value="${tipo.id}" data-prefijo="${tipo.prefijo}">${tipo.nombre}</option>`);
                     });
                 });
             }

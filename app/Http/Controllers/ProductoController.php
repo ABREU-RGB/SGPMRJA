@@ -89,7 +89,6 @@ class ProductoController extends Controller
             'tipo_producto_id'    => $validated['tipo_producto_id'],
             'insumo_tela_id'      => $request->input('insumo_tela_id'),
             'atributo_valor_ids'  => array_map('intval', $request->input('atributo_valor_ids', [])),
-            'modelo'              => $validated['modelo'] ?? null,
             'descripcion'         => $request->input('descripcion'),
             'precio_base'         => $validated['precio_base'],
             'imagen'              => $imagenPath,
@@ -123,7 +122,6 @@ class ProductoController extends Controller
             'codigo'             => $producto->codigo,
             'nombre'             => $producto->nombre_completo,
             'descripcion'        => $producto->descripcion,
-            'modelo'             => $producto->modelo,
             'precio_base'        => $producto->precio_base,
             'imagen'             => $producto->imagen ? asset($producto->imagen) : null,
             'estado'             => $producto->estado,
@@ -149,7 +147,6 @@ class ProductoController extends Controller
             'tipo_producto_id'    => $validated['tipo_producto_id'],
             'insumo_tela_id'      => $request->input('insumo_tela_id'),
             'atributo_valor_ids'  => array_map('intval', $request->input('atributo_valor_ids', [])),
-            'modelo'              => $validated['modelo'] ?? $producto->modelo,
             'descripcion'         => $request->input('descripcion'),
             'precio_base'         => $validated['precio_base'],
             'imagen'              => $imagenPath,
@@ -251,7 +248,6 @@ class ProductoController extends Controller
             'producto' => [
                 'id'           => $match->id,
                 'codigo'       => $match->codigo,
-                'modelo'       => $match->modelo,
                 'precio_base'  => (float) $match->precio_base,
                 'imagen'       => $match->imagen ? asset($match->imagen) : null,
                 'tipo_nombre'  => $match->tipoProducto?->nombre,
@@ -288,7 +284,6 @@ class ProductoController extends Controller
     {
         return $request->validate([
             'tipo_producto_id' => 'required|exists:tipo_producto,id',
-            'modelo'           => 'nullable|string|max:100',
             'precio_base'      => 'required|numeric|min:0.01',
             'imagen'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
