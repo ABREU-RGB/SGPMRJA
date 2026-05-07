@@ -429,11 +429,49 @@
                                 <div id="tipo-prefijo-error" class="invalid-feedback"></div>
                                 <small class="text-muted">Se usará para generar códigos como CHM-001</small>
                             </div>
-                            <div class="mb-0">
+                            <div class="mb-3">
                                 <label for="tipo-descripcion-field" class="form-label required">Descripción</label>
                                 <textarea id="tipo-descripcion-field" name="descripcion" class="form-control" rows="2"
                                     placeholder="Descripción opcional" required></textarea>
                                 <div id="tipo-descripcion-error" class="invalid-feedback"></div>
+                            </div>
+
+                            <div class="row g-2 mb-0">
+                                <div class="col-md-7">
+                                    <label for="tipo-precio-confeccion" class="form-label">Precio de Confección</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" id="tipo-precio-confeccion" name="precio_confeccion"
+                                            class="form-control" step="0.01" min="0" max="99999.99" placeholder="0.00" />
+                                    </div>
+                                    <small class="text-muted">Mano de obra + insumos secundarios. Se suma al precio de la tela para sugerir el precio final del producto.</small>
+                                </div>
+                                <div class="col-md-5 d-flex align-items-end">
+                                    <div class="form-check form-switch w-100">
+                                        <input class="form-check-input" type="checkbox" id="tipo-requiere-tela" name="requiere_tela" checked>
+                                        <label class="form-check-label" for="tipo-requiere-tela">
+                                            Requiere tela
+                                        </label>
+                                        <div class="text-muted small">Si está activo, todo producto de este tipo debe tener una tela asignada.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Sección: Atributos de confección asociados --}}
+                        <div class="modal-form-section mb-0 mt-3">
+                            <div class="modal-form-section-title">
+                                <i class="ri-list-check-2"></i>Atributos de confección
+                            </div>
+                            <p class="text-muted small mb-2">
+                                Selecciona qué variaciones definen una variante de este tipo (ej: Manga, Cuello).
+                                El <strong>orden</strong> define cómo se concatenan en el código del producto.
+                            </p>
+                            <div id="tipo-atributos-list" class="d-flex flex-column gap-2">
+                                {{-- Render dinámico vía JS --}}
+                                <div class="text-center text-muted py-2" id="tipo-atributos-empty">
+                                    <span class="spinner-border spinner-border-sm me-2"></span>Cargando atributos…
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1249,10 +1287,104 @@
                 $('#addTipoModal').modal('show');
             });
 
+            // ==== Atributos disponibles (cache para el modal de Tipo) ====
+            var atributosDisponibles = [];
+
+            function cargarAtributosDisponibles() {
+                return $.getJSON("{{ route('atributos.index') }}").done(function (rows) {
+                    atributosDisponibles = rows;
+                });
+            }
+
+            function renderAtributosLista(seleccionados) {
+                // seleccionados: array [{id, orden}] | undefined
+                var seleccionadosMap = {};
+                (seleccionados || []).forEach(function (s) {
+                    seleccionadosMap[s.id] = s.orden;
+                });
+
+                if (!atributosDisponibles.length) {
+                    $('#tipo-atributos-list').html(
+                        '<div class="text-muted small text-center py-2">No hay atributos definidos. ' +
+                        'Crea atributos en <a href="{{ url('atributos') }}" target="_blank">/atributos</a> antes de asociarlos.</div>'
+                    );
+                    return;
+                }
+
+                var html = atributosDisponibles.map(function (a) {
+                    var checked = seleccionadosMap.hasOwnProperty(a.id);
+                    var orden = checked ? seleccionadosMap[a.id] : '';
+                    return '' +
+                        '<div class="d-flex align-items-center gap-2 p-2 border rounded tipo-atr-row" data-atr-id="' + a.id + '">' +
+                            '<div class="form-check flex-grow-1 mb-0">' +
+                                '<input class="form-check-input tipo-atr-check" type="checkbox" id="tipo-atr-' + a.id + '"' + (checked ? ' checked' : '') + '>' +
+                                '<label class="form-check-label" for="tipo-atr-' + a.id + '">' +
+                                    '<strong>' + escapeHtml(a.nombre) + '</strong> ' +
+                                    '<span class="badge bg-light text-muted ms-1">' + escapeHtml(a.codigo) + '</span>' +
+                                '</label>' +
+                            '</div>' +
+                            '<div style="width: 90px;">' +
+                                '<input type="number" class="form-control form-control-sm tipo-atr-orden" min="1" max="99" placeholder="orden" value="' + orden + '"' + (checked ? '' : ' disabled') + '>' +
+                            '</div>' +
+                        '</div>';
+                }).join('');
+
+                $('#tipo-atributos-list').html(html);
+            }
+
+            // Toggle del input de orden cuando se marca/desmarca
+            $(document).on('change', '.tipo-atr-check', function () {
+                var $row = $(this).closest('.tipo-atr-row');
+                var $orden = $row.find('.tipo-atr-orden');
+                if (this.checked) {
+                    $orden.prop('disabled', false);
+                    if (!$orden.val()) {
+                        // Auto-asignar siguiente orden disponible
+                        var ordenes = $('.tipo-atr-check:checked').map(function () {
+                            return parseInt($(this).closest('.tipo-atr-row').find('.tipo-atr-orden').val()) || 0;
+                        }).get();
+                        var max = Math.max.apply(null, [0].concat(ordenes));
+                        $orden.val(max + 1);
+                    }
+                } else {
+                    $orden.prop('disabled', true).val('');
+                }
+            });
+
+            function recolectarAtributosSeleccionados() {
+                var sel = [];
+                $('.tipo-atr-check:checked').each(function () {
+                    var $row = $(this).closest('.tipo-atr-row');
+                    var id = parseInt($row.data('atr-id'));
+                    var orden = parseInt($row.find('.tipo-atr-orden').val()) || 1;
+                    sel.push({ id: id, orden: orden });
+                });
+                return sel;
+            }
+
+            function escapeHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
+            }
+
+            // Cargar atributos al abrir el modal (siempre refresca por si se agregaron en otra pestaña)
+            $("#addTipoModal").on("show.bs.modal", function () {
+                $('#tipo-atributos-empty').show();
+                cargarAtributosDisponibles().then(function () {
+                    var idEdit = $("#tipo-id-field").val();
+                    // En modo crear: render con cero seleccionados; en edición se rellena en el handler.
+                    if (!idEdit) renderAtributosLista([]);
+                });
+            });
+
             // Limpiar validaciones al cerrar modal de tipo
             $("#addTipoModal").on("hidden.bs.modal", function () {
                 $('#tipoForm')[0].reset();
                 $('#tipo-id-field').val('');
+                $('#tipo-precio-confeccion').val('');
+                $('#tipo-requiere-tela').prop('checked', true);
+                $('#tipo-atributos-list').html('');
                 $('#tipoModalTitle').html('<i class="ri-add-line me-2"></i>Agregar Tipo de Producto');
                 $('.is-invalid').removeClass('is-invalid');
                 $('.is-valid').removeClass('is-valid');
@@ -1260,21 +1392,31 @@
                 $('#save-tipo-btn').prop('disabled', false);
             });
 
-            // Editar tipo
+            // Editar tipo: cargar datos completos vía GET (incluye atributos asociados)
             $(document).on("click", ".edit-tipo-btn", function () {
                 var id = $(this).data("id");
-                var nombre = $(this).data("nombre");
-                var prefijo = $(this).data("prefijo");
-                var descripcion = $(this).data("descripcion");
 
-                $("#tipo-id-field").val(id);
-                $("#tipo-nombre-field").val(nombre);
-                $("#tipo-prefijo-field").val(prefijo);
-                $("#tipo-descripcion-field").val(descripcion);
-                $("#tipoModalTitle").html('<i class="ri-pencil-line me-2"></i>Editar Tipo de Producto');
+                $.getJSON("{{ url('tipo-productos') }}/" + id, function (tipo) {
+                    $("#tipo-id-field").val(tipo.id);
+                    $("#tipo-nombre-field").val(tipo.nombre);
+                    $("#tipo-prefijo-field").val(tipo.codigo_prefijo);
+                    $("#tipo-descripcion-field").val(tipo.descripcion || '');
+                    $("#tipo-precio-confeccion").val(tipo.precio_confeccion || 0);
+                    $("#tipo-requiere-tela").prop('checked', !!tipo.requiere_tela);
+                    $("#tipoModalTitle").html('<i class="ri-pencil-line me-2"></i>Editar Tipo de Producto');
 
-                $("#tiposModal").modal('hide');
-                $("#addTipoModal").modal('show');
+                    var asociados = (tipo.atributos || []).map(function (a) {
+                        return { id: a.id, orden: a.pivot ? a.pivot.orden : 1 };
+                    });
+
+                    $("#tiposModal").modal('hide');
+                    $("#addTipoModal").modal('show');
+
+                    // Esperar a que termine la carga de atributos disponibles antes de renderizar
+                    cargarAtributosDisponibles().then(function () {
+                        renderAtributosLista(asociados);
+                    });
+                });
             });
 
             // Eliminar tipo
@@ -1410,7 +1552,10 @@
                     data: {
                         nombre: $("#tipo-nombre-field").val(),
                         codigo_prefijo: $("#tipo-prefijo-field").val().toUpperCase(),
-                        descripcion: $("#tipo-descripcion-field").val()
+                        descripcion: $("#tipo-descripcion-field").val(),
+                        precio_confeccion: parseFloat($("#tipo-precio-confeccion").val()) || 0,
+                        requiere_tela: $("#tipo-requiere-tela").is(':checked') ? 1 : 0,
+                        atributos: recolectarAtributosSeleccionados()
                     },
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     success: function (response) {
