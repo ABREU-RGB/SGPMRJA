@@ -4097,6 +4097,24 @@
                 $('#cfg-info-tipo').text(p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo');
                 $('#cfg-info-precio').text(formatMoney(parseFloat(p.precio_base || 0)));
 
+                // Línea de variante (tela + atributos) bajo el código en el header
+                var variantLabel = (typeof window.cotBuildVariantLabel === 'function')
+                    ? window.cotBuildVariantLabel(p) : '';
+                var $variant = $('#cfg-info-variant');
+                if (!$variant.length) {
+                    // Inserta el contenedor justo después del bloque de código si no existe
+                    $('#cfg-info-codigo').parent().after(
+                        '<div id="cfg-info-variant-row" class="cfg-info-variant-row" style="grid-column: 1/-1; font-size:.78rem; color:#475569; margin-top:4px;"><i class="ri-shape-2-line me-1"></i><span id="cfg-info-variant"></span></div>'
+                    );
+                    $variant = $('#cfg-info-variant');
+                }
+                if (variantLabel) {
+                    $variant.text(variantLabel);
+                    $('#cfg-info-variant-row').show();
+                } else {
+                    $('#cfg-info-variant-row').hide();
+                }
+
                 var $media = $('#cfg-media-inner');
                 if (p.imagen) {
                     $media.html('<img src="' + escForHtml(p.imagen) + '" alt="" class="cfg-media-img">');
