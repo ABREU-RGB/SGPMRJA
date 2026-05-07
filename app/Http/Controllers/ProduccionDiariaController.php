@@ -14,7 +14,7 @@ class ProduccionDiariaController extends Controller
     public function index()
     {
         $empleados = \App\Models\Empleado::with('persona')
-            ->where('departamento', 'Produccion')
+            ->whereHas('departamento', fn($q) => $q->whereRaw("LOWER(nombre) LIKE 'producc%'"))
             ->where('estado', 1)
             ->get()
             ->map(function ($empleado) {

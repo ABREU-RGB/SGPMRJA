@@ -145,10 +145,23 @@
                         $cantidadBordados = $detalle->bordados->sum(function ($item) {
                             return (int) ($item->cantidad ?? 1);
                         });
+                        // Snapshot inmutable: lo que se cotizó al momento, no lo que está vivo en catálogo
+                        $telaSnap = $detalle->tela_snapshot;
+                        $atrSnap  = $detalle->atributos_snapshot;
+                        $variantPartes = [];
+                        if (is_array($telaSnap) && !empty($telaSnap['nombre'])) {
+                            $variantPartes[] = 'Tela: ' . $telaSnap['nombre'];
+                        }
+                        if (is_array($atrSnap)) {
+                            foreach ($atrSnap as $atrNombre => $valNombre) {
+                                $variantPartes[] = $atrNombre . ': ' . $valNombre;
+                            }
+                        }
+                        $variantTexto = !empty($variantPartes) ? ' (' . implode(' · ', $variantPartes) . ')' : '';
                     @endphp
                     <tr>
                         <td>{{ $detalle->cantidad }}</td>
-                        <td>{{ $detalle->producto->nombre ?? '-' }}</td>
+                        <td>{{ ($detalle->producto->nombre ?? '-') }}{{ $variantTexto }}</td>
                         <td class="text-left">{{ $detalle->descripcion ?? '-' }}</td>
                         <td>{{ $detalle->talla?->etiqueta ?? '-' }}</td>
                         <td>{{ $detalle->lleva_bordado ? ($logosTexto ?: ($detalle->nombre_logo ?: '-')) : '-' }}</td>

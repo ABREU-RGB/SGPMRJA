@@ -215,8 +215,7 @@
             <thead>
                 <tr>
                     <th style="width: 7%;">Cant.</th>
-                    <th style="width: 35%;">Concepto o Descripción del Producto</th>
-                    <th style="width: 10%;">Modelo</th>
+                    <th style="width: 45%;">Concepto o Descripción del Producto</th>
                     <th style="width: 7%;">Color</th>
                     <th style="width: 7%;">Talla</th>
                     <th style="width: 15%;">Logo</th>
@@ -241,16 +240,30 @@
                         $cantidadBordados = $detalle->bordados->sum(function ($b) {
                             return (int) ($b->cantidad ?? 1);
                         });
+                        // Snapshot inmutable: estado del catálogo al momento del pedido
+                        $telaSnap = $detalle->tela_snapshot;
+                        $atrSnap  = $detalle->atributos_snapshot;
+                        $variantPartes = [];
+                        if (is_array($telaSnap) && !empty($telaSnap['nombre'])) {
+                            $variantPartes[] = 'Tela: ' . $telaSnap['nombre'];
+                        }
+                        if (is_array($atrSnap)) {
+                            foreach ($atrSnap as $atrNombre => $valNombre) {
+                                $variantPartes[] = $atrNombre . ': ' . $valNombre;
+                            }
+                        }
                     @endphp
                     <tr>
                         <td>{{ $detalle->cantidad }}</td>
                         <td>
                             {{ $detalle->producto->nombre }}
+                            @if(!empty($variantPartes))
+                                <br><small style="color: #666;">{{ implode(' · ', $variantPartes) }}</small>
+                            @endif
                             @if($detalle->descripcion)
-                                - {{ $detalle->descripcion }}
+                                <br><small>{{ $detalle->descripcion }}</small>
                             @endif
                         </td>
-                        <td>{{ $detalle->producto->modelo ?? '-' }}</td>
                         <td>{{ $detalle->color?->nombre ?? '-' }}</td>
                         <td>{{ $detalle->talla?->etiqueta ?? '-' }}</td>
                         <td>

@@ -24,8 +24,11 @@ class OrdenProduccionController extends Controller
             ->with(['productos.producto'])
             ->orderBy('created_at', 'desc')
             ->get();
+        // Filtrar empleados del departamento de Producción a través de la FK
+        // departamento_id (la columna departamento varchar fue eliminada en la
+        // auditoría DB; este controlador no se había actualizado).
         $empleados = Empleado::with('persona')
-            ->where('departamento', 'Produccion')
+            ->whereHas('departamento', fn($q) => $q->whereRaw("LOWER(nombre) LIKE 'producc%'"))
             ->where('estado', 1)
             ->get()
             ->map(fn($e) => (object)[

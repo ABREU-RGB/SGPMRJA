@@ -766,6 +766,73 @@
 </div>
 
 {{-- ════════════════════════════════════════════════════════════════════
+     Modal Selector de Variante — Fase 4 (variantes/atributos)
+     Se abre al clickear una card de TIPO en el catálogo. Permite elegir
+     tela y valores de atributos para resolver el producto exacto antes
+     de configurar color/tallas/bordados.
+     ════════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade atlantico-modal atlantico-modal--op cot-variant-modal" id="varianteSelectorModal"
+    tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="cat-icon-square">
+                        <i class="ri-shape-2-line"></i>
+                    </div>
+                    <div>
+                        <p class="cat-eyebrow mb-0">Selecciona la variante</p>
+                        <h5 class="modal-title m-0" id="vs-tipo-nombre">—</h5>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small mb-3">
+                    Elige la combinación que vas a cotizar. El SKU se resuelve automáticamente.
+                </p>
+
+                {{-- Sección Tela --}}
+                <div class="mb-3" id="vs-tela-section">
+                    <label class="form-label small fw-semibold mb-2">
+                        <i class="ri-shirt-line me-1"></i>Tela
+                    </label>
+                    <div id="vs-tela-options" class="d-flex flex-wrap gap-2">
+                        {{-- Render dinámico --}}
+                    </div>
+                </div>
+
+                {{-- Sección Atributos (chips por atributo) --}}
+                <div id="vs-atributos-section">
+                    <div class="text-muted small text-center py-3">
+                        <span class="spinner-border spinner-border-sm me-2"></span>Cargando variantes…
+                    </div>
+                </div>
+
+                {{-- Resultado de resolución --}}
+                <div id="vs-result-found" class="alert alert-success py-2 small mt-3 mb-0" style="display:none;">
+                    <i class="ri-check-line me-1"></i>
+                    <strong id="vs-result-codigo">—</strong> · <span id="vs-result-precio">—</span>
+                </div>
+                <div id="vs-result-missing" class="alert alert-warning py-2 small mt-3 mb-0" style="display:none;">
+                    <i class="ri-error-warning-line me-1"></i>
+                    Esta combinación no existe en el catálogo. Crea el producto en
+                    <a href="{{ url('productos') }}" target="_blank">/productos</a> primero.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-atlantico-brand" id="vs-confirm" disabled>
+                    <i class="ri-arrow-right-line me-1"></i>Configurar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ════════════════════════════════════════════════════════════════════
      Modal Configurador de Producto — Fase 3
      Se abre al clickear una card del catálogo. Color + tallas matrix.
      Los bordados se configuran por línea desde el paso 2 (Fase 4).
@@ -806,6 +873,9 @@
                                 <span class="cfg-info-price-label">Precio base</span>
                                 <span class="cfg-info-price-value" id="cfg-info-precio">$0,00</span>
                             </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2" id="cfg-cambiar-variante" style="display:none;">
+                                <i class="ri-shape-2-line me-1"></i>Cambiar variante
+                            </button>
                             <p class="cfg-info-help">
                                 <i class="ri-information-line me-1"></i>El bordado se configura por
                                 línea en el paso 2 después de confirmar el carrito.

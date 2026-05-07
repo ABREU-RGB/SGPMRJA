@@ -178,6 +178,9 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::get('productos-data', [ProductoController::class, 'getProductos'])->name('productos.data');
         Route::get('productos/reporte/pdf', [ProductoController::class, 'reportePdf'])->name('productos.reporte.pdf');
         Route::post('productos/{id}/restore', [ProductoController::class, 'restore'])->name('productos.restore');
+        Route::get('productos-sugerir-precio', [ProductoController::class, 'sugerirPrecio'])->name('productos.sugerir-precio');
+        Route::get('productos-preview-codigo', [ProductoController::class, 'previewCodigo'])->name('productos.preview-codigo');
+        Route::get('productos-resolver-variante', [ProductoController::class, 'resolverVariante'])->name('productos.resolver-variante');
 
         // Tipos de Producto
         Route::get('tipo-productos', [App\Http\Controllers\TipoProductoController::class, 'index'])->name('tipo-productos.index');
@@ -186,9 +189,24 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::put('tipo-productos/{tipoProducto}', [App\Http\Controllers\TipoProductoController::class, 'update'])->name('tipo-productos.update');
         Route::delete('tipo-productos/{tipoProducto}', [App\Http\Controllers\TipoProductoController::class, 'destroy'])->name('tipo-productos.destroy');
         Route::patch('tipo-productos/{id}/restore', [App\Http\Controllers\TipoProductoController::class, 'restore'])->name('tipo-productos.restore');
-        Route::get('tipo-productos/{tipoProducto}/proximo-codigo', [App\Http\Controllers\TipoProductoController::class, 'proximoCodigo'])->name('tipo-productos.proximo-codigo');
         Route::get('tipo-productos-check-nombre', [App\Http\Controllers\TipoProductoController::class, 'checkNombre'])->name('tipo-productos.check-nombre');
         Route::get('tipo-productos-check-codigo', [App\Http\Controllers\TipoProductoController::class, 'checkCodigoPrefijo'])->name('tipo-productos.check-codigo');
+
+        // Atributos de confección (catálogo maestro)
+        Route::get('atributos', [App\Http\Controllers\AtributoController::class, 'index'])->name('atributos.index');
+        Route::post('atributos', [App\Http\Controllers\AtributoController::class, 'store'])->name('atributos.store');
+        Route::get('atributos/{atributo}', [App\Http\Controllers\AtributoController::class, 'show'])->name('atributos.show');
+        Route::put('atributos/{atributo}', [App\Http\Controllers\AtributoController::class, 'update'])->name('atributos.update');
+        Route::delete('atributos/{atributo}', [App\Http\Controllers\AtributoController::class, 'destroy'])->name('atributos.destroy');
+        Route::get('atributos-check-nombre', [App\Http\Controllers\AtributoController::class, 'checkNombre'])->name('atributos.check-nombre');
+        Route::get('atributos-check-codigo', [App\Http\Controllers\AtributoController::class, 'checkCodigo'])->name('atributos.check-codigo');
+
+        // Valores de cada atributo (anidado)
+        Route::get('atributos/{atributo}/valores', [App\Http\Controllers\AtributoValorController::class, 'index'])->name('atributos.valores.index');
+        Route::post('atributos/{atributo}/valores', [App\Http\Controllers\AtributoValorController::class, 'store'])->name('atributos.valores.store');
+        Route::put('atributos/{atributo}/valores/{valor}', [App\Http\Controllers\AtributoValorController::class, 'update'])->name('atributos.valores.update');
+        Route::delete('atributos/{atributo}/valores/{valor}', [App\Http\Controllers\AtributoValorController::class, 'destroy'])->name('atributos.valores.destroy');
+        Route::put('atributos/{atributo}/valores-reorder', [App\Http\Controllers\AtributoValorController::class, 'reorder'])->name('atributos.valores.reorder');
 
         // Insumos
         Route::resource('insumos', InsumoController::class);

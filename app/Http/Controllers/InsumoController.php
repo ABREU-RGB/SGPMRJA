@@ -38,6 +38,7 @@ class InsumoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
+            'codigo' => 'nullable|string|min:2|max:8|regex:/^[A-Z0-9]+$/|unique:insumo,codigo',
             'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
             'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
             'costo_unitario' => 'required|numeric|min:0.01',
@@ -45,18 +46,19 @@ class InsumoController extends Controller
             'stock_minimo' => 'required|numeric|min:0',
             'proveedor_id' => 'nullable|exists:proveedor,id',
             'estado' => 'nullable|boolean',
+        ], [
+            'codigo.regex' => 'El código solo admite letras mayúsculas y números.',
+            'codigo.unique' => 'Ya existe un insumo con este código.',
         ]);
 
-        $insumo = Insumo::create($request->only([
-            'nombre',
-            'tipo',
-            'unidad_medida',
-            'costo_unitario',
-            'stock_actual',
-            'stock_minimo',
-            'proveedor_id',
-            'estado'
-        ]));
+        $data = $request->only([
+            'nombre', 'tipo', 'unidad_medida', 'costo_unitario',
+            'stock_actual', 'stock_minimo', 'proveedor_id', 'estado'
+        ]);
+        // Código en mayúsculas, vacío como NULL
+        $data['codigo'] = $request->filled('codigo') ? strtoupper(trim($request->codigo)) : null;
+
+        $insumo = Insumo::create($data);
 
         return response()->json(['success' => 'Insumo creado exitosamente.', 'insumo' => $insumo]);
     }
@@ -69,8 +71,11 @@ class InsumoController extends Controller
 
     public function update(Request $request, $id)
     {
+        $insumo = Insumo::findOrFail($id);
+
         $request->validate([
             'nombre' => 'required|string|max:100',
+            'codigo' => 'nullable|string|min:2|max:8|regex:/^[A-Z0-9]+$/|unique:insumo,codigo,' . $insumo->id,
             'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
             'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
             'costo_unitario' => 'required|numeric|min:0.01',
@@ -78,19 +83,21 @@ class InsumoController extends Controller
             'stock_minimo' => 'required|numeric|min:0',
             'proveedor_id' => 'nullable|exists:proveedor,id',
             'estado' => 'nullable|boolean',
+        ], [
+            'codigo.regex' => 'El código solo admite letras mayúsculas y números.',
+            'codigo.unique' => 'Ya existe un insumo con este código.',
         ]);
 
-        $insumo = Insumo::findOrFail($id);
-        $insumo->update($request->only([
-            'nombre',
-            'tipo',
-            'unidad_medida',
-            'costo_unitario',
-            'stock_actual',
-            'stock_minimo',
-            'proveedor_id',
-            'estado'
-        ]));
+        $data = $request->only([
+            'nombre', 'tipo', 'unidad_medida', 'costo_unitario',
+            'stock_actual', 'stock_minimo', 'proveedor_id', 'estado'
+        ]);
+        // Código inmutable: solo se asigna si el insumo no tenía uno previamente
+        if (empty($insumo->codigo) && $request->filled('codigo')) {
+            $data['codigo'] = strtoupper(trim($request->codigo));
+        }
+
+        $insumo->update($data);
 
         return response()->json(['success' => 'Insumo actualizado exitosamente.']);
     }

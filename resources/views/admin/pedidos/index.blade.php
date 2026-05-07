@@ -1272,7 +1272,7 @@
                     var productoEncontrado = products.find(p => p.id == productoId);
                     if (productoEncontrado) {
                         var tipoNombre = productoEncontrado.tipo_producto ? productoEncontrado.tipo_producto.nombre : 'Sin tipo';
-                        productoText = (productoEncontrado.codigo || '') + ' - ' + tipoNombre + ' ' + productoEncontrado.modelo;
+                        productoText = (productoEncontrado.codigo || '') + ' - ' + tipoNombre;
                     }
                 }
 
@@ -1981,7 +1981,7 @@
                                                                                                                         <i class="ri-shopping-bag-line text-white fs-5"></i>
                                                                                                                     </div>
                                                                                                                     <div>
-                                                                                                                        <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'} ${item.producto.modelo}</h6>
+                                                                                                                        <h6 class="mb-0 fw-bold" style="color: #1e3c72;">${item.producto.codigo || ''} - ${item.producto.tipo_producto ? item.producto.tipo_producto.nombre : 'Sin tipo'}</h6>
                                                                                                                         <small class="text-muted">Producto #${index + 1}</small>
                                                                                                                     </div>
                                                                                                                     <div class="ms-auto">
@@ -2423,7 +2423,7 @@
 
             var card = $('.card[data-product-index="' + currentProductIndex + '"]');
             var tipoNombre = producto.tipo_producto ? producto.tipo_producto.nombre : 'Sin tipo';
-            var displayName = (producto.codigo || '') + ' - ' + tipoNombre + ' ' + producto.modelo;
+            var displayName = (producto.codigo || '') + ' - ' + tipoNombre;
 
             card.find('.producto-id-input').val(productoId);
             card.find('.producto-text').text(displayName).removeClass('placeholder-text');

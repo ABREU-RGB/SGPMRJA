@@ -495,7 +495,7 @@
             });
 
             // Código prefijo de tipo producto - solo letras, mayúsculas automáticas, máx 5
-            $(document).on('input', '#tipo-prefijo-field, input[name="codigo_prefijo"]', function () {
+            $(document).on('input', '#tipo-prefijo-field, input[name="prefijo"]', function () {
                 this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 5);
             });
 
@@ -632,7 +632,7 @@
             });
 
             // Validación de código prefijo (solo letras, máx 5)
-            $(document).on('blur', '#tipo-prefijo-field, input[name="codigo_prefijo"]', function () {
+            $(document).on('blur', '#tipo-prefijo-field, input[name="prefijo"]', function () {
                 let value = $(this).val().trim();
                 if (value.length === 0) {
                     marcarInvalido($(this), 'El código prefijo es obligatorio.');
