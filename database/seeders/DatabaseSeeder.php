@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ColorSeeder::class,
             TallaSeeder::class,
             BordadoUbicacionSeeder::class,
+            ProductoVariantesSeeder::class,
         ]);
     }
 }
