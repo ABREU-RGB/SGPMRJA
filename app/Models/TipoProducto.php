@@ -16,6 +16,13 @@ class TipoProducto extends Model
         'nombre',
         'codigo_prefijo',
         'descripcion',
+        'precio_confeccion',
+        'requiere_tela',
+    ];
+
+    protected $casts = [
+        'precio_confeccion' => 'decimal:2',
+        'requiere_tela' => 'boolean',
     ];
 
     /**
@@ -24,6 +31,17 @@ class TipoProducto extends Model
     public function productos()
     {
         return $this->hasMany(Producto::class);
+    }
+
+    /**
+     * Atributos de confección que aplican a este tipo
+     */
+    public function atributos()
+    {
+        return $this->belongsToMany(Atributo::class, 'tipo_producto_atributo')
+            ->withPivot(['es_obligatorio', 'orden'])
+            ->withTimestamps()
+            ->orderBy('tipo_producto_atributo.orden');
     }
 
     /**

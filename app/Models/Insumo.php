@@ -14,6 +14,7 @@ class Insumo extends Model
 
     protected $fillable = [
         'nombre',
+        'codigo',
         'tipo',
         'unidad_medida',
         'costo_unitario',
@@ -45,5 +46,14 @@ class Insumo extends Model
     public function movimientos()
     {
         return $this->hasMany(MovimientoInsumo::class);
+    }
+
+    /**
+     * Scope: solo insumos de tipo 'Tela' activos.
+     * Usado en el form de productos para definir la materia prima de la variante.
+     */
+    public function scopeTelas($query)
+    {
+        return $query->where('tipo', 'Tela')->where('estado', true);
     }
 }

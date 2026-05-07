@@ -14,10 +14,12 @@ class Producto extends Model
 
     protected $fillable = [
         'tipo_producto_id',
+        'insumo_tela_id',
         'codigo',
         'descripcion',
         'modelo',
         'precio_base',
+        'atributos_snapshot',
         'imagen',
         'estado',
     ];
@@ -25,6 +27,7 @@ class Producto extends Model
     protected $casts = [
         'estado' => 'boolean',
         'precio_base' => 'decimal:2',
+        'atributos_snapshot' => 'array',
     ];
 
     /**
@@ -38,6 +41,17 @@ class Producto extends Model
     public function tipoProducto()
     {
         return $this->belongsTo(TipoProducto::class);
+    }
+
+    public function tela()
+    {
+        return $this->belongsTo(Insumo::class, 'insumo_tela_id');
+    }
+
+    public function atributoValores()
+    {
+        return $this->belongsToMany(AtributoValor::class, 'producto_atributo_valor')
+            ->withTimestamps();
     }
 
     /**
