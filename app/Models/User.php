@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -64,6 +65,21 @@ class User extends Authenticatable
     public function getDireccionAttribute()
     {
         return $this->persona ? $this->persona->direccion_principal : null;
+    }
+
+    /**
+     * URL segura del avatar: verifica existencia física del archivo.
+     * Si no existe, devuelve un avatar generado con la inicial del usuario.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+
+        // Fallback: avatar con inicial vía ui-avatars.com
+        $name = urlencode($this->name ?? 'U');
+        return "https://ui-avatars.com/api/?name={$name}&color=FFFFFF&background=1e3c72&bold=true&size=128";
     }
 
     public function ordenesCreadas()

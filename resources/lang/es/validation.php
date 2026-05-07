@@ -151,6 +151,7 @@ return [
         'telefono' => 'Teléfono',
         'correo_electronico' => 'Correo Electrónico',
         'email' => 'Correo Electrónico',
+        'password' => 'contraseña',
         'tipo_credito' => 'Tipo de Crédito',
         'monto_solicitado' => 'Monto Solicitado',
         'ruta_documentos' => 'Documentos',

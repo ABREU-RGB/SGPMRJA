@@ -175,6 +175,157 @@
         font-size: 0.72rem;
         line-height: 1.2;
     }
+
+    /* ─── Overlay difuminador del wizard cuando el offcanvas está abierto ── */
+    #bordado-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1065;
+        background: rgba(10, 18, 40, 0.45);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.28s ease;
+    }
+
+    #bordado-modal-overlay.is-active {
+        opacity: 1;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    /* ─── Offcanvas configurador de bordados ─────────────────────────────── */
+    #bordadoOffcanvas {
+        width: 480px !important;
+        max-width: 95vw;
+        z-index: 1070;
+    }
+
+    .bordado-oc-header {
+        background: linear-gradient(135deg, #132649 0%, #1e3c72 100%);
+        border-bottom: 2px solid rgba(0, 217, 165, 0.30);
+        padding: 1rem 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-icon {
+        width: 38px;
+        height: 38px;
+        background: rgba(0, 217, 165, 0.16);
+        border: 1.5px solid rgba(0, 217, 165, 0.4);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--atlantico-cyan);
+        font-size: 1.1rem;
+    }
+
+    .bordado-oc-eyebrow {
+        font-size: 0.66rem;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+    }
+
+    #bordadoOffcanvas .offcanvas-title {
+        color: #fff !important;
+        font-size: 0.88rem;
+    }
+
+    .bordado-oc-color-badge {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.74rem;
+        color: rgba(255, 255, 255, 0.65);
+        margin-top: 2px;
+    }
+
+    .bordado-oc-color-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-search {
+        background: #f8f9fa;
+        border-bottom: 1px solid rgba(30, 60, 114, 0.08);
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-search .bordado-oc-search-icon {
+        background: rgba(30, 60, 114, 0.08);
+        border-color: rgba(30, 60, 114, 0.2);
+        color: #1e3c72;
+    }
+
+    .bordado-oc-search .form-control {
+        border-color: rgba(30, 60, 114, 0.2);
+    }
+
+    .bordado-oc-hint {
+        font-size: 0.75rem;
+        color: #6c7a94;
+    }
+
+    .bordado-oc-section-label {
+        font-size: 0.69rem;
+        font-weight: 700;
+        color: #5a6a85;
+        text-transform: uppercase;
+        letter-spacing: 0.045em;
+    }
+
+    .bordado-oc-divider {
+        border-color: rgba(30, 60, 114, 0.1);
+    }
+
+    .bordado-oc-footer {
+        padding: 0.85rem 1rem;
+        background: #fff;
+        border-top: 1px solid rgba(30, 60, 114, 0.1);
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.07);
+        flex-shrink: 0;
+    }
+
+    .bordado-oc-recargo-value {
+        color: var(--atlantico-dark-blue);
+        font-size: 1.05rem;
+    }
+
+    /* Dark mode — offcanvas bordados */
+    [data-bs-theme="dark"] #bordadoOffcanvas .offcanvas-body {
+        background: #1a2035;
+    }
+
+    [data-bs-theme="dark"] .bordado-oc-search {
+        background: #151c2e;
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-bs-theme="dark"] .bordado-oc-search .form-control {
+        background: #1e2840;
+        color: #c8cfe0;
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    [data-bs-theme="dark"] .bordado-oc-footer {
+        background: #1a2035;
+        border-top-color: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-bs-theme="dark"] .ubicacion-std-row,
+    [data-bs-theme="dark"] .ubicacion-personalizada-row {
+        background: #1e2840;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
 </style>
 <script>
     // Validación onblur: fecha_validez debe ser >= fecha_cotizacion
@@ -576,7 +727,7 @@
         // Preparar capas antes de animar el modal de logos (evita parpadeos)
         document.getElementById('logoSearchModal').addEventListener('show.bs.modal', function () {
             var zIndex = 1085;
-            if ($('#ubicacionCatalogoModal').hasClass('show')) {
+            if ($('#bordadoOffcanvas').hasClass('show')) {
                 zIndex = 1105;
             } else if ($('#showModal').hasClass('show')) {
                 zIndex = 1095;
@@ -1039,12 +1190,14 @@
         // === INICIO LÓGICA MODAL DE UBICACIÓN DE BORDADO ===
         // ============================================================
         var ubicacionModal = null;
-        var ubicacionModalEl = document.getElementById('ubicacionCatalogoModal');
-        var currentBordadoCard = null;
+        var ubicacionModalEl = document.getElementById('bordadoOffcanvas');
+        var currentBordadoCard = null;       // legacy fallback: card DOM ref
+        var currentBordadoGroupKey = null;   // fuente de verdad: "productoId|colorId"
         var ubicacionesBordadoArray = [];
+        window.cotGroupBordadosState = window.cotGroupBordadosState || {};
 
         if (ubicacionModalEl) {
-            ubicacionModal = new bootstrap.Modal(ubicacionModalEl);
+            ubicacionModal = new bootstrap.Offcanvas(ubicacionModalEl);
         }
 
         function cargarUbicacionesBordado(callback) {
@@ -1075,6 +1228,32 @@
             }) : [];
 
             $card.data('bordados', normalized);
+        }
+
+        function getGroupBordados(key) {
+            var st = window.cotGroupBordadosState || {};
+            return (st[key] && Array.isArray(st[key].bordados)) ? st[key].bordados : [];
+        }
+
+        function setGroupBordados(key, bordados) {
+            window.cotGroupBordadosState = window.cotGroupBordadosState || {};
+            window.cotGroupBordadosState[key] = { bordados: bordados };
+            var parts = String(key).split('|');
+            var pid = parts[0];
+            var cid = parts[1] || '';
+            $('#productos-container .product-item').each(function () {
+                var $c = $(this);
+                if (String($c.find('.producto-id-input').val()) === String(pid) &&
+                    String($c.find('.color-id-input').val() || '') === String(cid)) {
+                    setCardBordados($c, bordados);
+                    sincronizarCamposOcultosBordados($c);
+                    actualizarResumenBordadosEnCard($c);
+                    var $chk = $c.find('.lleva-bordado-checkbox');
+                    if (bordados.length > 0 && !$chk.is(':checked')) {
+                        $chk.prop('checked', true).trigger('change');
+                    }
+                }
+            });
         }
 
         function calcularRecargoUnitarioBordadoDesdeLista(bordados) {
@@ -1173,7 +1352,9 @@
             grid.empty();
             filtro = (filtro || '').toLowerCase().trim();
 
-            var bordadosActivos = currentBordadoCard ? getCardBordados(currentBordadoCard) : [];
+            var bordadosActivos = currentBordadoGroupKey
+                ? getGroupBordados(currentBordadoGroupKey)
+                : (currentBordadoCard ? getCardBordados(currentBordadoCard) : []);
             var grouped = {};
             ubicacionesBordadoArray.forEach(function (item) {
                 var nombre = String(item.nombre || '').trim();
@@ -1246,9 +1427,12 @@
             var container = $('#ubicacionesPersonalizadasContainer');
             container.empty();
 
-            if (!currentBordadoCard) return;
+            if (!currentBordadoGroupKey && !currentBordadoCard) return;
 
-            var customItems = getCardBordados(currentBordadoCard).filter(function (item) {
+            var _bordados = currentBordadoGroupKey
+                ? getGroupBordados(currentBordadoGroupKey)
+                : getCardBordados(currentBordadoCard);
+            var customItems = _bordados.filter(function (item) {
                 return !!item.es_personalizada;
             });
 
@@ -1363,12 +1547,14 @@
 
         function actualizarResumenRecargoModal() {
             var recargo = 0;
+            var activeCount = 0;
 
             $('#ubicacionesCatalogoGrid .ubicacion-std-check:checked').each(function () {
                 var row = $(this).closest('.ubicacion-std-row');
                 var precio = parseFloat(row.find('.ubicacion-std-precio').val()) || 0;
                 var cantidad = Math.max(1, parseInt(row.find('.ubicacion-std-cantidad').val() || 1, 10));
                 recargo += (precio * cantidad);
+                activeCount++;
             });
 
             $('#ubicacionesPersonalizadasContainer .ubicacion-personalizada-row').each(function () {
@@ -1377,9 +1563,11 @@
                 var precio = parseFloat($(this).find('.ubicacion-personalizada-precio').val()) || 0;
                 var cantidad = Math.max(1, parseInt($(this).find('.ubicacion-personalizada-cantidad').val() || 1, 10));
                 recargo += (precio * cantidad);
+                activeCount++;
             });
 
             $('#resumenRecargoBordadoModal').text(formatMoney(recargo));
+            $('#bordado-oc-active-count').text(activeCount);
         }
 
         function aplicarBordadosDesdeModal() {
@@ -1453,15 +1641,35 @@
                 return;
             }
 
-            setCardBordados(currentBordadoCard, bordados);
-            actualizarResumenBordadosEnCard(currentBordadoCard);
+            if (currentBordadoGroupKey) {
+                setGroupBordados(currentBordadoGroupKey, bordados);
+                currentBordadoGroupKey = null;
+            } else if (currentBordadoCard) {
+                setCardBordados(currentBordadoCard, bordados);
+                actualizarResumenBordadosEnCard(currentBordadoCard);
+            }
             calculateCotizacionTotals();
+            if (typeof refreshGroupedList === 'function') refreshGroupedList();
 
             if (ubicacionModal) ubicacionModal.hide();
         }
 
         if (ubicacionModalEl) {
-            ubicacionModalEl.addEventListener('shown.bs.modal', function () {
+            var $bordadoOverlay = $('#bordado-modal-overlay');
+
+            ubicacionModalEl.addEventListener('show.bs.offcanvas', function () {
+                $bordadoOverlay.addClass('is-active');
+            });
+
+            ubicacionModalEl.addEventListener('hidden.bs.offcanvas', function () {
+                $bordadoOverlay.removeClass('is-active');
+            });
+
+            $bordadoOverlay.on('click', function () {
+                if (ubicacionModal) ubicacionModal.hide();
+            });
+
+            ubicacionModalEl.addEventListener('shown.bs.offcanvas', function () {
                 $('#buscarUbicacionModal').val('').trigger('focus');
 
                 if (!ubicacionesBordadoArray.length) {
@@ -1475,16 +1683,6 @@
 
                 renderizarUbicacionesPersonalizadasModal();
                 renderizarUbicacionesModal('');
-            });
-
-            ubicacionModalEl.addEventListener('hidden.bs.modal', function () {
-                if ($('#showModal').hasClass('show')) {
-                    $('body').addClass('modal-open');
-                    var backdrops = $('.modal-backdrop');
-                    if (backdrops.length > 1) {
-                        backdrops.not(backdrops.first()).remove();
-                    }
-                }
             });
         }
 
@@ -1505,12 +1703,16 @@
 
         $('#productos-container').on('click', '.configurar-bordados-trigger', function (e) {
             e.preventDefault();
-            currentBordadoCard = $(this).closest('.product-item');
+            var $c = $(this).closest('.product-item');
+            currentBordadoCard = $c;
+            currentBordadoGroupKey = $c.find('.producto-id-input').val() + '|' + ($c.find('.color-id-input').val() || '');
             if (ubicacionModal) ubicacionModal.show();
         });
 
         $('#productos-container').on('click', '.bordados-summary-input', function () {
-            currentBordadoCard = $(this).closest('.product-item');
+            var $c = $(this).closest('.product-item');
+            currentBordadoCard = $c;
+            currentBordadoGroupKey = $c.find('.producto-id-input').val() + '|' + ($c.find('.color-id-input').val() || '');
             if (ubicacionModal) ubicacionModal.show();
         });
 
@@ -1882,19 +2084,23 @@
             calculateCotizacionTotals();
         });
         $('#abono-field').on('change keyup', updateCotizacionRemaining);
-        // Inicializar con un producto vacío al abrir el modal de creación
+        // Reset al abrir el modal en modo creación (wizard 3 pasos)
+        // El usuario agregará productos desde el paso 2 vía catálogo (Fase 2)
+        // o "Agregar manual" (legacy). El empty-state aparece si no hay productos.
         $('#create-btn').on('click', function () {
-            $('#modalTitle').text('Agregar Cotización');
+            $('#modalTitle').text('Nueva Cotización');
             $('#cotizacionForm')[0].reset();
             $('#id-field').val('');
             $('#cliente-id-field').val('').prop('disabled', false).removeClass('campo-protegido');
             $('#fecha-cotizacion-field').val('').prop('readonly', false).removeClass('campo-protegido');
-            $('#add-btn').show();
-            $('#edit-btn').hide();
+            $('#prioridad-field').val('Normal');
             $('#estado-field-wrapper').hide();
             $('#productos-container').empty();
-            addProductItem();
+            window.cotCart = [];
+            window.cotGroupBordadosState = {};
+            if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             calculateCotizacionTotals();
+            // showStep(1) y visibilidad de add-btn/edit-btn se ajustan en show.bs.modal
         });
 
 
@@ -2079,6 +2285,9 @@
             $('#edit-btn').show();
             $('#estado-field-wrapper').show();
             $('#productos-container').empty();
+            window.cotCart = [];
+            window.cotGroupBordadosState = {};
+            if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
             $.ajax({
                 url: '/cotizaciones/' + id,
                 method: 'GET',
@@ -2106,6 +2315,7 @@
                     $('#fecha-cotizacion-field').val(fechaCotizacion).prop('readonly', true).addClass('campo-protegido');
                     $('#fecha-validez-field').val(fechaValidez);
                     $('#estado-field').val(data.estado);
+                    $('#prioridad-field').val(data.prioridad || 'Normal');
                     $('#notas-field').val(data.notas || '');
                     // Cargar productos existentes
                     $('#productos-container').empty();
@@ -2130,12 +2340,23 @@
                                 detalle.talla_id || null,
                                 detalle.bordados || []
                             );
+
+                            // Poblar cotGroupBordadosState con bordados del server
+                            if ((detalle.bordados || []).length > 0) {
+                                var gKey = String(detalle.producto_id) + '|' + String(detalle.color_id || '');
+                                if (!window.cotGroupBordadosState[gKey]) {
+                                    window.cotGroupBordadosState[gKey] = { bordados: detalle.bordados };
+                                }
+                            }
                         });
                     }
 
                     // Esperar un momento para que todos los elementos se rendericen
                     setTimeout(function () {
                         calculateCotizacionTotals();
+                        // Wizard: regenerar tabla agrupada y KPIs con los datos cargados
+                        if (typeof window.cotRefreshGroupedList === 'function') window.cotRefreshGroupedList();
+                        if (window.cotWizard) window.cotWizard.refreshKPIs();
 
                         // Intentar inicializar Select2, pero no detener la ejecución si falla
                         try {
@@ -2662,6 +2883,11 @@
             $('#cliente-telefono-field').val(persona.telefono || '');
             $('#cliente-autocomplete-list').empty().hide();
             clienteSeleccionado = true;
+
+            // Wizard UX: mostrar tarjeta visual del cliente seleccionado
+            if (typeof window.cotMostrarTarjetaCliente === 'function') {
+                window.cotMostrarTarjetaCliente(persona, clienteId);
+            }
         }
 
         $('#ci-rif-number-field').on('input', function () {
@@ -2669,12 +2895,20 @@
             clearTimeout(autocompleteTimeout);
             if (query.length < 6) {
                 $('#cliente-autocomplete-list').empty().hide();
+                if (typeof window.cotShowLoading === 'function') window.cotShowLoading(false);
                 return;
+            }
+            // Mostrar skeleton si no hay cliente cargado
+            if (!$('#cliente-id-field').val() && typeof window.cotShowLoading === 'function') {
+                window.cotShowLoading(true);
             }
             autocompleteTimeout = setTimeout(function () {
                 $.ajax({
                     url: '/personas-search',
                     data: { q: query },
+                    complete: function () {
+                        if (typeof window.cotShowLoading === 'function') window.cotShowLoading(false);
+                    },
                     success: function (personas) {
                         let html = '';
                         if (personas.length > 0) {
@@ -2904,6 +3138,54 @@
             $('.invalid-feedback').hide();
         });
 
+        // === Lógica dinámica: Natural vs Jurídico/Gubernamental (modal cliente cotización) ===
+        function toggleClienteFieldsCotizacion() {
+            var tipo = $('#tipo_cliente-field-cliente').val();
+            var $prefixSelect = $('#documento-prefix-field-cliente');
+            var $docInput = $('#documento-number-field-cliente');
+
+            if (tipo === 'natural' || tipo === '') {
+                $('#campos-persona-natural-cliente').removeClass('d-none');
+                $('#nombre-field-cliente').prop('required', true).prop('disabled', false);
+                $('#apellido-field-cliente').prop('required', true).prop('disabled', false);
+
+                $('#campos-razon-social-cliente').addClass('d-none');
+                $('#razon-social-field-cliente').prop('required', false).prop('disabled', true).val('');
+
+                $prefixSelect.html('<option value="V-">V-</option><option value="E-">E-</option>');
+                $prefixSelect.prop('disabled', false);
+                $docInput.attr('maxlength', '8');
+                if ($docInput.val().length > 8) $docInput.val($docInput.val().slice(0, 8));
+
+            } else if (tipo === 'juridico') {
+                $('#campos-persona-natural-cliente').addClass('d-none');
+                $('#nombre-field-cliente').prop('required', false).prop('disabled', true).val('');
+                $('#apellido-field-cliente').prop('required', false).prop('disabled', true).val('');
+
+                $('#campos-razon-social-cliente').removeClass('d-none');
+                $('#razon-social-field-cliente').prop('required', true).prop('disabled', false);
+
+                $prefixSelect.html('<option value="J-">J-</option>');
+                $prefixSelect.prop('disabled', true);
+                $docInput.attr('maxlength', '9');
+                if ($docInput.val().length > 9) $docInput.val($docInput.val().slice(0, 9));
+
+            } else if (tipo === 'gubernamental') {
+                $('#campos-persona-natural-cliente').addClass('d-none');
+                $('#nombre-field-cliente').prop('required', false).prop('disabled', true).val('');
+                $('#apellido-field-cliente').prop('required', false).prop('disabled', true).val('');
+
+                $('#campos-razon-social-cliente').removeClass('d-none');
+                $('#razon-social-field-cliente').prop('required', true).prop('disabled', false);
+
+                $prefixSelect.html('<option value="G-">G-</option>');
+                $prefixSelect.prop('disabled', true);
+                $docInput.attr('maxlength', '9');
+                if ($docInput.val().length > 9) $docInput.val($docInput.val().slice(0, 9));
+            }
+        }
+        $(document).on('change', '#tipo_cliente-field-cliente', toggleClienteFieldsCotizacion);
+
         // Abrir modal de agregar cliente
         $('#open-add-cliente-modal').on('click', function () {
             $('#clienteFormCotizacion')[0].reset();
@@ -2917,6 +3199,8 @@
             $('#estatus-field-cliente').prop('checked', true);
             $('#estatus-label-cliente').text('Activo');
             $('#ciudad-field-cliente').html('<option value="">Primero seleccione un estado</option>');
+            $('#tipo_cliente-field-cliente').val('');
+            toggleClienteFieldsCotizacion();
             $('#modalAddCliente').modal('show');
         });
 
@@ -3050,5 +3334,1580 @@
                 }
             });
         });
+
+        // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — STEP 1 UX  (cliente card visual + chips + dates)
+        // ║ Tarjeta del cliente seleccionado, prioridad/estado como chips,
+        // ║ atajos de fecha, empty state y skeleton loading.
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            // === Avatar: iniciales + color basado en hash ====================
+            var AVATAR_COLORS = [
+                { bg: '#1e3c72', fg: '#ffffff' },
+                { bg: '#00b88c', fg: '#ffffff' },
+                { bg: '#0c4a6e', fg: '#ffffff' },
+                { bg: '#6b21a8', fg: '#ffffff' },
+                { bg: '#b45309', fg: '#ffffff' },
+                { bg: '#be123c', fg: '#ffffff' },
+                { bg: '#0e7490', fg: '#ffffff' },
+                { bg: '#365314', fg: '#ffffff' }
+            ];
+
+            function hashStr(s) {
+                var h = 0;
+                for (var i = 0; i < s.length; i++) {
+                    h = ((h << 5) - h) + s.charCodeAt(i);
+                    h |= 0;
+                }
+                return Math.abs(h);
+            }
+
+            function buildIniciales(persona) {
+                if (!persona) return '—';
+                var docPrefix = String(persona.tipo_documento || '').toUpperCase();
+                var esJuridico = docPrefix === 'J-' || docPrefix === 'G-';
+                if (esJuridico && persona.razon_social) {
+                    var rs = persona.razon_social.trim();
+                    var parts = rs.split(/\s+/).filter(Boolean);
+                    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+                    return rs.substring(0, 2).toUpperCase();
+                }
+                var n = (persona.nombre || '').trim();
+                var a = (persona.apellido || '').trim();
+                if (n && a) return (n[0] + a[0]).toUpperCase();
+                if (n) return n.substring(0, 2).toUpperCase();
+                return '—';
+            }
+
+            function pickAvatarColor(key) {
+                var idx = hashStr(String(key || 'default')) % AVATAR_COLORS.length;
+                return AVATAR_COLORS[idx];
+            }
+
+            // === Roles → badges ==============================================
+            var ROLE_LABELS = {
+                cliente:            { label: 'Cliente',   cls: 'cot-role-pill cot-role-cliente' },
+                empleado:           { label: 'Empleado',  cls: 'cot-role-pill cot-role-empleado' },
+                proveedor_natural:  { label: 'Proveedor', cls: 'cot-role-pill cot-role-proveedor' },
+                proveedor_juridico: { label: 'Proveedor', cls: 'cot-role-pill cot-role-proveedor' }
+            };
+
+            function buildRolesBadges(roles) {
+                if (!Array.isArray(roles) || !roles.length) return '';
+                var seen = {};
+                return roles.map(function (r) {
+                    var meta = ROLE_LABELS[r];
+                    if (!meta || seen[meta.label]) return '';
+                    seen[meta.label] = true;
+                    return '<span class="' + meta.cls + '">' + meta.label + '</span>';
+                }).filter(Boolean).join('');
+            }
+
+            // === Tarjeta del cliente =========================================
+            window.cotMostrarTarjetaCliente = function (persona, clienteId) {
+                if (!persona) return;
+                var docPrefix = String(persona.tipo_documento || '').toUpperCase();
+                var esJuridico = docPrefix === 'J-' || docPrefix === 'G-';
+                var nombre = esJuridico && persona.razon_social
+                    ? persona.razon_social
+                    : (persona.apellido ? persona.nombre + ' ' + persona.apellido : (persona.nombre || ''));
+
+                var iniciales = buildIniciales(persona);
+                var color = pickAvatarColor(persona.documento || persona.persona_id || nombre);
+
+                $('#cot-cliente-empty').hide();
+                $('#cot-cliente-loading').attr('hidden', true);
+                $('#cot-cliente-card').removeAttr('hidden').show();
+
+                var $av = $('#cot-cliente-avatar');
+                $av.text(iniciales).css({ background: color.bg, color: color.fg });
+
+                $('#cot-cliente-name-display').text(nombre || '—');
+                $('#cot-cliente-doc-display').text(persona.documento || '—');
+
+                var tel = persona.telefono || '';
+                var email = persona.email || '';
+                $('#cot-cliente-tel-wrap').toggle(!!tel);
+                $('#cot-cliente-tel-display').text(tel || '—');
+                $('#cot-cliente-email-wrap').toggle(!!email);
+                $('#cot-cliente-email-display').text(email || '—');
+
+                $('#cot-cliente-roles').html(buildRolesBadges(persona.roles));
+
+                var count = parseInt(persona.cotizaciones_count, 10);
+                if (clienteId && !isNaN(count) && count > 0) {
+                    $('#cot-cliente-stat-count').text(count);
+                    var lastDate = persona.cotizaciones_last_date || '';
+                    if (lastDate) {
+                        var parts = String(lastDate).split('T')[0].split('-');
+                        var pretty = parts.length === 3 ? (parts[2] + '/' + parts[1] + '/' + parts[0]) : lastDate;
+                        $('#cot-cliente-stat-last').text(pretty);
+                        $('#cot-cliente-stat-last-wrap').removeAttr('hidden').show();
+                    } else {
+                        $('#cot-cliente-stat-last-wrap').attr('hidden', true).hide();
+                    }
+                    $('#cot-cliente-stats').removeAttr('hidden').show();
+                } else {
+                    $('#cot-cliente-stats').attr('hidden', true).hide();
+                }
+            };
+
+            window.cotResetearCliente = function () {
+                $('#cot-cliente-card').attr('hidden', true).hide();
+                $('#cot-cliente-loading').attr('hidden', true).hide();
+                $('#cot-cliente-empty').show();
+                $('#cliente-id-field').val('');
+                $('#cliente-nombre-field').val('');
+                $('#cliente-apellido-field').val('');
+                $('#cliente-telefono-field').val('');
+                $('#cliente-email-field').val('');
+                $('#cliente-razon-social-display').val('');
+                if (typeof clienteSeleccionado !== 'undefined') clienteSeleccionado = false;
+            };
+
+            window.cotShowLoading = function (show) {
+                if (show) {
+                    if ($('#cliente-id-field').val()) return;
+                    $('#cot-cliente-empty').hide();
+                    $('#cot-cliente-loading').removeAttr('hidden').show();
+                } else {
+                    $('#cot-cliente-loading').attr('hidden', true).hide();
+                    if (!$('#cliente-id-field').val()) $('#cot-cliente-empty').show();
+                }
+            };
+
+            // Botón "Cambiar cliente"
+            $(document).on('click', '#cot-cliente-change-btn', function (e) {
+                e.preventDefault();
+                window.cotResetearCliente();
+                $('#ci-rif-number-field').val('').trigger('focus');
+            });
+
+            // === Chips de prioridad ==========================================
+            $(document).on('click', '.cot-priority-chip', function () {
+                var $b = $(this);
+                var val = $b.data('value');
+                $('.cot-priority-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $b.addClass('is-active').attr('aria-checked', 'true');
+                $('#prioridad-field').val(val).trigger('change');
+            });
+            $(document).on('change', '#prioridad-field', function () {
+                var val = $(this).val() || 'Normal';
+                $('.cot-priority-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $('.cot-priority-chip[data-value="' + val + '"]').addClass('is-active').attr('aria-checked', 'true');
+            });
+
+            // === Chips de estado =============================================
+            $(document).on('click', '.cot-estado-chip', function () {
+                var $b = $(this);
+                var val = $b.data('value');
+                $('.cot-estado-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $b.addClass('is-active').attr('aria-checked', 'true');
+                $('#estado-field').val(val).trigger('change');
+            });
+            $(document).on('change', '#estado-field', function () {
+                var val = $(this).val();
+                if (!val) return;
+                $('.cot-estado-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $('.cot-estado-chip[data-value="' + val + '"]').addClass('is-active').attr('aria-checked', 'true');
+            });
+
+            // === Atajos de fecha (validez) ==================================
+            $(document).on('click', '.cot-date-chip', function () {
+                var days = parseInt($(this).data('days'), 10) || 0;
+                var emisionVal = $('#fecha-cotizacion-field').val();
+                var base = emisionVal ? new Date(emisionVal + 'T00:00:00') : new Date();
+                if (isNaN(base.getTime())) base = new Date();
+                base.setDate(base.getDate() + days);
+                var iso = base.toISOString().split('T')[0];
+                $('#fecha-validez-field').val(iso).trigger('change').trigger('blur');
+                $('.cot-date-chip').removeClass('is-active');
+                $(this).addClass('is-active');
+            });
+
+            // Reset al abrir modal en modo crear
+            $('#showModal').on('show.bs.modal', function () {
+                if (!$('#id-field').val()) {
+                    window.cotResetearCliente();
+                }
+            });
+        })();
+
+        // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — CATÁLOGO DE PRODUCTOS  (Fase 2)
+        // ║ Modal anidado sobre el wizard que ofrece:
+        // ║   · sidebar de filtros (búsqueda, tipos, precio)
+        // ║   · grilla central de cards
+        // ║   · carrito lateral (estructura, lleno en Fase 4)
+        // ║ Click en card → abre Configurador (placeholder Fase 3).
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            var catState = {
+                search: '',
+                tipos: new Set(),
+                priceMin: null,
+                priceMax: null,
+                sort: 'relevance'
+            };
+            var catModalInstance = null;
+
+            function getProductsList() {
+                return (typeof products !== 'undefined' && Array.isArray(products)) ? products : [];
+            }
+
+            function getTipoCount(tipoId) {
+                return getProductsList().filter(function (p) {
+                    return p.tipo_producto && p.tipo_producto.id == tipoId;
+                }).length;
+            }
+
+            function uniqueTipos() {
+                var byId = {};
+                getProductsList().forEach(function (p) {
+                    if (p.tipo_producto && !byId[p.tipo_producto.id]) {
+                        byId[p.tipo_producto.id] = p.tipo_producto;
+                    }
+                });
+                return Object.values(byId).sort(function (a, b) {
+                    return String(a.nombre || '').localeCompare(String(b.nombre || ''));
+                });
+            }
+
+            function renderFilterTipos() {
+                var $cont = $('#cat-filter-tipos');
+                var tipos = uniqueTipos();
+                if (!tipos.length) {
+                    $cont.html('<p class="text-muted small mb-0 ps-1"><em>Sin tipos disponibles</em></p>');
+                    return;
+                }
+                var html = tipos.map(function (t) {
+                    var checked = catState.tipos.has(t.id) ? 'checked' : '';
+                    var count = getTipoCount(t.id);
+                    return (
+                        '<label class="cat-filter-item">' +
+                            '<input type="checkbox" class="form-check-input cat-tipo-check" value="' + t.id + '" ' + checked + '>' +
+                            '<span class="cat-filter-item-label">' + escapeForHtml(t.nombre) + '</span>' +
+                            '<span class="cat-filter-item-count">' + count + '</span>' +
+                        '</label>'
+                    );
+                }).join('');
+                $cont.html(html);
+            }
+
+            function escapeForHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            function getFilteredProducts() {
+                var list = getProductsList().slice();
+                var q = (catState.search || '').toLowerCase().trim();
+                list = list.filter(function (p) {
+                    if (q) {
+                        var hay = ((p.codigo || '') + ' ' + (p.modelo || '') + ' ' +
+                                   (p.tipo_producto ? p.tipo_producto.nombre : '')).toLowerCase();
+                        if (!hay.includes(q)) return false;
+                    }
+                    if (catState.tipos.size && !catState.tipos.has(p.tipo_producto ? p.tipo_producto.id : null)) {
+                        return false;
+                    }
+                    var price = parseFloat(p.precio_base || 0);
+                    if (catState.priceMin != null && price < catState.priceMin) return false;
+                    if (catState.priceMax != null && price > catState.priceMax) return false;
+                    return true;
+                });
+                if (catState.sort === 'price-asc') list.sort(function (a, b) { return (parseFloat(a.precio_base) || 0) - (parseFloat(b.precio_base) || 0); });
+                else if (catState.sort === 'price-desc') list.sort(function (a, b) { return (parseFloat(b.precio_base) || 0) - (parseFloat(a.precio_base) || 0); });
+                else if (catState.sort === 'name') list.sort(function (a, b) {
+                    return String(a.modelo || '').localeCompare(String(b.modelo || ''));
+                });
+                return list;
+            }
+
+            function renderGrid() {
+                var $grid = $('#cat-grid');
+                var $empty = $('#cat-grid-empty');
+                var items = getFilteredProducts();
+                $('#cat-results-count').text(items.length);
+
+                if (!items.length) {
+                    $grid.html('');
+                    $empty.removeClass('d-none');
+                    return;
+                }
+                $empty.addClass('d-none');
+
+                $grid.html(items.map(function (p) {
+                    var tipoNombre = p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo';
+                    var precio = parseFloat(p.precio_base || 0);
+                    var hasImg = !!p.imagen;
+                    var inCart = catCartHas(p.id);
+                    var imgBlock = hasImg
+                        ? '<img src="' + escapeForHtml(p.imagen) + '" alt="" class="cat-card-img">'
+                        : '<div class="cat-card-img-placeholder"><i class="ri-t-shirt-2-line"></i></div>';
+                    return (
+                        '<button type="button" class="cat-card' + (inCart ? ' is-incart' : '') + '" data-producto-id="' + p.id + '">' +
+                            '<div class="cat-card-media">' + imgBlock +
+                                '<span class="cat-card-tipo-badge">' + escapeForHtml(tipoNombre) + '</span>' +
+                            '</div>' +
+                            '<div class="cat-card-body">' +
+                                '<p class="cat-card-codigo">' + escapeForHtml(p.codigo || '—') + '</p>' +
+                                '<h6 class="cat-card-modelo">' + escapeForHtml(p.modelo || 'Sin modelo') + '</h6>' +
+                                '<div class="cat-card-foot">' +
+                                    '<span class="cat-card-price">' + formatMoney(precio) + '</span>' +
+                                    '<span class="cat-card-cta">' + (inCart ? '<i class="ri-check-line"></i> Configurado' : 'Configurar <i class="ri-arrow-right-line"></i>') + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</button>'
+                    );
+                }).join(''));
+            }
+
+            // === Carrito (Fase 2: estructura; Fase 4 implementa la lógica completa) ====
+            window.cotCart = window.cotCart || []; // [{productoId, colorId, tallasMap, bordados, ...}]
+
+            function catCartHas(productoId) {
+                return window.cotCart.some(function (it) { return it.productoId == productoId; });
+            }
+
+            function renderCart() {
+                var list = window.cotCart || [];
+                $('#cat-cart-count').text(list.length);
+                var $list = $('#cat-cart-list');
+                var $empty = $('#cat-cart-empty');
+                var $btn = $('#btn-cat-confirmar');
+
+                if (!list.length) {
+                    $list.html('').hide();
+                    $empty.show();
+                    $('#cat-cart-total').text(formatMoney(0));
+                    $btn.prop('disabled', true);
+                    return;
+                }
+                $empty.hide();
+                $list.show();
+
+                var total = 0;
+                $list.html(list.map(function (it) {
+                    var p = getProductsList().find(function (x) { return x.id == it.productoId; });
+                    if (!p) return '';
+                    var sub = parseFloat(it.subtotal || 0);
+                    total += sub;
+                    return (
+                        '<div class="cat-cart-item">' +
+                            '<div class="cat-cart-item-info">' +
+                                '<p class="cat-cart-item-name">' + escapeForHtml(p.modelo || '—') + '</p>' +
+                                '<p class="cat-cart-item-meta">' + escapeForHtml(it.summary || '') + '</p>' +
+                            '</div>' +
+                            '<div class="cat-cart-item-actions">' +
+                                '<span class="cat-cart-item-price">' + formatMoney(sub) + '</span>' +
+                                '<button type="button" class="cat-cart-item-remove" data-producto-id="' + p.id + '" title="Quitar"><i class="ri-close-line"></i></button>' +
+                            '</div>' +
+                        '</div>'
+                    );
+                }).join(''));
+                $('#cat-cart-total').text(formatMoney(total));
+                $btn.prop('disabled', false);
+            }
+
+            function clearFilters() {
+                catState.search = '';
+                catState.tipos.clear();
+                catState.priceMin = null;
+                catState.priceMax = null;
+                catState.sort = 'relevance';
+                $('#cat-search').val('');
+                $('#cat-price-min').val('');
+                $('#cat-price-max').val('');
+                $('#cat-sort').val('relevance');
+                renderFilterTipos();
+                renderGrid();
+            }
+
+            function openCatalog() {
+                if (!catModalInstance) {
+                    var el = document.getElementById('catalogoProductosModal');
+                    if (!el) return;
+                    catModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+                }
+                $('#cat-eyebrow').text('Catálogo · ' + getProductsList().length + ' productos disponibles');
+                renderFilterTipos();
+                renderGrid();
+                renderCart();
+                catModalInstance.show();
+                setTimeout(function () { $('#cat-search').trigger('focus'); }, 250);
+            }
+
+            // === LISTENERS ====================================================
+            $(document).on('click', '#btn-explorar-catalogo', openCatalog);
+
+            $(document).on('input', '#cat-search', function () {
+                catState.search = $(this).val();
+                renderGrid();
+            });
+            $(document).on('change', '.cat-tipo-check', function () {
+                var id = parseInt($(this).val(), 10);
+                if (this.checked) catState.tipos.add(id);
+                else catState.tipos.delete(id);
+                renderGrid();
+            });
+            $(document).on('input', '#cat-price-min', function () {
+                var v = parseFloat($(this).val());
+                catState.priceMin = isNaN(v) ? null : v;
+                renderGrid();
+            });
+            $(document).on('input', '#cat-price-max', function () {
+                var v = parseFloat($(this).val());
+                catState.priceMax = isNaN(v) ? null : v;
+                renderGrid();
+            });
+            $(document).on('change', '#cat-sort', function () {
+                catState.sort = $(this).val();
+                renderGrid();
+            });
+            $(document).on('click', '#cat-clear-filters', clearFilters);
+
+            // Click en card → en Fase 2 abrimos un placeholder; Fase 3 conecta el configurador real
+            $(document).on('click', '#cat-grid .cat-card', function () {
+                var pid = parseInt(this.dataset.productoId, 10);
+                if (typeof window.cotConfiguradorAbrir === 'function') {
+                    window.cotConfiguradorAbrir(pid);
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Configurador en construcción',
+                        text: 'En la próxima fase podrás configurar color, tallas y bordados desde aquí.',
+                        timer: 2200,
+                        showConfirmButton: false
+                    });
+                }
+            });
+
+            // Quitar item del carrito (delegado)
+            $(document).on('click', '.cat-cart-item-remove', function () {
+                var pid = parseInt(this.dataset.productoId, 10);
+                window.cotCart = (window.cotCart || []).filter(function (it) { return it.productoId !== pid; });
+                renderCart();
+                renderGrid();
+            });
+
+            // Confirmar carrito → trigger Fase 4 hook
+            $(document).on('click', '#btn-cat-confirmar', function () {
+                if (typeof window.cotCartConfirmar === 'function') {
+                    window.cotCartConfirmar();
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Próximamente',
+                        text: 'La conversión carrito → líneas de cotización llega en la Fase 4.',
+                        timer: 2200,
+                        showConfirmButton: false
+                    });
+                }
+            });
+
+            // Reset de filtros al cerrar
+            $('#catalogoProductosModal').on('hidden.bs.modal', function () { /* mantener filtros entre aperturas */ });
+
+            // Exponer
+            window.cotCatalog = {
+                open: openCatalog,
+                renderGrid: renderGrid,
+                renderCart: renderCart
+            };
+        })();
+
+        // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — CONFIGURADOR DE PRODUCTO  (Fase 3)
+        // ║ Modal anidado sobre el catálogo. Selección de:
+        // ║   1. Color (chips)
+        // ║   2. Tallas con cantidades (matrix)
+        // ║ Bordados se configuran por línea en el paso 2 (Fase 4).
+        // ║ Al guardar, agrega al carrito (window.cotCart) e invoca render.
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            var cfgState = {
+                producto: null,         // referencia al producto del catálogo
+                colorId: null,
+                colorNombre: '',
+                colorHex: null,
+                tallas: {},             // { tallaId: cantidad }
+                precioUnitario: null,   // precio editable, default = producto.precio_base
+                cartItemId: null        // si edita un item existente del carrito
+            };
+            var cfgModalInstance = null;
+
+            function $cfg(id) { return document.getElementById(id); }
+
+            function getColorByIdLocal(id) {
+                if (typeof coloresArray === 'undefined' || !Array.isArray(coloresArray)) return null;
+                return coloresArray.find(function (c) { return c.id == id; }) || null;
+            }
+            function getTallasArray() {
+                return (typeof tallasArray !== 'undefined' && Array.isArray(tallasArray)) ? tallasArray : [];
+            }
+
+            function escForHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            function openConfigurador(productoId, opts) {
+                opts = opts || {};
+                // products vive en el closure del $(document).ready exterior;
+                // accederlo directamente evita el shadowing del var hoisting.
+                var prodList = (typeof products !== 'undefined' && Array.isArray(products)) ? products : [];
+                var p = prodList.find(function (x) { return x.id == productoId; });
+                if (!p) {
+                    Swal.fire({ icon: 'error', title: 'Producto no encontrado', timer: 1800, showConfirmButton: false });
+                    return;
+                }
+
+                // Estado inicial — si edita un item existente, carga sus datos
+                cfgState.producto = p;
+                cfgState.cartItemId = opts.cartItemId || null;
+                var basePrice = parseFloat(p.precio_base || 0) || 0;
+                if (opts.existing) {
+                    cfgState.colorId = opts.existing.colorId || null;
+                    cfgState.colorNombre = opts.existing.colorNombre || '';
+                    cfgState.colorHex = opts.existing.colorHex || null;
+                    cfgState.tallas = Object.assign({}, opts.existing.tallas || {});
+                    cfgState.precioUnitario = (opts.existing.precioUnitario != null)
+                        ? parseFloat(opts.existing.precioUnitario) : basePrice;
+                } else {
+                    cfgState.colorId = null;
+                    cfgState.colorNombre = '';
+                    cfgState.colorHex = null;
+                    cfgState.tallas = {};
+                    cfgState.precioUnitario = basePrice;
+                }
+
+                renderInfo();
+                renderColorGrid();
+                renderTallasGrid();
+                renderPrecio();
+                refreshSummary();
+
+                // Cambiar texto del botón si es edición
+                $('#cfg-save-btn-label').text(opts.cartItemId ? 'Actualizar selección' : 'Agregar al carrito');
+
+                if (!cfgModalInstance) {
+                    var el = document.getElementById('cotConfiguradorModal');
+                    if (!el) return;
+                    cfgModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+                }
+                cfgModalInstance.show();
+            }
+            window.cotConfiguradorAbrir = openConfigurador;
+
+            function renderInfo() {
+                var p = cfgState.producto;
+                if (!p) return;
+                $('#cfg-eyebrow').text((p.tipo_producto ? p.tipo_producto.nombre : 'Producto') + ' · ' + (p.codigo || '—'));
+                $('#cfg-title').text(p.modelo || 'Sin modelo');
+                $('#cfg-info-codigo').text(p.codigo || '—');
+                $('#cfg-info-modelo').text(p.modelo || 'Sin modelo');
+                $('#cfg-info-tipo').text(p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo');
+                $('#cfg-info-precio').text(formatMoney(parseFloat(p.precio_base || 0)));
+
+                var $media = $('#cfg-media-inner');
+                if (p.imagen) {
+                    $media.html('<img src="' + escForHtml(p.imagen) + '" alt="" class="cfg-media-img">');
+                } else {
+                    $media.html('<i class="ri-t-shirt-2-line"></i>');
+                }
+            }
+
+            function renderColorGrid() {
+                var colors = (typeof coloresArray !== 'undefined' && Array.isArray(coloresArray)) ? coloresArray : [];
+                var $grid = $('#cfg-color-grid');
+                if (!colors.length) {
+                    $grid.html('<p class="text-muted small mb-0"><em>Cargando colores…</em></p>');
+                    return;
+                }
+
+                // Agrupar por categoría
+                var byGroup = {};
+                colors.forEach(function (c) {
+                    var g = c.grupo || 'Otros';
+                    (byGroup[g] = byGroup[g] || []).push(c);
+                });
+
+                var html = '';
+                Object.keys(byGroup).sort().forEach(function (g) {
+                    html += '<div class="cfg-color-group-title">' + escForHtml(g) + '</div>';
+                    html += '<div class="cfg-color-group-items">';
+                    byGroup[g].forEach(function (c) {
+                        var hex = c.hex_referencial || '#cccccc';
+                        var sel = cfgState.colorId == c.id;
+                        var lightHex = (hex.toUpperCase() === '#FFFFFF' || hex.toUpperCase() === '#FFFDD0');
+                        html += (
+                            '<button type="button" class="cfg-color-chip' + (sel ? ' is-selected' : '') + (lightHex ? ' is-light' : '') + '"' +
+                                ' data-color-id="' + c.id + '" data-color-nombre="' + escForHtml(c.nombre) + '" data-color-hex="' + escForHtml(hex) + '"' +
+                                ' title="' + escForHtml(c.nombre) + '">' +
+                                '<span class="cfg-color-chip-swatch" style="background:' + hex + ';"></span>' +
+                                '<span class="cfg-color-chip-label">' + escForHtml(c.nombre) + '</span>' +
+                            '</button>'
+                        );
+                    });
+                    html += '</div>';
+                });
+                $grid.html(html);
+
+                // Indicador de color seleccionado en el header
+                $('#cfg-color-selected').text(cfgState.colorNombre || 'Sin seleccionar');
+            }
+
+            function renderTallasGrid() {
+                var tallas = getTallasArray();
+                var $grid = $('#cfg-tallas-grid');
+                if (!tallas.length) {
+                    $grid.html('<p class="text-muted small mb-0"><em>Cargando tallas…</em></p>');
+                    return;
+                }
+
+                var html = tallas.map(function (t) {
+                    var label = t.etiqueta || t.nombre || '—';
+                    var qty = cfgState.tallas[t.id] || '';
+                    return (
+                        '<div class="cfg-talla-cell" data-talla-id="' + t.id + '" data-talla-label="' + escForHtml(label) + '">' +
+                            '<span class="cfg-talla-cell-label">' + escForHtml(label) + '</span>' +
+                            '<input type="number" class="cfg-talla-cell-input" min="0" step="1" placeholder="0"' +
+                                ' value="' + qty + '" data-talla-id="' + t.id + '">' +
+                        '</div>'
+                    );
+                }).join('');
+
+                $grid.html(html);
+            }
+
+            function totalTallas() {
+                return Object.keys(cfgState.tallas).reduce(function (acc, k) {
+                    return acc + (parseInt(cfgState.tallas[k] || 0, 10) || 0);
+                }, 0);
+            }
+
+            function renderPrecio() {
+                var basePrice = parseFloat(cfgState.producto ? cfgState.producto.precio_base : 0) || 0;
+                $('#cfg-precio-base-hint-value').text(formatMoney(basePrice));
+                var current = (cfgState.precioUnitario != null) ? cfgState.precioUnitario : basePrice;
+                $('#cfg-precio-input').val(parseFloat(current).toFixed(2));
+            }
+
+            function refreshSummary() {
+                var qty = totalTallas();
+                var unit = (cfgState.precioUnitario != null && !isNaN(cfgState.precioUnitario))
+                    ? parseFloat(cfgState.precioUnitario)
+                    : (parseFloat(cfgState.producto ? cfgState.producto.precio_base : 0) || 0);
+                var subtotal = qty * unit;
+
+                $('#cfg-tallas-total').text(qty);
+                $('#cfg-summary-qty').text(qty);
+                $('#cfg-summary-unit').text(formatMoney(unit));
+                $('#cfg-summary-subtotal').text(formatMoney(subtotal));
+
+                $('#cfg-save-btn').prop('disabled', !(cfgState.colorId && qty > 0 && unit > 0));
+            }
+
+            // Click en chip de color
+            $(document).on('click', '#cfg-color-grid .cfg-color-chip', function () {
+                var $b = $(this);
+                cfgState.colorId = parseInt($b.data('color-id'), 10);
+                cfgState.colorNombre = $b.data('color-nombre');
+                cfgState.colorHex = $b.data('color-hex');
+                $('#cfg-color-grid .cfg-color-chip').removeClass('is-selected');
+                $b.addClass('is-selected');
+                $('#cfg-color-selected').text(cfgState.colorNombre || 'Sin seleccionar');
+                refreshSummary();
+            });
+
+            // Cambio en cantidad por talla
+            $(document).on('input', '#cfg-tallas-grid .cfg-talla-cell-input', function () {
+                var tid = parseInt($(this).data('talla-id'), 10);
+                var v = parseInt($(this).val(), 10);
+                if (isNaN(v) || v <= 0) {
+                    delete cfgState.tallas[tid];
+                } else {
+                    cfgState.tallas[tid] = v;
+                }
+                // Resaltar la celda con valor
+                $(this).closest('.cfg-talla-cell').toggleClass('is-active', !!cfgState.tallas[tid]);
+                refreshSummary();
+            });
+
+            // Distribuir uniforme
+            $(document).on('click', '#cfg-distribute-btn', function () {
+                Swal.fire({
+                    title: 'Distribuir uniforme',
+                    text: '¿Cuántas unidades en total?',
+                    input: 'number',
+                    inputAttributes: { min: 1, step: 1 },
+                    inputValue: 50,
+                    showCancelButton: true,
+                    confirmButtonText: 'Distribuir',
+                    cancelButtonText: 'Cancelar',
+                    customClass: { container: 'swal-over-modal' }
+                }).then(function (res) {
+                    if (!res.isConfirmed) return;
+                    var total = parseInt(res.value, 10);
+                    if (!total || total < 1) return;
+                    var tallas = getTallasArray();
+                    if (!tallas.length) return;
+                    var per = Math.floor(total / tallas.length);
+                    var rem = total % tallas.length;
+                    cfgState.tallas = {};
+                    tallas.forEach(function (t, i) {
+                        var v = per + (i < rem ? 1 : 0);
+                        if (v > 0) cfgState.tallas[t.id] = v;
+                    });
+                    renderTallasGrid();
+                    // Restaurar visual de inputs activos
+                    Object.keys(cfgState.tallas).forEach(function (tid) {
+                        $('#cfg-tallas-grid .cfg-talla-cell[data-talla-id="' + tid + '"]').addClass('is-active');
+                    });
+                    refreshSummary();
+                });
+            });
+
+            // Cambio en el precio unitario
+            $(document).on('input', '#cfg-precio-input', function () {
+                var v = parseFloat($(this).val());
+                cfgState.precioUnitario = isNaN(v) ? 0 : v;
+                refreshSummary();
+            });
+
+            // Restaurar precio base
+            $(document).on('click', '#cfg-precio-reset', function () {
+                if (!cfgState.producto) return;
+                cfgState.precioUnitario = parseFloat(cfgState.producto.precio_base || 0) || 0;
+                $('#cfg-precio-input').val(cfgState.precioUnitario.toFixed(2));
+                refreshSummary();
+            });
+
+            // Volver al catálogo
+            $(document).on('click', '#cfg-back-to-catalog', function () {
+                if (cfgModalInstance) cfgModalInstance.hide();
+            });
+
+            // Guardar (agregar al carrito)
+            $(document).on('click', '#cfg-save-btn', function () {
+                if (!cfgState.colorId || totalTallas() === 0) return;
+                var p = cfgState.producto;
+
+                var tallasItems = Object.keys(cfgState.tallas).map(function (tid) {
+                    var t = getTallasArray().find(function (x) { return x.id == tid; });
+                    return {
+                        tallaId: parseInt(tid, 10),
+                        tallaLabel: t ? (t.etiqueta || t.nombre) : '—',
+                        qty: parseInt(cfgState.tallas[tid], 10) || 0
+                    };
+                }).filter(function (x) { return x.qty > 0; });
+
+                var totalQty = tallasItems.reduce(function (a, x) { return a + x.qty; }, 0);
+                var basePrice = parseFloat(p.precio_base || 0);
+                var unit = (cfgState.precioUnitario != null && cfgState.precioUnitario > 0)
+                    ? parseFloat(cfgState.precioUnitario) : basePrice;
+                var subtotal = totalQty * unit;
+
+                var item = {
+                    id: cfgState.cartItemId || ('cit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),
+                    productoId: p.id,
+                    productoCodigo: p.codigo || '',
+                    productoModelo: p.modelo || '',
+                    productoTipo: p.tipo_producto ? p.tipo_producto.nombre : '',
+                    productoPrecio: basePrice,
+                    colorId: cfgState.colorId,
+                    colorNombre: cfgState.colorNombre,
+                    colorHex: cfgState.colorHex,
+                    tallas: tallasItems,
+                    totalQty: totalQty,
+                    unitPrice: unit,                 // precio efectivo (puede diferir del precio_base)
+                    precioCustom: unit !== basePrice,
+                    subtotal: subtotal,
+                    summary: cfgState.colorNombre + ' · ' +
+                             tallasItems.map(function (x) { return x.tallaLabel + '×' + x.qty; }).join(' · ') +
+                             (unit !== basePrice ? ' · @' + formatMoney(unit) : '')
+                };
+
+                window.cotCart = window.cotCart || [];
+                if (cfgState.cartItemId) {
+                    var idx = window.cotCart.findIndex(function (c) { return c.id === cfgState.cartItemId; });
+                    if (idx >= 0) window.cotCart[idx] = item;
+                    else window.cotCart.push(item);
+                } else {
+                    window.cotCart.push(item);
+                }
+
+                if (cfgModalInstance) cfgModalInstance.hide();
+
+                if (window.cotCatalog) {
+                    window.cotCatalog.renderCart();
+                    window.cotCatalog.renderGrid();
+                }
+
+                // Toast suave
+                Swal.fire({
+                    icon: 'success',
+                    title: cfgState.cartItemId ? 'Actualizado' : 'Añadido al carrito',
+                    text: p.modelo + ' · ' + cfgState.colorNombre + ' · ' + totalQty + ' unidades',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1700
+                });
+            });
+
+            // Cargar colores/tallas si aún no están cargados al abrir
+            $('#cotConfiguradorModal').on('show.bs.modal', function () {
+                if (typeof coloresArray !== 'undefined' && (!coloresArray || coloresArray.length === 0)) {
+                    $.get("{{ route('colores.data') }}", function (data) {
+                        coloresArray = data;
+                        renderColorGrid();
+                    });
+                }
+                if (typeof tallasArray !== 'undefined' && (!tallasArray || tallasArray.length === 0)) {
+                    if (typeof cargarTallasCatalogo === 'function') {
+                        cargarTallasCatalogo(renderTallasGrid);
+                    }
+                }
+            });
+
+            // Reset al cerrar
+            $('#cotConfiguradorModal').on('hidden.bs.modal', function () {
+                cfgState = { producto: null, colorId: null, colorNombre: '', colorHex: null, tallas: {}, cartItemId: null };
+            });
+
+            // Permitir editar item del carrito (lateral) — abrir configurador con datos cargados
+            $(document).on('click', '.cat-cart-item', function (e) {
+                if ($(e.target).closest('.cat-cart-item-remove').length) return;
+                var $info = $(this).find('.cat-cart-item-info');
+                if (!$info.length) return;
+                // El item id se almacena en el li padre via data-cart-item-id (lo agregaré en Fase 4)
+                // Por ahora doble-click no hace nada en Fase 3.
+            });
+
+            window.cotConfigurador = {
+                open: openConfigurador,
+                state: cfgState
+            };
+        })();
+
+        // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — CARRITO → LÍNEAS + TABLA AGRUPADA  (Fase 4)
+        // ║ Convierte cada item del carrito en N llamadas a addProductItem
+        // ║ (una por talla con qty>0). Renderiza una vista agrupada por
+        // ║ (producto + color) sobre el productos-container que se mantiene
+        // ║ oculto como fuente de verdad para FormData.
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+
+            // === Confirmación del carrito ====================================
+            window.cotCartConfirmar = function () {
+                var cart = window.cotCart || [];
+                if (!cart.length) return;
+
+                var totalLineas = 0;
+                cart.forEach(function (item) {
+                    var unit = parseFloat(item.unitPrice || item.productoPrecio || 0) || 0;
+                    item.tallas.forEach(function (t) {
+                        if (!t.qty || t.qty <= 0) return;
+                        addProductItem(
+                            item.productoId,
+                            t.qty,
+                            unit,
+                            '',                 // descripcion
+                            false,              // lleva_bordado: el usuario lo activa después por línea/bloque
+                            '',                 // _unused
+                            item.colorId,
+                            t.tallaId,
+                            []                  // bordados vacíos
+                        );
+                        totalLineas++;
+                    });
+                });
+
+                // Limpiar carrito
+                window.cotCart = [];
+                if (window.cotCatalog) {
+                    window.cotCatalog.renderCart();
+                    window.cotCatalog.renderGrid();
+                }
+
+                // Cerrar catálogo
+                var catEl = document.getElementById('catalogoProductosModal');
+                var catInst = catEl ? bootstrap.Modal.getInstance(catEl) : null;
+                if (catInst) catInst.hide();
+
+                // Refrescar wizard
+                if (window.cotWizard) window.cotWizard.refreshKPIs();
+                refreshGroupedList();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Productos agregados',
+                    text: totalLineas + ' línea(s) agregada(s) a la cotización.',
+                    toast: true, position: 'top-end',
+                    showConfirmButton: false, timer: 1900
+                });
+            };
+
+            // === Render de la tabla agrupada =================================
+            function escForHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            // Hash compacto del array de bordados para agrupar líneas con misma config
+            function bordadosKey(bordados) {
+                if (!Array.isArray(bordados) || !bordados.length) return 'sb';
+                return bordados.map(function (b) {
+                    return [
+                        b.ubicacion_bordado_id || 'p',
+                        b.logo_id || '0',
+                        b.nombre_aplicado || '',
+                        parseFloat(b.precio_aplicado || 0).toFixed(2),
+                        parseInt(b.cantidad || 1, 10)
+                    ].join('|');
+                }).sort().join(';');
+            }
+
+            function readGroupsFromContainer() {
+                var groups = [];
+                var byKey = {};
+                $('#productos-container .product-item').each(function () {
+                    var $card = $(this);
+                    var prodId = $card.find('.producto-id-input').val();
+                    var colorId = $card.find('.color-id-input').val() || '';
+                    var bordados = (typeof getCardBordados === 'function') ? getCardBordados($card) : [];
+                    var llevaBordado = parseInt($card.find('.lleva-bordado-value').val() || 0, 10) === 1;
+                    var bKey = llevaBordado ? bordadosKey(bordados) : 'sb';
+                    var key = (prodId || 'x') + '|' + (colorId || 'x') + '|' + bKey;
+
+                    if (!byKey[key]) {
+                        var producto = (typeof products !== 'undefined' && Array.isArray(products))
+                            ? products.find(function (p) { return p.id == prodId; }) : null;
+                        var colorObj = (typeof getColorById === 'function') ? getColorById(parseInt(colorId, 10) || 0) : null;
+                        byKey[key] = {
+                            key: key,
+                            productoId: prodId,
+                            producto: producto,
+                            colorId: colorId,
+                            color: colorObj,
+                            llevaBordado: llevaBordado,
+                            bordados: bordados,
+                            cards: [],
+                            totalQty: 0,
+                            totalSubtotal: 0,
+                            unitBase: 0,
+                            unitWithBordado: 0
+                        };
+                        groups.push(byKey[key]);
+                    }
+                    var qty = parseFloat($card.find('.cantidad-input').val()) || 0;
+                    var base = parseFloat($card.find('.precio-unitario-input').val()) || 0;
+                    var recargo = llevaBordado && typeof calcularRecargoUnitarioBordadoDesdeLista === 'function'
+                        ? calcularRecargoUnitarioBordadoDesdeLista(bordados) : 0;
+                    var unit = base + recargo;
+                    var tallaId = $card.find('.talla-input-value').val() || '';
+                    var tallaLabel = $card.find('.talla-input-display').val() || '';
+                    byKey[key].cards.push({
+                        $card: $card,
+                        productIndex: $card.data('product-index'),
+                        tallaId: tallaId,
+                        tallaLabel: tallaLabel,
+                        qty: qty,
+                        base: base,
+                        unit: unit
+                    });
+                    byKey[key].totalQty += qty;
+                    byKey[key].totalSubtotal += qty * unit;
+                    byKey[key].unitBase = base;
+                    byKey[key].unitWithBordado = unit;
+                });
+                return groups;
+            }
+
+            function refreshGroupedList() {
+                var groups = readGroupsFromContainer();
+                var $list = $('#cot-grouped-list');
+                var $empty = $('#cot-empty-state');
+
+                if (!groups.length) {
+                    $list.empty();
+                    $empty.show();
+                    return;
+                }
+                $empty.hide();
+
+                var rowsHtml = groups.map(function (g, idx) {
+                    var prodCodigo = g.producto && g.producto.codigo ? g.producto.codigo : '—';
+                    var prodModelo = g.producto && g.producto.modelo ? g.producto.modelo : '(producto sin definir)';
+                    var tipoLabel = g.producto && g.producto.tipo_producto ? g.producto.tipo_producto.nombre : '';
+                    var colorName = g.color ? g.color.nombre : (g.colorId ? '#' + g.colorId : 'Sin color');
+                    var colorHex = g.color ? g.color.hex_referencial : '#cccccc';
+                    var lightHex = (String(colorHex).toUpperCase() === '#FFFFFF' || String(colorHex).toUpperCase() === '#FFFDD0');
+
+                    var tallasChips = g.cards.map(function (c) {
+                        return '<span class="cot-chip cot-chip-talla">' +
+                                    escForHtml(c.tallaLabel || '?') + '<span class="cot-chip-x">×</span>' +
+                                    '<strong>' + c.qty + '</strong>' +
+                               '</span>';
+                    }).join('');
+
+                    var bordadoLine = g.llevaBordado
+                        ? ('<div class="cot-grouped-bordado-line"><i class="ri-scissors-cut-line"></i> ' +
+                                g.bordados.length + ' bordado' + (g.bordados.length === 1 ? '' : 's') +
+                                ' · +' + formatMoney(g.unitWithBordado - g.unitBase) + '/u</div>')
+                        : '';
+
+                    var indices = g.cards.map(function (c) { return c.productIndex; }).join(',');
+                    var unitDisplay = formatMoney(g.unitWithBordado);
+                    var unitNote = (g.llevaBordado && g.unitWithBordado !== g.unitBase)
+                        ? '<small class="cot-grouped-unit-note">' + formatMoney(g.unitBase) + ' + ' + formatMoney(g.unitWithBordado - g.unitBase) + '</small>'
+                        : '';
+
+                    return (
+                        '<tr class="cot-grouped-row" data-group-key="' + escForHtml(g.key) + '" data-product-id="' + escForHtml(g.productoId) + '" data-color-id="' + escForHtml(g.colorId) + '" data-card-indices="' + escForHtml(indices) + '">' +
+                            '<td class="cot-col-num">' + (idx + 1) + '</td>' +
+                            '<td class="cot-col-prod">' +
+                                (tipoLabel ? '<span class="cot-tipo-pill">' + escForHtml(tipoLabel) + '</span>' : '') +
+                                '<div class="cot-prod-modelo">' + escForHtml(prodModelo) + '</div>' +
+                                '<div class="cot-prod-codigo">' + escForHtml(prodCodigo) + '</div>' +
+                            '</td>' +
+                            '<td class="cot-col-color">' +
+                                '<span class="cot-color-cell">' +
+                                    '<span class="cot-color-dot" style="background:' + colorHex + ';' + (lightHex ? 'border-color:#cbd5e1;' : '') + '"></span>' +
+                                    escForHtml(colorName) +
+                                '</span>' +
+                            '</td>' +
+                            '<td class="cot-col-tallas">' +
+                                '<div class="cot-tallas-wrap">' + tallasChips + '</div>' +
+                                bordadoLine +
+                            '</td>' +
+                            '<td class="cot-col-num cot-cell-num"><strong>' + g.totalQty + '</strong></td>' +
+                            '<td class="cot-cell-num">' + unitDisplay + unitNote + '</td>' +
+                            '<td class="cot-cell-num cot-cell-subtotal">' + formatMoney(g.totalSubtotal) + '</td>' +
+                            '<td class="cot-col-acc">' +
+                                '<button type="button" class="cot-grouped-action-btn cot-action-edit" title="Editar"><i class="ri-edit-2-line"></i></button>' +
+                                '<button type="button" class="cot-grouped-action-btn cot-action-bordado" title="Configurar bordado"><i class="ri-scissors-cut-line"></i></button>' +
+                                '<button type="button" class="cot-grouped-action-btn cot-action-delete" title="Eliminar"><i class="ri-delete-bin-line"></i></button>' +
+                            '</td>' +
+                        '</tr>'
+                    );
+                }).join('');
+
+                var tableHtml =
+                    '<div class="cot-grouped-tablewrap">' +
+                        '<table class="cot-grouped-table">' +
+                            '<thead>' +
+                                '<tr>' +
+                                    '<th class="cot-col-num">#</th>' +
+                                    '<th class="cot-col-prod">Producto</th>' +
+                                    '<th class="cot-col-color">Color</th>' +
+                                    '<th class="cot-col-tallas">Tallas y cantidades</th>' +
+                                    '<th class="cot-col-num">Unid.</th>' +
+                                    '<th class="cot-cell-num">Precio U.</th>' +
+                                    '<th class="cot-cell-num">Subtotal</th>' +
+                                    '<th class="cot-col-acc">Acc.</th>' +
+                                '</tr>' +
+                            '</thead>' +
+                            '<tbody>' + rowsHtml + '</tbody>' +
+                        '</table>' +
+                    '</div>';
+
+                $list.html(tableHtml);
+            }
+
+            window.cotRefreshGroupedList = refreshGroupedList;
+            window.cotReadGroups = readGroupsFromContainer;
+
+            // === Acciones de bloque ==========================================
+            // Eliminar bloque entero
+            $(document).on('click', '.cot-action-delete', function () {
+                var $blk = $(this).closest('.cot-grouped-row');
+                var indices = String($blk.data('card-indices') || '').split(',').filter(Boolean);
+                Swal.fire({
+                    icon: 'warning',
+                    title: '¿Eliminar bloque?',
+                    text: 'Se quitarán todas las líneas asociadas a este producto y color.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#c0392b'
+                }).then(function (res) {
+                    if (!res.isConfirmed) return;
+                    indices.forEach(function (idx) {
+                        $('#productos-container .product-item[data-product-index="' + idx + '"]').remove();
+                    });
+                    if (typeof reindexProductItems === 'function') reindexProductItems();
+                    if (typeof calculateCotizacionTotals === 'function') calculateCotizacionTotals();
+                    refreshGroupedList();
+                    if (window.cotWizard) window.cotWizard.refreshKPIs();
+                });
+            });
+
+            // Editar bloque → reabre configurador con datos cargados
+            $(document).on('click', '.cot-action-edit', function () {
+                var $blk = $(this).closest('.cot-grouped-row');
+                var prodId = parseInt($blk.data('product-id'), 10);
+                var colorId = parseInt($blk.data('color-id'), 10);
+                var groupKey = $blk.data('group-key');
+
+                // Reconstruir tallas y precio del bloque
+                var tallasMap = {};
+                var precioFromCards = null;
+                $('#productos-container .product-item').each(function () {
+                    var $c = $(this);
+                    var pid = parseInt($c.find('.producto-id-input').val(), 10);
+                    var cid = parseInt($c.find('.color-id-input').val(), 10);
+                    if (pid !== prodId || cid !== colorId) return;
+                    var tid = parseInt($c.find('.talla-input-value').val(), 10);
+                    var qty = parseInt($c.find('.cantidad-input').val(), 10) || 0;
+                    if (tid && qty > 0) tallasMap[tid] = qty;
+                    var price = parseFloat($c.find('.precio-unitario-input').val());
+                    if (precioFromCards == null && !isNaN(price)) precioFromCards = price;
+                });
+
+                var color = (typeof getColorById === 'function') ? getColorById(colorId) : null;
+
+                window.__cotEditGroupKey = groupKey;
+                if (typeof window.cotConfiguradorAbrir === 'function') {
+                    window.cotConfiguradorAbrir(prodId, {
+                        existing: {
+                            colorId: colorId,
+                            colorNombre: color ? color.nombre : '',
+                            colorHex: color ? color.hex_referencial : null,
+                            tallas: tallasMap,
+                            precioUnitario: precioFromCards
+                        },
+                        cartItemId: 'edit_' + groupKey  // marca de edición
+                    });
+                }
+            });
+
+            // Bordados — usa cotGroupBordadosState como fuente de verdad (desacoplado de DOM)
+            $(document).on('click', '.cot-action-bordado', function () {
+                var $blk = $(this).closest('.cot-grouped-row');
+                var productoId = $blk.attr('data-product-id') || '';
+                var colorId = $blk.attr('data-color-id') || '';
+                var groupKey = productoId + '|' + colorId;
+
+                // Asegurar que el checkbox esté activo en la primera card del bloque
+                var indicesAttr = $blk.attr('data-card-indices') || '';
+                var firstIdx = indicesAttr.split(',').filter(Boolean)[0];
+                if (firstIdx) {
+                    var $firstCard = $('#productos-container .product-item[data-product-index="' + firstIdx + '"]');
+                    if ($firstCard.length) {
+                        currentBordadoCard = $firstCard;
+                        var $chk = $firstCard.find('.lleva-bordado-checkbox');
+                        if (!$chk.is(':checked')) $chk.prop('checked', true).trigger('change');
+                    }
+                }
+
+                currentBordadoGroupKey = groupKey;
+
+                // Poblar el header del offcanvas con identidad del producto y color
+                var prodObj = (typeof products !== 'undefined' && Array.isArray(products))
+                    ? products.find(function (p) { return p.id == productoId; }) : null;
+                var colorObj = (typeof getColorById === 'function') ? getColorById(parseInt(colorId, 10) || 0) : null;
+                var prodLabel = prodObj
+                    ? ((prodObj.modelo || prodObj.descripcion || '') + (prodObj.codigo ? ' · ' + prodObj.codigo : ''))
+                    : '(producto)';
+                var colorName = colorObj ? colorObj.nombre : (colorId ? 'Color #' + colorId : 'Sin color');
+                var colorHex  = colorObj ? (colorObj.hex_referencial || '#ccc') : '#ccc';
+
+                $('#bordado-oc-producto').text(prodLabel);
+                $('#bordado-oc-color-name').text(colorName);
+                $('#bordado-oc-color-dot').css('background', colorHex);
+
+                var offcanvasEl = document.getElementById('bordadoOffcanvas');
+                if (typeof ubicacionModal !== 'undefined' && ubicacionModal && typeof ubicacionModal.show === 'function') {
+                    ubicacionModal.show();
+                } else if (offcanvasEl) {
+                    bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl).show();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Panel de bordados no disponible',
+                        text: 'El sistema de bordados no se cargó correctamente.',
+                        timer: 2200, showConfirmButton: false });
+                }
+            });
+
+            // Hook configurador en modo edición → reemplazar bloque viejo por el nuevo
+            // Interceptamos el guardado mediante override del listener; pero como el listener original
+            // ya empuja al cart, aquí en modo edit el cartItemId arranca con "edit_" → manejamos especial.
+            (function patchCfgSaveForEdit() {
+                $(document).on('click', '#cfg-save-btn', function () {
+                    // Diferimos un poco para que el push al cart suceda primero
+                    setTimeout(function () {
+                        if (!window.cotConfigurador) return;
+                        var lastItem = (window.cotCart || []).slice(-1)[0];
+                        if (!lastItem || !lastItem.id || String(lastItem.id).indexOf('edit_') !== 0) return;
+
+                        // Es una edición de un bloque existente:
+                        // 1) Eliminar las cards viejas del bloque (todas las que comparten producto+color)
+                        var prodId = lastItem.productoId;
+                        var colorId = lastItem.colorId;
+                        $('#productos-container .product-item').each(function () {
+                            var $c = $(this);
+                            var pid = parseInt($c.find('.producto-id-input').val(), 10);
+                            var cid = parseInt($c.find('.color-id-input').val(), 10);
+                            if (pid === prodId && cid === colorId) $c.remove();
+                        });
+
+                        // 2) Insertar nuevas cards del item editado (una por talla)
+                        var unit = parseFloat(lastItem.unitPrice || lastItem.productoPrecio || 0) || 0;
+                        lastItem.tallas.forEach(function (t) {
+                            if (!t.qty || t.qty <= 0) return;
+                            addProductItem(
+                                lastItem.productoId, t.qty, unit, '', false, '',
+                                lastItem.colorId, t.tallaId, []
+                            );
+                        });
+
+                        // 3) Quitar el item del carrito (era una edición, no debe quedar como item nuevo)
+                        window.cotCart = (window.cotCart || []).filter(function (it) {
+                            return it.id !== lastItem.id;
+                        });
+                        if (window.cotCatalog) window.cotCatalog.renderCart();
+
+                        // 4) Reindex y refresh
+                        if (typeof reindexProductItems === 'function') reindexProductItems();
+                        if (typeof calculateCotizacionTotals === 'function') calculateCotizacionTotals();
+                        if (window.cotWizard) window.cotWizard.refreshKPIs();
+                        refreshGroupedList();
+
+                        Swal.fire({
+                            icon: 'success', title: 'Bloque actualizado',
+                            toast: true, position: 'top-end',
+                            showConfirmButton: false, timer: 1500
+                        });
+                    }, 60);
+                });
+            })();
+
+            // Refrescar cuando algo cambie en productos-container
+            $(document).on('change keyup', '#productos-container .cantidad-input, #productos-container .precio-unitario-input', function () {
+                clearTimeout(window.__cotGroupedDebounce);
+                window.__cotGroupedDebounce = setTimeout(refreshGroupedList, 220);
+            });
+            $(document).on('change', '#productos-container .lleva-bordado-checkbox', function () {
+                refreshGroupedList();
+            });
+            $(document).on('click', '#productos-container .remove-producto-item', function () {
+                refreshGroupedList();
+            });
+
+            // También refrescar cuando se carga edit (Fase 6) o se agrega manual
+            $(document).on('click', '#add-producto-item', function () {
+                refreshGroupedList();
+            });
+        })();
+
+        // ╔══════════════════════════════════════════════════════════════════
+        // ║ COTIZACIONES — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
+        // ║ Fase 1: navegación, validación mínima, sincronización footer,
+        // ║ refresco de KPIs (paso 2) y resumen visual (paso 3).
+        // ╚══════════════════════════════════════════════════════════════════
+        (function () {
+            'use strict';
+            var TOTAL_STEPS = 3;
+            var IVA_RATE = 0.16;
+            var currentStep = 1;
+
+            function isEditMode() { return !!$('#id-field').val(); }
+
+            function escHtmlW(str) {
+                return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+                });
+            }
+
+            function showStep(n) {
+                n = Math.max(1, Math.min(TOTAL_STEPS, n));
+                currentStep = n;
+
+                document.querySelectorAll('#showModal .cot-step-content').forEach(function (sec) {
+                    var step = parseInt(sec.dataset.step, 10);
+                    var active = step === n;
+                    sec.classList.toggle('is-active', active);
+                    sec.hidden = !active;
+                });
+
+                document.querySelectorAll('#showModal .cot-step-marker').forEach(function (mk) {
+                    var step = parseInt(mk.dataset.step, 10);
+                    mk.classList.toggle('is-active', step === n);
+                    mk.classList.toggle('is-complete', step < n);
+                    mk.setAttribute('aria-selected', step === n ? 'true' : 'false');
+                });
+
+                document.querySelectorAll('#showModal .cot-step-line-fill').forEach(function (lf) {
+                    var line = parseInt(lf.dataset.line, 10);
+                    lf.style.width = (line < n) ? '100%' : '0%';
+                });
+
+                var ind = document.getElementById('cot-step-current');
+                if (ind) ind.textContent = String(n);
+
+                var $prev = $('#btn-cot-prev');
+                var $next = $('#btn-cot-next');
+                var $add = $('#add-btn');
+                var $edit = $('#edit-btn');
+
+                $prev.toggle(n > 1);
+
+                if (n === TOTAL_STEPS) {
+                    $next.hide();
+                    if (isEditMode()) { $add.hide(); $edit.show(); }
+                    else { $edit.hide(); $add.show(); }
+                    refreshResumen();
+                } else {
+                    $next.show();
+                    $add.hide(); $edit.hide();
+                }
+
+                if (n === 2) refreshKPIs();
+            }
+
+            function nextStep() {
+                if (currentStep < TOTAL_STEPS) {
+                    if (!validateStep(currentStep)) return;
+                    showStep(currentStep + 1);
+                }
+            }
+            function prevStep() {
+                if (currentStep > 1) showStep(currentStep - 1);
+            }
+
+            function validateStep(n) {
+                if (n === 1) {
+                    var clienteId = $('#cliente-id-field').val();
+                    var fecha = $('#fecha-cotizacion-field').val();
+                    var validez = $('#fecha-validez-field').val();
+                    if (!clienteId) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Cliente requerido',
+                            text: 'Debes seleccionar o crear un cliente antes de continuar.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        $('#ci-rif-number-field').trigger('focus');
+                        return false;
+                    }
+                    if (!fecha) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Fecha requerida',
+                            text: 'La fecha de emisión es obligatoria.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        $('#fecha-cotizacion-field').trigger('focus');
+                        return false;
+                    }
+                    if (validez && validez < fecha) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Fechas inconsistentes',
+                            text: 'La fecha de validez no puede ser anterior a la fecha de emisión.',
+                            timer: 2400, showConfirmButton: false
+                        });
+                        $('#fecha-validez-field').trigger('focus');
+                        return false;
+                    }
+                    // Si cualquier campo del paso 1 está marcado is-invalid, frenar
+                    var $invalid = $('#cot-step-1 .is-invalid:visible');
+                    if ($invalid.length) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Corrige los errores',
+                            text: 'Revisa los campos marcados en rojo antes de continuar.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        $invalid.first().trigger('focus');
+                        return false;
+                    }
+                    return true;
+                }
+                if (n === 2) {
+                    var rows = $('#productos-container .product-item').length;
+                    if (!rows) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Sin productos',
+                            text: 'Agrega al menos un producto desde el catálogo para continuar.',
+                            timer: 2400, showConfirmButton: false
+                        });
+                        return false;
+                    }
+                    // Validar que cada línea tenga producto, color, talla y cantidad>0
+                    var problemas = [];
+                    $('#productos-container .product-item').each(function (i) {
+                        var $c = $(this);
+                        if (!$c.find('.producto-id-input').val()) problemas.push('línea ' + (i + 1) + ': producto');
+                        if (!$c.find('.talla-input-value').val()) problemas.push('línea ' + (i + 1) + ': talla');
+                        var qty = parseInt($c.find('.cantidad-input').val(), 10) || 0;
+                        if (qty <= 0) problemas.push('línea ' + (i + 1) + ': cantidad');
+                        var precio = parseFloat($c.find('.precio-unitario-input').val()) || 0;
+                        if (precio <= 0) problemas.push('línea ' + (i + 1) + ': precio');
+                    });
+                    if (problemas.length) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Datos incompletos',
+                            html: 'Faltan datos en:<br><strong>' + problemas.slice(0, 6).join('<br>') +
+                                  (problemas.length > 6 ? '<br>…' : '') + '</strong>',
+                            timer: 3500, showConfirmButton: true
+                        });
+                        return false;
+                    }
+                    return true;
+                }
+                return true;
+            }
+
+            function readLineState($card) {
+                var qty = parseFloat($card.find('.cantidad-input').val()) || 0;
+                var base = parseFloat($card.find('.precio-unitario-input').val()) || 0;
+                var lleva = parseInt($card.find('.lleva-bordado-value').val() || 0, 10) === 1;
+                var recargo = lleva && typeof calcularRecargoUnitarioBordadoDesdeLista === 'function'
+                    ? calcularRecargoUnitarioBordadoDesdeLista(getCardBordados($card))
+                    : 0;
+                return { qty: qty, unit: base + recargo };
+            }
+
+            function refreshEmptyState() {
+                var hasItems = $('#productos-container .product-item').length > 0;
+                $('#cot-empty-state').toggle(!hasItems);
+            }
+
+            function refreshKPIs() {
+                refreshEmptyState();
+                var $items = $('#productos-container .product-item');
+                var subtotal = 0;
+                $items.each(function () {
+                    var s = readLineState($(this));
+                    subtotal += s.qty * s.unit;
+                });
+                $('#cot-kpi-items').text($items.length);
+                $('#cot-kpi-subtotal').text(formatMoney(subtotal));
+                $('#cot-kpi-total').text(formatMoney(subtotal));
+            }
+
+            function refreshResumen() {
+                var subtotal = 0;
+                var rows = [];
+
+                if (typeof window.cotReadGroups === 'function') {
+                    // Vista agrupada (Fase 4): una fila por bloque
+                    var groups = window.cotReadGroups();
+                    groups.forEach(function (g, idx) {
+                        subtotal += g.totalSubtotal;
+                        var prodLabel = g.producto
+                            ? ((g.producto.codigo ? g.producto.codigo + ' · ' : '') + (g.producto.modelo || ''))
+                            : '(producto sin definir)';
+                        var colorName = g.color ? g.color.nombre : (g.colorId ? '#' + g.colorId : '');
+                        var tallasTxt = g.cards.map(function (c) { return c.tallaLabel + '×' + c.qty; }).join(' · ');
+                        var bordadoBadge = g.llevaBordado
+                            ? ' <span class="cot-resumen-bordado-pill"><i class="ri-scissors-cut-line"></i> bordado</span>'
+                            : '';
+                        var unitDisplay = formatMoney(g.unitWithBordado);
+                        var unitNote = (g.llevaBordado && g.unitWithBordado !== g.unitBase)
+                            ? '<small class="cot-resumen-unit-note">' + formatMoney(g.unitBase) + ' + ' + formatMoney(g.unitWithBordado - g.unitBase) + '</small>'
+                            : '';
+
+                        rows.push(
+                            '<tr>' +
+                                '<td>' +
+                                    '<div class="cot-resumen-row-prod">' + escHtmlW(prodLabel) + bordadoBadge + '</div>' +
+                                    '<div class="cot-resumen-row-meta">' +
+                                        (colorName ? '<span>' + escHtmlW(colorName) + '</span>' : '') +
+                                        '<span class="cot-resumen-row-tallas">' + escHtmlW(tallasTxt) + '</span>' +
+                                    '</div>' +
+                                '</td>' +
+                                '<td class="text-center align-middle"><strong>' + g.totalQty + '</strong></td>' +
+                                '<td class="text-end font-monospace align-middle">' + unitDisplay + unitNote + '</td>' +
+                                '<td class="text-end font-monospace fw-semibold align-middle">' + formatMoney(g.totalSubtotal) + '</td>' +
+                            '</tr>'
+                        );
+                    });
+                } else {
+                    // Fallback línea-por-línea (vista antigua, por si los grupos no están)
+                    var $items = $('#productos-container .product-item');
+                    $items.each(function () {
+                        var $c = $(this);
+                        var s = readLineState($c);
+                        var rowSubtotal = s.qty * s.unit;
+                        subtotal += rowSubtotal;
+                        var prodName = $c.find('.producto-text-display').val() || 'Producto sin definir';
+                        var colorName = $c.find('.color-display').val() || '';
+                        var tallaName = $c.find('.talla-input-display').val() || '';
+                        var bits = [colorName, tallaName].filter(Boolean).join(' · ');
+                        var label = prodName + (bits ? ' — ' + bits : '');
+                        rows.push(
+                            '<tr>' +
+                                '<td class="text-truncate" style="max-width:0;" title="' + escHtmlW(label) + '">' + escHtmlW(label) + '</td>' +
+                                '<td class="text-center">' + s.qty + '</td>' +
+                                '<td class="text-end font-monospace">' + formatMoney(s.unit) + '</td>' +
+                                '<td class="text-end font-monospace fw-semibold">' + formatMoney(rowSubtotal) + '</td>' +
+                            '</tr>'
+                        );
+                    });
+                }
+
+                if (!rows.length) {
+                    rows.push('<tr><td colspan="4" class="text-center text-muted py-3 small">Sin productos agregados</td></tr>');
+                }
+                var iva = subtotal * IVA_RATE;
+                var total = subtotal + iva;
+                $('#cot-resumen-lineas').html(rows.join(''));
+                $('#cot-resumen-subtotal').text(formatMoney(subtotal));
+                $('#cot-resumen-iva').text(formatMoney(iva));
+                $('#cot-resumen-total').text(formatMoney(total));
+            }
+
+            // === LISTENERS =====================================================
+            $('#btn-cot-next').on('click', nextStep);
+            $('#btn-cot-prev').on('click', prevStep);
+
+            // Click en marker del stepper: retroceder libre, avanzar con validación
+            $(document).on('click', '#showModal .cot-step-marker', function () {
+                var target = parseInt(this.dataset.step, 10);
+                if (target === currentStep) return;
+                if (target < currentStep) { showStep(target); return; }
+                for (var s = currentStep; s < target; s++) {
+                    if (!validateStep(s)) return;
+                }
+                showStep(target);
+            });
+
+            // KPIs en vivo en paso 2
+            $(document).on('change keyup',
+                '#productos-container .cantidad-input, #productos-container .precio-unitario-input',
+                function () { if (currentStep === 2) refreshKPIs(); });
+            $(document).on('change', '#productos-container .lleva-bordado-checkbox', function () {
+                if (currentStep === 2) refreshKPIs();
+            });
+            $(document).on('click', '#add-producto-item, #productos-container .remove-producto-item', function () {
+                refreshKPIs();
+            });
+            // Cambios en los selectores de producto/color/talla
+            $(document).on('click', '#productos-container .producto-selector-trigger, #productos-container .buscar-color-trigger, #productos-container .buscar-talla-trigger', function () {
+                setTimeout(refreshKPIs, 600);
+            });
+
+            // Reset al abrir el modal
+            $('#showModal').on('show.bs.modal', function () { showStep(1); refreshKPIs(); });
+            $('#showModal').on('shown.bs.modal', function () { showStep(currentStep); });
+            $('#showModal').on('hidden.bs.modal', function () { currentStep = 1; });
+
+            // API global por si otras funciones quieren usarlo
+            window.cotWizard = {
+                show: showStep, next: nextStep, prev: prevStep,
+                refreshKPIs: refreshKPIs, refreshResumen: refreshResumen
+            };
+        })();
     });
 </script>

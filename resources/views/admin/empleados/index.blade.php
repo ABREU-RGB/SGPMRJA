@@ -7,31 +7,6 @@
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" rel="stylesheet"
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
-    <style>
-        /* Botones de acceso a sub-maestros (header de Empleados) */
-        .btn-link-depto {
-            background-color: #155e75;       /* cyan-800 */
-            border-color: #155e75;
-            color: #fff;
-        }
-        .btn-link-depto:hover,
-        .btn-link-depto:focus {
-            background-color: #0e4a5d;       /* cyan-900 */
-            border-color: #0e4a5d;
-            color: #fff;
-        }
-        .btn-link-cargo {
-            background-color: #92400e;       /* amber-800 */
-            border-color: #92400e;
-            color: #fff;
-        }
-        .btn-link-cargo:hover,
-        .btn-link-cargo:focus {
-            background-color: #78350f;       /* amber-900 */
-            border-color: #78350f;
-            color: #fff;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -119,8 +94,8 @@
                         <div class="col-lg-6">
                             <!-- Card Datos Personales -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                <div class="card-header border-0">
+                                    <h6 class="mb-0">
                                         <i class="ri-user-line me-2"></i>Datos Personales
                                     </h6>
                                 </div>
@@ -128,9 +103,8 @@
                                     <div class="row g-3">
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-user-line" style="color: #1e3c72;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--navy">
+                                                    <i class="ri-user-line emp-icon--navy"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Nombre Completo</small>
@@ -140,9 +114,8 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-bank-card-line" style="color: #2ecc71;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--green">
+                                                    <i class="ri-bank-card-line emp-icon--green"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Documento</small>
@@ -152,9 +125,8 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-user-heart-line" style="color: #00d9a5;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--teal">
+                                                    <i class="ri-user-heart-line emp-icon--teal"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Género</small>
@@ -164,9 +136,8 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-cake-2-line" style="color: #1e3c72;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--navy">
+                                                    <i class="ri-cake-2-line emp-icon--navy"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Fecha Nacimiento</small>
@@ -180,8 +151,8 @@
 
                             <!-- Card Contacto -->
                             <div class="card border-0 shadow-sm">
-                                <div class="card-header border-0" style="background: rgba(46, 204, 113, 0.1);">
-                                    <h6 class="mb-0" style="color: #2ecc71;">
+                                <div class="card-header border-0">
+                                    <h6 class="mb-0">
                                         <i class="ri-contacts-line me-2"></i>Contacto y Ubicación
                                     </h6>
                                 </div>
@@ -189,9 +160,8 @@
                                     <div class="row g-3">
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-mail-line" style="color: #1e3c72;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--navy">
+                                                    <i class="ri-mail-line emp-icon--navy"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Email</small>
@@ -201,9 +171,8 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-phone-line" style="color: #00d9a5;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--teal">
+                                                    <i class="ri-phone-line emp-icon--teal"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Teléfono</small>
@@ -213,9 +182,8 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-home-4-line" style="color: #2ecc71;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--green">
+                                                    <i class="ri-home-4-line emp-icon--green"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Dirección</small>
@@ -225,9 +193,8 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-building-line" style="color: #1e3c72;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--navy">
+                                                    <i class="ri-building-line emp-icon--navy"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Municipio</small>
@@ -244,8 +211,8 @@
                         <div class="col-lg-6">
                             <!-- Card Datos Laborales -->
                             <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                    <h6 class="mb-0" style="color: #1e3c72;">
+                                <div class="card-header border-0">
+                                    <h6 class="mb-0">
                                         <i class="ri-briefcase-line me-2"></i>Datos Laborales
                                     </h6>
                                 </div>
@@ -253,9 +220,8 @@
                                     <div class="row g-3">
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-hashtag" style="color: #2ecc71;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--green">
+                                                    <i class="ri-hashtag emp-icon--green"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Código</small>
@@ -265,9 +231,8 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                    <i class="ri-user-star-line" style="color: #00d9a5;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--teal">
+                                                    <i class="ri-user-star-line emp-icon--teal"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Cargo</small>
@@ -277,9 +242,8 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-building-2-line" style="color: #1e3c72;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--navy">
+                                                    <i class="ri-building-2-line emp-icon--navy"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Departamento</small>
@@ -293,8 +257,8 @@
 
                             <!-- Card Estado -->
                             <div class="card border-0 shadow-sm">
-                                <div class="card-header border-0" style="background: rgba(0, 217, 165, 0.1);">
-                                    <h6 class="mb-0" style="color: #00d9a5;">
+                                <div class="card-header border-0">
+                                    <h6 class="mb-0">
                                         <i class="ri-information-line me-2"></i>Estado del Empleado
                                     </h6>
                                 </div>
@@ -302,9 +266,8 @@
                                     <div class="row g-3">
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                    <i class="ri-calendar-check-line" style="color: #2ecc71;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--green">
+                                                    <i class="ri-calendar-check-line emp-icon--green"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Fecha Ingreso</small>
@@ -314,9 +277,8 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                    <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
+                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center emp-icon-box emp-icon-box--navy">
+                                                    <i class="ri-checkbox-circle-line emp-icon--navy"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block">Estado</small>
@@ -351,8 +313,7 @@
                 <form id="empleadoForm" novalidate>
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
-                        <div id="edit-shared-persona-notice" class="d-none alert mb-3 py-2 px-3"
-                            style="background:rgba(8,145,178,0.08); border:1px solid rgba(8,145,178,0.3); border-radius:8px; font-size:0.82rem; color:#0891b2;">
+                        <div id="edit-shared-persona-notice" class="d-none alert mb-3 py-2 px-3 emp-shared-notice">
                             <i class="ri-user-shared-line me-1"></i>
                             Esta persona también está registrada como <strong id="edit-shared-role"></strong>.
                             Los cambios en datos personales afectarán ambos registros.
@@ -365,8 +326,7 @@
                                 <div class="col-md-4">
                                     <label for="field-documento_identidad" class="form-label required">Documento de Identidad</label>
                                     <div class="input-group">
-                                        <select class="form-select" id="tipo-documento-field" name="tipo_documento"
-                                            style="max-width: 80px;">
+                                        <select class="form-select tipo-doc-select" id="tipo-documento-field" name="tipo_documento">
                                             <option value="V-">V-</option>
                                             <option value="E-">E-</option>
                                             <option value="J-">J-</option>
@@ -375,19 +335,17 @@
                                         <input type="text" id="field-documento_identidad" name="documento_identidad"
                                             class="form-control" placeholder="Nro. documento" required />
                                     </div>
-                                    <div id="documento-persona-card" class="d-none mt-2 rounded"
-                                        style="border:1px solid rgba(8,145,178,0.35); background:rgba(8,145,178,0.06); padding:10px 12px;">
-                                        <div style="font-size:0.78rem; font-weight:600; color:#0891b2; margin-bottom:4px;">
+                                    <div id="documento-persona-card" class="d-none mt-2 rounded emp-persona-card">
+                                        <div class="emp-persona-card-title">
                                             <i class="ri-user-shared-line me-1"></i>
-                                            Persona ya registrada como <span id="persona-card-role" style="text-transform:capitalize;"></span>
+                                            Persona ya registrada como <span id="persona-card-role" class="text-capitalize"></span>
                                         </div>
-                                        <div id="persona-card-data" style="font-size:0.8rem; line-height:1.8; margin-bottom:8px;"></div>
-                                        <button type="button" id="persona-vincular-btn" class="btn btn-sm"
-                                            style="background:#0891b2; color:white; font-size:0.75rem; padding:3px 12px; border-radius:20px;">
+                                        <div id="persona-card-data" class="emp-persona-card-data"></div>
+                                        <button type="button" id="persona-vincular-btn" class="btn btn-sm emp-persona-vincular-btn">
                                             <i class="ri-link me-1"></i>Usar estos datos
                                         </button>
                                     </div>
-                                    <div id="documento-vinculado-notice" class="d-none mt-1" style="font-size:0.78rem; color:#0891b2;">
+                                    <div id="documento-vinculado-notice" class="d-none mt-1 emp-persona-notice-text">
                                         <i class="ri-link me-1"></i><span id="documento-vinculado-text"></span>
                                     </div>
                                 </div>
@@ -407,8 +365,7 @@
                                     <x-forms.input name="telefono_number" label="Teléfono" id="telefono-number-field"
                                         maxlength="7" placeholder="1234567" prependRaw="true">
                                         <x-slot:prepend>
-                                            <select class="form-select" id="telefono-prefix-field"
-                                                style="max-width: 100px; min-width: 100px;">
+                                            <select class="form-select phone-prefix-select" id="telefono-prefix-field">
                                                 <option value="0412">0412</option>
                                                 <option value="0422">0422</option>
                                                 <option value="0414">0414</option>
@@ -796,14 +753,14 @@
 
             function generateButtons(empleadoId) {
                 return '<div class="d-flex gap-1 justify-content-center">' +
-                    '<button class="btn btn-sm btn-soft-secondary view-item-btn" data-id="' + empleadoId + '" title="Ver" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-eye-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-secondary view-item-btn dt-action-btn" data-id="' + empleadoId + '" title="Ver">' +
+                    '<i class="ri-eye-fill dt-action-icon"></i>' +
                     '</button>' +
-                    '<button class="btn btn-sm btn-soft-success edit-item-btn" data-id="' + empleadoId + '" title="Editar" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-pencil-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-success edit-item-btn dt-action-btn" data-id="' + empleadoId + '" title="Editar">' +
+                    '<i class="ri-pencil-fill dt-action-icon"></i>' +
                     '</button>' +
-                    '<button class="btn btn-sm btn-soft-danger remove-item-btn" data-id="' + empleadoId + '" title="Eliminar" style="padding:0.2rem 0.45rem;">' +
-                    '<i class="ri-delete-bin-fill" style="font-size:13px;"></i>' +
+                    '<button class="btn btn-sm btn-soft-danger remove-item-btn dt-action-btn" data-id="' + empleadoId + '" title="Eliminar">' +
+                    '<i class="ri-delete-bin-fill dt-action-icon"></i>' +
                     '</button>' +
                     '</div>';
             }
