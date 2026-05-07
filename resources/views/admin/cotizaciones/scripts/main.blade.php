@@ -4516,6 +4516,30 @@
                 return groups;
             }
 
+            // Construye la línea de variante (tela + atributos) a partir de un producto
+            function buildVariantLabel(producto) {
+                if (!producto) return '';
+                var partes = [];
+                if (producto.tela && producto.tela.nombre) {
+                    partes.push(producto.tela.nombre);
+                }
+                var snap = producto.atributos_snapshot;
+                if (snap && typeof snap === 'object' && !Array.isArray(snap)) {
+                    Object.keys(snap).forEach(function (atr) {
+                        partes.push(atr + ': ' + snap[atr]);
+                    });
+                } else if (Array.isArray(producto.atributo_valores) && producto.atributo_valores.length) {
+                    // Fallback si el snapshot no está poblado pero sí los valores
+                    producto.atributo_valores.forEach(function (v) {
+                        if (v.atributo && v.atributo.nombre) {
+                            partes.push(v.atributo.nombre + ': ' + v.nombre);
+                        }
+                    });
+                }
+                return partes.join(' · ');
+            }
+            window.cotBuildVariantLabel = buildVariantLabel;
+
             function refreshGroupedList() {
                 var groups = readGroupsFromContainer();
                 var $list = $('#cot-grouped-list');
@@ -4532,6 +4556,7 @@
                     var prodCodigo = g.producto && g.producto.codigo ? g.producto.codigo : '—';
                     var prodModelo = g.producto && g.producto.modelo ? g.producto.modelo : '(producto sin definir)';
                     var tipoLabel = g.producto && g.producto.tipo_producto ? g.producto.tipo_producto.nombre : '';
+                    var variantLabel = buildVariantLabel(g.producto);
                     var colorName = g.color ? g.color.nombre : (g.colorId ? '#' + g.colorId : 'Sin color');
                     var colorHex = g.color ? g.color.hex_referencial : '#cccccc';
                     var lightHex = (String(colorHex).toUpperCase() === '#FFFFFF' || String(colorHex).toUpperCase() === '#FFFDD0');
@@ -4562,6 +4587,9 @@
                                 (tipoLabel ? '<span class="cot-tipo-pill">' + escForHtml(tipoLabel) + '</span>' : '') +
                                 '<div class="cot-prod-modelo">' + escForHtml(prodModelo) + '</div>' +
                                 '<div class="cot-prod-codigo">' + escForHtml(prodCodigo) + '</div>' +
+                                (variantLabel
+                                    ? '<div class="cot-prod-variant" style="font-size:.72rem;color:#475569;margin-top:2px;"><i class="ri-shape-2-line me-1"></i>' + escForHtml(variantLabel) + '</div>'
+                                    : '') +
                             '</td>' +
                             '<td class="cot-col-color">' +
                                 '<span class="cot-color-cell">' +
@@ -4987,6 +5015,9 @@
                         var prodLabel = g.producto
                             ? ((g.producto.codigo ? g.producto.codigo + ' · ' : '') + (g.producto.modelo || ''))
                             : '(producto sin definir)';
+                        var variantLabel = (typeof window.cotBuildVariantLabel === 'function')
+                            ? window.cotBuildVariantLabel(g.producto)
+                            : '';
                         var colorName = g.color ? g.color.nombre : (g.colorId ? '#' + g.colorId : '');
                         var tallasTxt = g.cards.map(function (c) { return c.tallaLabel + '×' + c.qty; }).join(' · ');
                         var bordadoBadge = g.llevaBordado
@@ -5001,6 +5032,7 @@
                             '<tr>' +
                                 '<td>' +
                                     '<div class="cot-resumen-row-prod">' + escHtmlW(prodLabel) + bordadoBadge + '</div>' +
+                                    (variantLabel ? '<div class="cot-resumen-row-variant" style="font-size:.72rem;color:#475569;margin:2px 0;"><i class="ri-shape-2-line me-1"></i>' + escHtmlW(variantLabel) + '</div>' : '') +
                                     '<div class="cot-resumen-row-meta">' +
                                         (colorName ? '<span>' + escHtmlW(colorName) + '</span>' : '') +
                                         '<span class="cot-resumen-row-tallas">' + escHtmlW(tallasTxt) + '</span>' +
