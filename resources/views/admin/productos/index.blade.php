@@ -132,6 +132,8 @@
                                 <th>Código</th>
                                 <th>Imagen</th>
                                 <th>Tipo</th>
+                                <th>Tela</th>
+                                <th>Atributos</th>
                                 <th>Modelo</th>
                                 <th>Precio Base</th>
                                 <th>Estado</th>
@@ -293,12 +295,36 @@
                                         </div>
                                     </div>
 
-                                    <x-forms.input name="modelo" label="Modelo"
-                                        placeholder="Ej: Polo Clásica, Cuello V, Drill Industrial" required
+                                    {{-- Selector de Tela (insumo tipo='Tela') --}}
+                                    <div class="mb-3" id="tela-field-wrapper">
+                                        <label for="tela-field" class="form-label">
+                                            Tela <span class="text-danger" id="tela-required-star">*</span>
+                                        </label>
+                                        <select id="tela-field" name="insumo_tela_id" class="form-select">
+                                            <option value="">Seleccione una tela...</option>
+                                            @foreach($telasDisponibles as $tela)
+                                                <option value="{{ $tela->id }}"
+                                                    data-codigo="{{ $tela->codigo }}"
+                                                    data-costo="{{ $tela->costo_unitario }}"
+                                                    data-unidad="{{ $tela->unidad_medida }}">
+                                                    {{ $tela->nombre }}
+                                                    @if($tela->codigo) [{{ $tela->codigo }}] @endif
+                                                    — ${{ number_format($tela->costo_unitario, 2) }}/{{ $tela->unidad_medida }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <small class="text-muted" id="tela-hint">
+                                            Materia prima base. Define la sugerencia de precio.
+                                        </small>
+                                    </div>
+
+                                    <x-forms.input name="modelo" label="Modelo (alias comercial)"
+                                        placeholder="Opcional: ej. Premium 2026, Línea Ejecutiva"
+                                        hint="Nombre comercial. El SKU se genera de tipo + tela + atributos."
                                         id="modelo-field" />
-                                    <x-forms.input name="codigo" label="Código" readonly class="bg-light"
-                                        placeholder="Se genera automáticamente"
-                                        hint="El código se genera al seleccionar el tipo de producto" id="codigo-field" />
+                                    <x-forms.input name="codigo" label="Código (SKU)" readonly class="bg-light fw-bold"
+                                        placeholder="Se genera al seleccionar tipo, tela y atributos"
+                                        hint="Determinístico: prefijo-tela-atributos-secuencial." id="codigo-field" />
 
                                     <div class="mb-0">
                                         <label for="descripcion-field" class="form-label">Descripción <span
@@ -309,12 +335,41 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
+                                <div class="modal-form-section">
+                                    <div class="modal-form-section-title">
+                                        <i class="ri-list-check-2"></i>Variaciones (atributos de confección)
+                                    </div>
+                                    <div id="atributos-chips-container">
+                                        <div class="text-muted small text-center py-3" id="atributos-empty">
+                                            <i class="ri-information-line"></i>
+                                            Selecciona un tipo de producto para ver sus variaciones.
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="modal-form-section mb-0">
                                     <div class="modal-form-section-title"><i class="ri-money-dollar-circle-line"></i>Precio,
                                         Imagen y Estado</div>
 
-                                    <x-forms.input name="precio_base" label="Precio Base ($)" type="number" step="0.01"
-                                        min="0" placeholder="0.00" required id="precio-base-field" />
+                                    <div class="mb-3">
+                                        <label for="precio-base-field" class="form-label">
+                                            Precio Base ($) <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" name="precio_base"
+                                                step="0.01" min="0" placeholder="0.00" required id="precio-base-field" />
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                id="btn-aplicar-sugerido" title="Aplicar precio sugerido"
+                                                style="display:none;">
+                                                <i class="ri-magic-line me-1"></i>
+                                                <span id="sugerido-label">Sugerido: $0.00</span>
+                                            </button>
+                                        </div>
+                                        <small class="text-muted d-block mt-1" id="precio-breakdown" style="display:none;">
+                                            <span id="precio-breakdown-text"></span>
+                                        </small>
+                                    </div>
 
                                     {{-- Imagen — mantiene HTML nativo por preview --}}
                                     <div class="mb-3">
@@ -585,6 +640,25 @@
                         }
                     },
                     {
+                        data: 'tela_nombre',
+                        name: 'tela_nombre',
+                        orderable: false,
+                        render: function (data) {
+                            if (!data || data === '—') return '<span class="text-muted">—</span>';
+                            return '<span class="badge bg-light text-dark border"><i class="ri-shirt-line me-1"></i>' + data + '</span>';
+                        }
+                    },
+                    {
+                        data: 'atributos_resumen',
+                        name: 'atributos_resumen',
+                        orderable: false,
+                        searchable: false,
+                        render: function (data) {
+                            if (!data || data === '—') return '<span class="text-muted small">—</span>';
+                            return '<span class="text-muted small">' + data + '</span>';
+                        }
+                    },
+                    {
                         data: 'modelo',
                         name: 'modelo',
                         render: function (data) {
@@ -625,13 +699,13 @@
                     {
                         extend: 'copy',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4] // Excluir la columna de acciones (índice 5)
+                            columns: [0, 1, 2, 3, 4, 5, 6] // Excluir solo la columna de acciones
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [1, 2, 3, 4] // Excluir la columna de imagen (índice 0) y de acciones (índice 5)
+                            columns: [2, 3, 4, 5, 6] // Excluir imagen (0), código (1) y acciones; incluir tipo, tela, atributos, modelo, precio
                         }
                     }
                 ],
@@ -730,6 +804,7 @@
                     $("#modalTitle").text("Editar Producto");
                     $("#id-field").val(data.id);
                     $("#tipo-producto-field").val(data.tipo_producto_id);
+                    $("#tela-field").val(data.insumo_tela_id || '');
                     $("#codigo-field").val(data.codigo);
                     $("#descripcion-field").val(data.descripcion);
                     $("#modelo-field").val(data.modelo);
@@ -742,11 +817,9 @@
                     if (data.imagen) {
                         $("#imagen-preview img").attr('src', data.imagen);
                         $("#imagen-preview").show();
-                        // Al editar con imagen existente, no es obligatorio subir una nueva
                         $("#imagen-field").prop('required', false);
                         $("#imagen-required-star").addClass('d-none');
                     } else {
-                        // Si no tiene imagen (caso raro), pedimos una
                         $("#imagen-field").prop('required', true);
                         $("#imagen-required-star").removeClass('d-none');
                     }
@@ -754,32 +827,185 @@
                     $("#add-btn").hide();
                     $("#edit-btn").show();
                     $("#showModal").modal('show');
+
+                    // Cargar atributos del tipo y marcar los del producto
+                    cargarAtributosDeTipo(data.tipo_producto_id).then(function () {
+                        renderAtributosChips(data.atributo_valor_ids || []);
+                        // En edición no recalculamos SKU; mostramos sugerencia y breakdown sí
+                        actualizarSugerenciaPrecioOnly();
+                    });
                 });
             });
 
-            // Generar código automático al seleccionar tipo o escribir modelo
-            function actualizarCodigoPreview() {
-                var tipoId = $("#tipo-producto-field").val();
-                var modelo = $("#modelo-field").val();
-                var isEditing = $("#id-field").val() !== "";
-
-                if (tipoId && !isEditing) {
-                    $.get("{{ url('tipo-productos') }}/" + tipoId + "/proximo-codigo", { modelo: modelo }, function (response) {
-                        $("#codigo-field").val(response.codigo);
-                    });
-                } else if (!tipoId) {
-                    $("#codigo-field").val("");
-                }
+            // Variante de actualizarCodigoYPrecio que NO toca el SKU (para modo edición)
+            function actualizarSugerenciaPrecioOnly() {
+                var tipoId = $('#tipo-producto-field').val();
+                var telaId = $('#tela-field').val();
+                if (!tipoId) return;
+                $.getJSON("{{ route('productos.sugerir-precio') }}", {
+                    tipo_producto_id: tipoId,
+                    insumo_tela_id: telaId || null
+                }).done(function (resp) {
+                    if (resp.precio_sugerido > 0) {
+                        $('#sugerido-label').text('Sugerido: $' + parseFloat(resp.precio_sugerido).toFixed(2));
+                        $('#btn-aplicar-sugerido').show().data('valor', resp.precio_sugerido);
+                        $('#precio-breakdown-text').html(
+                            'Tela: $' + parseFloat(resp.costo_tela).toFixed(2) +
+                            ' + Confección: $' + parseFloat(resp.precio_confeccion).toFixed(2) +
+                            ' = <strong>$' + parseFloat(resp.precio_sugerido).toFixed(2) + '</strong>'
+                        );
+                        $('#precio-breakdown').show();
+                    }
+                });
             }
 
-            $("#tipo-producto-field").on("change", actualizarCodigoPreview);
+            // ========= NUEVO FLUJO: Variantes (tipo + tela + atributos) =========
 
-            // Actualizar código cuando el usuario escribe el modelo (con delay)
-            var modeloTimer;
-            $("#modelo-field").on("keyup", function () {
-                clearTimeout(modeloTimer);
-                modeloTimer = setTimeout(actualizarCodigoPreview, 500);
+            var atributosDelTipoActual = []; // [{id, nombre, codigo, valores: [...]}, ...] en orden del tipo
+
+            function cargarAtributosDeTipo(tipoId) {
+                if (!tipoId) {
+                    atributosDelTipoActual = [];
+                    renderAtributosChips();
+                    actualizarCodigoYPrecio();
+                    return $.Deferred().resolve();
+                }
+                return $.getJSON("{{ url('tipo-productos') }}/" + tipoId).done(function (tipo) {
+                    atributosDelTipoActual = (tipo.atributos || []).map(function (a) {
+                        return {
+                            id: a.id,
+                            nombre: a.nombre,
+                            codigo: a.codigo,
+                            orden: a.pivot ? a.pivot.orden : 999,
+                            valores: a.valores || []
+                        };
+                    });
+                    // Toggle requerimiento de tela
+                    var requiereTela = !!tipo.requiere_tela;
+                    $('#tela-field').prop('required', requiereTela);
+                    $('#tela-required-star').toggle(requiereTela);
+                    renderAtributosChips();
+                });
+            }
+
+            function renderAtributosChips(seleccionadosIds) {
+                var preseleccionados = seleccionadosIds || [];
+                if (!atributosDelTipoActual.length) {
+                    $('#atributos-empty').show().text('Este tipo no tiene atributos asociados.');
+                    $('#atributos-chips-container').find('.atributo-grupo').remove();
+                    return;
+                }
+                $('#atributos-empty').hide();
+
+                var html = atributosDelTipoActual.map(function (atr) {
+                    if (!atr.valores.length) {
+                        return '' +
+                            '<div class="atributo-grupo mb-3" data-atr-id="' + atr.id + '">' +
+                                '<label class="form-label small text-muted mb-1">' +
+                                    escapeHtml(atr.nombre) +
+                                '</label>' +
+                                '<div class="text-muted small fst-italic">Sin valores definidos. ' +
+                                'Agregar en <a href="{{ url('atributos') }}" target="_blank">/atributos</a>.</div>' +
+                            '</div>';
+                    }
+                    var chips = atr.valores.map(function (v) {
+                        var checked = preseleccionados.indexOf(v.id) !== -1;
+                        return '' +
+                            '<input type="radio" class="btn-check atributo-radio" ' +
+                                'name="atr_' + atr.id + '" id="val-' + v.id + '" ' +
+                                'value="' + v.id + '" data-atr-id="' + atr.id + '"' +
+                                (checked ? ' checked' : '') + '>' +
+                            '<label class="btn btn-outline-primary btn-sm" for="val-' + v.id + '">' +
+                                escapeHtml(v.nombre) +
+                                ' <small class="text-muted">' + escapeHtml(v.codigo) + '</small>' +
+                            '</label>';
+                    }).join('');
+                    return '' +
+                        '<div class="atributo-grupo mb-3" data-atr-id="' + atr.id + '">' +
+                            '<label class="form-label small fw-semibold mb-2">' +
+                                escapeHtml(atr.nombre) +
+                                ' <span class="text-muted small">(' + escapeHtml(atr.codigo) + ')</span>' +
+                            '</label>' +
+                            '<div class="d-flex flex-wrap gap-2">' + chips + '</div>' +
+                        '</div>';
+                }).join('');
+
+                $('#atributos-chips-container').find('.atributo-grupo').remove();
+                $('#atributos-chips-container').append(html);
+            }
+
+            function recolectarValoresSeleccionados() {
+                return $('.atributo-radio:checked').map(function () {
+                    return parseInt($(this).val());
+                }).get();
+            }
+
+            function actualizarCodigoYPrecio() {
+                var tipoId = $('#tipo-producto-field').val();
+                var telaId = $('#tela-field').val();
+
+                if (!tipoId) {
+                    $('#codigo-field').val('');
+                    $('#btn-aplicar-sugerido').hide();
+                    $('#precio-breakdown').hide();
+                    return;
+                }
+
+                // Sugerencia de precio (depende de tipo + tela)
+                $.getJSON("{{ route('productos.sugerir-precio') }}", {
+                    tipo_producto_id: tipoId,
+                    insumo_tela_id: telaId || null
+                }).done(function (resp) {
+                    if (resp.precio_sugerido > 0) {
+                        $('#sugerido-label').text('Sugerido: $' + parseFloat(resp.precio_sugerido).toFixed(2));
+                        $('#btn-aplicar-sugerido').show().data('valor', resp.precio_sugerido);
+                        $('#precio-breakdown-text').html(
+                            'Tela: $' + parseFloat(resp.costo_tela).toFixed(2) +
+                            ' + Confección: $' + parseFloat(resp.precio_confeccion).toFixed(2) +
+                            ' = <strong>$' + parseFloat(resp.precio_sugerido).toFixed(2) + '</strong>'
+                        );
+                        $('#precio-breakdown').show();
+                    } else {
+                        $('#btn-aplicar-sugerido').hide();
+                        $('#precio-breakdown').hide();
+                    }
+                });
+
+                // Vista previa SKU (depende de tipo + tela + atributos seleccionados)
+                if ($('#id-field').val()) return; // En edición no recalculamos automáticamente
+                var valoresIds = recolectarValoresSeleccionados();
+                $.getJSON("{{ route('productos.preview-codigo') }}", {
+                    tipo_producto_id: tipoId,
+                    insumo_tela_id: telaId || null,
+                    'atributo_valor_ids[]': valoresIds
+                }).done(function (resp) {
+                    $('#codigo-field').val(resp.codigo);
+                });
+            }
+
+            function escapeHtml(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
+            }
+
+            // Listeners
+            $('#tipo-producto-field').on('change', function () {
+                cargarAtributosDeTipo($(this).val()).then(actualizarCodigoYPrecio);
             });
+            $('#tela-field').on('change', actualizarCodigoYPrecio);
+            $(document).on('change', '.atributo-radio', actualizarCodigoYPrecio);
+
+            // Aplicar precio sugerido
+            $('#btn-aplicar-sugerido').on('click', function () {
+                var v = $(this).data('valor');
+                if (v) $('#precio-base-field').val(parseFloat(v).toFixed(2)).trigger('blur');
+            });
+
+            // Compatibilidad: el campo modelo ya no es obligatorio para el SKU,
+            // pero se mantiene por si el usuario quiere un alias comercial.
+            // (Reemplazada actualizarCodigoPreview por actualizarCodigoYPrecio.)
+            function actualizarCodigoPreview() { actualizarCodigoYPrecio(); }
 
             // Enviar formulario
             $("#productoForm").on("submit", function (e) {
@@ -796,6 +1022,11 @@
                 if (method === "PUT") {
                     formData.append('_method', 'PUT');
                 }
+
+                // Adjuntar valores de atributos seleccionados (uno por radio group)
+                recolectarValoresSeleccionados().forEach(function (vid) {
+                    formData.append('atributo_valor_ids[]', vid);
+                });
 
                 $.ajax({
                     url: url,
@@ -956,11 +1187,10 @@
                 $("#productoForm")[0].reset();
                 $("#id-field").val("");
                 $("#codigo-field").val("");
+                $("#tela-field").val("");
                 $("#imagen-preview").hide();
-                // Para nuevo producto, la imagen es obligatoria
                 $("#imagen-field").prop('required', true);
                 $("#imagen-required-star").removeClass('d-none');
-                // Reset switch de estado a Activo por defecto
                 $("#estado-switch").prop('checked', true);
                 $("#estado-hidden-field").val("1");
                 $("#estado-label").text("Activo");
@@ -968,6 +1198,12 @@
                 $("#edit-btn").hide();
                 $('#productoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
                 $('#productoForm').find('.invalid-feedback').hide();
+                // Reset variantes
+                atributosDelTipoActual = [];
+                $('#atributos-chips-container').find('.atributo-grupo').remove();
+                $('#atributos-empty').show().text('Selecciona un tipo de producto para ver sus variaciones.');
+                $('#btn-aplicar-sugerido').hide();
+                $('#precio-breakdown').hide();
             });
 
             function validarFormularioProducto() {

@@ -178,6 +178,8 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::get('productos-data', [ProductoController::class, 'getProductos'])->name('productos.data');
         Route::get('productos/reporte/pdf', [ProductoController::class, 'reportePdf'])->name('productos.reporte.pdf');
         Route::post('productos/{id}/restore', [ProductoController::class, 'restore'])->name('productos.restore');
+        Route::get('productos-sugerir-precio', [ProductoController::class, 'sugerirPrecio'])->name('productos.sugerir-precio');
+        Route::get('productos-preview-codigo', [ProductoController::class, 'previewCodigo'])->name('productos.preview-codigo');
 
         // Tipos de Producto
         Route::get('tipo-productos', [App\Http\Controllers\TipoProductoController::class, 'index'])->name('tipo-productos.index');

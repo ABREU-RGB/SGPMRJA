@@ -68,9 +68,12 @@ class TipoProductoController extends Controller
      */
     public function show(TipoProducto $tipoProducto): JsonResponse
     {
-        $tipoProducto->load(['atributos' => function ($q) {
-            $q->orderBy('tipo_producto_atributo.orden');
-        }]);
+        $tipoProducto->load([
+            'atributos' => function ($q) {
+                $q->orderBy('tipo_producto_atributo.orden');
+            },
+            'atributos.valores',
+        ]);
 
         return response()->json($tipoProducto);
     }
