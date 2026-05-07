@@ -57,6 +57,7 @@
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
+                                    <th>Código</th>
                                     <th>Tipo</th>
                                     <th>Stock Actual</th>
                                     <th>Costo Unit.</th>
@@ -244,10 +245,19 @@
                             <div class="modal-form-section-title"><i class="ri-box-3-line"></i>Datos del Insumo</div>
 
                             <div class="row mb-0">
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <x-forms.input name="nombre" label="Nombre" required />
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="codigo-field" class="form-label">Código</label>
+                                        <input type="text" id="codigo-field" name="codigo" class="form-control text-uppercase"
+                                            maxlength="8" placeholder="Ej: OXF, DAC"
+                                            style="font-family: monospace;" />
+                                        <small class="text-muted">2-8 letras/números. Inmutable. Recomendado para Telas (forma parte del SKU).</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <x-forms.select name="tipo" label="Tipo" required
                                         :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Boton' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
                                 </div>
@@ -354,38 +364,48 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        exportOptions: { columns: [0, 1, 2, 3, 4] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                     },
                     {
                         extend: 'csv',
-                        exportOptions: { columns: [0, 1, 2, 3, 4] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                     },
                     {
                         extend: 'excel',
-                        exportOptions: { columns: [0, 1, 2, 3, 4] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                     },
                     {
                         extend: 'pdf',
-                        exportOptions: { columns: [0, 1, 2, 3, 4] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                     },
                     {
                         extend: 'print',
-                        exportOptions: { columns: [0, 1, 2, 3, 4] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
                     }
                 ],
                 columns: [
                     {
                         data: 'nombre',
                         name: 'nombre',
-                        width: '20%',
+                        width: '18%',
                         render: function (data) {
                             return renderEllipsis(data);
                         }
                     },
                     {
+                        data: 'codigo',
+                        name: 'codigo',
+                        width: '8%',
+                        render: function (data) {
+                            return data
+                                ? '<span class="codigo-pill" style="font-family: monospace; padding: .12rem .55rem; background: rgba(30,60,114,.10); color: #1e3c72; border-radius: 4px; font-size: .78rem; font-weight: 600;">' + data + '</span>'
+                                : '<span class="text-muted">—</span>';
+                        }
+                    },
+                    {
                         data: 'tipo',
                         name: 'tipo',
-                        width: '13%',
+                        width: '11%',
                         render: function (data) {
                             var tipos = {
                                 'Tela': '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
@@ -488,6 +508,9 @@
                     $("#modalTitle").text("Editar Insumo");
                     $("#id-field").val(data.id);
                     $("#field-nombre").val(data.nombre);
+                    $("#codigo-field").val(data.codigo || '');
+                    // Código inmutable después de crear: si ya tiene valor, deshabilitar
+                    $("#codigo-field").prop('readonly', !!data.codigo);
                     $("#field-tipo").val(data.tipo);
                     $("#field-unidad_medida").val(data.unidad_medida);
                     $("#field-stock_actual").val(data.stock_actual);
@@ -628,7 +651,7 @@
                 $("#modalTitle").text("Agregar Insumo");
                 $("#insumoForm")[0].reset();
                 $("#id-field").val("");
-                $("#add-btn").show();
+                $("#codigo-field").prop('readonly', false);
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 $('#insumoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
