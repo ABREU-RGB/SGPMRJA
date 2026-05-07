@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Log;
 class PedidoService
 {
     public function __construct(
-        private BordadoPricingService $bordadoPricingService
+        private BordadoPricingService $bordadoPricingService,
+        private ProductoService $productoService
     ) {
     }
 
@@ -123,17 +124,20 @@ class PedidoService
     private function crearDetalles(Pedido $pedido, array $productos): void
     {
         foreach ($productos as $item) {
-            $producto = Producto::find($item['producto_id']);
+            $producto = Producto::with('tela')->find($item['producto_id']);
             $precioBase = isset($item['precio_unitario'])
                 ? (float) $item['precio_unitario']
                 : (float) ($producto->precio_base ?? 0);
 
             $bordados = $this->bordadoPricingService->normalizeBordados($item);
             $precioUnitarioFinal = $this->bordadoPricingService->calcularPrecioUnitarioFinal($precioBase, $bordados);
+            $snapshots = $this->productoService->buildSnapshotsParaDetalle($producto);
 
             $detalle = DetallePedido::create([
                 'pedido_id' => $pedido->id,
                 'producto_id' => $item['producto_id'],
+                'tela_snapshot' => $snapshots['tela_snapshot'],
+                'atributos_snapshot' => $snapshots['atributos_snapshot'],
                 'cantidad' => $item['cantidad'],
                 'descripcion' => $item['descripcion'] ?? null,
                 'lleva_bordado' => $item['lleva_bordado'] ?? false,

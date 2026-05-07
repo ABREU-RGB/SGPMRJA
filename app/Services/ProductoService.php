@@ -198,4 +198,35 @@ class ProductoService
         $valoresOrdenados = $this->ordenarValoresParaTipo($tipo, $valoresIds);
         return $this->generarCodigo($tipo, $tela, $valoresOrdenados->all());
     }
+
+    /**
+     * Construye los snapshots inmutables (tela + atributos) que se almacenan
+     * en cada renglón de cotización/pedido para preservar el estado del
+     * catálogo en el momento exacto del registro.
+     *
+     * @return array{tela_snapshot: ?array, atributos_snapshot: ?array}
+     */
+    public function buildSnapshotsParaDetalle(Producto $producto): array
+    {
+        if (!$producto->relationLoaded('tela')) {
+            $producto->load('tela');
+        }
+
+        $telaSnapshot = null;
+        if ($producto->tela) {
+            $telaSnapshot = [
+                'id'             => $producto->tela->id,
+                'nombre'         => $producto->tela->nombre,
+                'codigo'         => $producto->tela->codigo,
+                'costo_unitario' => (float) $producto->tela->costo_unitario,
+                'unidad_medida'  => $producto->tela->unidad_medida,
+                'snapshot_at'    => now()->toDateString(),
+            ];
+        }
+
+        return [
+            'tela_snapshot'      => $telaSnapshot,
+            'atributos_snapshot' => $producto->atributos_snapshot ?: null,
+        ];
+    }
 }
