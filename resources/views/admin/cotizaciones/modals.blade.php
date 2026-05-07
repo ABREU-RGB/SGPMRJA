@@ -873,6 +873,9 @@
                                 <span class="cfg-info-price-label">Precio base</span>
                                 <span class="cfg-info-price-value" id="cfg-info-precio">$0,00</span>
                             </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2" id="cfg-cambiar-variante" style="display:none;">
+                                <i class="ri-shape-2-line me-1"></i>Cambiar variante
+                            </button>
                             <p class="cfg-info-help">
                                 <i class="ri-information-line me-1"></i>El bordado se configura por
                                 línea en el paso 2 después de confirmar el carrito.

@@ -3920,11 +3920,13 @@
                 });
             }
 
-            function vsAbrir(tipoId) {
+            function vsAbrir(tipoId, opts) {
+                opts = opts || {};
                 vsState.tipoId = tipoId;
                 vsState.productos = getProductosDelTipo(tipoId);
-                vsState.telaId = null;
-                vsState.valoresPorAtributo = {};
+                vsState.telaId = opts.telaId || null;
+                vsState.valoresPorAtributo = opts.valoresPorAtributo ? Object.assign({}, opts.valoresPorAtributo) : {};
+                vsState.editContexto = opts.editContexto || null;
                 vsState.tipo = null;
 
                 $('#vs-tipo-nombre').text(vsState.productos[0]?.tipo_producto?.nombre || 'Variante');
@@ -3936,10 +3938,15 @@
                     vsState.tipo = tipo;
                     vsRenderTelas();
                     vsRenderAtributos();
+                    // Si vino con preselección, intentar resolver de inmediato
+                    if (opts.telaId || (opts.valoresPorAtributo && Object.keys(opts.valoresPorAtributo).length)) {
+                        vsResolverVariante();
+                    }
                 });
 
                 new bootstrap.Modal(document.getElementById('varianteSelectorModal')).show();
             }
+            window.cotVarianteSelectorAbrir = vsAbrir;
 
             // Listeners del selector
             $(document).on('change', '.vs-tela-radio', function () {
@@ -3954,9 +3961,26 @@
             $(document).on('click', '#vs-confirm', function () {
                 var pid = $(this).data('producto-id');
                 if (!pid) return;
+                var ctx = vsState.editContexto;
                 bootstrap.Modal.getInstance(document.getElementById('varianteSelectorModal'))?.hide();
                 if (typeof window.cotConfiguradorAbrir === 'function') {
-                    window.cotConfiguradorAbrir(pid);
+                    if (ctx) {
+                        // Cambio de variante en plena edición: reabre configurador con el nuevo
+                        // producto pero conservando color/tallas/precio que ya estaban configurados.
+                        window.cotConfiguradorAbrir(pid, {
+                            existing: {
+                                colorId: ctx.colorId,
+                                colorNombre: ctx.colorNombre,
+                                colorHex: ctx.colorHex,
+                                tallas: ctx.tallas,
+                                precioUnitario: ctx.precioUnitario
+                            },
+                            cartItemId: ctx.cartItemId,
+                            productoIdOriginal: ctx.productoIdOriginal
+                        });
+                    } else {
+                        window.cotConfiguradorAbrir(pid);
+                    }
                 }
             });
 
@@ -4014,6 +4038,7 @@
 
             var cfgState = {
                 producto: null,         // referencia al producto del catálogo
+                productoIdOriginal: null, // si edita un bloque y cambia la variante, recuerda el SKU original para reemplazo
                 colorId: null,
                 colorNombre: '',
                 colorHex: null,
@@ -4053,6 +4078,11 @@
                 // Estado inicial — si edita un item existente, carga sus datos
                 cfgState.producto = p;
                 cfgState.cartItemId = opts.cartItemId || null;
+                // Si veníamos editando un bloque de un producto distinto (cambio de variante),
+                // recordá el id original para que el patcher de guardado pueda borrar las cards correctas.
+                cfgState.productoIdOriginal = (opts.productoIdOriginal != null)
+                    ? opts.productoIdOriginal
+                    : p.id;
                 var basePrice = parseFloat(p.precio_base || 0) || 0;
                 if (opts.existing) {
                     cfgState.colorId = opts.existing.colorId || null;
@@ -4114,6 +4144,14 @@
                 } else {
                     $('#cfg-info-variant-row').hide();
                 }
+
+                // Mostrar botón "Cambiar variante" solo si el tipo tiene >1 producto activo
+                var tipoId = p.tipo_producto ? p.tipo_producto.id : null;
+                var prodList = (typeof products !== 'undefined' && Array.isArray(products)) ? products : [];
+                var hermanos = tipoId ? prodList.filter(function (x) {
+                    return x.tipo_producto && x.tipo_producto.id === tipoId;
+                }).length : 0;
+                $('#cfg-cambiar-variante').toggle(hermanos > 1);
 
                 var $media = $('#cfg-media-inner');
                 if (p.imagen) {
@@ -4294,6 +4332,42 @@
                 if (cfgModalInstance) cfgModalInstance.hide();
             });
 
+            // Cambiar variante: cierra el configurador y abre el selector con
+            // los valores actuales pre-seleccionados, manteniendo color/tallas
+            // ya configurados para que no se pierda el avance.
+            $(document).on('click', '#cfg-cambiar-variante', function () {
+                var p = cfgState.producto;
+                if (!p || !p.tipo_producto) return;
+
+                var preTela = p.tela ? p.tela.id : null;
+                var preValores = {};
+                if (Array.isArray(p.atributo_valores)) {
+                    p.atributo_valores.forEach(function (v) {
+                        if (v.atributo) preValores[v.atributo.id] = v.id;
+                    });
+                }
+
+                var contexto = {
+                    productoIdOriginal: cfgState.productoIdOriginal || p.id,
+                    colorId: cfgState.colorId,
+                    colorNombre: cfgState.colorNombre,
+                    colorHex: cfgState.colorHex,
+                    tallas: Object.assign({}, cfgState.tallas),
+                    precioUnitario: cfgState.precioUnitario,
+                    cartItemId: cfgState.cartItemId
+                };
+
+                if (cfgModalInstance) cfgModalInstance.hide();
+
+                if (typeof window.cotVarianteSelectorAbrir === 'function') {
+                    window.cotVarianteSelectorAbrir(p.tipo_producto.id, {
+                        telaId: preTela,
+                        valoresPorAtributo: preValores,
+                        editContexto: contexto
+                    });
+                }
+            });
+
             // Guardar (agregar al carrito)
             $(document).on('click', '#cfg-save-btn', function () {
                 if (!cfgState.colorId || totalTallas() === 0) return;
@@ -4317,6 +4391,7 @@
                 var item = {
                     id: cfgState.cartItemId || ('cit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),
                     productoId: p.id,
+                    productoIdOriginal: cfgState.productoIdOriginal || p.id,
                     productoCodigo: p.codigo || '',
                     productoModelo: p.modelo || '',
                     productoTipo: p.tipo_producto ? p.tipo_producto.nombre : '',
@@ -4780,13 +4855,15 @@
 
                         // Es una edición de un bloque existente:
                         // 1) Eliminar las cards viejas del bloque (todas las que comparten producto+color)
-                        var prodId = lastItem.productoId;
+                        //    productoIdOriginal apunta al SKU que estaba antes del cambio de variante;
+                        //    si no hubo cambio, equivale al productoId actual.
+                        var prodIdParaBorrar = lastItem.productoIdOriginal || lastItem.productoId;
                         var colorId = lastItem.colorId;
                         $('#productos-container .product-item').each(function () {
                             var $c = $(this);
                             var pid = parseInt($c.find('.producto-id-input').val(), 10);
                             var cid = parseInt($c.find('.color-id-input').val(), 10);
-                            if (pid === prodId && cid === colorId) $c.remove();
+                            if (pid === prodIdParaBorrar && cid === colorId) $c.remove();
                         });
 
                         // 2) Insertar nuevas cards del item editado (una por talla)
@@ -4798,6 +4875,18 @@
                                 lastItem.colorId, t.tallaId, []
                             );
                         });
+
+                        // 2b) Si cambió la variante (productoId distinto al original), migrar
+                        // los bordados del groupKey viejo al nuevo para no perderlos.
+                        if (prodIdParaBorrar && prodIdParaBorrar !== lastItem.productoId &&
+                            window.cotGroupBordadosState) {
+                            var oldKey = prodIdParaBorrar + '|' + colorId;
+                            var newKey = lastItem.productoId + '|' + colorId;
+                            if (window.cotGroupBordadosState[oldKey]) {
+                                window.cotGroupBordadosState[newKey] = window.cotGroupBordadosState[oldKey];
+                                delete window.cotGroupBordadosState[oldKey];
+                            }
+                        }
 
                         // 3) Quitar el item del carrito (era una edición, no debe quedar como item nuevo)
                         window.cotCart = (window.cotCart || []).filter(function (it) {
