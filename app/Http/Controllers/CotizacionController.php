@@ -28,7 +28,13 @@ class CotizacionController extends Controller
     }
     public function index()
     {
-        $productos = Producto::with('tipoProducto')->where('estado', true)->get();
+        $productos = Producto::with([
+            'tipoProducto',
+            'tela:id,nombre,codigo,costo_unitario,unidad_medida',
+            'atributoValores:id,atributo_id,nombre,codigo',
+            'atributoValores.atributo:id,nombre,codigo',
+        ])->where('estado', true)->get();
+
         $logos = Logo::orderBy('name')->get(['id', 'name', 'original_filename']);
         $insumos = Insumo::all();
         $bancos = Banco::all();

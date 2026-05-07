@@ -3629,38 +3629,70 @@
                 return list;
             }
 
+            // Agrupa los productos filtrados por tipo. Un producto sin tipo
+            // queda en una clave especial "sin-tipo".
+            function groupByTipo(items) {
+                var map = {};
+                items.forEach(function (p) {
+                    var tipo = p.tipo_producto;
+                    var key = tipo ? ('t-' + tipo.id) : 'sin-tipo';
+                    if (!map[key]) {
+                        map[key] = {
+                            tipo: tipo,
+                            tipoNombre: tipo ? tipo.nombre : 'Sin tipo',
+                            productos: [],
+                            precioMin: Infinity,
+                            precioMax: 0,
+                            firstImg: null
+                        };
+                    }
+                    map[key].productos.push(p);
+                    var price = parseFloat(p.precio_base || 0);
+                    if (price < map[key].precioMin) map[key].precioMin = price;
+                    if (price > map[key].precioMax) map[key].precioMax = price;
+                    if (!map[key].firstImg && p.imagen) map[key].firstImg = p.imagen;
+                });
+                return Object.values(map).sort(function (a, b) {
+                    return String(a.tipoNombre || '').localeCompare(String(b.tipoNombre || ''));
+                });
+            }
+
             function renderGrid() {
                 var $grid = $('#cat-grid');
                 var $empty = $('#cat-grid-empty');
                 var items = getFilteredProducts();
-                $('#cat-results-count').text(items.length);
+                var grupos = groupByTipo(items);
 
-                if (!items.length) {
+                $('#cat-results-count').text(grupos.length + ' familia' + (grupos.length === 1 ? '' : 's'));
+
+                if (!grupos.length) {
                     $grid.html('');
                     $empty.removeClass('d-none');
                     return;
                 }
                 $empty.addClass('d-none');
 
-                $grid.html(items.map(function (p) {
-                    var tipoNombre = p.tipo_producto ? p.tipo_producto.nombre : 'Sin tipo';
-                    var precio = parseFloat(p.precio_base || 0);
-                    var hasImg = !!p.imagen;
-                    var inCart = catCartHas(p.id);
+                $grid.html(grupos.map(function (g) {
+                    var hasImg = !!g.firstImg;
                     var imgBlock = hasImg
-                        ? '<img src="' + escapeForHtml(p.imagen) + '" alt="" class="cat-card-img">'
+                        ? '<img src="' + escapeForHtml(g.firstImg) + '" alt="" class="cat-card-img">'
                         : '<div class="cat-card-img-placeholder"><i class="ri-t-shirt-2-line"></i></div>';
+                    var rangoPrecio = g.precioMin === g.precioMax
+                        ? formatMoney(g.precioMin)
+                        : formatMoney(g.precioMin) + ' – ' + formatMoney(g.precioMax);
+                    var nVariantes = g.productos.length;
+                    var tipoId = g.tipo ? g.tipo.id : '';
                     return (
-                        '<button type="button" class="cat-card' + (inCart ? ' is-incart' : '') + '" data-producto-id="' + p.id + '">' +
+                        '<button type="button" class="cat-card cat-card-tipo" data-tipo-id="' + tipoId + '">' +
                             '<div class="cat-card-media">' + imgBlock +
-                                '<span class="cat-card-tipo-badge">' + escapeForHtml(tipoNombre) + '</span>' +
+                                '<span class="cat-card-tipo-badge">' + escapeForHtml(g.tipoNombre) + '</span>' +
                             '</div>' +
                             '<div class="cat-card-body">' +
-                                '<p class="cat-card-codigo">' + escapeForHtml(p.codigo || '—') + '</p>' +
-                                '<h6 class="cat-card-modelo">' + escapeForHtml(p.modelo || 'Sin modelo') + '</h6>' +
+                                '<p class="cat-card-codigo"><i class="ri-stack-line me-1"></i>' + nVariantes + ' variante' + (nVariantes === 1 ? '' : 's') + '</p>' +
+                                '<h6 class="cat-card-modelo">' + escapeForHtml(g.tipoNombre) + '</h6>' +
                                 '<div class="cat-card-foot">' +
-                                    '<span class="cat-card-price">' + formatMoney(precio) + '</span>' +
-                                    '<span class="cat-card-cta">' + (inCart ? '<i class="ri-check-line"></i> Configurado' : 'Configurar <i class="ri-arrow-right-line"></i>') + '</span>' +
+                                    '<span class="cat-card-price">' + rangoPrecio + '</span>' +
+                                    '<span class="cat-card-cta">Elegir variante <i class="ri-arrow-right-line"></i></span>' +
                                 '</div>' +
                             '</div>' +
                         '</button>'
@@ -3772,20 +3804,167 @@
             });
             $(document).on('click', '#cat-clear-filters', clearFilters);
 
-            // Click en card → en Fase 2 abrimos un placeholder; Fase 3 conecta el configurador real
-            $(document).on('click', '#cat-grid .cat-card', function () {
-                var pid = parseInt(this.dataset.productoId, 10);
+            // ============== Selector de Variante (Fase 4) ==============
+            // Click en card de tipo → abre modal con chips de tela y atributos.
+            // Al elegir combinación, se resuelve el producto via endpoint y se
+            // abre el configurador clásico.
+            var vsState = {
+                tipoId: null,
+                tipo: null,            // objeto tipo cargado vía /tipo-productos/{id}
+                productos: [],         // productos del tipo (subconjunto del catálogo)
+                telaId: null,          // tela seleccionada (insumo_id)
+                valoresPorAtributo: {} // {atributo_id: valor_id}
+            };
+
+            function getProductosDelTipo(tipoId) {
+                return getProductsList().filter(function (p) {
+                    return p.tipo_producto && p.tipo_producto.id == tipoId;
+                });
+            }
+
+            // Telas únicas usadas por productos del tipo
+            function telasDelTipo(productos) {
+                var byId = {};
+                productos.forEach(function (p) {
+                    if (p.tela && !byId[p.tela.id]) byId[p.tela.id] = p.tela;
+                });
+                return Object.values(byId).sort(function (a, b) {
+                    return String(a.nombre || '').localeCompare(String(b.nombre || ''));
+                });
+            }
+
+            function vsRenderTelas() {
+                var telas = telasDelTipo(vsState.productos);
+                var $cont = $('#vs-tela-options');
+                if (!telas.length) {
+                    $('#vs-tela-section').hide();
+                    return;
+                }
+                $('#vs-tela-section').show();
+                $cont.html(telas.map(function (t) {
+                    var checked = vsState.telaId == t.id;
+                    return '' +
+                        '<input type="radio" class="btn-check vs-tela-radio" name="vs-tela" ' +
+                            'id="vs-tela-' + t.id + '" value="' + t.id + '"' + (checked ? ' checked' : '') + '>' +
+                        '<label class="btn btn-outline-primary btn-sm" for="vs-tela-' + t.id + '">' +
+                            escapeForHtml(t.nombre) +
+                            (t.codigo ? ' <small class="text-muted">' + escapeForHtml(t.codigo) + '</small>' : '') +
+                        '</label>';
+                }).join(''));
+            }
+
+            function vsRenderAtributos() {
+                var $cont = $('#vs-atributos-section');
+                if (!vsState.tipo || !vsState.tipo.atributos || !vsState.tipo.atributos.length) {
+                    $cont.html('<p class="text-muted small mb-0">Este tipo no tiene atributos asociados.</p>');
+                    return;
+                }
+                var html = vsState.tipo.atributos.map(function (atr) {
+                    if (!atr.valores || !atr.valores.length) {
+                        return '<div class="mb-3"><label class="form-label small fw-semibold mb-2">' +
+                            escapeForHtml(atr.nombre) + '</label>' +
+                            '<p class="text-muted small fst-italic mb-0">Sin valores definidos.</p></div>';
+                    }
+                    var seleccionado = vsState.valoresPorAtributo[atr.id];
+                    var chips = atr.valores.map(function (v) {
+                        var checked = seleccionado == v.id;
+                        return '' +
+                            '<input type="radio" class="btn-check vs-atributo-radio" name="vs-atr-' + atr.id + '" ' +
+                                'id="vs-val-' + v.id + '" value="' + v.id + '" data-atr-id="' + atr.id + '"' +
+                                (checked ? ' checked' : '') + '>' +
+                            '<label class="btn btn-outline-primary btn-sm" for="vs-val-' + v.id + '">' +
+                                escapeForHtml(v.nombre) +
+                            '</label>';
+                    }).join('');
+                    return '<div class="mb-3">' +
+                        '<label class="form-label small fw-semibold mb-2">' +
+                            escapeForHtml(atr.nombre) +
+                        '</label>' +
+                        '<div class="d-flex flex-wrap gap-2">' + chips + '</div>' +
+                    '</div>';
+                }).join('');
+                $cont.html(html);
+            }
+
+            function vsResolverVariante() {
+                if (!vsState.tipoId) return;
+                var valoresIds = Object.values(vsState.valoresPorAtributo).filter(function (x) { return !!x; });
+                var nAtributos = vsState.tipo && vsState.tipo.atributos ? vsState.tipo.atributos.length : 0;
+                var requiereTela = vsState.tipo && vsState.tipo.requiere_tela;
+
+                // No resolver hasta que TODO esté seleccionado
+                var faltaTela = requiereTela && !vsState.telaId;
+                var faltanAtributos = valoresIds.length < nAtributos;
+                if (faltaTela || faltanAtributos) {
+                    $('#vs-result-found, #vs-result-missing').hide();
+                    $('#vs-confirm').prop('disabled', true).removeData('producto-id');
+                    return;
+                }
+
+                $.getJSON("{{ route('productos.resolver-variante') }}", {
+                    tipo_producto_id: vsState.tipoId,
+                    insumo_tela_id: vsState.telaId || null,
+                    'atributo_valor_ids[]': valoresIds
+                }).done(function (resp) {
+                    if (resp.found) {
+                        $('#vs-result-codigo').text(resp.producto.codigo);
+                        $('#vs-result-precio').text(formatMoney(resp.producto.precio_base));
+                        $('#vs-result-found').show();
+                        $('#vs-result-missing').hide();
+                        $('#vs-confirm').prop('disabled', false).data('producto-id', resp.producto.id);
+                    } else {
+                        $('#vs-result-found').hide();
+                        $('#vs-result-missing').show();
+                        $('#vs-confirm').prop('disabled', true).removeData('producto-id');
+                    }
+                });
+            }
+
+            function vsAbrir(tipoId) {
+                vsState.tipoId = tipoId;
+                vsState.productos = getProductosDelTipo(tipoId);
+                vsState.telaId = null;
+                vsState.valoresPorAtributo = {};
+                vsState.tipo = null;
+
+                $('#vs-tipo-nombre').text(vsState.productos[0]?.tipo_producto?.nombre || 'Variante');
+                $('#vs-result-found, #vs-result-missing').hide();
+                $('#vs-confirm').prop('disabled', true).removeData('producto-id');
+
+                // Cargar info del tipo (atributos con sus valores)
+                $.getJSON("{{ url('tipo-productos') }}/" + tipoId).done(function (tipo) {
+                    vsState.tipo = tipo;
+                    vsRenderTelas();
+                    vsRenderAtributos();
+                });
+
+                new bootstrap.Modal(document.getElementById('varianteSelectorModal')).show();
+            }
+
+            // Listeners del selector
+            $(document).on('change', '.vs-tela-radio', function () {
+                vsState.telaId = parseInt(this.value);
+                vsResolverVariante();
+            });
+            $(document).on('change', '.vs-atributo-radio', function () {
+                var atrId = $(this).data('atr-id');
+                vsState.valoresPorAtributo[atrId] = parseInt(this.value);
+                vsResolverVariante();
+            });
+            $(document).on('click', '#vs-confirm', function () {
+                var pid = $(this).data('producto-id');
+                if (!pid) return;
+                bootstrap.Modal.getInstance(document.getElementById('varianteSelectorModal'))?.hide();
                 if (typeof window.cotConfiguradorAbrir === 'function') {
                     window.cotConfiguradorAbrir(pid);
-                } else {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Configurador en construcción',
-                        text: 'En la próxima fase podrás configurar color, tallas y bordados desde aquí.',
-                        timer: 2200,
-                        showConfirmButton: false
-                    });
                 }
+            });
+
+            // Click en card de tipo → abrir selector
+            $(document).on('click', '#cat-grid .cat-card-tipo', function () {
+                var tipoId = parseInt(this.dataset.tipoId, 10);
+                if (!tipoId) return;
+                vsAbrir(tipoId);
             });
 
             // Quitar item del carrito (delegado)

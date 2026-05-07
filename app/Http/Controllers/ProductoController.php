@@ -209,6 +209,58 @@ class ProductoController extends Controller
     }
 
     /**
+     * Resuelve la variante exacta (producto) que matchea una combinación
+     * tipo + tela + valores. Usado por el wizard de cotizaciones para que
+     * el usuario seleccione la variante con chips antes de configurarla.
+     */
+    public function resolverVariante(Request $request)
+    {
+        $request->validate([
+            'tipo_producto_id'      => 'required|exists:tipo_producto,id',
+            'insumo_tela_id'        => 'nullable|exists:insumo,id',
+            'atributo_valor_ids'    => 'nullable|array',
+            'atributo_valor_ids.*'  => 'integer|exists:atributo_valor,id',
+        ]);
+
+        $tipoId    = (int) $request->tipo_producto_id;
+        $telaId    = $request->insumo_tela_id ? (int) $request->insumo_tela_id : null;
+        $valoresIds = array_map('intval', $request->input('atributo_valor_ids', []));
+        sort($valoresIds);
+
+        $candidatos = Producto::with(['tela', 'atributoValores', 'tipoProducto'])
+            ->where('tipo_producto_id', $tipoId)
+            ->where('estado', true)
+            ->when($telaId, fn($q) => $q->where('insumo_tela_id', $telaId))
+            ->when(!$telaId, fn($q) => $q->whereNull('insumo_tela_id'))
+            ->get();
+
+        $match = $candidatos->first(function ($p) use ($valoresIds) {
+            $idsActuales = $p->atributoValores->pluck('id')->sort()->values()->all();
+            return $idsActuales == $valoresIds;
+        });
+
+        if (!$match) {
+            return response()->json([
+                'found' => false,
+                'message' => 'No existe una variante con esa combinación. Crea primero el producto en /productos.',
+            ]);
+        }
+
+        return response()->json([
+            'found' => true,
+            'producto' => [
+                'id'           => $match->id,
+                'codigo'       => $match->codigo,
+                'modelo'       => $match->modelo,
+                'precio_base'  => (float) $match->precio_base,
+                'imagen'       => $match->imagen ? asset($match->imagen) : null,
+                'tipo_nombre'  => $match->tipoProducto?->nombre,
+                'tela_nombre'  => $match->tela?->nombre,
+            ],
+        ]);
+    }
+
+    /**
      * Vista previa del SKU sin persistir nada.
      */
     public function previewCodigo(Request $request)
