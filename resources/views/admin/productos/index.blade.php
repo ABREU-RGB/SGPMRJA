@@ -7,6 +7,14 @@
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" rel="stylesheet"
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+    {{-- Grid responsivo para filtros: 1 col mobile → 4 cols desktop --}}
+    <style>
+        @media (min-width: 768px) {
+            .navy-filter-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -93,7 +101,11 @@
                                 data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
                                 aria-expanded="false" aria-controls="filters-collapse-body">
                                 <i class="ri-filter-3-line"></i>
-                                <span>Filtros</span>
+                                <span class="position-relative">
+                                    Filtros
+                                    <span class="d-none position-absolute" id="filter-dot-indicator"
+                                        style="top: -3px; right: -10px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #1b2e4b; display: inline-block;"></span>
+                                </span>
                                 <span class="navy-filter-badge d-none" id="active-filter-count"></span>
                                 <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
                             </button>
@@ -101,9 +113,9 @@
                         {{-- Body: colapsable, oculto por defecto --}}
                         <div class="collapse" id="filters-collapse-body">
                             <div class="navy-filter-body">
-                                <div class="row g-2 align-items-end">
-                                    {{-- Filtro: Tipo de Producto (dinámico desde $tiposProducto) --}}
-                                    <div class="col-lg-4 col-md-6">
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;" class="navy-filter-grid">
+                                    {{-- Filtro 1: Tipo de Producto (dinámico desde $tiposProducto) --}}
+                                    <div>
                                         <label class="navy-filter-label" for="filter-tipo-producto">
                                             <i class="ri-price-tag-3-line"></i> Tipo de Producto
                                         </label>
@@ -114,11 +126,50 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    {{-- Filtro 2: Tela (dinámico desde $telasDisponibles) --}}
+                                    <div>
+                                        <label class="navy-filter-label" for="filter-tela">
+                                            <i class="ri-shirt-line"></i> Tela
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tela">
+                                            <option value="">Todas</option>
+                                            @foreach($telasDisponibles as $tela)
+                                                <option value="{{ $tela->id }}">{{ $tela->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 3: Estatus --}}
+                                    <div>
+                                        <label class="navy-filter-label" for="filter-estatus">
+                                            <i class="ri-shield-check-line"></i> Estatus
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estatus">
+                                            <option value="">Todos</option>
+                                            <option value="1" selected>Activo</option>
+                                            <option value="0">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 4: Ordenar por --}}
+                                    <div>
+                                        <label class="navy-filter-label" for="filter-orden">
+                                            <i class="ri-sort-asc"></i> Ordenar por
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-orden">
+                                            <option value="recientes">Más recientes primero</option>
+                                            <option value="codigo_asc">Código (A-Z)</option>
+                                            <option value="codigo_desc">Código (Z-A)</option>
+                                            <option value="precio_mayor">Mayor Precio Base</option>
+                                            <option value="precio_menor">Menor Precio Base</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                {{-- Botón limpiar --}}
+                                {{-- Botón limpiar: estilo ghost con icono de escoba --}}
                                 <div class="d-flex justify-content-end mt-2">
-                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
-                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
+                                    <button type="button" class="btn btn-sm" id="btn-clear-filters"
+                                        style="background: transparent; color: #8a9bb5; border: none; font-size: 0.8rem; transition: all 0.2s ease;"
+                                        onmouseover="this.style.color='#ef4444'; this.style.textDecoration='underline';"
+                                        onmouseout="this.style.color='#8a9bb5'; this.style.textDecoration='none';">
+                                        <i class='bx bx-broom' style="margin-right: 4px; font-size: 1rem; vertical-align: middle;"></i>Limpiar filtros
                                     </button>
                                 </div>
                             </div>
@@ -594,9 +645,13 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('productos.data') }}" + (esHistorial ? '?historial=true' : ''),
+                    url: "{{ route('productos.data') }}",
                     data: function (d) {
-                        d.filter_tipo_producto_id = $('#filter-tipo-producto').val();
+                        // ── Filtros avanzados: enviar valores al server ──
+                        d.filter_tipo_producto_id    = $('#filter-tipo-producto').val();
+                        d.filter_insumo_tela_id      = $('#filter-tela').val();
+                        d.filter_estatus             = $('#filter-estatus').val();
+                        d.filter_orden               = $('#filter-orden').val();
                     }
                 },
                 columns: [
@@ -669,19 +724,20 @@
                         }
                     }
                 ],
-                order: [[1, 'desc']], // Cambiar el índice de ordenamiento (ahora la columna "Nombre" es la índice 1)
+                order: [],
+                ordering: false,
                 dom: 'rtip',
                 buttons: [
                     {
                         extend: 'copy',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6] // Excluir solo la columna de acciones
+                            columns: [0, 1, 2, 3, 4, 5, 6]
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [2, 3, 4, 5] // Excluir imagen (0), código (1) y acciones; incluir tipo, tela, atributos, precio
+                            columns: [2, 3, 4, 5]
                         }
                     }
                 ],
@@ -694,12 +750,22 @@
             // Filtros: server-side (ajax.reload con filter_tipo_producto_id)
             // ══════════════════════════════════════════════════════
 
-            // ── Badge: contador de filtros activos ──
+            // ── Badge: actualizar contador de filtros activos + punto rojo ──
             function updateFilterBadge() {
                 var count = 0;
-                if ($('#filter-tipo-producto').val() !== '') count++;
+                if ($('#filter-tipo-producto').val() !== '')                         count++;
+                if ($('#filter-tela').val() !== '')                                  count++;
+                if ($('#filter-estatus').val() !== '1')                              count++;
+                if ($('#filter-orden').val() !== 'recientes')                        count++;
                 var $badge = $('#active-filter-count');
-                count > 0 ? $badge.text(count).removeClass('d-none') : $badge.addClass('d-none');
+                var $dot   = $('#filter-dot-indicator');
+                if (count > 0) {
+                    $badge.text(count).removeClass('d-none');
+                    $dot.removeClass('d-none');
+                } else {
+                    $badge.addClass('d-none');
+                    $dot.addClass('d-none');
+                }
             }
 
             // ── Sincronizar clase is-collapsed con el collapse ──
@@ -719,18 +785,30 @@
                 }, 300);
             });
 
-            // ── Filtro Tipo Producto (server-side) ──
-            $('#filter-tipo-producto').on('change', function () {
+            // ── Filtros de select: recargar al cambiar ──
+            $('.navy-filter-select').on('change', function () {
                 table.ajax.reload();
                 updateFilterBadge();
             });
 
-            // ── Botón limpiar: resetea búsqueda + filtros ──
+            // ── Si se llegó por toggle historial (?historial=true) ──
+            @if($historial)
+                $('#filter-estatus').val('0');
+                table.ajax.reload();
+                updateFilterBadge();
+            @endif
+
+            // ── Botón limpiar: resetea búsqueda + filtros + orden ──
             $('#btn-clear-filters').on('click', function () {
                 $('#filter-tipo-producto').val('');
+                $('#filter-tela').val('');
+                $('#filter-estatus').val('1');
+                $('#filter-orden').val('recientes');
                 $('#custom-search-input').val('');
-                table.search('').ajax.reload();
                 updateFilterBadge();
+                table.search('').ajax.reload(function () {
+                    updateFilterBadge();
+                });
             });
 
             // Sincronizar switch de estado con hidden input

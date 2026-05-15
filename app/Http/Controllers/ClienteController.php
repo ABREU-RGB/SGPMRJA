@@ -74,6 +74,33 @@ class ClienteController extends Controller
             });
         }
 
+        // ══════════════════════════════════════════════════════════
+        // ORDENAMIENTO — Selector "Ordenar por" del frontend
+        // Valores posibles: recientes, antiguos, nombre_asc, nombre_desc
+        // Fallback: más recientes primero (created_at DESC)
+        // ══════════════════════════════════════════════════════════
+        $orden = $request->input('filter_orden', 'recientes');
+
+        switch ($orden) {
+            case 'antiguos':
+                $query->orderBy('cliente.created_at', 'asc');
+                break;
+            case 'nombre_asc':
+                $query->join('persona', 'cliente.persona_id', '=', 'persona.id')
+                      ->orderBy('persona.nombre', 'asc')
+                      ->select('cliente.*');
+                break;
+            case 'nombre_desc':
+                $query->join('persona', 'cliente.persona_id', '=', 'persona.id')
+                      ->orderBy('persona.nombre', 'desc')
+                      ->select('cliente.*');
+                break;
+            case 'recientes':
+            default:
+                $query->orderBy('cliente.created_at', 'desc');
+                break;
+        }
+
         return DataTables::of($query)
             ->addColumn('nombre', fn($c) => $c->nombre ?? 'N/A')
             ->addColumn('apellido', fn($c) => $c->apellido ?? '')

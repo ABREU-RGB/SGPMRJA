@@ -15,10 +15,61 @@ class InsumoController extends Controller
         return view('admin.insumos.index', compact('proveedores'));
     }
 
-    public function getInsumos()
+    public function getInsumos(Request $request)
     {
-        $insumos = Insumo::with('proveedor.persona');
-        return DataTables::of($insumos)
+        // ── Base query con relaciones ──
+        $query = Insumo::with('proveedor.persona');
+
+        // ══════════════════════════════════════════════════════════
+        // FILTROS AVANZADOS — Server-Side (Patrón Maestro S-07)
+        // ══════════════════════════════════════════════════════════
+
+        // Filtro: Tipo de Insumo (Tela, Hilo, Boton, Cierre, Etiqueta)
+        if ($request->filled('filter_tipo')) {
+            $query->where('tipo', $request->input('filter_tipo'));
+        }
+
+        // Filtro: Proveedor
+        if ($request->filled('filter_proveedor')) {
+            $query->where('proveedor_id', $request->input('filter_proveedor'));
+        }
+
+        // Filtro: Disponibilidad de Stock
+        if ($request->filled('filter_stock')) {
+            $stock = $request->input('filter_stock');
+            if ($stock === 'con_stock') {
+                $query->where('insumo.stock_actual', '>', 0);
+            } elseif ($stock === 'agotado') {
+                $query->where('insumo.stock_actual', '<=', 0);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // ORDENAMIENTO — Selector "Ordenar por" del frontend
+        // Fallback: más recientes primero (created_at DESC)
+        // ══════════════════════════════════════════════════════════
+        $orden = $request->input('filter_orden', 'recientes');
+
+        switch ($orden) {
+            case 'mayor_costo':
+                $query->orderBy('insumo.costo_unitario', 'desc');
+                break;
+            case 'menor_costo':
+                $query->orderBy('insumo.costo_unitario', 'asc');
+                break;
+            case 'mayor_stock':
+                $query->orderBy('insumo.stock_actual', 'desc');
+                break;
+            case 'menor_stock':
+                $query->orderBy('insumo.stock_actual', 'asc');
+                break;
+            case 'recientes':
+            default:
+                $query->orderBy('insumo.created_at', 'desc');
+                break;
+        }
+
+        return DataTables::of($query)
             ->addColumn('proveedor_nombre', function ($insumo) {
                 return $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'Sin proveedor';
             })

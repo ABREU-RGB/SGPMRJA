@@ -60,6 +60,33 @@ class ProveedorController extends Controller
             });
         }
 
+        // ══════════════════════════════════════════════════════════
+        // ORDENAMIENTO — Selector "Ordenar por" del frontend
+        // Valores posibles: recientes, antiguos, nombre_asc, nombre_desc
+        // Fallback: más recientes primero (created_at DESC)
+        // ══════════════════════════════════════════════════════════
+        $orden = $request->input('filter_orden', 'recientes');
+
+        switch ($orden) {
+            case 'antiguos':
+                $query->orderBy('proveedor.created_at', 'asc');
+                break;
+            case 'nombre_asc':
+                $query->join('persona', 'proveedor.persona_id', '=', 'persona.id')
+                      ->orderBy('persona.nombre', 'asc')
+                      ->select('proveedor.*');
+                break;
+            case 'nombre_desc':
+                $query->join('persona', 'proveedor.persona_id', '=', 'persona.id')
+                      ->orderBy('persona.nombre', 'desc')
+                      ->select('proveedor.*');
+                break;
+            case 'recientes':
+            default:
+                $query->orderBy('proveedor.created_at', 'desc');
+                break;
+        }
+
         return DataTables::of($query)
             ->addColumn('nombre_display', fn($p) => $p->nombre_completo ?? 'N/A')
             ->addColumn('documento_display', fn($p) => $p->documento ?? 'N/A')

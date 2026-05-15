@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @push('styles')
     <!-- Sweet Alert css-->
@@ -7,7 +7,14 @@
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet"
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    {{-- Estilos en public/assets/css/custom.css — sección "MÓDULO MAESTROS — Insumos" --}}
+    {{-- Grid responsivo para filtros: 1 col mobile → 4 cols desktop --}}
+    <style>
+        @media (min-width: 768px) {
+            .navy-filter-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -33,12 +40,6 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Insumos</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar insumo...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                     data-bs-target="#showModal">
@@ -52,6 +53,106 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- ============================================================
+                         FILTROS — Patrón Maestro S-07 (Colapsable)
+                         CSS genérico en custom.css: .navy-filter-*
+                         ============================================================ --}}
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
+                        <div class="navy-filter-header is-collapsed">
+                            {{-- Búsqueda global (siempre visible) --}}
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" id="custom-search-input"
+                                    class="navy-search-input"
+                                    placeholder="Buscar insumo..."
+                                    autocomplete="off">
+                            </div>
+                            {{-- Divisor vertical --}}
+                            <div class="navy-header-divider"></div>
+                            {{-- Trigger del collapse de filtros --}}
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
+                                <i class="ri-filter-3-line"></i>
+                                <span class="position-relative">
+                                    Filtros
+                                    <span class="d-none position-absolute" id="filter-dot-indicator"
+                                        style="top: -3px; right: -10px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #1b2e4b; display: inline-block;"></span>
+                                </span>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
+                        {{-- Body: colapsable, oculto por defecto --}}
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;" class="navy-filter-grid">
+                                    {{-- Filtro 1: Tipo de Insumo --}}
+                                    <div>
+                                        <label class="navy-filter-label" for="filter-tipo">
+                                            <i class="ri-price-tag-3-line"></i> Tipo de Insumo
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tipo">
+                                            <option value="">Todos</option>
+                                            <option value="Tela">Tela</option>
+                                            <option value="Hilo">Hilo</option>
+                                            <option value="Boton">Botón</option>
+                                            <option value="Cierre">Cierre</option>
+                                            <option value="Etiqueta">Etiqueta</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 2: Proveedor --}}
+                                    <div>
+                                        <label class="navy-filter-label" for="filter-proveedor">
+                                            <i class="ri-building-2-line"></i> Proveedor
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-proveedor">
+                                            <option value="">Todos</option>
+                                            @foreach($proveedores as $prov)
+                                                <option value="{{ $prov->id }}">{{ $prov->nombre_completo }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 3: Disponibilidad --}}
+                                    <div>
+                                        <label class="navy-filter-label" for="filter-stock">
+                                            <i class="ri-store-3-line"></i> Disponibilidad
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-stock">
+                                            <option value="">Todos</option>
+                                            <option value="con_stock">Con Stock</option>
+                                            <option value="agotado">Agotados</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 4: Ordenar por --}}
+                                    <div>
+                                        <label class="navy-filter-label" for="filter-orden">
+                                            <i class="ri-sort-asc"></i> Ordenar por
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-orden">
+                                            <option value="recientes">Más recientes primero</option>
+                                            <option value="mayor_costo">Mayor Costo</option>
+                                            <option value="menor_costo">Menor Costo</option>
+                                            <option value="mayor_stock">Mayor Stock</option>
+                                            <option value="menor_stock">Menor Stock</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                {{-- Botón limpiar: estilo ghost con icono de escoba --}}
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-sm" id="btn-clear-filters"
+                                        style="background: transparent; color: #8a9bb5; border: none; font-size: 0.8rem; transition: all 0.2s ease;"
+                                        onmouseover="this.style.color='#ef4444'; this.style.textDecoration='underline';"
+                                        onmouseout="this.style.color='#8a9bb5'; this.style.textDecoration='none';">
+                                        <i class='bx bx-broom' style="margin-right: 4px; font-size: 1rem; vertical-align: middle;"></i>Limpiar filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- FIN FILTROS --}}
+
                     <div class="table-responsive">
                         <table id="insumos-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                             <thead>
@@ -363,7 +464,16 @@
                 serverSide: true,
                 autoWidth: false,
                 responsive: false,
-                ajax: "{{ route('insumos.data') }}",
+                ajax: {
+                    url: "{{ route('insumos.data') }}",
+                    data: function (d) {
+                        // ── Filtros avanzados: enviar valores al server ──
+                        d.filter_tipo       = $('#filter-tipo').val();
+                        d.filter_proveedor  = $('#filter-proveedor').val();
+                        d.filter_stock      = $('#filter-stock').val();
+                        d.filter_orden      = $('#filter-orden').val();
+                    }
+                },
                 dom: 'rtip',
                 buttons: [
                     {
@@ -457,13 +567,68 @@
                         }
                     }
                 ],
-                order: [[0, 'desc']],
+                order: [],
+                ordering: false,
                 language: lenguajeData
             });
 
-            // Buscador personalizado
+            // ══════════════════════════════════════════════════
+            // BÚSQUEDA + FILTROS AVANZADOS — Patrón Maestro S-07
+            // Header unificado: búsqueda global + panel colapsable
+            // ══════════════════════════════════════════════════
+
+            // ── Badge: actualizar contador de filtros activos + punto rojo ──
+            function updateFilterBadge() {
+                var count = 0;
+                if ($('#filter-tipo').val() !== '')                                  count++;
+                if ($('#filter-proveedor').val() !== '')                             count++;
+                if ($('#filter-stock').val() !== '')                                 count++;
+                if ($('#filter-orden').val() !== 'recientes')                        count++;
+                var $badge = $('#active-filter-count');
+                var $dot   = $('#filter-dot-indicator');
+                if (count > 0) {
+                    $badge.text(count).removeClass('d-none');
+                    $dot.removeClass('d-none');
+                } else {
+                    $badge.addClass('d-none');
+                    $dot.addClass('d-none');
+                }
+            }
+
+            // ── Sincronizar clase is-collapsed con el estado del collapse ──
+            $('#filters-collapse-body').on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            }).on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
+            // ── Búsqueda global (debounce 300ms) ──
+            var searchTimeout = null;
             $('#custom-search-input').on('keyup', function () {
-                table.search(this.value).draw();
+                clearTimeout(searchTimeout);
+                var val = this.value;
+                searchTimeout = setTimeout(function () {
+                    table.search(val).draw();
+                }, 300);
+            });
+
+            // ── Filtros de select: recargar al cambiar ──
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+                updateFilterBadge();
+            });
+
+            // ── Botón limpiar: resetea búsqueda + filtros + orden ──
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-tipo').val('');
+                $('#filter-proveedor').val('');
+                $('#filter-stock').val('');
+                $('#filter-orden').val('recientes');
+                $('#custom-search-input').val('');
+                updateFilterBadge();
+                table.search('').ajax.reload(function () {
+                    updateFilterBadge();
+                });
             });
 
             function formatDate(dateStr) {

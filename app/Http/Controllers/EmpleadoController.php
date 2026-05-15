@@ -23,7 +23,8 @@ class EmpleadoController extends Controller
     public function index()
     {
         $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id');
-        return view('admin.empleados.index', compact('departamentos'));
+        $cargos = Cargo::orderBy('nombre')->pluck('nombre', 'id');
+        return view('admin.empleados.index', compact('departamentos', 'cargos'));
     }
 
     public function create()
@@ -32,11 +33,54 @@ class EmpleadoController extends Controller
         return view('admin.empleados.create', compact('departamentos'));
     }
 
-    public function getEmpleados()
+    public function getEmpleados(Request $request)
     {
-        $empleados = Empleado::with(['persona.telefonos', 'persona.direcciones', 'cargo', 'departamento'])->get();
+        // ── Base query con relaciones ──
+        $query = Empleado::with(['persona.telefonos', 'persona.direcciones', 'cargo', 'departamento']);
 
-        return DataTables::of($empleados)
+        // ══════════════════════════════════════════════════════════
+        // FILTROS AVANZADOS — Server-Side (Patrón Maestro S-07)
+        // ══════════════════════════════════════════════════════════
+
+        // Filtro: Departamento
+        if ($request->filled('filter_departamento')) {
+            $query->where('departamento_id', $request->input('filter_departamento'));
+        }
+
+        // Filtro: Cargo
+        if ($request->filled('filter_cargo')) {
+            $query->where('cargo_id', $request->input('filter_cargo'));
+        }
+
+        // Filtro: Estatus (1 = activo, 0 = inactivo)
+        if ($request->filled('filter_estatus')) {
+            $query->where('empleado.estado', $request->input('filter_estatus'));
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // ORDENAMIENTO — Selector "Ordenar por" del frontend
+        // Fallback: más recientes primero (created_at DESC)
+        // ══════════════════════════════════════════════════════════
+        $orden = $request->input('filter_orden', 'recientes');
+
+        switch ($orden) {
+            case 'nombre_asc':
+                $query->join('persona', 'empleado.persona_id', '=', 'persona.id')
+                      ->orderBy('persona.nombre', 'asc')
+                      ->select('empleado.*');
+                break;
+            case 'nombre_desc':
+                $query->join('persona', 'empleado.persona_id', '=', 'persona.id')
+                      ->orderBy('persona.nombre', 'desc')
+                      ->select('empleado.*');
+                break;
+            case 'recientes':
+            default:
+                $query->orderBy('empleado.created_at', 'desc');
+                break;
+        }
+
+        return DataTables::of($query)
             ->addColumn('nombre_completo', function ($emp) {
                 return $emp->persona ? $emp->persona->nombre_completo : 'N/A';
             })

@@ -27,16 +27,55 @@ class ProductoController extends Controller
 
     public function getProductos(Request $request)
     {
-        $query = $request->has('historial')
-            ? Producto::onlyTrashed()->with(['tipoProducto', 'tela'])
-            : Producto::with(['tipoProducto', 'tela']);
+        // ── Base query con relaciones ──
+        $query = Producto::with(['tipoProducto', 'tela']);
 
+        // ══════════════════════════════════════════════════════════
+        // FILTROS AVANZADOS — Server-Side (Patrón Maestro S-07)
+        // ══════════════════════════════════════════════════════════
+
+        // Filtro: Tipo de Producto
         if ($request->filled('filter_tipo_producto_id')) {
             $query->where('tipo_producto_id', $request->filter_tipo_producto_id);
         }
 
+        // Filtro: Tela
         if ($request->filled('filter_insumo_tela_id')) {
             $query->where('insumo_tela_id', $request->filter_insumo_tela_id);
+        }
+
+        // Filtro: Estatus (1 = activo, 0 = inactivo/trashed)
+        if ($request->filled('filter_estatus')) {
+            $estatus = $request->input('filter_estatus');
+            if ($estatus === '0') {
+                $query->onlyTrashed();
+            }
+            // Si estatus es '1', el query base ya excluye trashed
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // ORDENAMIENTO — Selector "Ordenar por" del frontend
+        // Fallback: más recientes primero (created_at DESC)
+        // ══════════════════════════════════════════════════════════
+        $orden = $request->input('filter_orden', 'recientes');
+
+        switch ($orden) {
+            case 'codigo_asc':
+                $query->orderBy('producto.codigo', 'asc');
+                break;
+            case 'codigo_desc':
+                $query->orderBy('producto.codigo', 'desc');
+                break;
+            case 'precio_mayor':
+                $query->orderBy('producto.precio_base', 'desc');
+                break;
+            case 'precio_menor':
+                $query->orderBy('producto.precio_base', 'asc');
+                break;
+            case 'recientes':
+            default:
+                $query->orderBy('producto.created_at', 'desc');
+                break;
         }
 
         return DataTables::of($query)
