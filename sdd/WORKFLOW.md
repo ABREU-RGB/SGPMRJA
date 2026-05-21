@@ -164,11 +164,16 @@ Antes de cerrar la feature completa (todas las tasks de un spec):
 
 | Comando | Propósito |
 |---|---|
-| `/sdd-proposal <slug>` | Explorar opciones de una feature (Fase 0). |
 | `/sdd-spec <slug>` | Crear spec formal (Fase 1). |
 | `/sdd-task <spec>` | Descomponer spec en tasks (Fase 2). |
 | `/sdd-status` | Resumir estado de tasks (pendientes / en curso / completas). |
 | `/sdd-next` | Sugerir próximas tasks desbloqueadas para tomar. |
+
+Los comandos están definidos en **dos lugares** para soportar ambas herramientas del equipo:
+- **Claude Code** (Emmanuel): `.claude/commands/sdd-*.md`
+- **Antigravity** (Vanessa, Santiago): `.agent/workflows/sdd-*.md`
+
+Las definiciones son funcionalmente idénticas — al editar una, mantener la otra sincronizada.
 
 ---
 
