@@ -71,8 +71,8 @@ Schema::create('control_calidad', function (Blueprint $table) {
 | GET | /admin/calidad/{id}/edit | edit | admin.calidad.edit |
 
 ### UI / Vistas
-- Tipo de card: `card-transactional` (sección Transacciones) o `card-maestros` / `card-reportes` según corresponda — ver `MEMORY.md`
-- Tipo de modal: `atlantico-modal atlantico-modal--op` (transaccional)
+- Tipo de card: `card-transactional` (sección Transacciones) o `card-maestros` / `card-reportes` según corresponda — ver `AGENTS.md` § Estándares visuales
+- Tipo de modal: `atlantico-modal atlantico-modal--op` (transaccional) — ver `docs/conventions/modal-system.md`
 - DataTable: clase `dt-transactional`, anchos por `nth-child`, `lenguajeData` global
 
 ---
@@ -109,7 +109,7 @@ Schema::create('control_calidad', function (Blueprint $table) {
 ### Edge cases a verificar
 - Pedido sin empleado asignado
 - Resultado "rechazado" debe abrir campo observaciones obligatorio
-- Validación JS al cerrar Select2 (patrón `select2:close` — ver `memory/project_validaciones_js.md`)
+- Validación JS al cerrar Select2 (patrón `select2:close` — ver `docs/conventions/js-validations.md`)
 
 ### Dark mode
 - Verificar contrastes en modal, DataTable, badges de resultado
@@ -124,10 +124,10 @@ Schema::create('control_calidad', function (Blueprint $table) {
 - [ ] Migración corre limpia en BD fresca: `php artisan migrate:fresh --seed`
 - [ ] Controller pasa QA manual (sección 4)
 - [ ] Vista respeta estándares visuales: card, modal, DataTable, validaciones JS
-- [ ] Sidebar actualizado con el ítem nuevo si aplica (ver `memory/project_sidebar_colors.md`)
+- [ ] Sidebar actualizado con el ítem nuevo si aplica (ver `docs/conventions/sidebar-colors.md`)
 - [ ] Dark mode funcional sin estilos inline
 - [ ] PR mergeada a `enmanuel`
-- [ ] Memoria creada/actualizada si introduce patrón nuevo reusable
+- [ ] Doc nuevo en `docs/conventions/` si introduce patrón reusable
 
 ---
 
@@ -162,11 +162,11 @@ class Pedido extends Model {
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(...);
 ```
 
-### Memorias relevantes (no reinventar)
-- `memory/project_modal_system.md` — usar `atlantico-modal--op` para modales transaccionales
-- `memory/project_validaciones_js.md` — patrón de validación blur + submit
-- `memory/reference_modales_anidados.md` — fix global ya aplicado, NO reimplementar
-- `MEMORY.md` § DataTable estándar — `table-layout: fixed`, `autoWidth: false`
+### Convenciones a respetar (ver `docs/conventions/`)
+- `docs/conventions/modal-system.md` — usar `atlantico-modal--op` para modales transaccionales
+- `docs/conventions/js-validations.md` — patrón de validación blur + submit
+- `docs/conventions/nested-modals.md` — fix global ya aplicado, NO reimplementar
+- `AGENTS.md` § DataTable estándar — `table-layout: fixed`, `autoWidth: false`
 
 ### NO existe — no referenciar
 - ~~`App\Services\ControlCalidadService`~~ — se crea en esta feature (TASK-???)

@@ -30,11 +30,13 @@ Prioriza **seguridad, corrección y mantenibilidad** sobre velocidad.
 Antes de cualquier trabajo no trivial:
 
 1. **`AGENTS.md`** (este archivo) — reglas del proyecto.
-2. **`MEMORY.md`** en `~/.claude/projects/-home-emmanuel-SGPMRJA/memory/` — convenciones y deuda viva.
+2. **`docs/conventions/README.md`** — índice de convenciones técnicas vigentes.
 3. **`sdd/WORKFLOW.md`** — metodología SDD del equipo.
-4. **`memory/<tema>.md`** específicos relevantes a la tarea (modal, validaciones, DataTable, etc.).
+4. **`docs/conventions/<tema>.md`** específicos relevantes a la tarea (modal, validaciones, DataTable, etc.).
 
 Si la tarea proviene de un spec SDD, leer el spec completo y verificar el Codebase Contract.
+
+Para contexto histórico (sprints cerrados, decisiones pasadas), ver `docs/history/`.
 
 ---
 
@@ -104,7 +106,7 @@ Si la tarea proviene de un spec SDD, leer el spec completo y verificar el Codeba
 | `utility-modal-header` | Utilitarios nivel 2 | Navy oscuro `#132649` |
 | *(ninguna)* | Sistema | Bootstrap default |
 
-**Modales anidados**: el fix global está en `app.blade.php` (clase `modal-hidden-temp`). NO reimplementar por módulo. Ver `memory/reference_modales_anidados.md`.
+**Modales anidados**: el fix global está en `app.blade.php` (clase `modal-hidden-temp`). NO reimplementar por módulo. Ver `docs/conventions/nested-modals.md`.
 
 ### SweetAlert2
 Reglas centralizadas en `custom.css` sección "SWEETALERT2 — ESTÁNDAR ATLÁNTICO". `z-index: 1200`. Dark mode incluido. **NO** poner reglas inline ni en blade.
@@ -141,13 +143,13 @@ Reglas centralizadas en `custom.css` sección "SWEETALERT2 — ESTÁNDAR ATLÁNT
 ### Eloquent
 - `protected $table = 'nombre_real';` explícito si el nombre no es la convención plural.
 - SoftDeletes con migración (`$table->softDeletes()`) + trait en modelo.
-- Generadores secuenciales (`Model::max('col') + 1`) deben usar `withTrashed()` si la columna tiene UNIQUE y el modelo es SoftDeletes. Ver `memory/feedback_softdeletes_unique_constraint.md`.
+- Generadores secuenciales (`Model::max('col') + 1`) deben usar `withTrashed()` si la columna tiene UNIQUE y el modelo es SoftDeletes. Ver `docs/conventions/softdeletes-unique.md`.
 
 ### Validación
 - Server-side obligatoria — `Form Request` separado en `app/Http/Requests/` o `$request->validate([...])`.
 - Client-side: patrón `novalidate` + `blur` handlers + `validarFormulario*()` + wiring al submit.
 - Select2: usar evento `select2:close` para disparar validación.
-- Ver `memory/project_validaciones_js.md` para detalle.
+- Ver `docs/conventions/js-validations.md` para detalle.
 
 ### Blade
 - **NO** estilos inline (`style="..."`). Toda regla CSS va en `custom.css`.
@@ -156,11 +158,11 @@ Reglas centralizadas en `custom.css` sección "SWEETALERT2 — ESTÁNDAR ATLÁNT
 
 ### Nomenclatura de columnas
 - **Sin redundancia**: `codigo` no `codigo_corto`, `prefijo` no `codigo_prefijo`.
-- Ver `memory/feedback_estandar_nomenclatura_columnas.md`.
+- Ver `docs/conventions/column-naming.md`.
 
 ### Inmutabilidad
 - Códigos que forman parte del SKU son **readonly** después de la primera asignación.
-- Form + backend deben respetarlo. Ver `memory/feedback_inmutabilidad_codigos.md`.
+- Form + backend deben respetarlo. Ver `docs/conventions/code-immutability.md`.
 
 ---
 
@@ -192,24 +194,29 @@ Reglas centralizadas en `custom.css` sección "SWEETALERT2 — ESTÁNDAR ATLÁNT
 
 ---
 
-## Memoria del proyecto
+## Documentación del proyecto
 
-El proyecto tiene un sistema de memoria viva en:
-`~/.claude/projects/-home-emmanuel-SGPMRJA/memory/`
+El proyecto tiene dos carpetas de documentación versionadas en el repo:
 
-- **`MEMORY.md`** es el índice — siempre leerlo primero.
-- Memorias por tema: convenciones, decisiones, deuda técnica, patrones reusables.
-- Las memorias NO son código — son contexto histórico y reglas.
+### `docs/conventions/` — convenciones técnicas vigentes
+- **`docs/conventions/README.md`** es el índice — leerlo primero.
+- Un `.md` por tema (modal, validaciones, DataTable, etc.).
+- Esta es la **fuente de verdad** del equipo.
 
-**Cuándo actualizar memoria**:
-- Después de mergear una feature SDD que introduce patrón nuevo reusable.
+### `docs/history/` — bitácora histórica
+- Sprints cerrados, refactors mergeados, decisiones pasadas.
+- No es de lectura obligatoria. Sirve para "¿por qué hicieron X así?".
+
+**Cuándo crear un doc de convención nuevo**:
+- Después de mergear una feature SDD que introduce patrón reusable.
 - Cuando se decide una convención que afecta a futuras tareas.
-- Cuando se descubre un footgun a evitar.
+- Cuando se descubre un footgun a evitar (añadir a `anti-patterns.md`).
 
-**Cuándo NO escribir memoria**:
+**Cuándo NO escribir doc**:
 - Patrones derivables leyendo el código.
-- Estado efímero de la conversación actual.
-- Información ya documentada en `MEMORY.md` o submemoria existente.
+- Información ya documentada en otro doc — actualizar el existente.
+
+Cualquier doc nuevo en `docs/conventions/` debe enlazarse desde el README de esa carpeta.
 
 ---
 
@@ -262,7 +269,8 @@ Asignaciones de tasks SDD en el header del archivo task.md (`Assigned-to`).
 
 - Workflow SDD: `sdd/WORKFLOW.md`
 - Templates SDD: `sdd/templates/`
-- Memoria principal: `~/.claude/projects/-home-emmanuel-SGPMRJA/memory/MEMORY.md`
+- Convenciones: `docs/conventions/README.md`
+- Historia: `docs/history/README.md`
 - CSS admin: `public/assets/css/custom.css`
 - Layout admin: `resources/views/admin/layouts/app.blade.php`
 - Sidebar admin: `resources/views/admin/layouts/sidebar.blade.php`

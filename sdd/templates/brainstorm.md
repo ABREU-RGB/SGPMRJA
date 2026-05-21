@@ -50,7 +50,7 @@ base_branch: enmanuel
 
 🔗 **Código existente a reusar:**
 - `app/Http/Controllers/Admin/PedidoController.php` — patrón controller
-- `memory/project_modal_system.md` — sistema modal estándar
+- `docs/conventions/modal-system.md` — sistema modal estándar
 
 ---
 
@@ -172,10 +172,10 @@ use App\Models\Pedido;            // app/Models/Pedido.php
 use App\Models\Empleado;          // app/Models/Empleado.php
 ```
 
-### Memorias relevantes
-<!-- Lista las memorias que orientan esta feature. -->
-- `memory/project_modal_system.md`
-- `memory/project_validaciones_js.md`
+### Convenciones relevantes
+<!-- Lista los docs de docs/conventions/ que orientan esta feature. -->
+- `docs/conventions/modal-system.md`
+- `docs/conventions/js-validations.md`
 
 ### NO existe — anti-alucinación
 <!-- Cosas que podrían parecer existentes pero NO. -->

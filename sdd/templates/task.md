@@ -75,11 +75,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 });
 ```
 
-### Memorias a respetar
-- `MEMORY.md` § DataTable estándar
-- `memory/project_modal_system.md`
-- `memory/project_validaciones_js.md`
-- `memory/feedback_softdeletes_unique_constraint.md` si la task genera códigos secuenciales
+### Convenciones a respetar (ver `docs/conventions/`)
+- `AGENTS.md` § DataTable estándar
+- `docs/conventions/modal-system.md`
+- `docs/conventions/js-validations.md`
+- `docs/conventions/softdeletes-unique.md` si la task genera códigos secuenciales
 
 ### NO existe — no referenciar
 - ~~`App\Services\ControlCalidadService`~~ — no existe

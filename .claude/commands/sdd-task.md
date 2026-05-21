@@ -56,7 +56,7 @@ Para CADA task, poblar su sección `## Codebase Contract`:
 3. **Añadir referencias específicas**: si la task toca archivos no cubiertos por el contrato del spec, leer esos archivos y añadir sus firmas.
 4. **Scope preciso**: solo incluir imports/firmas que la task realmente necesita. Una task de migración no necesita firmas de vistas.
 5. **Sección "NO existe"**: lista cosas que un implementador podría asumir existen pero no — esta es la medida anti-alucinación más fuerte.
-6. **Enlazar memorias**: si el patrón está documentado, enlazar en vez de duplicar.
+6. **Enlazar convenciones**: si el patrón está documentado en `docs/conventions/`, enlazar en vez de duplicar.
 
 **Quality bar**: una task sin Codebase Contract poblada está **incompleta**. El ejecutor (humano junior o Claude Code) **alucinará** si no le damos anclas explícitas verificadas.
 

@@ -98,11 +98,12 @@ Ejemplo:
 - ~~ruta admin.pedidos.calidad~~ — no registrada en routes/web.php
 ```
 
-Para SGPMRJA, los **contratos pueden enlazar a memorias** ya existentes:
-- Sistema modal → `memory/project_modal_system.md`
-- Validaciones → `memory/project_validaciones_js.md`
-- DataTable estándar → `MEMORY.md`
-- Patrón búsqueda de persona → `memory/reference_persona_unified_search.md`
+Para SGPMRJA, los **contratos pueden enlazar a las convenciones del repo** en vez de duplicar contenido:
+- Sistema modal → `docs/conventions/modal-system.md`
+- Validaciones → `docs/conventions/js-validations.md`
+- DataTable estándar → `AGENTS.md` § Estándares visuales
+- Patrón búsqueda de persona → `docs/conventions/persona-unified-search.md`
+- Índice completo → `docs/conventions/README.md`
 
 ---
 
@@ -144,15 +145,15 @@ Cualquier miembro del equipo (o Claude Code) puede tomar una task. Pasos:
 Antes de cerrar la feature completa (todas las tasks de un spec):
 
 - Pasar el spec a `Status: approved` → cambiar a `Status: shipped` con fecha.
-- Crear o actualizar memoria correspondiente en `~/.claude/projects/-home-emmanuel-SGPMRJA/memory/` cuando aplique (patrones nuevos, decisiones no obvias).
-- Anotar el spec en `MEMORY.md` si introduce convenciones nuevas reusables.
+- Crear o actualizar doc en `docs/conventions/` cuando aplique (patrones nuevos, decisiones no obvias).
+- Si la feature ya quedó cerrada y es de tamaño relevante, opcionalmente añadir snapshot a `docs/history/`.
 
 ---
 
 ## Reglas de calidad para ejecutores
 
 1. **Respetar el scope** — si encuentras algo fuera, anótalo como nueva task; no lo metas en este PR.
-2. **Seguir patrones existentes** — revisar memorias y código antes de inventar abstracciones.
+2. **Seguir patrones existentes** — revisar `docs/conventions/` y el código antes de inventar abstracciones.
 3. **Codebase Contract es ley** — no inventes imports, rutas o métodos. Si necesitas algo no listado, verifícalo y actualiza el contrato antes de codificar.
 4. **Commits pequeños** — una task = uno o pocos commits coherentes.
 5. **PR descriptivo** — enlazar task, resumir cambios, listar QA pasado.

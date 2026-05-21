@@ -51,12 +51,12 @@ Esta sección **previene alucinaciones** durante la implementación. Hacer:
 2. **Para cada clase/módulo referenciado**: `read` el archivo real y registrar firmas exactas, métodos, atributos, con ruta y línea.
 3. **Verificar imports**: confirmar que `use App\X\Y;` resuelve realmente. No asumir.
 4. **Registrar lo que NO existe**: si buscaste algo plausible y no está, anotarlo en "NO existe". Esta es la medida anti-alucinación más efectiva.
-5. **Enlazar memorias relevantes**: en vez de duplicar contenido, apuntar a archivos existentes:
-   - `memory/project_modal_system.md`
-   - `memory/project_validaciones_js.md`
-   - `memory/reference_modales_anidados.md`
-   - `memory/project_db_audit.md`
-   - etc.
+5. **Enlazar convenciones relevantes**: en vez de duplicar contenido, apuntar a archivos en `docs/conventions/`:
+   - `docs/conventions/modal-system.md`
+   - `docs/conventions/js-validations.md`
+   - `docs/conventions/nested-modals.md`
+   - `docs/conventions/db-architecture.md`
+   - `docs/conventions/README.md` para el índice completo
 6. **Incluir código provisto por el usuario**: si el profesor o equipo dio fragmentos, preservarlos como referencias verificadas.
 
 ### 4. Crear el spec
@@ -93,7 +93,7 @@ git commit -m "sdd: añadir spec FEAT-<ID> — <feature-slug>"
 
    Feature ID: FEAT-<ID>
    Status: draft
-   Memorias enlazadas: <lista>
+   Convenciones enlazadas: <lista>
    Preguntas abiertas: <count>
 
 Siguiente paso:
