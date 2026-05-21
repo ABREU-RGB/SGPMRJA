@@ -8,7 +8,8 @@ base_branch: enmanuel
 **Feature ID**: FEAT-001
 **Fecha**: 2026-05-20
 **Autor**: Emmanuel
-**Status**: draft
+**Status**: approved
+**Assigned-to**: Santiago
 **Versión objetivo**: Sprint actual
 
 ---
@@ -17,7 +18,7 @@ base_branch: enmanuel
 
 ### Planteamiento del problema
 
-El proyecto tiene establecido el patrón visual unificado de **búsqueda + filtros colapsables** (clases `navy-filter-header`, `advanced-filters-wrapper`, etc.) — documentado en `docs/conventions/ux-search-filters.md`. Está aplicado en **7 módulos** (clientes, proveedores, productos, empleados, insumos, departamentos, cargos), pero **8 módulos siguen con la barra de búsqueda simple vieja**:
+El proyecto tiene establecido el patrón visual unificado de **búsqueda + filtros colapsables** (clases `navy-filter-header`, `advanced-filters-wrapper`, etc.) — documentado en `docs/conventions/ux-search-filters.md`. Está aplicado en **7 módulos** (clientes, proveedores, productos, empleados, insumos, departamentos, cargos), pero **7 módulos siguen con la barra de búsqueda simple vieja** y deben migrarse:
 
 | Módulo | Sección |
 |---|---|
@@ -27,14 +28,15 @@ El proyecto tiene establecido el patrón visual unificado de **búsqueda + filtr
 | `produccion/diaria/` | Gestión Operativa |
 | `inventario/movimientos/` | Gestión Operativa |
 | `inventario/alertas/` | Gestión Operativa |
-| `inventario/reporte/` | Reportes (puede no aplicar) |
-| `users/` | Sistema (puede no aplicar) |
+| `users/` | Sistema |
+
+`inventario/reporte/` queda **fuera de alcance** — pertenece a la sección Reportes (paleta sky `card-reportes`), no operativa.
 
 Esto rompe la consistencia visual del sistema y deja a los módulos operativos sin filtros avanzados que ayudarían al usuario a navegar volúmenes crecientes de datos (cotizaciones, pedidos, órdenes).
 
 ### Objetivos
 
-1. Migrar TODOS los módulos operativos al patrón `navy-filter-header` unificado.
+1. Migrar los 7 módulos pendientes al patrón `navy-filter-header` unificado.
 2. Añadir filtros relevantes a cada módulo según su dominio (estados, fechas, empleados, tipos, etc.).
 3. Mantener consistencia con el patrón ya validado en módulos maestros.
 4. Botón "Historial" donde aplique (módulos con SoftDeletes activo).
@@ -43,7 +45,7 @@ Esto rompe la consistencia visual del sistema y deja a los módulos operativos s
 
 - **NO** rediseñar los DataTables ni cambiar columnas.
 - **NO** modificar el patrón base ya establecido en `custom.css` (solo aplicar las clases existentes).
-- **NO** tocar `inventario/reporte/` y `users/` por ahora — son dudosos (ver §8 preguntas abiertas).
+- **NO** tocar `inventario/reporte/` — es sección Reportes (paleta sky), no operativa.
 - **NO** introducir librerías nuevas — todo se hace con lo ya disponible (jQuery + DataTables + Bootstrap 5).
 - **NO** cambiar la lógica de los controllers más allá de aceptar filtros adicionales en `$request`.
 
@@ -90,19 +92,19 @@ card-header                            advanced-filters-wrapper.navy-theme
 | `ProduccionDiariaController` | modificar | añadir `where` condicionales |
 | `MovimientoInventarioController` | modificar | añadir `where` condicionales |
 | `InventarioAlertaController` | revisar | quizás solo visual |
+| `UserController` | modificar | añadir `where` condicionales (`role`, `estado`) |
 
-### Filtros propuestos por módulo
+### Filtros confirmados por módulo
 
-> Los filtros concretos requieren validación (ver §8). Propuesta inicial:
-
-| Módulo | Filtros propuestos | Mecanismo |
+| Módulo | Filtros | Mecanismo |
 |---|---|---|
-| Cotizaciones | Estado (Pendiente/Aprobada/Vencida/Convertida/Cancelada), Cliente (opcional) | Server-side |
-| Pedidos | Estado (Pendiente/Completado/Cancelado), Método de pago | Server-side |
-| Órdenes | Estado (Pendiente/En Proceso/Finalizado/Cancelado), Departamento | Server-side |
-| Producción Diaria | Empleado, Rango de fecha | Server-side |
-| Inventario Movimientos | Tipo (Entrada/Salida), Insumo, Rango de fecha | Server-side |
+| Cotizaciones | Estado (Pendiente/Aprobada/Vencida/Convertida/Cancelada) + Cliente (autocomplete persona-search) | Server-side |
+| Pedidos | Estado (Pendiente/Completado/Cancelado) + Cliente | Server-side |
+| Órdenes | Estado (Pendiente/En Proceso/Finalizado/Cancelado) + Departamento | Server-side |
+| Producción Diaria | Empleado + Rango de fecha (2 inputs `<input type="date">` desde/hasta) | Server-side |
+| Inventario Movimientos | Tipo (Entrada/Salida) + Insumo + Rango de fecha | Server-side |
 | Inventario Alertas | (sin filtros adicionales — vista ya filtra `stock_actual <= stock_minimo`) | Solo visual |
+| Users | Rol (Administrador/Supervisor/Usuario) + Estado (Activo/Inactivo) | Server-side |
 
 ### UI / Vistas
 
@@ -153,6 +155,12 @@ card-header                            advanced-filters-wrapper.navy-theme
 - **Depende de**: ninguno
 - **Riesgo**: bajo — más rápida; solo cambio visual del header
 
+### Módulo 7: Users
+- **Path**: `resources/views/admin/users/index.blade.php` + scripts + `UserController.php`
+- **Responsabilidad**: patrón visual + filtros de Rol y Estado
+- **Depende de**: ninguno
+- **Riesgo**: bajo — módulo pequeño con pocos campos
+
 ---
 
 ## 4. Test / QA Specification
@@ -192,7 +200,7 @@ Para cada módulo migrado, validar:
 
 > La feature está completa cuando TODO lo siguiente es verdadero:
 
-- [ ] 6 módulos migrados con el patrón `navy-filter-header` (Cotizaciones, Pedidos, Órdenes, Producción Diaria, Inventario Movimientos, Inventario Alertas).
+- [ ] 7 módulos migrados con el patrón `navy-filter-header` (Cotizaciones, Pedidos, Órdenes, Producción Diaria, Inventario Movimientos, Inventario Alertas, Users).
 - [ ] Cada módulo pasa QA manual (sección 4) en light + dark mode.
 - [ ] Filtros server-side funcionan: cambiar select → `ajax.reload()` → datos filtrados.
 - [ ] Badge contador muestra correctamente filtros activos.
@@ -201,7 +209,7 @@ Para cada módulo migrado, validar:
 - [ ] Botón Historial preservado donde aplicaba antes.
 - [ ] Sin estilos inline nuevos en los Blade (toda regla en `custom.css`).
 - [ ] DataTable mantiene `lenguajeData` global y `dt-transactional`.
-- [ ] PRs mergeadas a `enmanuel` (una PR por módulo o agrupadas según el dev decida).
+- [ ] **Una sola PR** que cubre los 7 módulos, mergeada a `enmanuel`.
 - [ ] `docs/conventions/ux-search-filters.md` actualizado: tabla "Estado por módulo" refleja la nueva realidad.
 
 ---
@@ -302,8 +310,8 @@ return DataTables::of($query)->make(true);
 
 ### Patrones a seguir
 
-- **Empezar por el módulo más simple** (Inventario Alertas, solo visual) para validar el approach antes de tocar los grandes.
-- **Una PR por módulo** preferible — facilita revisión y rollback selectivo.
+- **Empezar por el módulo más simple** (Inventario Alertas, solo visual; o Users, también pequeño) para validar el approach antes de tocar los grandes.
+- **Una sola PR final** que cubra los 7 módulos — facilita ver el patrón aplicado consistentemente en todo el sistema antes de mergear. Se puede ir commiteando módulo por módulo en la misma rama feat/.
 - **Botones existentes (Agregar / Exportar / Historial)** se preservan. Quedan a la derecha del `advanced-filters-wrapper` o dentro del card-header arriba, según mejor encaje visual.
 - **Servidor primero, cliente después**: añadir lógica en el controller, luego cablear el JS.
 - **NO romper el ordenamiento ni paginación de DataTable** existentes.
@@ -325,20 +333,20 @@ return DataTables::of($query)->make(true);
 
 ---
 
-## 8. Preguntas abiertas
+## 8. Preguntas abiertas — RESUELTAS
 
-> Resolver antes de generar tasks (`/sdd-task`). Marcar con [x] al cerrar y dejar la respuesta tras el `:`.
-
-- [ ] **Inventario Reporte (`inventario/reporte/`)** — ¿se incluye en este spec o queda fuera porque es de "Reportes" no "Operativa"? — *Owner: Emmanuel*
-- [ ] **Users (`users/`)** — ¿se incluye? Pertenece al menú "Sistema" no a "Operativa". Si se decide migrar, ¿qué filtros tendría (rol, activo/inactivo)? — *Owner: Emmanuel*
-- [ ] **Filtros confirmados por módulo** — la propuesta de §2 es preliminar. Validar:
-  - ¿Cotizaciones debe filtrar por Cliente además de Estado?
-  - ¿Pedidos debe filtrar por método de pago, o por cliente, o ambos?
-  - ¿Órdenes debe filtrar por Departamento (asume que el dato existe en `orden_produccion.departamento_id`)?
-  - ¿Producción Diaria filtra por rango de fecha (2 inputs) o por mes (1 select)?
-  - — *Owner: equipo + profesor*
-- [ ] **Asignación de tasks** — ¿quién toma cuál módulo? Sugerencia: Vanessa los maestros pendientes si los hubiera + módulos simples (Alertas, Producción Diaria); Santiago los transaccionales (Movimientos, Órdenes); Emmanuel los más grandes (Cotizaciones, Pedidos). — *Owner: Emmanuel*
-- [ ] **Una PR grande o N pequeñas?** — recomendación del spec: una PR por módulo. Confirmar. — *Owner: Emmanuel*
+- [x] **Inventario Reporte (`inventario/reporte/`)** — ¿se incluye? — *Owner: Emmanuel*: NO. Pertenece a sección Reportes (paleta sky), no operativa. Queda fuera del spec.
+- [x] **Users (`users/`)** — ¿se incluye? — *Owner: Emmanuel*: SÍ, incluir como Módulo 7. Filtros: Rol (Administrador/Supervisor/Usuario) + Estado (Activo/Inactivo).
+- [x] **Filtros confirmados por módulo** — *Owner: Emmanuel*: la propuesta inicial queda aprobada con estos detalles:
+  - Cotizaciones: Estado + Cliente (autocomplete persona-search).
+  - Pedidos: Estado + Cliente (método de pago descartado — poco discriminante).
+  - Órdenes: Estado + Departamento.
+  - Producción Diaria: Empleado + rango de fecha (2 inputs `<input type="date">` desde/hasta, NO selector de mes).
+  - Inv. Movimientos: Tipo + Insumo + rango de fecha.
+  - Inv. Alertas: solo migración visual, sin filtros nuevos.
+  - Users: Rol + Estado.
+- [x] **Asignación del spec** — *Owner: Emmanuel*: spec completo asignado a **Santiago**. Regla del equipo: 1 spec = 1 persona = 1 PR (ver `feedback-spec-assignment-model` en memoria).
+- [x] **Una PR grande o N pequeñas?** — *Owner: Emmanuel*: **una PR grande** que cubre los 7 módulos. Permite revisar el patrón aplicado consistentemente en todo el sistema antes de mergear.
 
 ---
 
@@ -347,3 +355,4 @@ return DataTables::of($query)->make(true);
 | Versión | Fecha | Autor | Cambio |
 |---|---|---|---|
 | 0.1 | 2026-05-20 | Emmanuel + Claude | Borrador inicial |
+| 1.0 | 2026-05-20 | Emmanuel | Resueltas 5 preguntas abiertas, añadido Módulo 7 (Users), spec asignado a Santiago, estrategia 1 PR. Status → approved. |
