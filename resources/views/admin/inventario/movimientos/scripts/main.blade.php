@@ -1,10 +1,44 @@
 <script>
     $(document).ready(function () {
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        function updateFilterBadge() {
+            let count = 0;
+            $('.navy-filter-select').each(function () {
+                if ($(this).val() && $(this).val() !== '') {
+                    count++;
+                }
+            });
+            $('#active-filter-count').text(count).toggleClass('d-none', count === 0);
+        }
+
+        $('#filters-collapse-body')
+            .on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            })
+            .on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
         // Inicializar DataTable
         var table = $('#movimientos-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('inventario.movimientos.data') }}",
+            ajax: {
+                url: "{{ route('inventario.movimientos.data') }}",
+                data: function (d) {
+                    d.filter_tipo_movimiento = $('#filter-tipo').val();
+                    d.filter_insumo_id = $('#filter-insumo').val();
+                    d.filter_fecha_desde = $('#filter-fecha-desde').val();
+                    d.filter_fecha_hasta = $('#filter-fecha-hasta').val();
+                }
+            },
             autoWidth: false,
             columns: [
                 { data: 'insumo_nombre', name: 'insumo_nombre', width: '25%' },
@@ -54,9 +88,24 @@
         });
 
         // Buscador personalizado
-        $('#custom-search-input').on('keyup', function () {
+        $('#custom-search-input').on('input', debounce(function () {
             table.search(this.value).draw();
+        }, 300));
+
+        $('.navy-filter-select').on('change', function () {
+            table.ajax.reload(null, true);
+            updateFilterBadge();
         });
+
+        $('#btn-clear-filters').on('click', function () {
+            $('.navy-filter-select').val('');
+            $('#custom-search-input').val('');
+            table.search('').draw();
+            table.ajax.reload(null, true);
+            updateFilterBadge();
+        });
+
+        updateFilterBadge();
 
         // Manejar cambio en el select de insumo
         $('#insumo_id').on('change', function () {
