@@ -2,11 +2,11 @@
 
 **Feature**: FEAT-001 — unified-filters-rollout
 **Spec**: `sdd/specs/unified-filters-rollout.spec.md`
-**Status**: pending
+**Status**: in-progress
 **Priority**: high
 **Esfuerzo estimado**: L (4-8h)
 **Depends-on**: none
-**Assigned-to**: unassigned
+**Assigned-to**: santiago
 
 ---
 
