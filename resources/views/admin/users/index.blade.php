@@ -35,12 +35,6 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Usuarios</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar usuario...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                     data-bs-target="#showModal">
@@ -51,6 +45,54 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        <div class="navy-filter-header is-collapsed">
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" class="navy-search-input" id="custom-search-input"
+                                    placeholder="Buscar usuario..." autocomplete="off">
+                            </div>
+                            <div class="navy-header-divider"></div>
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="navy-filter-label" for="filter-role">
+                                            <i class="ri-shield-user-line"></i> Rol
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-role">
+                                            <option value="">Todos los roles</option>
+                                            <option value="Administrador">Administrador</option>
+                                            <option value="Supervisor">Supervisor</option>
+                                            <option value="Usuario">Usuario</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estado">
+                                            <i class="ri-shield-check-line"></i> Estado
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estado">
+                                            <option value="">Todos los estados</option>
+                                            <option value="1">Activo</option>
+                                            <option value="0">Inactivo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-link" id="btn-clear-filters">Limpiar filtros</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <table id="users-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
@@ -323,6 +365,32 @@
                 }
             });
 
+            function debounce(func, wait) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            function updateFilterBadge() {
+                let count = 0;
+                $('.navy-filter-select').each(function () {
+                    if ($(this).val() && $(this).val() !== '') {
+                        count++;
+                    }
+                });
+                $('#active-filter-count').text(count).toggleClass('d-none', count === 0);
+            }
+
+            $('#filters-collapse-body')
+                .on('show.bs.collapse', function () {
+                    $('.navy-filter-header').removeClass('is-collapsed');
+                })
+                .on('hidden.bs.collapse', function () {
+                    $('.navy-filter-header').addClass('is-collapsed');
+                });
+
             function generateButtons(userId, recoveryLocked, isSelf, userName, userEmail) {
                 var unlockBtn = '';
                 if (recoveryLocked) {
@@ -361,9 +429,14 @@
             }
 
             var table = $('#users-table').DataTable({
+                processing: true,
+                serverSide: true,
                 ajax: {
                     url: "{{ route('users.data') }}",
-                    dataSrc: 'data'
+                    data: function (d) {
+                        d.filter_role = $('#filter-role').val();
+                        d.filter_estado = $('#filter-estado').val();
+                    }
                 },
                 columns: [
                     {
@@ -424,9 +497,24 @@
             });
 
             // Buscador personalizado
-            $('#custom-search-input').on('keyup', function () {
+            $('#custom-search-input').on('input', debounce(function () {
                 table.search(this.value).draw();
+            }, 300));
+
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload(null, true);
+                updateFilterBadge();
             });
+
+            $('#btn-clear-filters').on('click', function () {
+                $('.navy-filter-select').val('');
+                $('#custom-search-input').val('');
+                table.search('').draw();
+                table.ajax.reload(null, true);
+                updateFilterBadge();
+            });
+
+            updateFilterBadge();
 
             function validarFormularioUsuario() {
                 let esValido = true;
