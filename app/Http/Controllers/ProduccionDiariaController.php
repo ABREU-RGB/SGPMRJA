@@ -30,10 +30,25 @@ class ProduccionDiariaController extends Controller
         return view('admin.produccion.diaria.index', compact('empleados', 'ordenes'));
     }
 
-    public function getRegistros()
+    public function getRegistros(Request $request)
     {
         $registros = ProduccionDiaria::with(['orden.producto', 'empleado.persona'])
             ->select('produccion_diaria.*');
+
+        if ($request->filled('filter_empleado_id')) {
+            $registros->where('produccion_diaria.empleado_id', $request->input('filter_empleado_id'));
+        }
+
+        $fechaDesde = $request->input('filter_fecha_desde');
+        $fechaHasta = $request->input('filter_fecha_hasta');
+
+        if ($fechaDesde && $fechaHasta) {
+            $registros->whereBetween('produccion_diaria.fecha_produccion', [$fechaDesde, $fechaHasta]);
+        } elseif ($fechaDesde) {
+            $registros->where('produccion_diaria.fecha_produccion', '>=', $fechaDesde);
+        } elseif ($fechaHasta) {
+            $registros->where('produccion_diaria.fecha_produccion', '<=', $fechaHasta);
+        }
 
         return DataTables::of($registros)
             ->addColumn('orden_producto', function ($registro) {
