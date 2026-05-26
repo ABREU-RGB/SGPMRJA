@@ -42,13 +42,36 @@ class PedidoController extends Controller
         return view('admin.pedidos.index', compact('productos', 'insumos', 'bancos', 'tallas', 'colores', 'logos'));
     }
 
-    public function getPedidos()
+    public function getPedidos(Request $request)
     {
         // Hacer JOINs para permitir ordenamiento y búsqueda por datos del cliente
         $pedidos = Pedido::select('pedido.*')
             ->join('cliente', 'pedido.cliente_id', '=', 'cliente.id')
             ->join('persona', 'cliente.persona_id', '=', 'persona.id')
             ->with(['user:id,name', 'cliente.persona']);
+
+        if ($request->filled('filter_estado')) {
+            $pedidos->where('pedido.estado', $request->input('filter_estado'));
+        }
+
+        if ($request->filled('filter_fecha_entrega')) {
+            $pedidos->whereDate('pedido.fecha_entrega_estimada', $request->input('filter_fecha_entrega'));
+        }
+
+        $orden = $request->input('filter_orden', 'recientes');
+
+        switch ($orden) {
+            case 'monto_desc':
+                $pedidos->orderBy('pedido.total', 'desc');
+                break;
+            case 'entrega_asc':
+                $pedidos->orderBy('pedido.fecha_entrega_estimada', 'asc');
+                break;
+            case 'recientes':
+            default:
+                $pedidos->orderBy('pedido.created_at', 'desc');
+                break;
+        }
 
         return DataTables::of($pedidos)
             // Usar accessors para mostrar datos normalizados del cliente

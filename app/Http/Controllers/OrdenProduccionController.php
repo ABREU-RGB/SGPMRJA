@@ -39,9 +39,36 @@ class OrdenProduccionController extends Controller
         return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos', 'empleados', 'logos'));
     }
 
-    public function getOrdenes()
+    public function getOrdenes(Request $request)
     {
         $ordenes = OrdenProduccion::with(['producto.tipoProducto', 'creadoPor:id,name', 'pedido.cliente.persona'])->select('orden_produccion.*');
+
+        if ($request->filled('filter_estado')) {
+            $ordenes->where('orden_produccion.estado', $request->input('filter_estado'));
+        }
+
+        if ($request->filled('filter_fecha_desde')) {
+            $ordenes->whereDate('orden_produccion.fecha_fin_estimada', '>=', $request->input('filter_fecha_desde'));
+        }
+
+        if ($request->filled('filter_fecha_hasta')) {
+            $ordenes->whereDate('orden_produccion.fecha_fin_estimada', '<=', $request->input('filter_fecha_hasta'));
+        }
+
+        $orden = $request->input('filter_orden', 'recientes');
+
+        switch ($orden) {
+            case 'progreso_desc':
+                $ordenes->orderByRaw('(orden_produccion.cantidad_producida / NULLIF(orden_produccion.cantidad_solicitada, 0)) desc');
+                break;
+            case 'progreso_asc':
+                $ordenes->orderByRaw('(orden_produccion.cantidad_producida / NULLIF(orden_produccion.cantidad_solicitada, 0)) asc');
+                break;
+            case 'recientes':
+            default:
+                $ordenes->orderBy('orden_produccion.created_at', 'desc');
+                break;
+        }
 
         return DataTables::of($ordenes)
             ->addColumn('pedido_info', function ($orden) {

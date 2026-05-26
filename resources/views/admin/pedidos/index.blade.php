@@ -129,13 +129,6 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Pedidos</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar pedido...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
-                            <!-- Botones de Acción -->
                             <div class="d-flex gap-2">
                                 @if(Auth::user()->isAdmin())
                                     <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
@@ -151,6 +144,61 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        <div class="navy-filter-header is-collapsed">
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" class="navy-search-input" id="custom-search-input"
+                                    placeholder="Buscar pedido..." autocomplete="off">
+                            </div>
+                            <div class="navy-header-divider"></div>
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-estado">
+                                            <i class="ri-shield-check-line"></i> Estado
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estado">
+                                            <option value="">Todos los estados</option>
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="Procesando">Procesando</option>
+                                            <option value="Completado">Completado</option>
+                                            <option value="Cancelado">Cancelado</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-fecha-entrega">
+                                            <i class="ri-calendar-event-line"></i> Fecha de Entrega
+                                        </label>
+                                        <input type="date" class="form-control navy-filter-select" id="filter-fecha-entrega">
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-orden">
+                                            <i class="ri-sort-desc"></i> Ordenar Por
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-orden">
+                                            <option value="recientes">Recientes</option>
+                                            <option value="monto_desc">Mayor monto</option>
+                                            <option value="entrega_asc">Entrega mas proxima</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-link" id="btn-clear-filters">Limpiar filtros</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <table id="pedidos-table" class="table table-bordered table-striped table-sm align-middle dt-transactional table-operativa">
                         <thead>
                             <tr>
@@ -1144,11 +1192,45 @@
                 $('.invalid-feedback').remove();
             });
 
+            function debounce(func, wait) {
+                let timeout;
+                return function () {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        func.apply(context, args);
+                    }, wait);
+                };
+            }
+
+            function updateFilterBadge() {
+                let count = 0;
+                const ordenValue = $('#filter-orden').val();
+                if ($('#filter-estado').val()) {
+                    count++;
+                }
+                if ($('#filter-fecha-entrega').val()) {
+                    count++;
+                }
+                if (ordenValue && ordenValue !== 'recientes') {
+                    count++;
+                }
+                $('#active-filter-count').text(count).toggleClass('d-none', count === 0);
+            }
+
             var table = $('#pedidos-table').DataTable({
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('pedidos.data') }}",
+                ajax: {
+                    url: "{{ route('pedidos.data') }}",
+                    data: function (d) {
+                        d.filter_estado = $('#filter-estado').val();
+                        d.filter_fecha_entrega = $('#filter-fecha-entrega').val();
+                        d.filter_orden = $('#filter-orden').val();
+                    }
+                },
                 columns: [
                     { data: 'id', name: 'id', title: 'Pedido', className: 'text-center', width: '8%' },
                     { data: 'cliente_nombre_display', name: 'cliente_nombre_display', defaultContent: 'N/A', width: '30%' },
@@ -1214,7 +1296,8 @@
                         }
                     }
                 ],
-                order: [[0, 'desc']],
+                order: [],
+                ordering: false,
                 dom: 'rtip',
                 buttons: [
                     {
@@ -1233,10 +1316,34 @@
                 language: lenguajeData
             });
 
-            // Vincular buscador personalizado al DataTable
-            $('#custom-search-input').on('keyup', function () {
+            $('#filters-collapse-body')
+                .on('show.bs.collapse', function () {
+                    $('.navy-filter-header').removeClass('is-collapsed');
+                })
+                .on('hidden.bs.collapse', function () {
+                    $('.navy-filter-header').addClass('is-collapsed');
+                });
+
+            $('#custom-search-input').on('input', debounce(function () {
                 table.search(this.value).draw();
+            }, 300));
+
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+                updateFilterBadge();
             });
+
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-estado').val('');
+                $('#filter-fecha-entrega').val('');
+                $('#filter-orden').val('recientes');
+                $('.navy-filter-select').trigger('change');
+                $('#custom-search-input').val('');
+                table.search('').draw();
+                updateFilterBadge();
+            });
+
+            updateFilterBadge();
 
             window.products = @json($productos);
             var tallasCatalogo = @json($tallas->mapWithKeys(function ($talla) {

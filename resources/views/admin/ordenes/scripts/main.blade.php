@@ -321,11 +321,49 @@
             }
         });
 
+        function debounce(func, wait) {
+            let timeout;
+            return function () {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+
+        function updateFilterBadge() {
+            let count = 0;
+            const ordenValue = $('#filter-orden').val();
+            if ($('#filter-estado').val()) {
+                count++;
+            }
+            if ($('#filter-fecha-desde').val()) {
+                count++;
+            }
+            if ($('#filter-fecha-hasta').val()) {
+                count++;
+            }
+            if (ordenValue && ordenValue !== 'recientes') {
+                count++;
+            }
+            $('#active-filter-count').text(count).toggleClass('d-none', count === 0);
+        }
+
         // DataTable
         var table = $('#ordenes-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('ordenes.data') }}",
+            ajax: {
+                url: "{{ route('ordenes.data') }}",
+                data: function (d) {
+                    d.filter_estado = $('#filter-estado').val();
+                    d.filter_fecha_desde = $('#filter-fecha-desde').val();
+                    d.filter_fecha_hasta = $('#filter-fecha-hasta').val();
+                    d.filter_orden = $('#filter-orden').val();
+                }
+            },
             dom: 'rtip',
             columns: [
                 {
@@ -411,7 +449,8 @@
                     }
                 }
             ],
-            order: [[0, 'desc']],
+            order: [],
+            ordering: false,
             autoWidth: false,
             responsive: false,
             buttons: [
@@ -439,10 +478,35 @@
             language: lenguajeData
         });
 
-        // Buscador personalizado
-        $('#custom-search-input').on('keyup', function () {
+        $('#filters-collapse-body')
+            .on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            })
+            .on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
+        $('#custom-search-input').on('input', debounce(function () {
             table.search(this.value).draw();
+        }, 300));
+
+        $('.navy-filter-select').on('change', function () {
+            table.ajax.reload();
+            updateFilterBadge();
         });
+
+        $('#btn-clear-filters').on('click', function () {
+            $('#filter-estado').val('');
+            $('#filter-fecha-desde').val('');
+            $('#filter-fecha-hasta').val('');
+            $('#filter-orden').val('recientes');
+            $('.navy-filter-select').trigger('change');
+            $('#custom-search-input').val('');
+            table.search('').draw();
+            updateFilterBadge();
+        });
+
+        updateFilterBadge();
 
         // Agregar fila de insumo
         $('#add-insumo-btn').click(function () {
