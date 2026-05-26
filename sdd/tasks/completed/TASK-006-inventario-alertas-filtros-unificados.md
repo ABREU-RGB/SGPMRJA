@@ -2,11 +2,11 @@
 
 **Feature**: FEAT-001 — unified-filters-rollout
 **Spec**: `sdd/specs/unified-filters-rollout.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: low
 **Esfuerzo estimado**: S (< 2h)
 **Depends-on**: none
-**Assigned-to**: unassigned
+**Assigned-to**: santiago
 
 ---
 
@@ -91,3 +91,14 @@ public function alertasStock()
 4. Crear rama `feat/TASK-006-inventario-alertas-filtros-unificados`.
 5. Implementar dentro del scope y completar QA.
 6. Mover a `sdd/tasks/completed/` y llenar Nota de Completitud.
+
+---
+
+## Nota de Completitud
+
+**Completado por**: santiago
+**Fecha**: 2026-05-23
+**Commits**: c80fa46
+**Notas**: Migrado el header a filtros unificados, debounce de busqueda y boton Limpiar; card y tabla con clases transaccionales.
+
+**Desviaciones del spec**: ninguna

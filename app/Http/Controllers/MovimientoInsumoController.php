@@ -18,11 +18,33 @@ class MovimientoInsumoController extends Controller
         return view('admin.inventario.movimientos.index', compact('insumos', 'proveedores'));
     }
 
-    public function getMovimientos()
+    public function getMovimientos(Request $request)
     {
         $movimientos = MovimientoInsumo::with(['insumo', 'creadoPor'])
             ->select('movimiento_insumo.id', 'movimiento_insumo.insumo_id', 'movimiento_insumo.tipo_movimiento', 'movimiento_insumo.cantidad', 'movimiento_insumo.stock_anterior', 'movimiento_insumo.stock_nuevo', 'movimiento_insumo.motivo', 'movimiento_insumo.created_by', 'movimiento_insumo.created_at')
             ->orderBy('movimiento_insumo.created_at', 'desc');
+
+        if ($request->filled('filter_tipo_movimiento')) {
+            $movimientos->where('movimiento_insumo.tipo_movimiento', $request->input('filter_tipo_movimiento'));
+        }
+
+        if ($request->filled('filter_insumo_id')) {
+            $movimientos->where('movimiento_insumo.insumo_id', $request->input('filter_insumo_id'));
+        }
+
+        $fechaDesde = $request->input('filter_fecha_desde');
+        $fechaHasta = $request->input('filter_fecha_hasta');
+
+        if ($fechaDesde && $fechaHasta) {
+            $movimientos->whereBetween('movimiento_insumo.created_at', [
+                $fechaDesde . ' 00:00:00',
+                $fechaHasta . ' 23:59:59',
+            ]);
+        } elseif ($fechaDesde) {
+            $movimientos->where('movimiento_insumo.created_at', '>=', $fechaDesde . ' 00:00:00');
+        } elseif ($fechaHasta) {
+            $movimientos->where('movimiento_insumo.created_at', '<=', $fechaHasta . ' 23:59:59');
+        }
 
         return DataTables::of($movimientos)
             ->addColumn('insumo_nombre', function ($movimiento) {

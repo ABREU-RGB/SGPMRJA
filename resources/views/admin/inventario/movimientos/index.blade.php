@@ -35,12 +35,6 @@
                         <div class="d-flex align-items-center">
                             <h5 class="card-title mb-0 flex-grow-1">Movimientos de Inventario</h5>
                             <div class="flex-shrink-0 d-flex align-items-center gap-3">
-                                <!-- Buscador Personalizado -->
-                                <div class="search-box">
-                                    <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                        placeholder="Buscar movimiento...">
-                                    <i class="ri-search-line search-icon"></i>
-                                </div>
                                 <div class="d-flex gap-2">
                                     <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                         data-bs-target="#createModal">
@@ -57,6 +51,66 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                            <div class="navy-filter-header is-collapsed">
+                                <div class="navy-header-search">
+                                    <i class="ri-search-line"></i>
+                                    <input type="text" class="navy-search-input" id="custom-search-input"
+                                        placeholder="Buscar movimiento..." autocomplete="off">
+                                </div>
+                                <div class="navy-header-divider"></div>
+                                <button class="navy-filter-btn collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                    aria-expanded="false" aria-controls="filters-collapse-body">
+                                    <i class="ri-filter-3-line"></i>
+                                    <span>Filtros</span>
+                                    <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                    <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                                </button>
+                            </div>
+                            <div class="collapse" id="filters-collapse-body">
+                                <div class="navy-filter-body">
+                                    <div class="row g-3">
+                                        <div class="col-12 col-md-3">
+                                            <label class="navy-filter-label" for="filter-tipo">
+                                                <i class="ri-exchange-line"></i> Tipo
+                                            </label>
+                                            <select class="form-select navy-filter-select" id="filter-tipo">
+                                                <option value="">Todos</option>
+                                                <option value="Entrada">Entrada</option>
+                                                <option value="Salida">Salida</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-md-3">
+                                            <label class="navy-filter-label" for="filter-insumo">
+                                                <i class="ri-archive-line"></i> Insumo
+                                            </label>
+                                            <select class="form-select navy-filter-select" id="filter-insumo">
+                                                <option value="">Todos</option>
+                                                @foreach ($insumos as $insumo)
+                                                    <option value="{{ $insumo->id }}">{{ $insumo->nombre }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-md-3">
+                                            <label class="navy-filter-label" for="filter-fecha-desde">
+                                                <i class="ri-calendar-line"></i> Desde
+                                            </label>
+                                            <input type="date" class="form-control navy-filter-select" id="filter-fecha-desde">
+                                        </div>
+                                        <div class="col-12 col-md-3">
+                                            <label class="navy-filter-label" for="filter-fecha-hasta">
+                                                <i class="ri-calendar-2-line"></i> Hasta
+                                            </label>
+                                            <input type="date" class="form-control navy-filter-select" id="filter-fecha-hasta">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button type="button" class="btn btn-link" id="btn-clear-filters">Limpiar filtros</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <table id="movimientos-table" class="table table-bordered table-striped align-middle dt-transactional table-operativa">
                             <thead>
                                 <tr>

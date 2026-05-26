@@ -15,9 +15,18 @@ class UserController extends Controller
         return view('admin.users.index');
     }
 
-    public function getUsers()
+    public function getUsers(Request $request)
     {
-        $users = User::all();
+        $users = User::query();
+
+        if ($request->filled('filter_role')) {
+            $users->where('role', $request->input('filter_role'));
+        }
+
+        if ($request->filled('filter_estado')) {
+            $users->where('estado', $request->input('filter_estado'));
+        }
+
         return DataTables::of($users)
             ->editColumn('avatar', function ($user) {
                 return $user->avatar ? asset('storage/' . $user->avatar) : null;

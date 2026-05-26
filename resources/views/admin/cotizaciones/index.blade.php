@@ -38,13 +38,6 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Listado de Cotizaciones</h5>
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar cotización...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
-
                             @if(Auth::user()->isAdmin())
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
                                     data-bs-target="#showModal">
@@ -58,6 +51,55 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        <div class="navy-filter-header is-collapsed">
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" class="navy-search-input" id="custom-search-input"
+                                    placeholder="Buscar cotización..." autocomplete="off">
+                            </div>
+                            <div class="navy-header-divider"></div>
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-estado">
+                                            <i class="ri-shield-check-line"></i> Estado
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estado">
+                                            <option value="">Todos los estados</option>
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="Aprobada">Aprobada</option>
+                                            <option value="Vencida">Vencida</option>
+                                            <option value="Convertida">Convertida</option>
+                                            <option value="Cancelada">Cancelada</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-8">
+                                        <label class="navy-filter-label" for="filter-cliente-search">
+                                            <i class="ri-user-line"></i> Cliente
+                                        </label>
+                                        <input type="hidden" id="filter-cliente-id">
+                                        <input type="text" class="form-control navy-filter-select" id="filter-cliente-search"
+                                            placeholder="Buscar por documento o nombre" autocomplete="off">
+                                        <div class="list-group d-none" id="filter-cliente-results"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-link" id="btn-clear-filters">Limpiar filtros</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <table id="cotizaciones-table" class="table table-bordered table-striped table-sm align-middle dt-transactional table-operativa">
                         <thead>
                             <tr>

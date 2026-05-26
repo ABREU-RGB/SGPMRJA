@@ -2,11 +2,11 @@
 
 **Feature**: FEAT-001 — unified-filters-rollout
 **Spec**: `sdd/specs/unified-filters-rollout.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: medium
 **Esfuerzo estimado**: M (2-4h)
 **Depends-on**: none
-**Assigned-to**: unassigned
+**Assigned-to**: santiago
 
 ---
 
@@ -104,3 +104,14 @@ class User extends Authenticatable
 4. Crear rama `feat/TASK-007-users-filtros-unificados`.
 5. Implementar dentro del scope y completar QA.
 6. Mover a `sdd/tasks/completed/` y llenar Nota de Completitud.
+
+---
+
+## Nota de Completitud
+
+**Completado por**: santiago
+**Fecha**: 2026-05-23
+**Commits**: 9fe30dd
+**Notas**: Header unificado con filtros de rol/estado, debounce de busqueda y clear; DataTable server-side con filtros en query.
+
+**Desviaciones del spec**: ninguna

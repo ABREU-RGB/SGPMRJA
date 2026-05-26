@@ -23,6 +23,31 @@
     });
 
     $(document).ready(function () {
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        function updateFilterBadge() {
+            let count = 0;
+            $('.navy-filter-select').each(function () {
+                if ($(this).val() && $(this).val() !== '') {
+                    count++;
+                }
+            });
+            $('#active-filter-count').text(count).toggleClass('d-none', count === 0);
+        }
+
+        $('#filters-collapse-body')
+            .on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            })
+            .on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
         // Inicializar Select2 con dropdownParent para que funcione correctamente en modales
         $('#field-orden_id, #field-empleado_id').select2({
             theme: 'bootstrap-5',
@@ -41,7 +66,14 @@
         var table = $('#produccion-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('produccion.diaria.data') }}",
+            ajax: {
+                url: "{{ route('produccion.diaria.data') }}",
+                data: function (d) {
+                    d.filter_empleado_id = $('#filter-empleado').val();
+                    d.filter_fecha_desde = $('#filter-fecha-desde').val();
+                    d.filter_fecha_hasta = $('#filter-fecha-hasta').val();
+                }
+            },
             columns: [
                 {
                     data: 'fecha',
@@ -131,9 +163,24 @@
         });
 
         // Vincular buscador personalizado al DataTable
-        $('#custom-search-input').on('keyup', function () {
+        $('#custom-search-input').on('input', debounce(function () {
             table.search(this.value).draw();
+        }, 300));
+
+        $('.navy-filter-select').on('change', function () {
+            table.ajax.reload(null, true);
+            updateFilterBadge();
         });
+
+        $('#btn-clear-filters').on('click', function () {
+            $('.navy-filter-select').val('');
+            $('#custom-search-input').val('');
+            table.search('').draw();
+            table.ajax.reload(null, true);
+            updateFilterBadge();
+        });
+
+        updateFilterBadge();
 
         // Registrar producción
         $('#produccionForm').on('submit', function (e) {
