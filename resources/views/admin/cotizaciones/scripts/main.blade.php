@@ -407,7 +407,14 @@
 
         function updateFilterBadge() {
             let count = 0;
+            const ordenValue = $('#filter-orden').val();
             if ($('#filter-estado').val()) {
+                count++;
+            }
+            if ($('#filter-fecha').val()) {
+                count++;
+            }
+            if (ordenValue && ordenValue !== 'recientes') {
                 count++;
             }
             $('#active-filter-count').text(count).toggleClass('d-none', count === 0);
@@ -423,6 +430,8 @@
                 url: "{{ route('cotizaciones.data') }}",
                 data: function (d) {
                     d.filter_estado = $('#filter-estado').val();
+                    d.filter_fecha = $('#filter-fecha').val();
+                    d.filter_orden = $('#filter-orden').val();
                 }
             },
             columns: [
@@ -541,7 +550,8 @@
                     }
                 }
             ],
-            order: [[0, 'desc']],
+            order: [],
+            ordering: false,
             language: lenguajeData
         });
 
@@ -564,6 +574,8 @@
 
         $('#btn-clear-filters').on('click', function () {
             $('#filter-estado').val('');
+            $('#filter-fecha').val('');
+            $('#filter-orden').val('recientes');
             $('.navy-filter-select').trigger('change');
             $('#custom-search-input').val('');
             table.search('').draw();

@@ -84,6 +84,22 @@
                                             <option value="Cancelada">Cancelada</option>
                                         </select>
                                     </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-fecha">
+                                            <i class="ri-calendar-event-line"></i> Fecha
+                                        </label>
+                                        <input type="date" class="form-control navy-filter-select" id="filter-fecha">
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-orden">
+                                            <i class="ri-sort-desc"></i> Ordenar Por
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-orden">
+                                            <option value="recientes">Recientes</option>
+                                            <option value="total_desc">Mayor total</option>
+                                            <option value="total_asc">Menor total</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="d-flex justify-content-end mt-2">
                                     <button type="button" class="btn btn-link" id="btn-clear-filters">Limpiar filtros</button>
