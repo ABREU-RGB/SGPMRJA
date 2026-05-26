@@ -84,14 +84,21 @@
                                             <option value="Cancelada">Cancelada</option>
                                         </select>
                                     </div>
-                                    <div class="col-12 col-md-8">
-                                        <label class="navy-filter-label" for="filter-cliente-search">
-                                            <i class="ri-user-line"></i> Cliente
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-fecha">
+                                            <i class="ri-calendar-event-line"></i> Fecha
                                         </label>
-                                        <input type="hidden" id="filter-cliente-id">
-                                        <input type="text" class="form-control navy-filter-select" id="filter-cliente-search"
-                                            placeholder="Buscar por documento o nombre" autocomplete="off">
-                                        <div class="list-group d-none" id="filter-cliente-results"></div>
+                                        <input type="date" class="form-control navy-filter-select" id="filter-fecha">
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label class="navy-filter-label" for="filter-orden">
+                                            <i class="ri-sort-desc"></i> Ordenar Por
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-orden">
+                                            <option value="recientes">Recientes</option>
+                                            <option value="total_desc">Mayor total</option>
+                                            <option value="total_asc">Menor total</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-end mt-2">

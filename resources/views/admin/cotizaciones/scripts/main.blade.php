@@ -392,13 +392,48 @@
                 $(this).val(capitalizeFirstLetter(val));
             }
         });
+
+        function debounce(func, wait) {
+            let timeout;
+            return function () {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+
+        function updateFilterBadge() {
+            let count = 0;
+            const ordenValue = $('#filter-orden').val();
+            if ($('#filter-estado').val()) {
+                count++;
+            }
+            if ($('#filter-fecha').val()) {
+                count++;
+            }
+            if (ordenValue && ordenValue !== 'recientes') {
+                count++;
+            }
+            $('#active-filter-count').text(count).toggleClass('d-none', count === 0);
+        }
+
         var table = $('#cotizaciones-table').DataTable({
             responsive: true,
             autoWidth: false,
             dom: 'rtip', /* Ocultar buscador (f) y selector de longitud (l) para máxima limpieza */
             processing: true,
             serverSide: true,
-            ajax: "{{ route('cotizaciones.data') }}",
+            ajax: {
+                url: "{{ route('cotizaciones.data') }}",
+                data: function (d) {
+                    d.filter_estado = $('#filter-estado').val();
+                    d.filter_fecha = $('#filter-fecha').val();
+                    d.filter_orden = $('#filter-orden').val();
+                }
+            },
             columns: [
                 { data: 'id', name: 'id', title: 'Nro.', width: '5%' },
                 { data: 'cliente_nombre', name: 'cliente_nombre', width: '32%' },
@@ -515,14 +550,39 @@
                     }
                 }
             ],
-            order: [[0, 'desc']],
+            order: [],
+            ordering: false,
             language: lenguajeData
         });
 
-        // Buscador personalizado
-        $('#custom-search-input').on('keyup', function () {
+        $('#filters-collapse-body')
+            .on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            })
+            .on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
+        $('#custom-search-input').on('input', debounce(function () {
             table.search(this.value).draw();
+        }, 300));
+
+        $('.navy-filter-select').on('change', function () {
+            table.ajax.reload();
+            updateFilterBadge();
         });
+
+        $('#btn-clear-filters').on('click', function () {
+            $('#filter-estado').val('');
+            $('#filter-fecha').val('');
+            $('#filter-orden').val('recientes');
+            $('.navy-filter-select').trigger('change');
+            $('#custom-search-input').val('');
+            table.search('').draw();
+            updateFilterBadge();
+        });
+
+        updateFilterBadge();
 
         // Ajustar columnas cuando se redimensiona la ventana
         $(window).on('resize', function () {
