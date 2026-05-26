@@ -5627,6 +5627,197 @@ header#page-topbar,
     background: #4e7ac7;
 }
 
+/* ================================================================
+   FILTROS AVANZADOS — Variante OPERATIVA (.emerald-theme)
+   Paleta: Emerald Operativo #064e3b / #10b981
+   Aplica a: Cotizaciones, Pedidos, Órdenes de Producción,
+             Producción Diaria, Movimiento de Inventario, Alertas.
+   Estrategia: overrides scoped sobre las clases estructurales
+   .navy-filter-* cuando el wrapper tiene .emerald-theme.
+   ================================================================ */
+
+/* ── Wrapper ─────────────────────────────────────────────────── */
+.advanced-filters-wrapper.emerald-theme {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, rgba(16, 185, 129, 0.08) 100%);
+    border: 1px solid rgba(6, 78, 59, 0.18);
+    border-left: 4px solid var(--op-accent);
+}
+
+.advanced-filters-wrapper.emerald-theme:hover {
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.12);
+}
+
+/* ── Toggle / Header ─────────────────────────────────────────── */
+.advanced-filters-wrapper.emerald-theme .navy-filter-toggle,
+.advanced-filters-wrapper.emerald-theme .navy-filter-header {
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-toggle:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-toggle:not(.collapsed),
+.advanced-filters-wrapper.emerald-theme .navy-filter-header {
+    border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-header.is-collapsed {
+    border-bottom: none;
+}
+
+/* ── Chevron / Título / Labels ───────────────────────────────── */
+.advanced-filters-wrapper.emerald-theme .navy-filter-chevron,
+.advanced-filters-wrapper.emerald-theme .navy-filter-title,
+.advanced-filters-wrapper.emerald-theme .navy-filter-title i,
+.advanced-filters-wrapper.emerald-theme .navy-filter-label,
+.advanced-filters-wrapper.emerald-theme .navy-filter-btn,
+.advanced-filters-wrapper.emerald-theme .navy-filter-btn .navy-filter-chevron {
+    color: var(--op-dark);
+}
+
+/* ── Select / Input ──────────────────────────────────────────── */
+.advanced-filters-wrapper.emerald-theme .navy-filter-select,
+.advanced-filters-wrapper.emerald-theme .navy-filter-input {
+    border-color: rgba(6, 78, 59, 0.25) !important;
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-select:hover,
+.advanced-filters-wrapper.emerald-theme .navy-filter-input:hover {
+    border-color: rgba(6, 78, 59, 0.45) !important;
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-select:focus,
+.advanced-filters-wrapper.emerald-theme .navy-filter-input:focus {
+    border-color: var(--op-accent) !important;
+    box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.18) !important;
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-input-icon {
+    color: rgba(6, 78, 59, 0.45);
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-input:focus ~ .navy-filter-input-icon {
+    color: var(--op-dark);
+}
+
+/* ── Header unificado: divisor + search ──────────────────────── */
+.advanced-filters-wrapper.emerald-theme .navy-header-divider {
+    background: rgba(6, 78, 59, 0.2);
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-header-search > i {
+    color: rgba(6, 78, 59, 0.5);
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-header-search:focus-within > i {
+    color: var(--op-dark);
+}
+
+.advanced-filters-wrapper.emerald-theme .navy-filter-btn:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+/* ── Badge contador ──────────────────────────────────────────── */
+.advanced-filters-wrapper.emerald-theme .navy-filter-badge {
+    background: var(--op-dark);
+}
+
+/* ── Botón limpiar (btn-navy-outline en wrapper emerald) ─────── */
+.advanced-filters-wrapper.emerald-theme .btn-navy-outline {
+    color: var(--op-dark) !important;
+    border-color: rgba(6, 78, 59, 0.35) !important;
+}
+
+.advanced-filters-wrapper.emerald-theme .btn-navy-outline:hover {
+    background: var(--op-dark) !important;
+    color: #ffffff !important;
+    border-color: var(--op-dark) !important;
+    box-shadow: 0 2px 8px rgba(6, 78, 59, 0.28) !important;
+}
+
+/* ── DARK MODE — Variante Emerald ─────────────────────────────── */
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border-color: rgba(16, 185, 129, 0.22);
+    border-left-color: var(--op-accent);
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-toggle,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-header {
+    background: rgba(16, 185, 129, 0.06);
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-toggle:hover,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-btn:hover {
+    background: rgba(16, 185, 129, 0.12);
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-toggle:not(.collapsed),
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-header {
+    border-bottom-color: rgba(16, 185, 129, 0.18);
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-header.is-collapsed {
+    border-bottom: none;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-chevron,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-title,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-title i,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-label,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-btn,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-btn .navy-filter-chevron {
+    color: #6ee7b7;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-select,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-input {
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-select:focus,
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-input:focus {
+    border-color: var(--op-accent) !important;
+    box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.22) !important;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-input-icon {
+    color: rgba(110, 231, 183, 0.45);
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-input:focus ~ .navy-filter-input-icon {
+    color: #6ee7b7;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-header-divider {
+    background: rgba(16, 185, 129, 0.28);
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-header-search > i {
+    color: rgba(110, 231, 183, 0.5);
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-header-search:focus-within > i {
+    color: #6ee7b7;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .navy-filter-badge {
+    background: var(--op-accent);
+    color: #052e1c;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .btn-navy-outline {
+    color: #6ee7b7 !important;
+    border-color: rgba(16, 185, 129, 0.42) !important;
+}
+
+[data-bs-theme="dark"] .advanced-filters-wrapper.emerald-theme .btn-navy-outline:hover {
+    background: var(--op-accent) !important;
+    color: #052e1c !important;
+    border-color: var(--op-accent) !important;
+}
+
 /* ── Botón toggle Historial — Patrón Maestro ─────────────────── */
 .btn-historial {
     display: inline-flex;

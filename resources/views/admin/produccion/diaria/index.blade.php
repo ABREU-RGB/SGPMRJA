@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                    <div class="advanced-filters-wrapper emerald-theme" id="advanced-filters">
                         <div class="navy-filter-header is-collapsed">
                             <div class="navy-header-search">
                                 <i class="ri-search-line"></i>
