@@ -84,15 +84,6 @@
                                             <option value="Cancelada">Cancelada</option>
                                         </select>
                                     </div>
-                                    <div class="col-12 col-md-8">
-                                        <label class="navy-filter-label" for="filter-cliente-search">
-                                            <i class="ri-user-line"></i> Cliente
-                                        </label>
-                                        <input type="hidden" id="filter-cliente-id">
-                                        <input type="text" class="form-control navy-filter-select" id="filter-cliente-search"
-                                            placeholder="Buscar por documento o nombre" autocomplete="off">
-                                        <div class="list-group d-none" id="filter-cliente-results"></div>
-                                    </div>
                                 </div>
                                 <div class="d-flex justify-content-end mt-2">
                                     <button type="button" class="btn btn-link" id="btn-clear-filters">Limpiar filtros</button>

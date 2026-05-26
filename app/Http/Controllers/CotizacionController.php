@@ -41,20 +41,41 @@ class CotizacionController extends Controller
         return view('admin.cotizaciones.index', compact('productos', 'logos', 'insumos', 'bancos'));
     }
 
-    public function getCotizaciones()
+    public function getCotizaciones(Request $request)
     {
         // Actualizar automáticamente cotizaciones vencidas
         Cotizacion::actualizarCotizacionesVencidas();
 
         // Cargar clientes incluso si están eliminados (soft deleted)
-        $cotizaciones = Cotizacion::with(['user:id,name'])
+        $cotizaciones = Cotizacion::select('cotizacion.*')
+            ->leftJoin('cliente', 'cotizacion.cliente_id', '=', 'cliente.id')
+            ->leftJoin('persona', 'cliente.persona_id', '=', 'persona.id')
+            ->with(['user:id,name'])
             ->with([
                 'cliente' => function ($query) {
                     $query->withTrashed()->with('persona');
                 }
-            ])
-            ->select('cotizacion.*');
+            ]);
+
+        if ($request->filled('filter_estado')) {
+            $cotizaciones->where('cotizacion.estado', $request->input('filter_estado'));
+        }
+
         return DataTables::of($cotizaciones)
+            ->filter(function ($query) use ($request) {
+                $search = $request->input('search.value');
+                if (!$search) {
+                    return;
+                }
+
+                $query->where(function ($q) use ($search) {
+                    $q->where('persona.nombre', 'like', "%{$search}%")
+                        ->orWhere('persona.apellido', 'like', "%{$search}%")
+                        ->orWhereRaw("CONCAT(persona.nombre, ' ', persona.apellido) like ?", ["%{$search}%"])
+                        ->orWhereRaw("CONCAT(persona.tipo_documento, persona.documento_identidad) like ?", ["%{$search}%"])
+                        ->orWhere('cotizacion.id', 'like', "%{$search}%");
+                });
+            })
             ->addColumn('usuario_creador', function ($cotizacion) {
                 return $cotizacion->user ? $cotizacion->user->name : 'N/A';
             })
