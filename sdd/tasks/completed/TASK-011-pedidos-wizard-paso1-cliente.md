@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: TASK-010
@@ -163,11 +163,16 @@ Copiar la mecánica del stepper de cotización (rellenar líneas `.wiz-step-line
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
-
-**Completado por**:
-**Fecha**:
-**Commits**:
+**Completado por**: santiago (Claude)
+**Fecha**: 2026-05-26
+**Commits**: feat(pedidos): implementar paso 1 del wizard (cliente, fechas, prioridad)
 **Notas**:
+- Creado `resources/views/admin/pedidos/scripts/main.blade.php` con wizard scaffold (TOTAL_STEPS=4, showStep, validateStep, nextStep, prevStep, window.pedWizard API)
+- Lógica paso 1: autocomplete personas-search con debounce 300ms, tarjeta cliente visual (avatar+roles), chips prioridad (Normal/Alta/Urgente), chips estado (solo edit), fecha_pedido default=hoy
+- Modal `#modalAddCliente` incluido en `modals.blade.php` con handlers en `scripts/main.blade.php` (pedToggleClienteFields, save con POST /clientes, callback a pedAplicarPersonaAPedido)
+- `index.blade.php` actualizado con @include modals, municipios-venezuela.js y @include scripts/main
+- 24/24 assertions HTML + 30/30 assertions JS — Blade cache clean
 
 **Desviaciones del spec**:
+- El modal `#modalAddCliente` usa los mismos IDs que cotizaciones (sin sufijo `-ped`). No hay conflicto porque son páginas distintas. Se optó por reutilizar ids estándar para evitar duplicar la lógica del formulario.
+- La tarjeta cliente en pedidos omite el bloque de estadísticas (cotizaciones_count) que cotizaciones sí muestra; no está en el mapeo de campos del spec de pedidos.

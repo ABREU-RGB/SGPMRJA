@@ -220,6 +220,7 @@
 
     @include('admin.pedidos.modals.seleccionar_cotizacion')
     @include('admin.partials.catalog_modals')
+    @include('admin.pedidos.modals')
     <!-- Modal para ver detalles del Pedido -->
     <div class="modal fade atlantico-modal atlantico-modal--op" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
@@ -2707,4 +2708,6 @@
         });
     </script>
     @include('admin.pedidos.scripts.cotizacion_selection')
+    <script src="{{ URL::asset('/assets/js/municipios-venezuela.js') }}"></script>
+    @include('admin.pedidos.scripts.main')
 @endpush
