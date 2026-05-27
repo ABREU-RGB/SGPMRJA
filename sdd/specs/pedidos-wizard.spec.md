@@ -9,7 +9,7 @@ base_branch: enmanuel
 **Fecha**: 2026-05-26
 **Autor**: Emmanuel
 **Status**: approved
-**Assigned-to**: Emmanuel
+**Assigned-to**: Santiago
 **Versión objetivo**: Sprint actual
 
 ---

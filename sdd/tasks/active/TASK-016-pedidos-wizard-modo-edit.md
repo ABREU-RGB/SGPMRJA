@@ -6,7 +6,7 @@
 **Priority**: medium
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: TASK-014
-**Assigned-to**: emmanuel
+**Assigned-to**: santiago
 
 ---
 
