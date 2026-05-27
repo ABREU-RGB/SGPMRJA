@@ -57,6 +57,16 @@
                             <h4 class="wiz-step-title">Cliente y datos del pedido</h4>
                             <p class="wiz-step-desc">Busca el cliente por su documento, define las fechas y la prioridad del pedido.</p>
                         </div>
+
+                        {{-- Banner: datos heredados de cotización (oculto por defecto) --}}
+                        <div class="ped-banner-heredado d-none" id="ped-banner-heredado-p1">
+                            <i class="ri-file-transfer-line"></i>
+                            <span>Datos heredados de cotización
+                                <strong class="ped-banner-cot-num">#—</strong>
+                                — Puedes revisar y ajustar antes de guardar.
+                            </span>
+                        </div>
+
                         <div class="row g-3">
 
                             {{-- Card Cliente --}}
@@ -259,6 +269,15 @@
                             <span class="wiz-step-tag">Paso 2 de 4</span>
                             <h4 class="wiz-step-title">Productos del pedido</h4>
                             <p class="wiz-step-desc">Agrega los productos manualmente o importa desde una cotización existente.</p>
+                        </div>
+
+                        {{-- Banner: datos heredados de cotización (oculto por defecto) --}}
+                        <div class="ped-banner-heredado d-none" id="ped-banner-heredado-p2">
+                            <i class="ri-file-transfer-line"></i>
+                            <span>Productos heredados de cotización
+                                <strong class="ped-banner-cot-num">#—</strong>
+                                — Puedes agregar, editar o eliminar antes de continuar.
+                            </span>
                         </div>
 
                         {{-- Banner importar cotización --}}

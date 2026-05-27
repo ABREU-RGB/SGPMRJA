@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: medium
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: TASK-014
@@ -154,11 +154,11 @@ PedidoWizard.abrirDesdeCotizacion(cotizacionId) {
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
-
-**Completado por**:
-**Fecha**:
-**Commits**:
-**Notas**:
+**Completado por**: santiago
+**Fecha**: 2026-05-27
+**Commits**: feat(pedidos): TASK-015 modo completar desde cotización
+**Notas**: Implementado patrón `pedPendingHydration` — los datos se almacenan antes de que `show.bs.modal` dispare los resets, y se aplican en `shown.bs.modal` después de que los resets terminan. IIFE aislado en `scripts/main.blade.php`. Banner amber en pasos 1 y 2. Query param `?convertir={id}` detectado en carga de página. `pedHidratarProductosDesde` agregado al IIFE de paso 2 como API limpia.
 
 **Desviaciones del spec**:
+- Flujo de "Agregar Pedido" desde pedidos/index.blade.php (que abría el modal `seleccionarCotizacionModal` directamente) ahora también usa `pedAbrirDesdeCotizacion` en lugar del POST atómico.
+- El endpoint `convertirAPedido` (POST) ya no se usa desde ningún flujo de UI — queda como API interna pero sin botón que lo llame.

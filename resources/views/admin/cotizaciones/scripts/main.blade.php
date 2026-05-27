@@ -2792,85 +2792,10 @@
         });
 
         // === CONVERTIR COTIZACIÓN A PEDIDO ===
+        // Redirige al wizard de pedidos pre-hidratado con los datos de la cotización
         $('#cotizaciones-table').on('click', '.convert-to-pedido-btn', function () {
             var cotizacionId = $(this).data('id');
-
-            Swal.fire({
-                title: '¿Convertir a Pedido?',
-                html: '<p>Se creará un nuevo pedido con los datos de esta cotización:</p>' +
-                    '<ul class="text-start"><li>Cliente</li><li>Productos</li><li>Precios</li></ul>' +
-                    '<small class="text-muted">Después podrá editar el pedido para agregar fecha de entrega, abono y método de pago.</small>',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '<i class="ri-exchange-line me-1"></i> Sí, convertir',
-                cancelButtonText: 'Cancelar',
-                customClass: {
-                    confirmButton: 'btn btn-success w-xs me-2',
-                    cancelButton: 'btn btn-light w-xs'
-                },
-                buttonsStyling: false,
-                showCloseButton: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Mostrar loading
-                    Swal.fire({
-                        title: 'Convirtiendo...',
-                        text: 'Creando pedido desde la cotización',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    // Llamar al endpoint para convertir
-                    $.ajax({
-                        url: '/cotizaciones/' + cotizacionId + '/convertir-a-pedido',
-                        method: 'POST',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function (response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Pedido Creado!',
-                                html: '<p>' + response.message + '</p>' +
-                                    '<p class="mt-2">¿Desea ir al pedido creado para completar los datos?</p>',
-                                showCancelButton: true,
-                                confirmButtonText: '<i class="ri-edit-line me-1"></i> Editar Pedido',
-                                cancelButtonText: 'Quedarme aquí',
-                                customClass: {
-                                    confirmButton: 'btn btn-primary me-2',
-                                    cancelButton: 'btn btn-light'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                // Recargar la tabla para mostrar el estado actualizado
-                                table.ajax.reload();
-
-                                if (result.isConfirmed) {
-                                    // Redirigir al módulo de pedidos
-                                    window.location.href = '/pedidos?editar=' + response.pedido_id;
-                                }
-                            });
-                        },
-                        error: function (xhr) {
-                            var errorMsg = 'No se pudo convertir la cotización.';
-                            if (xhr.responseJSON && xhr.responseJSON.error) {
-                                errorMsg = xhr.responseJSON.error;
-                            }
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: errorMsg,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                },
-                                buttonsStyling: false
-                            });
-                        }
-                    });
-                }
-            });
+            window.location.href = '/pedidos?convertir=' + cotizacionId;
         });
 
         // === AUTOCOMPLETADO UNIFICADO DE PERSONA (cliente + empleado + proveedor) ===

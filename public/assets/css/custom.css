@@ -6304,3 +6304,28 @@ header#page-topbar,
     box-shadow: 0 1px 6px rgba(110,231,183,0.15);
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   PEDIDO WIZARD — Banner "Datos heredados de cotización" (amber)
+   ════════════════════════════════════════════════════════════════════ */
+.ped-banner-heredado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(245,158,11,0.10);
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+.ped-banner-heredado i { font-size: 1rem; color: #f59e0b; flex-shrink: 0; }
+
+[data-bs-theme="dark"] .ped-banner-heredado {
+    background: rgba(245,158,11,0.12);
+    border-color: rgba(245,158,11,0.28);
+    color: #fcd34d;
+}
+[data-bs-theme="dark"] .ped-banner-heredado i { color: #fbbf24; }
+

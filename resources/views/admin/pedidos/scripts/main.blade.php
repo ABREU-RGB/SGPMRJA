@@ -1000,6 +1000,28 @@ $(document).ready(function () {
             });
         };
 
+        // Hidratar array de productos directamente (llamado desde IIFE TASK-015)
+        window.pedHidratarProductosDesde = function (productos, cotizacionId) {
+            pedProdItems = [];
+            productos.forEach(function (p) {
+                var cant   = parseInt(p.cantidad, 10);
+                var precio = parseFloat(p.precio_unitario);
+                pedProdItems.push({
+                    producto_id:  p.producto_id,
+                    nombre:       p.producto_nombre,
+                    cantidad:     cant,
+                    talla_id:     p.talla_id || null,
+                    talla_label:  p.talla_id ? (pedTallasCatalogo[p.talla_id] || '') : '',
+                    color_id:     p.color_id || null,
+                    color_label:  p.color_id ? (pedColoresCatalogo[p.color_id] || '') : '',
+                    precio_unitario: precio,
+                    subtotal:     cant * precio,
+                    heredado_cotizacion_id: cotizacionId
+                });
+            });
+            pedRenderProductos();
+        };
+
         // Reset al abrir el wizard en modo crear
         var $wizModal = $(document).find('#pedidoForm').closest('.modal');
         if (!$wizModal.length) $wizModal = $('#showModal');
@@ -1302,6 +1324,110 @@ $(document).ready(function () {
                 }
             });
         });
+
+    })();
+
+
+    // ╔══════════════════════════════════════════════════════════════════
+    // ║ PEDIDO WIZARD — TASK-015: Modo "completar desde cotización"
+    // ║ Fetch datosParaPedido, hidrata pasos 1+2, abre en paso 3
+    // ╚══════════════════════════════════════════════════════════════════
+    (function () {
+        'use strict';
+
+        var pedPendingHydration = null;
+
+        function pedMostrarBannerHeredado(cotizacionId) {
+            $('.ped-banner-cot-num').text('#' + cotizacionId);
+            $('#ped-banner-heredado-p1, #ped-banner-heredado-p2').removeClass('d-none');
+        }
+
+        function pedOcultarBannerHeredado() {
+            $('#ped-banner-heredado-p1, #ped-banner-heredado-p2').addClass('d-none');
+        }
+
+        // Abrir wizard hidratado con datos de una cotización
+        window.pedAbrirDesdeCotizacion = function (cotizacionId) {
+            Swal.fire({
+                title: 'Cargando cotización...',
+                text: 'Preparando datos para el pedido',
+                allowOutsideClick: false,
+                didOpen: function () { Swal.showLoading(); }
+            });
+
+            $.ajax({
+                url: '{{ route("cotizaciones.datosParaPedido", ":id") }}'.replace(':id', cotizacionId),
+                method: 'GET',
+                success: function (data) {
+                    Swal.close();
+                    if (!data || !data.cliente) {
+                        Swal.fire({ icon: 'error', title: 'Error',
+                            text: 'No se pudieron cargar los datos de la cotización.' });
+                        return;
+                    }
+                    // Guardar antes de que show.bs.modal dispare los resets
+                    pedPendingHydration = { data: data };
+                    $('#showModal').modal('show');
+                },
+                error: function (xhr) {
+                    Swal.close();
+                    var msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                        || 'No se pudieron cargar los datos de la cotización.';
+                    Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                }
+            });
+        };
+
+        // Aplicar hydration después de que los resets de show.bs.modal corran
+        $('#showModal').on('shown.bs.modal', function () {
+            if (!pedPendingHydration) return;
+
+            var data  = pedPendingHydration.data;
+            var cotId = data.cotizacion_id;
+            pedPendingHydration = null;
+
+            // Marcar origen de cotización
+            $('#ped-wiz-cotizacion-id-field').val(cotId);
+
+            // Paso 1 — cliente
+            if (data.cliente && typeof window.pedAplicarPersonaAPedido === 'function') {
+                window.pedAplicarPersonaAPedido(data.cliente, data.cliente_id);
+            }
+
+            // Paso 2 — productos
+            if (data.productos && data.productos.length && typeof window.pedHidratarProductosDesde === 'function') {
+                window.pedHidratarProductosDesde(data.productos, cotId);
+            }
+
+            // Banners amber en paso 1 y paso 2
+            pedMostrarBannerHeredado(cotId);
+
+            // Título identificador
+            $('#modalTitle').text('Pedido desde Cotización #' + cotId);
+
+            // Ir directamente al paso 3 (pago)
+            if (typeof window.pedWizard !== 'undefined') {
+                window.pedWizard.show(3);
+            }
+        });
+
+        // Limpiar al cerrar
+        $('#showModal').on('hidden.bs.modal', function () {
+            pedOcultarBannerHeredado();
+            if (!$('#ped-wiz-id-field').val()) {
+                $('#modalTitle').text('Nuevo Pedido');
+            }
+        });
+
+        // Detectar ?convertir={cotizacionId} en la URL al cargar la página
+        var params     = new URLSearchParams(window.location.search);
+        var convertirId = params.get('convertir');
+        if (convertirId) {
+            window.history.replaceState(null, '', window.location.pathname);
+            setTimeout(function () {
+                window.pedAbrirDesdeCotizacion(convertirId);
+            }, 450);
+        }
 
     })();
 
