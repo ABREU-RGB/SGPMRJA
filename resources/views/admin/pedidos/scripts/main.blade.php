@@ -66,6 +66,10 @@ $(document).ready(function () {
             if (n === 3 && typeof window.pedSincronizarTotalPago === 'function') {
                 window.pedSincronizarTotalPago();
             }
+            // Hook: renderizar resumen al entrar en paso 4
+            if (n === 4 && typeof window.pedRenderResumen === 'function') {
+                window.pedRenderResumen();
+            }
         }
 
         function validateStep(n) {
@@ -1085,7 +1089,7 @@ $(document).ready(function () {
             }
         });
 
-        // Exponer estado para TASK-014 (submit)
+        // Exponer estado para paso 4 (submit)
         window.pedPagoState = {
             get metodo()     { return $('#ped-pago-metodo-field').val() || null; },
             get abono()      { return parseFloat($('#ped-pago-abono-field').val()) || 0; },
@@ -1102,6 +1106,202 @@ $(document).ready(function () {
                 return null;
             }
         };
+
+    })();
+
+
+    // ╔══════════════════════════════════════════════════════════════════
+    // ║ PEDIDO WIZARD — PASO 4: Resumen + submit final (crear)
+    // ╚══════════════════════════════════════════════════════════════════
+    (function () {
+        'use strict';
+
+        var METODO_LABELS = {
+            efectivo:     'Efectivo',
+            transferencia: 'Transferencia',
+            pago_movil:   'Pago Móvil'
+        };
+
+        function pedFmtRes(n) {
+            return '$' + parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Renderizar bloque cliente
+        function pedRenderResCliente() {
+            var nombre = $('#ped-cliente-name-display').text().trim() || '—';
+            var doc    = $('#ped-cliente-doc-display').text().trim() || '—';
+            var tel    = $('#ped-cliente-tel-wrap').is(':visible') ? $('#ped-cliente-tel-display').text().trim() : '';
+            var email  = $('#ped-cliente-email-wrap').is(':visible') ? $('#ped-cliente-email-display').text().trim() : '';
+            var html   = '<dl class="row g-0 mb-0 small">' +
+                '<dt class="col-5 text-muted">Nombre</dt><dd class="col-7 fw-semibold mb-1">' + nombre + '</dd>' +
+                '<dt class="col-5 text-muted">Documento</dt><dd class="col-7 mb-1">' + doc + '</dd>' +
+                (tel   ? '<dt class="col-5 text-muted">Teléfono</dt><dd class="col-7 mb-1">' + tel + '</dd>' : '') +
+                (email ? '<dt class="col-5 text-muted">Email</dt><dd class="col-7 mb-0">' + email + '</dd>' : '') +
+                '</dl>';
+            $('#ped-res-cliente-bloque').html(html);
+        }
+
+        // Renderizar bloque datos del pedido
+        function pedRenderResDatos() {
+            var fecha    = $('#ped-fecha-pedido-field').val() || '—';
+            var entrega  = $('#ped-fecha-entrega-field').val() || 'No especificada';
+            var prioridad = $('#ped-prioridad-field').val() || 'Normal';
+            var html = '<dl class="row g-0 mb-0 small">' +
+                '<dt class="col-6 text-muted">Fecha pedido</dt><dd class="col-6 fw-semibold mb-1">' + fecha + '</dd>' +
+                '<dt class="col-6 text-muted">Entrega estimada</dt><dd class="col-6 mb-1">' + entrega + '</dd>' +
+                '<dt class="col-6 text-muted">Prioridad</dt><dd class="col-6 mb-0">' + prioridad + '</dd>' +
+                '</dl>';
+            $('#ped-res-datos-bloque').html(html);
+        }
+
+        // Renderizar tabla de productos
+        function pedRenderResProductos() {
+            var items = (window.pedProdState && window.pedProdState.items) || [];
+            var total = (window.pedProdState && window.pedProdState.total) || 0;
+            $('#ped-res-lineas').text(items.length);
+            $('#ped-res-total').text(pedFmtRes(total));
+            if (!items.length) {
+                $('#ped-res-productos-tbody').html(
+                    '<tr><td colspan="6" class="text-center text-muted py-3 small">Sin productos</td></tr>'
+                );
+                return;
+            }
+            var rows = items.map(function (it) {
+                var badge = it.heredado_cotizacion_id
+                    ? ' <span class="ped-inherited-badge">Heredado #' + it.heredado_cotizacion_id + '</span>'
+                    : '';
+                return '<tr>' +
+                    '<td class="small">' + it.nombre + badge + '</td>' +
+                    '<td class="text-center small">' + it.cantidad + '</td>' +
+                    '<td class="small">' + (it.talla_label || '—') + '</td>' +
+                    '<td class="small">' + (it.color_label || '—') + '</td>' +
+                    '<td class="text-end small">' + pedFmtRes(it.precio_unitario) + '</td>' +
+                    '<td class="text-end small fw-semibold">' + pedFmtRes(it.subtotal) + '</td>' +
+                    '</tr>';
+            }).join('');
+            $('#ped-res-productos-tbody').html(rows);
+        }
+
+        // Renderizar bloque pago
+        function pedRenderResPago() {
+            var pago     = window.pedPagoState;
+            var metodo   = pago.metodo;
+            var abono    = pago.abono;
+            var total    = (window.pedProdState && window.pedProdState.total) || 0;
+            var restante = total - abono;
+            var metodoLabel = metodo ? (METODO_LABELS[metodo] || metodo) : 'Sin método';
+            var html = '<dl class="row g-0 mb-0 small">' +
+                '<dt class="col-5 text-muted">Abono</dt><dd class="col-7 fw-semibold mb-1">' + pedFmtRes(abono) + '</dd>' +
+                '<dt class="col-5 text-muted">Restante</dt><dd class="col-7 mb-1">' + pedFmtRes(restante) + '</dd>' +
+                '<dt class="col-5 text-muted">Método</dt><dd class="col-7 mb-0">' + metodoLabel + '</dd>';
+            if (metodo === 'transferencia' || metodo === 'pago_movil') {
+                var $bancoSel = metodo === 'transferencia'
+                    ? $('#ped-pago-transferencia-banco') : $('#ped-pago-movil-banco');
+                var bancoNombre = $bancoSel.find('option:selected').text() || '—';
+                var ref = pago.referencia || '—';
+                html += '<dt class="col-5 text-muted mt-1">Banco</dt><dd class="col-7 mt-1">' + bancoNombre + '</dd>' +
+                        '<dt class="col-5 text-muted">Referencia</dt><dd class="col-7">' + ref + '</dd>';
+            }
+            html += '</dl>';
+            $('#ped-res-pago-bloque').html(html);
+        }
+
+        // Render completo del resumen
+        window.pedRenderResumen = function () {
+            pedRenderResCliente();
+            pedRenderResDatos();
+            pedRenderResProductos();
+            pedRenderResPago();
+        };
+
+        // Construir payload para el store
+        function pedConstruirPayload() {
+            var items  = (window.pedProdState && window.pedProdState.items) || [];
+            var pago   = window.pedPagoState;
+            var metodo = pago.metodo;
+
+            var pagos = [];
+            if (metodo) {
+                pagos.push({
+                    metodo:     metodo,
+                    monto:      pago.abono,
+                    banco_id:   pago.banco_id || null,
+                    referencia: pago.referencia || null
+                });
+            }
+
+            return {
+                _token:                 $('meta[name="csrf-token"]').attr('content'),
+                cliente_id:             $('#ped-wiz-cliente-id-field').val(),
+                cotizacion_id:          $('#ped-wiz-cotizacion-id-field').val() || null,
+                fecha_pedido:           $('#ped-fecha-pedido-field').val(),
+                fecha_entrega_estimada: $('#ped-fecha-entrega-field').val() || null,
+                prioridad:              $('#ped-prioridad-field').val(),
+                pagos:                  pagos,
+                productos:              items.map(function (it) {
+                    return {
+                        producto_id: it.producto_id,
+                        cantidad:    it.cantidad,
+                        talla_id:    it.talla_id || null,
+                        color_id:    it.color_id || null
+                    };
+                })
+            };
+        }
+
+        // Mapear errores 422 al paso que los originó
+        function pedMapErrorsToStep(errors) {
+            var keys = Object.keys(errors);
+            if (keys.some(function (k) { return /^(cliente_id|fecha_pedido|prioridad)/.test(k); })) return 1;
+            if (keys.some(function (k) { return /^productos/.test(k); })) return 2;
+            if (keys.some(function (k) { return /^pagos/.test(k); })) return 3;
+            return 4;
+        }
+
+        // Submit: crear pedido (POST /pedidos)
+        $(document).on('click', '#ped-wiz-add-btn', function () {
+            var $btn = $(this).prop('disabled', true);
+            var payload = pedConstruirPayload();
+
+            $.ajax({
+                url: '{{ route("pedidos.store") }}',
+                method: 'POST',
+                data: payload,
+                success: function (response) {
+                    $btn.prop('disabled', false);
+                    Swal.fire({
+                        icon: 'success', title: '¡Pedido creado!',
+                        text: response.success,
+                        showConfirmButton: false, timer: 1800
+                    });
+                    var $wizModal = $('#pedidoForm').closest('.modal');
+                    if (!$wizModal.length) $wizModal = $('#showModal');
+                    $wizModal.modal('hide');
+                    if ($.fn.DataTable.isDataTable('#pedidos-table')) {
+                        $('#pedidos-table').DataTable().ajax.reload(null, false);
+                    }
+                },
+                error: function (xhr) {
+                    $btn.prop('disabled', false);
+                    var msg = '';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        var errs = xhr.responseJSON.errors;
+                        var step = pedMapErrorsToStep(errs);
+                        msg = Object.values(errs).map(function (v) {
+                            return Array.isArray(v) ? v[0] : v;
+                        }).join('\n');
+                        if (typeof window.pedWizard !== 'undefined') {
+                            window.pedWizard.show(step);
+                        }
+                    } else if (xhr.responseJSON) {
+                        msg = xhr.responseJSON.error || xhr.responseJSON.message || 'Error desconocido.';
+                    } else {
+                        msg = 'Ocurrió un error al crear el pedido.';
+                    }
+                    Swal.fire({ icon: 'error', title: 'Error al guardar', text: msg });
+                }
+            });
+        });
 
     })();
 

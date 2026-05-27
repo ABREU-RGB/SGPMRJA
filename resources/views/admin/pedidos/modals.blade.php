@@ -506,11 +506,91 @@
                             <p class="wiz-step-desc">Revisa toda la información antes de guardar el pedido.</p>
                         </div>
                         <div class="row g-3">
-                            {{-- Implementar en TASK-014 --}}
-                            <div class="col-12 text-center text-muted py-5">
-                                <i class="ri-file-text-line fs-1 opacity-25"></i>
-                                <p class="mt-2 mb-0 small">Resumen consolidado y submit — se implementan en TASK-014</p>
+
+                            {{-- Card: Cliente --}}
+                            <div class="col-md-6">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <i class="ri-user-3-line me-2"></i>Cliente
+                                        </h6>
+                                    </div>
+                                    <div class="card-body" id="ped-res-cliente-bloque">
+                                        <p class="text-muted small mb-0">—</p>
+                                    </div>
+                                </div>
                             </div>
+
+                            {{-- Card: Datos del pedido --}}
+                            <div class="col-md-6">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <i class="ri-calendar-event-line me-2"></i>Datos del pedido
+                                        </h6>
+                                    </div>
+                                    <div class="card-body" id="ped-res-datos-bloque">
+                                        <p class="text-muted small mb-0">—</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Card: Productos --}}
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <i class="ri-shopping-bag-3-line me-2"></i>
+                                            Productos
+                                            (<span id="ped-res-lineas">0</span>&nbsp;línea(s))
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Producto</th>
+                                                        <th class="text-center">Cant.</th>
+                                                        <th>Talla</th>
+                                                        <th>Color</th>
+                                                        <th class="text-end">P. Unit.</th>
+                                                        <th class="text-end">Subtotal</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="ped-res-productos-tbody">
+                                                    <tr>
+                                                        <td colspan="6" class="text-center text-muted py-3 small">
+                                                            Sin productos
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="table-primary">
+                                                        <td colspan="5" class="text-end fw-bold small">Total estimado</td>
+                                                        <td class="text-end fw-bold" id="ped-res-total">$0.00</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Card: Pago --}}
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <i class="ri-wallet-line me-2"></i>Pago
+                                        </h6>
+                                    </div>
+                                    <div class="card-body" id="ped-res-pago-bloque">
+                                        <p class="text-muted small mb-0">—</p>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </section>
 
