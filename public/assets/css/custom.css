@@ -6248,3 +6248,59 @@ header#page-topbar,
 }
 [data-bs-theme="dark"] .ped-prod-subtotal { color: #ffffff; }
 
+/* ════════════════════════════════════════════════════════════════════
+   PEDIDO WIZARD — PASO 3: PAGO
+   Chips de método (radio-style, selección única)
+   ════════════════════════════════════════════════════════════════════ */
+
+.ped-metodo-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.ped-metodo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(30,60,114,0.26);
+    background: rgba(30,60,114,0.04);
+    color: #1e3c72;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+}
+.ped-metodo-chip:hover {
+    border-color: rgba(0,217,165,0.45);
+    background: rgba(0,217,165,0.06);
+    color: #006b52;
+}
+.ped-metodo-chip.is-active {
+    background: rgba(0,217,165,0.16);
+    border-color: rgba(0,217,165,0.5);
+    color: #006b52;
+    box-shadow: 0 1px 6px rgba(0,217,165,0.18);
+}
+.ped-metodo-chip i { font-size: 0.88rem; }
+
+/* ── Dark mode — Paso 3 método ──────────────────────────────── */
+[data-bs-theme="dark"] .ped-metodo-chip {
+    background: rgba(78,122,199,0.08);
+    border-color: rgba(78,122,199,0.28);
+    color: #93c5fd;
+}
+[data-bs-theme="dark"] .ped-metodo-chip:hover {
+    border-color: rgba(110,231,183,0.4);
+    background: rgba(110,231,183,0.08);
+    color: #6ee7b7;
+}
+[data-bs-theme="dark"] .ped-metodo-chip.is-active {
+    background: rgba(110,231,183,0.14);
+    border-color: rgba(110,231,183,0.42);
+    color: #6ee7b7;
+    box-shadow: 0 1px 6px rgba(110,231,183,0.15);
+}
+

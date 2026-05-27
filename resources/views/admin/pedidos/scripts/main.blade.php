@@ -61,6 +61,11 @@ $(document).ready(function () {
                 $next.show();
                 $add.hide(); $edit.hide();
             }
+
+            // Hook: sincronizar total al entrar en paso 3
+            if (n === 3 && typeof window.pedSincronizarTotalPago === 'function') {
+                window.pedSincronizarTotalPago();
+            }
         }
 
         function validateStep(n) {
@@ -120,7 +125,55 @@ $(document).ready(function () {
                 }
                 return true;
             }
-            // Pasos 3–4 se implementan en TASK-013/014
+            if (n === 3) {
+                var total3  = parseFloat($('#ped-pago-total-display').val()) || 0;
+                var abono3  = parseFloat($('#ped-pago-abono-field').val()) || 0;
+                var metodo3 = $('#ped-pago-metodo-field').val();
+
+                if (abono3 < 0 || abono3 > total3 + 0.001) {
+                    Swal.fire({
+                        icon: 'warning', title: 'Abono inválido',
+                        text: 'El abono no puede ser mayor al total del pedido.',
+                        timer: 2200, showConfirmButton: false
+                    });
+                    $('#ped-pago-abono-field').trigger('focus');
+                    return false;
+                }
+                if (abono3 > 0 && !metodo3) {
+                    Swal.fire({
+                        icon: 'warning', title: 'Método requerido',
+                        text: 'Si registras un abono, debes seleccionar el método de pago.',
+                        timer: 2200, showConfirmButton: false
+                    });
+                    return false;
+                }
+                if (metodo3 === 'transferencia' || metodo3 === 'pago_movil') {
+                    var $bancoSel3 = metodo3 === 'transferencia'
+                        ? $('#ped-pago-transferencia-banco') : $('#ped-pago-movil-banco');
+                    var $refInput3 = metodo3 === 'transferencia'
+                        ? $('#ped-pago-transferencia-ref') : $('#ped-pago-movil-ref');
+                    if (!$bancoSel3.val()) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Banco requerido',
+                            text: 'Selecciona el banco para completar el método de pago.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        $bancoSel3.trigger('focus');
+                        return false;
+                    }
+                    if (!$refInput3.val().trim()) {
+                        Swal.fire({
+                            icon: 'warning', title: 'Referencia requerida',
+                            text: 'Ingresa el número de referencia del pago.',
+                            timer: 2200, showConfirmButton: false
+                        });
+                        $refInput3.trigger('focus');
+                        return false;
+                    }
+                }
+                return true;
+            }
+            // Paso 4 se implementa en TASK-014
             return true;
         }
 
@@ -955,6 +1008,100 @@ $(document).ready(function () {
 
         // Estado global expuesto para paso 3 y validateStep
         window.pedProdState = { items: pedProdItems, total: 0 };
+
+    })();
+
+
+    // ╔══════════════════════════════════════════════════════════════════
+    // ║ PEDIDO WIZARD — PASO 3: Pago
+    // ║ Total readonly, abono, restante, chips método, condicionales
+    // ╚══════════════════════════════════════════════════════════════════
+    (function () {
+        'use strict';
+
+        function pedFmtPago(n) {
+            return parseFloat(n || 0).toFixed(2);
+        }
+
+        function pedRecalcularRestante() {
+            var total = parseFloat($('#ped-pago-total-display').val()) || 0;
+            var abono = parseFloat($('#ped-pago-abono-field').val()) || 0;
+            $('#ped-pago-restante-display').val(pedFmtPago(total - abono));
+        }
+
+        function pedMostrarCondicional(metodo) {
+            $('#ped-pago-cond-transferencia').attr('hidden', true);
+            $('#ped-pago-cond-pago-movil').attr('hidden', true);
+            if (metodo === 'transferencia') {
+                $('#ped-pago-cond-transferencia').removeAttr('hidden');
+            } else if (metodo === 'pago_movil') {
+                $('#ped-pago-cond-pago-movil').removeAttr('hidden');
+            }
+        }
+
+        function pedResetPaso3() {
+            $('#ped-pago-abono-field').val('0');
+            $('#ped-pago-total-display').val('0.00');
+            $('#ped-pago-restante-display').val('0.00');
+            $('.ped-metodo-chip').removeClass('is-active').attr('aria-checked', 'false');
+            $('#ped-pago-metodo-field').val('');
+            pedMostrarCondicional(null);
+            $('#ped-pago-transferencia-banco, #ped-pago-movil-banco').val('');
+            $('#ped-pago-transferencia-ref, #ped-pago-movil-ref').val('');
+        }
+
+        // Sincronizar total desde paso 2 al navegar al paso 3
+        window.pedSincronizarTotalPago = function () {
+            var total = (window.pedProdState && window.pedProdState.total) || 0;
+            $('#ped-pago-total-display').val(pedFmtPago(total));
+            pedRecalcularRestante();
+        };
+
+        // Recalcular restante en tiempo real
+        $(document).on('input', '#ped-pago-abono-field', pedRecalcularRestante);
+
+        // Chips de método de pago (radio-style, toggle off si se vuelve a clickear)
+        $(document).on('click', '.ped-metodo-chip', function () {
+            var $b  = $(this);
+            var val = $b.data('value');
+            if ($b.hasClass('is-active')) {
+                $b.removeClass('is-active').attr('aria-checked', 'false');
+                $('#ped-pago-metodo-field').val('');
+                pedMostrarCondicional(null);
+            } else {
+                $('.ped-metodo-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $b.addClass('is-active').attr('aria-checked', 'true');
+                $('#ped-pago-metodo-field').val(val);
+                pedMostrarCondicional(val);
+            }
+        });
+
+        // Reset al abrir el wizard en modo crear
+        var $wizModal = $(document).find('#pedidoForm').closest('.modal');
+        if (!$wizModal.length) $wizModal = $('#showModal');
+        $wizModal.on('show.bs.modal', function () {
+            if (!$('#ped-wiz-id-field').val()) {
+                pedResetPaso3();
+            }
+        });
+
+        // Exponer estado para TASK-014 (submit)
+        window.pedPagoState = {
+            get metodo()     { return $('#ped-pago-metodo-field').val() || null; },
+            get abono()      { return parseFloat($('#ped-pago-abono-field').val()) || 0; },
+            get banco_id()   {
+                var m = $('#ped-pago-metodo-field').val();
+                if (m === 'transferencia') return $('#ped-pago-transferencia-banco').val() || null;
+                if (m === 'pago_movil')   return $('#ped-pago-movil-banco').val() || null;
+                return null;
+            },
+            get referencia() {
+                var m = $('#ped-pago-metodo-field').val();
+                if (m === 'transferencia') return $('#ped-pago-transferencia-ref').val().trim() || null;
+                if (m === 'pago_movil')   return $('#ped-pago-movil-ref').val().trim() || null;
+                return null;
+            }
+        };
 
     })();
 

@@ -322,11 +322,179 @@
                             <p class="wiz-step-desc">Registra el abono, el restante y el método de pago del pedido.</p>
                         </div>
                         <div class="row g-3">
-                            {{-- Implementar en TASK-013 --}}
-                            <div class="col-12 text-center text-muted py-5">
-                                <i class="ri-wallet-3-line fs-1 opacity-25"></i>
-                                <p class="mt-2 mb-0 small">Abono, restante y métodos de pago — se implementan en TASK-013</p>
+
+                            {{-- Card: Total / Abono / Restante --}}
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <i class="ri-money-dollar-circle-line me-2"></i>Distribución del pago
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-semibold mb-1">
+                                                    Total del pedido ($)
+                                                </label>
+                                                <div class="pago-kpi-box">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="text" id="ped-pago-total-display"
+                                                            class="form-control fw-bold" readonly />
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted d-block mt-1" style="font-size:0.68rem;">
+                                                    <i class="ri-refresh-line me-1"></i>Viene del paso 2
+                                                </small>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="ped-pago-abono-field"
+                                                    class="form-label small fw-semibold mb-1">Abono ($)</label>
+                                                <div class="pago-kpi-box">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" id="ped-pago-abono-field"
+                                                            name="abono" class="form-control"
+                                                            step="0.01" min="0" value="0" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-semibold mb-1">
+                                                    Restante ($)
+                                                </label>
+                                                <div class="pago-kpi-box">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="text" id="ped-pago-restante-display"
+                                                            class="form-control" readonly />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
+                            {{-- Card: Método de pago --}}
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header border-0 bg-soft-primary">
+                                        <h6 class="mb-0 text-atlantico-dark">
+                                            <i class="ri-bank-card-line me-2"></i>Método de pago
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="text-muted small mb-2">
+                                            Opcional si el abono es $0.00.
+                                        </p>
+
+                                        {{-- Chips de selección (radio-style, un solo método) --}}
+                                        <div class="ped-metodo-chips mb-3" role="radiogroup"
+                                            aria-label="Método de pago">
+                                            <button type="button" class="ped-metodo-chip"
+                                                data-value="efectivo"
+                                                role="radio" aria-checked="false">
+                                                <i class="ri-money-dollar-circle-line"></i>Efectivo
+                                            </button>
+                                            <button type="button" class="ped-metodo-chip"
+                                                data-value="transferencia"
+                                                role="radio" aria-checked="false">
+                                                <i class="ri-bank-card-line"></i>Transferencia
+                                            </button>
+                                            <button type="button" class="ped-metodo-chip"
+                                                data-value="pago_movil"
+                                                role="radio" aria-checked="false">
+                                                <i class="ri-smartphone-line"></i>Pago Móvil
+                                            </button>
+                                        </div>
+                                        <select id="ped-pago-metodo-field" name="metodo"
+                                            class="d-none" tabindex="-1">
+                                            <option value="">Sin método</option>
+                                            <option value="efectivo">Efectivo</option>
+                                            <option value="transferencia">Transferencia</option>
+                                            <option value="pago_movil">Pago Móvil</option>
+                                        </select>
+
+                                        {{-- Condicional: Transferencia --}}
+                                        <div id="ped-pago-cond-transferencia" hidden>
+                                            <div class="metodo-form-block">
+                                                <p class="metodo-form-title">
+                                                    <i class="ri-bank-card-line"></i>Datos de Transferencia
+                                                </p>
+                                                <div class="row g-2">
+                                                    <div class="col-md-6">
+                                                        <label for="ped-pago-transferencia-banco"
+                                                            class="form-label small fw-semibold mb-1">
+                                                            Banco <span class="text-danger">*</span>
+                                                        </label>
+                                                        <select id="ped-pago-transferencia-banco"
+                                                            name="banco_id_transferencia"
+                                                            class="form-select form-select-sm">
+                                                            <option value="">Seleccione banco</option>
+                                                            @foreach($bancos as $banco)
+                                                                <option value="{{ $banco->id }}">
+                                                                    {{ $banco->nombre }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="ped-pago-transferencia-ref"
+                                                            class="form-label small fw-semibold mb-1">
+                                                            Referencia <span class="text-danger">*</span>
+                                                        </label>
+                                                        <input type="text" id="ped-pago-transferencia-ref"
+                                                            name="referencia_transferencia"
+                                                            class="form-control form-control-sm"
+                                                            placeholder="Nro. referencia" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Condicional: Pago Móvil --}}
+                                        <div id="ped-pago-cond-pago-movil" hidden>
+                                            <div class="metodo-form-block">
+                                                <p class="metodo-form-title">
+                                                    <i class="ri-smartphone-line"></i>Datos de Pago Móvil
+                                                </p>
+                                                <div class="row g-2">
+                                                    <div class="col-md-6">
+                                                        <label for="ped-pago-movil-banco"
+                                                            class="form-label small fw-semibold mb-1">
+                                                            Banco <span class="text-danger">*</span>
+                                                        </label>
+                                                        <select id="ped-pago-movil-banco"
+                                                            name="banco_id_pago_movil"
+                                                            class="form-select form-select-sm">
+                                                            <option value="">Seleccione banco</option>
+                                                            @foreach($bancos as $banco)
+                                                                <option value="{{ $banco->id }}">
+                                                                    {{ $banco->nombre }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="ped-pago-movil-ref"
+                                                            class="form-label small fw-semibold mb-1">
+                                                            Referencia <span class="text-danger">*</span>
+                                                        </label>
+                                                        <input type="text" id="ped-pago-movil-ref"
+                                                            name="referencia_pago_movil"
+                                                            class="form-control form-control-sm"
+                                                            placeholder="Nro. referencia" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </section>
 
