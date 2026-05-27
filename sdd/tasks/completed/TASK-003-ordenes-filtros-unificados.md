@@ -2,11 +2,11 @@
 
 **Feature**: FEAT-001 — unified-filters-rollout
 **Spec**: `sdd/specs/unified-filters-rollout.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: medium
 **Esfuerzo estimado**: M (2-4h)
 **Depends-on**: none
-**Assigned-to**: unassigned
+**Assigned-to**: santiago
 
 ---
 
@@ -109,3 +109,14 @@ class OrdenProduccion extends Model
 4. Crear rama `feat/TASK-003-ordenes-filtros-unificados`.
 5. Implementar dentro del scope y completar QA.
 6. Mover a `sdd/tasks/completed/` y llenar Nota de Completitud.
+
+---
+
+## Nota de Completitud
+
+**Completado por**: Santiago + equipo (TL)
+**Fecha**: 2026-04 → 2026-05 (rollout); reconciliado 2026-05-26
+**Commits**: `1f7dd15` (rollout operativa, tocó `ordenes/index.blade.php` +67 y `ordenes/scripts/main.blade.php` +72 líneas), PR #13
+**Notas**: Filtros aplicados en `ordenes/index.blade.php` con `advanced-filters-wrapper` + `navy-filter-header`. Filtros reales: Estado, Fecha desde, Fecha hasta, Orden. Verificado en código durante reconciliación SDD. Reconciliado a `done` por discrepancia entre task y git.
+
+**Desviaciones del spec**: el spec planteaba "Estado + Departamento"; la implementación usa Estado + rango de fecha (desde/hasta) + Orden.

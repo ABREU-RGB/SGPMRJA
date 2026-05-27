@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-001 — unified-filters-rollout
 **Spec**: `sdd/specs/unified-filters-rollout.spec.md`
-**Status**: in-progress
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: L (4-8h)
 **Depends-on**: none
@@ -112,3 +112,14 @@ public static function actualizarCotizacionesVencidas()
 4. Crear rama `feat/TASK-001-cotizaciones-filtros-unificados`.
 5. Implementar dentro del scope y completar QA.
 6. Mover a `sdd/tasks/completed/` y llenar Nota de Completitud.
+
+---
+
+## Nota de Completitud
+
+**Completado por**: Santiago + equipo (TL)
+**Fecha**: 2026-04 → 2026-05 (rollout); reconciliado 2026-05-26
+**Commits**: `1f7dd15` (rollout operativa), `8436a1a` + `922d5f2` (ajustes filtros cotizaciones), PR #13 y #14
+**Notas**: Filtros aplicados en `cotizaciones/index.blade.php` con `advanced-filters-wrapper` + `navy-filter-header`. Filtros reales: Estado, Fecha, Orden. Verificado en código durante reconciliación SDD (grep `advanced-filters-wrapper` = 1). Reconciliado a `done` por discrepancia entre archivos de task y realidad de git (la implementación se mergeó sin cerrar la task).
+
+**Desviaciones del spec**: el spec planteaba "Estado + Cliente"; la implementación usa Estado + Fecha + Orden (el filtro de cliente se descartó por redundancia con la búsqueda — ver PR #14 "remove redundant client input").

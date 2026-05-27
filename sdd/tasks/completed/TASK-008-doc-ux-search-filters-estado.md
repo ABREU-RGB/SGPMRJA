@@ -2,11 +2,11 @@
 
 **Feature**: FEAT-001 — unified-filters-rollout
 **Spec**: `sdd/specs/unified-filters-rollout.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: low
 **Esfuerzo estimado**: S (< 2h)
 **Depends-on**: TASK-001, TASK-002, TASK-003, TASK-004, TASK-005, TASK-006, TASK-007
-**Assigned-to**: unassigned
+**Assigned-to**: emmanuel
 
 ---
 
@@ -64,3 +64,14 @@ El spec requiere actualizar la tabla "Estado por modulo" en `docs/conventions/ux
 4. Crear rama `feat/TASK-008-doc-ux-search-filters-estado`.
 5. Implementar dentro del scope y completar QA.
 6. Mover a `sdd/tasks/completed/` y llenar Nota de Completitud.
+
+---
+
+## Nota de Completitud
+
+**Completado por**: Emmanuel + Claude
+**Fecha**: 2026-05-26
+**Commits**: (reconciliación SDD — este commit)
+**Notas**: Actualizada la sección "Estado por módulo" de `docs/conventions/ux-search-filters.md`. Antes listaba solo Clientes/Proveedores/Productos y declaraba que los operativos "NO aplica el patrón" — ya falso tras el rollout FEAT-001. Ahora la tabla refleja los 3 grupos (maestros navy, operativos emerald, sistema) con los filtros reales verificados por grep de cada `index.blade.php`. Añadida nota de la variante `emerald-theme` introducida en `480b4bd`.
+
+**Desviaciones del spec**: ninguna.

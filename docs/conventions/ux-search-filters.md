@@ -74,15 +74,37 @@ $('#btn-clear-filters').on('click', function () {
 
 ## Estado por módulo
 
+> Rollout completado (FEAT-001, 2026-05). El patrón está aplicado en **todos los módulos maestros y operativos**.
+
+### Maestros (paleta navy `navy-theme`)
+
 | Módulo | Filtros | Mecanismo | Botón Historial |
 |---|---|---|---|
 | Clientes | Tipo, Estatus, Estado (3 selects) | Server-side (`ajax.reload()`) | ✅ |
 | Proveedores | Tipo Proveedor (1 select) | Client-side (`column(2).search()`) | ✅ |
 | Productos | Tipo Producto (1 select, dinámico) | Server-side (`ajax.reload()`) | ✅ |
+| Empleados | Departamento, Cargo | Server-side | ✅ |
+| Insumos | Tipo | Server-side | ✅ |
+| Departamentos / Cargos | búsqueda simple | Client-side | ✅ |
 
-## Módulos donde NO aplica el patrón
+### Operativos (paleta emerald `emerald-theme` — ver `480b4bd`)
 
-Pedidos, Cotizaciones, Órdenes, Inventario, Producción, Empleados, Insumos, Usuarios. Estos tienen search-box en `card-header` y no tienen filtros que integrar.
+| Módulo | Filtros | Mecanismo | Botón Historial |
+|---|---|---|---|
+| Cotizaciones | Estado, Fecha, Orden | Server-side | — |
+| Pedidos | Estado, Fecha entrega, Orden | Server-side | — |
+| Órdenes de Producción | Estado, Fecha desde/hasta, Orden | Server-side | — |
+| Producción Diaria | Empleado, Fecha desde/hasta | Server-side | — |
+| Inventario Movimientos | Tipo, Insumo, Fecha desde/hasta | Server-side | — |
+| Inventario Alertas | (solo visual — vista ya filtrada por stock bajo) | — | — |
+
+### Sistema
+
+| Módulo | Filtros | Mecanismo |
+|---|---|---|
+| Usuarios | Rol, Estado | Server-side |
+
+> **Nota de paleta**: los módulos operativos usan la variante `emerald-theme` del wrapper (no `navy-theme`) para mantener consistencia con el estándar visual de la sección Gestión Operativa. Las clases estructurales `navy-filter-*` se mantienen como base; solo el color cambia según el tema del wrapper padre.
 
 ## Patrón server-side: ejemplo Productos
 

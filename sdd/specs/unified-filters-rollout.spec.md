@@ -8,7 +8,7 @@ base_branch: enmanuel
 **Feature ID**: FEAT-001
 **Fecha**: 2026-05-20
 **Autor**: Emmanuel
-**Status**: approved
+**Status**: shipped
 **Assigned-to**: Santiago
 **Versión objetivo**: Sprint actual
 

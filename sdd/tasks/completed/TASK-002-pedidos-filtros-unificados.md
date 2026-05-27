@@ -2,11 +2,11 @@
 
 **Feature**: FEAT-001 — unified-filters-rollout
 **Spec**: `sdd/specs/unified-filters-rollout.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: L (4-8h)
 **Depends-on**: none
-**Assigned-to**: unassigned
+**Assigned-to**: santiago
 
 ---
 
@@ -110,3 +110,14 @@ class Pedido extends Model
 4. Crear rama `feat/TASK-002-pedidos-filtros-unificados`.
 5. Implementar dentro del scope y completar QA.
 6. Mover a `sdd/tasks/completed/` y llenar Nota de Completitud.
+
+---
+
+## Nota de Completitud
+
+**Completado por**: Santiago + equipo (TL)
+**Fecha**: 2026-04 → 2026-05 (rollout); reconciliado 2026-05-26
+**Commits**: `1f7dd15` (rollout operativa, tocó `pedidos/index.blade.php` +129 líneas), PR #13
+**Notas**: Filtros aplicados en `pedidos/index.blade.php` con `advanced-filters-wrapper` + `navy-filter-header`. Filtros reales: Estado, Fecha de entrega, Orden. Verificado en código durante reconciliación SDD. Reconciliado a `done` por discrepancia entre task y git.
+
+**Desviaciones del spec**: el spec planteaba "Estado + Cliente"; la implementación usa Estado + Fecha entrega + Orden (mismo criterio que cotizaciones — cliente descartado por redundancia con búsqueda).
