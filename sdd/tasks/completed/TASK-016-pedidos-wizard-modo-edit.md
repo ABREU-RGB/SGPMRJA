@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: medium
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: TASK-014
@@ -181,11 +181,19 @@ PedidoWizard.aplicarCamposProtegidos() {
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
-
-**Completado por**:
-**Fecha**:
-**Commits**:
+**Completado por**: Emmanuel (continuando el trabajo de Santiago)
+**Fecha**: 2026-05-27
+**Commits**: (este commit)
 **Notas**:
+- `window.pedAbrirEnEdit(pedidoId)` agregado en `scripts/main.blade.php` (IIFE nuevo, espeja el patrón de TASK-015). Usa `GET pedidos.show` (no existe `edit()` en el controller — la ruta `pedidos.edit` apunta a un método inexistente; `show()` ya devuelve el pedido completo con productos/bordados/pagos/cliente normalizado).
+- Hidrata los 4 pasos: cliente (construye objeto persona desde campos normalizados), fechas, prioridad, estado, productos (mapea formato `show()` `producto.nombre` → `producto_nombre`), pago (abono + primer pago).
+- Marca edit con `#ped-wiz-id-field` ANTES de abrir el modal → los resets de modo crear (en `show.bs.modal`) se saltan solos.
+- Campos protegidos: documento del cliente (`#ped-ci-rif-*`) y `fecha_pedido` → readonly + `campo-protegido`. Clase `.ped-wiz-edit-mode` en el modal oculta acciones de producto, importar y cambiar cliente (CSS en custom.css).
+- Submit ramifica: edit → `_method: PUT` + `estado` + `url = /pedidos/{id}`; crear → POST store. Mensaje de éxito adaptado.
+- `hidden.bs.modal` resetea todo el estado edit (id, readonly, estado wrapper, título, texto botón) → la próxima apertura en modo crear queda limpia.
+- **Fix de bug en prep de TASK-016**: los chips/select de estado en `modals.blade.php` tenían valores de cotización (`Aprobado`, `Entregado`) que NO existen en el enum de pedido. Corregidos a `Pendiente/Procesando/Completado/Cancelado` (coinciden con `UpdatePedidoRequest`).
 
 **Desviaciones del spec**:
+- El backend `update()` BLOQUEA con 403 editar pedidos `Completado`/`Cancelado` (guard pre-existente). El spec pedía "reabrir siempre". Resolución: el wizard SÍ abre en edit para cualquier estado (read), pero el guardado de un Completado/Cancelado será rechazado por el backend con su mensaje. Para Pendiente/Procesando el edit funciona completo.
+- **Limitación de bordados (pre-existente, NO introducida aquí)**: `pedConstruirPayload()` (TASK-014) no envía bordados ni en crear ni en editar — el modelo de productos del wizard aún no captura bordados. Editar+guardar un pedido con bordados los perdería. Es un gap de TASK-012/014; se debe abordar aparte. Flageado para QA en TASK-018.
+- **QA end-to-end diferido a TASK-018**: hay un `#showModal` duplicado (el viejo en `index.blade.php` + el nuevo en `modals.blade.php`). TASK-017 elimina el viejo; recién ahí el wizard es testeable en navegador.
