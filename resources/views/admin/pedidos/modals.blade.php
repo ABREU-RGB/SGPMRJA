@@ -268,31 +268,16 @@
                         <div class="wiz-step-header">
                             <span class="wiz-step-tag">Paso 2 de 4</span>
                             <h4 class="wiz-step-title">Productos del pedido</h4>
-                            <p class="wiz-step-desc">Agrega los productos manualmente o importa desde una cotización existente.</p>
+                            <p class="wiz-step-desc">Definidos en la cotización de origen — solo lectura. Para cambiarlos, edita la cotización.</p>
                         </div>
 
-                        {{-- Banner: datos heredados de cotización (oculto por defecto) --}}
+                        {{-- Banner: productos heredados de cotización (solo lectura) --}}
                         <div class="ped-banner-heredado d-none" id="ped-banner-heredado-p2">
                             <i class="ri-file-transfer-line"></i>
                             <span>Productos heredados de cotización
                                 <strong class="ped-banner-cot-num">#—</strong>
-                                — Puedes agregar, editar o eliminar antes de continuar.
+                                — definidos en la cotización (solo lectura).
                             </span>
-                        </div>
-
-                        {{-- Banner importar cotización --}}
-                        <div class="ped-import-cot-banner mb-3">
-                            <div class="ped-import-cot-banner-icon">
-                                <i class="ri-file-transfer-line"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="ped-import-cot-banner-title">¿Importar productos desde una cotización?</p>
-                                <p class="ped-import-cot-banner-desc">Selecciona una cotización aprobada para pre-cargar sus productos.</p>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-outline-success flex-shrink-0"
-                                id="ped-btn-importar-cotizacion">
-                                <i class="ri-download-line me-1"></i>Importar
-                            </button>
                         </div>
 
                         {{-- KPI bar — líneas + total --}}
@@ -307,29 +292,17 @@
                             </div>
                         </div>
 
-                        {{-- Empty state (visible sin productos) --}}
+                        {{-- Empty state --}}
                         <div class="cot-empty-state" id="ped-productos-empty">
                             <div class="cot-empty-icon">
                                 <i class="ri-shopping-bag-3-line"></i>
                             </div>
-                            <h6 class="cot-empty-title">Sin productos aún</h6>
-                            <p class="cot-empty-desc">Agrega productos manualmente o importa desde una cotización aprobada.</p>
-                            <button type="button" class="btn btn-sm btn-atlantico-brand"
-                                id="ped-btn-agregar-prod-empty">
-                                <i class="ri-add-line me-1"></i>Agregar producto
-                            </button>
+                            <h6 class="cot-empty-title">Sin productos</h6>
+                            <p class="cot-empty-desc">La cotización de origen no tiene productos.</p>
                         </div>
 
-                        {{-- Lista de tarjetas de productos (renderizada por JS) --}}
-                        <div id="ped-productos-list" class="d-flex flex-column gap-2"></div>
-
-                        {{-- Botón agregar (visible cuando hay al menos 1 producto) --}}
-                        <div class="mt-3" id="ped-agregar-prod-row" hidden>
-                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                id="ped-btn-agregar-prod">
-                                <i class="ri-add-line me-1"></i>Agregar otro producto
-                            </button>
-                        </div>
+                        {{-- Grilla de productos agrupada (solo lectura — espejo del wizard de cotización) --}}
+                        <div id="ped-productos-list"></div>
 
                     </section>
 
@@ -374,10 +347,13 @@
                                                     <div class="input-group input-group-sm">
                                                         <span class="input-group-text">$</span>
                                                         <input type="number" id="ped-pago-abono-field"
-                                                            name="abono" class="form-control"
-                                                            step="0.01" min="0" value="0" />
+                                                            name="abono" class="form-control fw-bold"
+                                                            step="0.01" min="0" value="0" readonly />
                                                     </div>
                                                 </div>
+                                                <small class="text-muted d-block mt-1" style="font-size:0.68rem;">
+                                                    <i class="ri-add-circle-line me-1"></i>Suma de los métodos
+                                                </small>
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="form-label small fw-semibold mb-1">
@@ -396,52 +372,60 @@
                                 </div>
                             </div>
 
-                            {{-- Card: Método de pago --}}
+                            {{-- Card: Métodos de pago (multi-método — se pueden combinar) --}}
                             <div class="col-12">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header border-0 bg-soft-primary">
                                         <h6 class="mb-0 text-atlantico-dark">
-                                            <i class="ri-bank-card-line me-2"></i>Método de pago
+                                            <i class="ri-bank-card-line me-2"></i>Métodos de pago
                                         </h6>
                                     </div>
                                     <div class="card-body">
-                                        <p class="text-muted small mb-2">
-                                            Opcional si el abono es $0.00.
+                                        <p class="text-muted small mb-3">
+                                            Activá uno o varios métodos y repartí el abono. Dejalos apagados si el pedido se paga después.
                                         </p>
 
-                                        {{-- Chips de selección (radio-style, un solo método) --}}
-                                        <div class="ped-metodo-chips mb-3" role="radiogroup"
-                                            aria-label="Método de pago">
-                                            <button type="button" class="ped-metodo-chip"
-                                                data-value="efectivo"
-                                                role="radio" aria-checked="false">
-                                                <i class="ri-money-dollar-circle-line"></i>Efectivo
-                                            </button>
-                                            <button type="button" class="ped-metodo-chip"
-                                                data-value="transferencia"
-                                                role="radio" aria-checked="false">
-                                                <i class="ri-bank-card-line"></i>Transferencia
-                                            </button>
-                                            <button type="button" class="ped-metodo-chip"
-                                                data-value="pago_movil"
-                                                role="radio" aria-checked="false">
-                                                <i class="ri-smartphone-line"></i>Pago Móvil
-                                            </button>
+                                        {{-- Efectivo --}}
+                                        <div class="ped-pago-metodo" data-metodo="efectivo">
+                                            <div class="ped-pago-metodo-head">
+                                                <div class="form-check form-switch ped-pago-switch">
+                                                    <input class="form-check-input ped-metodo-toggle" type="checkbox"
+                                                        data-metodo="efectivo" id="ped-metodo-toggle-efectivo">
+                                                    <label class="form-check-label" for="ped-metodo-toggle-efectivo">
+                                                        <i class="ri-money-dollar-circle-line me-1"></i>Efectivo
+                                                    </label>
+                                                </div>
+                                                <div class="ped-pago-monto-wrap">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" class="form-control ped-metodo-monto"
+                                                            data-metodo="efectivo" id="ped-monto-efectivo"
+                                                            step="0.01" min="0" placeholder="0.00" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <select id="ped-pago-metodo-field" name="metodo"
-                                            class="d-none" tabindex="-1">
-                                            <option value="">Sin método</option>
-                                            <option value="efectivo">Efectivo</option>
-                                            <option value="transferencia">Transferencia</option>
-                                            <option value="pago_movil">Pago Móvil</option>
-                                        </select>
 
-                                        {{-- Condicional: Transferencia --}}
-                                        <div id="ped-pago-cond-transferencia" hidden>
-                                            <div class="metodo-form-block">
-                                                <p class="metodo-form-title">
-                                                    <i class="ri-bank-card-line"></i>Datos de Transferencia
-                                                </p>
+                                        {{-- Transferencia --}}
+                                        <div class="ped-pago-metodo" data-metodo="transferencia">
+                                            <div class="ped-pago-metodo-head">
+                                                <div class="form-check form-switch ped-pago-switch">
+                                                    <input class="form-check-input ped-metodo-toggle" type="checkbox"
+                                                        data-metodo="transferencia" id="ped-metodo-toggle-transferencia">
+                                                    <label class="form-check-label" for="ped-metodo-toggle-transferencia">
+                                                        <i class="ri-bank-card-line me-1"></i>Transferencia
+                                                    </label>
+                                                </div>
+                                                <div class="ped-pago-monto-wrap">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" class="form-control ped-metodo-monto"
+                                                            data-metodo="transferencia" id="ped-monto-transferencia"
+                                                            step="0.01" min="0" placeholder="0.00" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ped-pago-metodo-extra" id="ped-pago-extra-transferencia" hidden>
                                                 <div class="row g-2">
                                                     <div class="col-md-6">
                                                         <label for="ped-pago-transferencia-banco"
@@ -449,13 +433,10 @@
                                                             Banco <span class="text-danger">*</span>
                                                         </label>
                                                         <select id="ped-pago-transferencia-banco"
-                                                            name="banco_id_transferencia"
                                                             class="form-select form-select-sm">
                                                             <option value="">Seleccione banco</option>
                                                             @foreach($bancos as $banco)
-                                                                <option value="{{ $banco->id }}">
-                                                                    {{ $banco->nombre }}
-                                                                </option>
+                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -465,7 +446,6 @@
                                                             Referencia <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text" id="ped-pago-transferencia-ref"
-                                                            name="referencia_transferencia"
                                                             class="form-control form-control-sm"
                                                             placeholder="Nro. referencia" />
                                                     </div>
@@ -473,12 +453,26 @@
                                             </div>
                                         </div>
 
-                                        {{-- Condicional: Pago Móvil --}}
-                                        <div id="ped-pago-cond-pago-movil" hidden>
-                                            <div class="metodo-form-block">
-                                                <p class="metodo-form-title">
-                                                    <i class="ri-smartphone-line"></i>Datos de Pago Móvil
-                                                </p>
+                                        {{-- Pago Móvil --}}
+                                        <div class="ped-pago-metodo" data-metodo="pago_movil">
+                                            <div class="ped-pago-metodo-head">
+                                                <div class="form-check form-switch ped-pago-switch">
+                                                    <input class="form-check-input ped-metodo-toggle" type="checkbox"
+                                                        data-metodo="pago_movil" id="ped-metodo-toggle-pago_movil">
+                                                    <label class="form-check-label" for="ped-metodo-toggle-pago_movil">
+                                                        <i class="ri-smartphone-line me-1"></i>Pago Móvil
+                                                    </label>
+                                                </div>
+                                                <div class="ped-pago-monto-wrap">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" class="form-control ped-metodo-monto"
+                                                            data-metodo="pago_movil" id="ped-monto-pago_movil"
+                                                            step="0.01" min="0" placeholder="0.00" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ped-pago-metodo-extra" id="ped-pago-extra-pago_movil" hidden>
                                                 <div class="row g-2">
                                                     <div class="col-md-6">
                                                         <label for="ped-pago-movil-banco"
@@ -486,13 +480,10 @@
                                                             Banco <span class="text-danger">*</span>
                                                         </label>
                                                         <select id="ped-pago-movil-banco"
-                                                            name="banco_id_pago_movil"
                                                             class="form-select form-select-sm">
                                                             <option value="">Seleccione banco</option>
                                                             @foreach($bancos as $banco)
-                                                                <option value="{{ $banco->id }}">
-                                                                    {{ $banco->nombre }}
-                                                                </option>
+                                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -502,7 +493,6 @@
                                                             Referencia <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text" id="ped-pago-movil-ref"
-                                                            name="referencia_pago_movil"
                                                             class="form-control form-control-sm"
                                                             placeholder="Nro. referencia" />
                                                     </div>

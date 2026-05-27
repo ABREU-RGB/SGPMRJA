@@ -43,8 +43,9 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <div class="d-flex gap-2">
                                 @if(Auth::user()->isAdmin())
+                                    {{-- Un pedido solo nace de una cotización aprobada: abre el selector --}}
                                     <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
-                                        data-bs-target="#showModal">
+                                        data-bs-target="#seleccionarCotizacionModal">
                                         <i class="ri-add-line align-bottom me-1"></i> Agregar Pedido
                                     </button>
                                 @endif

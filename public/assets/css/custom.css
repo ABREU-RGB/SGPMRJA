@@ -6248,73 +6248,80 @@ header#page-topbar,
 }
 [data-bs-theme="dark"] .ped-prod-subtotal { color: #ffffff; }
 
-/* ── Modo edición (TASK-016): campos protegidos read-only ──────────────
-   Al editar un pedido, cliente y productos no se modifican: se ocultan
-   las acciones de agregar/editar/eliminar producto, el importar y el
-   cambiar cliente. Solo fecha entrega, prioridad, estado y pago editan. */
-.ped-wiz-edit-mode .ped-prod-actions,
-.ped-wiz-edit-mode .ped-import-cot-banner,
-.ped-wiz-edit-mode #ped-agregar-prod-row,
-.ped-wiz-edit-mode #ped-btn-agregar-prod-empty,
-.ped-wiz-edit-mode #ped-cliente-change-btn {
+/* ── Modo protegido (.ped-wiz-locked): cliente + productos de solo lectura ──
+   Un pedido siempre nace de una cotización (o se está editando uno existente):
+   el cliente y los productos vienen de la cotización y no se modifican aquí.
+   Se oculta el botón "cambiar cliente". Solo fecha entrega, prioridad, estado
+   y pago son editables. La grilla de productos se renderiza sin acciones. */
+.ped-wiz-locked #ped-cliente-change-btn {
     display: none !important;
 }
 
 /* ════════════════════════════════════════════════════════════════════
    PEDIDO WIZARD — PASO 3: PAGO
-   Chips de método (radio-style, selección única)
+   Métodos de pago — bloques con toggle (se pueden combinar varios)
    ════════════════════════════════════════════════════════════════════ */
 
-.ped-metodo-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+.ped-pago-metodo {
+    border: 1px solid rgba(30,60,114,0.16);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    background: rgba(30,60,114,0.02);
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
 }
-.ped-metodo-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 16px;
-    border-radius: 999px;
-    border: 1px solid rgba(30,60,114,0.26);
-    background: rgba(30,60,114,0.04);
-    color: #1e3c72;
-    font-size: 0.8rem;
-    font-weight: 700;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.15s ease;
-}
-.ped-metodo-chip:hover {
-    border-color: rgba(0,217,165,0.45);
-    background: rgba(0,217,165,0.06);
-    color: #006b52;
-}
-.ped-metodo-chip.is-active {
-    background: rgba(0,217,165,0.16);
+.ped-pago-metodo.is-active {
     border-color: rgba(0,217,165,0.5);
-    color: #006b52;
-    box-shadow: 0 1px 6px rgba(0,217,165,0.18);
+    background: rgba(0,217,165,0.06);
+    box-shadow: 0 1px 8px rgba(0,217,165,0.12);
 }
-.ped-metodo-chip i { font-size: 0.88rem; }
+.ped-pago-metodo-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.ped-pago-switch {
+    margin: 0;
+    min-height: auto;
+    padding-left: 2.4em;
+}
+.ped-pago-switch .form-check-input {
+    cursor: pointer;
+    width: 2em;
+    height: 1em;
+    margin-left: -2.4em;
+}
+.ped-pago-switch .form-check-input:checked {
+    background-color: #00d9a5;
+    border-color: #00d9a5;
+}
+.ped-pago-switch .form-check-label {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #1e3c72;
+    cursor: pointer;
+}
+.ped-pago-switch .form-check-label i { font-size: 0.92rem; }
+.ped-pago-monto-wrap { width: 150px; flex-shrink: 0; }
+.ped-pago-metodo-extra {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(30,60,114,0.2);
+}
 
-/* ── Dark mode — Paso 3 método ──────────────────────────────── */
-[data-bs-theme="dark"] .ped-metodo-chip {
-    background: rgba(78,122,199,0.08);
-    border-color: rgba(78,122,199,0.28);
-    color: #93c5fd;
+/* ── Dark mode — Paso 3 métodos ──────────────────────────────── */
+[data-bs-theme="dark"] .ped-pago-metodo {
+    border-color: rgba(78,122,199,0.22);
+    background: rgba(78,122,199,0.05);
 }
-[data-bs-theme="dark"] .ped-metodo-chip:hover {
-    border-color: rgba(110,231,183,0.4);
-    background: rgba(110,231,183,0.08);
-    color: #6ee7b7;
-}
-[data-bs-theme="dark"] .ped-metodo-chip.is-active {
-    background: rgba(110,231,183,0.14);
+[data-bs-theme="dark"] .ped-pago-metodo.is-active {
     border-color: rgba(110,231,183,0.42);
-    color: #6ee7b7;
-    box-shadow: 0 1px 6px rgba(110,231,183,0.15);
+    background: rgba(110,231,183,0.08);
+    box-shadow: 0 1px 8px rgba(110,231,183,0.12);
 }
+[data-bs-theme="dark"] .ped-pago-switch .form-check-label { color: #93c5fd; }
+[data-bs-theme="dark"] .ped-pago-metodo-extra { border-top-color: rgba(78,122,199,0.25); }
 
 /* ════════════════════════════════════════════════════════════════════
    PEDIDO WIZARD — Banner "Datos heredados de cotización" (amber)
