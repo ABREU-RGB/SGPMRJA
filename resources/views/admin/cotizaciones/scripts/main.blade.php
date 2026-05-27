@@ -4997,21 +4997,21 @@
                 n = Math.max(1, Math.min(TOTAL_STEPS, n));
                 currentStep = n;
 
-                document.querySelectorAll('#showModal .cot-step-content').forEach(function (sec) {
+                document.querySelectorAll('#showModal .wiz-step-content').forEach(function (sec) {
                     var step = parseInt(sec.dataset.step, 10);
                     var active = step === n;
                     sec.classList.toggle('is-active', active);
                     sec.hidden = !active;
                 });
 
-                document.querySelectorAll('#showModal .cot-step-marker').forEach(function (mk) {
+                document.querySelectorAll('#showModal .wiz-step-marker').forEach(function (mk) {
                     var step = parseInt(mk.dataset.step, 10);
                     mk.classList.toggle('is-active', step === n);
                     mk.classList.toggle('is-complete', step < n);
                     mk.setAttribute('aria-selected', step === n ? 'true' : 'false');
                 });
 
-                document.querySelectorAll('#showModal .cot-step-line-fill').forEach(function (lf) {
+                document.querySelectorAll('#showModal .wiz-step-line-fill').forEach(function (lf) {
                     var line = parseInt(lf.dataset.line, 10);
                     lf.style.width = (line < n) ? '100%' : '0%';
                 });
@@ -5238,7 +5238,7 @@
             $('#btn-cot-prev').on('click', prevStep);
 
             // Click en marker del stepper: retroceder libre, avanzar con validación
-            $(document).on('click', '#showModal .cot-step-marker', function () {
+            $(document).on('click', '#showModal .wiz-step-marker', function () {
                 var target = parseInt(this.dataset.step, 10);
                 if (target === currentStep) return;
                 if (target < currentStep) { showStep(target); return; }

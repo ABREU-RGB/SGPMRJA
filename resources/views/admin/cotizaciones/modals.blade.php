@@ -209,7 +209,7 @@
      Modal Cotización — Wizard 3 pasos (Cliente · Productos · Resumen)
      IDs de campos preservados para compatibilidad con scripts/main.blade.php
      ════════════════════════════════════════════════════════════════════ -->
-<div class="modal fade atlantico-modal atlantico-modal--op cot-wizard-modal" id="showModal" tabindex="-1"
+<div class="modal fade atlantico-modal atlantico-modal--op wiz-modal" id="showModal" tabindex="-1"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
@@ -219,21 +219,21 @@
             </div>
 
             {{-- Stepper visual --}}
-            <div class="cot-stepper-wrapper">
-                <div class="cot-stepper" role="tablist" aria-label="Pasos de la cotización">
-                    <button type="button" class="cot-step-marker is-active" data-step="1" role="tab" aria-selected="true">
-                        <span class="cot-step-dot">1</span>
-                        <span class="cot-step-label">Cliente</span>
+            <div class="wiz-stepper-wrapper">
+                <div class="wiz-stepper" role="tablist" aria-label="Pasos de la cotización">
+                    <button type="button" class="wiz-step-marker is-active" data-step="1" role="tab" aria-selected="true">
+                        <span class="wiz-step-dot">1</span>
+                        <span class="wiz-step-label">Cliente</span>
                     </button>
-                    <span class="cot-step-line"><span class="cot-step-line-fill" data-line="1"></span></span>
-                    <button type="button" class="cot-step-marker" data-step="2" role="tab" aria-selected="false">
-                        <span class="cot-step-dot">2</span>
-                        <span class="cot-step-label">Productos</span>
+                    <span class="wiz-step-line"><span class="wiz-step-line-fill" data-line="1"></span></span>
+                    <button type="button" class="wiz-step-marker" data-step="2" role="tab" aria-selected="false">
+                        <span class="wiz-step-dot">2</span>
+                        <span class="wiz-step-label">Productos</span>
                     </button>
-                    <span class="cot-step-line"><span class="cot-step-line-fill" data-line="2"></span></span>
-                    <button type="button" class="cot-step-marker" data-step="3" role="tab" aria-selected="false">
-                        <span class="cot-step-dot">3</span>
-                        <span class="cot-step-label">Resumen</span>
+                    <span class="wiz-step-line"><span class="wiz-step-line-fill" data-line="2"></span></span>
+                    <button type="button" class="wiz-step-marker" data-step="3" role="tab" aria-selected="false">
+                        <span class="wiz-step-dot">3</span>
+                        <span class="wiz-step-label">Resumen</span>
                     </button>
                 </div>
             </div>
@@ -243,14 +243,14 @@
                 <input type="hidden" id="id-field" />
                 <input type="hidden" id="cliente-id-field" name="cliente_id" />
 
-                <div class="modal-body p-0 cot-wizard-body">
+                <div class="modal-body p-0 wiz-wizard-body">
 
                     {{-- ═════════════════════════ PASO 1 — CLIENTE ═════════════════════════ --}}
-                    <section class="cot-step-content is-active" id="cot-step-1" data-step="1">
-                        <div class="cot-step-header">
-                            <span class="cot-step-tag">Paso 1 de 3</span>
-                            <h4 class="cot-step-title">Cliente y datos generales</h4>
-                            <p class="cot-step-desc">Busca el cliente por su documento o créalo en línea, luego define las fechas y la prioridad.</p>
+                    <section class="wiz-step-content is-active" id="cot-step-1" data-step="1">
+                        <div class="wiz-step-header">
+                            <span class="wiz-step-tag">Paso 1 de 3</span>
+                            <h4 class="wiz-step-title">Cliente y datos generales</h4>
+                            <p class="wiz-step-desc">Busca el cliente por su documento o créalo en línea, luego define las fechas y la prioridad.</p>
                         </div>
 
                         <div class="row g-3">
@@ -467,13 +467,13 @@
                     </section>
 
                     {{-- ═════════════════════════ PASO 2 — PRODUCTOS ═════════════════════════ --}}
-                    <section class="cot-step-content" id="cot-step-2" data-step="2" hidden>
-                        <div class="cot-step-header">
+                    <section class="wiz-step-content" id="cot-step-2" data-step="2" hidden>
+                        <div class="wiz-step-header">
                             <div class="d-flex align-items-end justify-content-between flex-wrap gap-3">
                                 <div>
-                                    <span class="cot-step-tag">Paso 2 de 3</span>
-                                    <h4 class="cot-step-title">Productos de la cotización</h4>
-                                    <p class="cot-step-desc">Explora el catálogo y configura cada prenda con sus colores, tallas y bordados.</p>
+                                    <span class="wiz-step-tag">Paso 2 de 3</span>
+                                    <h4 class="wiz-step-title">Productos de la cotización</h4>
+                                    <p class="wiz-step-desc">Explora el catálogo y configura cada prenda con sus colores, tallas y bordados.</p>
                                 </div>
                                 <div class="d-flex gap-2 flex-wrap">
                                     <button type="button" class="btn btn-atlantico-brand" id="btn-explorar-catalogo">
@@ -529,11 +529,11 @@
                     </section>
 
                     {{-- ═════════════════════════ PASO 3 — RESUMEN ═════════════════════════ --}}
-                    <section class="cot-step-content" id="cot-step-3" data-step="3" hidden>
-                        <div class="cot-step-header">
-                            <span class="cot-step-tag">Paso 3 de 3</span>
-                            <h4 class="cot-step-title">Resumen y notas</h4>
-                            <p class="cot-step-desc">Revisa el desglose, agrega condiciones y finaliza.</p>
+                    <section class="wiz-step-content" id="cot-step-3" data-step="3" hidden>
+                        <div class="wiz-step-header">
+                            <span class="wiz-step-tag">Paso 3 de 3</span>
+                            <h4 class="wiz-step-title">Resumen y notas</h4>
+                            <p class="wiz-step-desc">Revisa el desglose, agrega condiciones y finaliza.</p>
                         </div>
 
                         <div class="row g-3">
@@ -615,28 +615,28 @@
 
                 </div>{{-- /modal-body --}}
 
-                <div class="modal-footer cot-wizard-footer">
-                    <div class="cot-wizard-footer-info">
-                        <span class="cot-wizard-step-info">
+                <div class="modal-footer wiz-wizard-footer">
+                    <div class="wiz-wizard-footer-info">
+                        <span class="wiz-wizard-step-info">
                             <span id="cot-step-current">1</span> de 3
                         </span>
                     </div>
-                    <div class="cot-wizard-footer-actions">
-                        <button type="button" class="btn btn-light cot-wizard-btn-prev" id="btn-cot-prev"
+                    <div class="wiz-wizard-footer-actions">
+                        <button type="button" class="btn btn-light wiz-wizard-btn-prev" id="btn-cot-prev"
                             style="display:none;">
                             <i class="ri-arrow-left-line me-1"></i>Anterior
                         </button>
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                             <i class="ri-close-line me-1"></i>Cerrar
                         </button>
-                        <button type="button" class="btn btn-atlantico-brand cot-wizard-btn-next" id="btn-cot-next">
+                        <button type="button" class="btn btn-atlantico-brand wiz-wizard-btn-next" id="btn-cot-next">
                             Continuar<i class="ri-arrow-right-line ms-1"></i>
                         </button>
-                        <button type="submit" class="btn btn-success cot-wizard-btn-submit" id="add-btn"
+                        <button type="submit" class="btn btn-success wiz-wizard-btn-submit" id="add-btn"
                             style="display:none;">
                             <i class="ri-check-line me-1"></i>Crear cotización
                         </button>
-                        <button type="submit" class="btn btn-success cot-wizard-btn-submit" id="edit-btn"
+                        <button type="submit" class="btn btn-success wiz-wizard-btn-submit" id="edit-btn"
                             style="display:none;">
                             <i class="ri-save-line me-1"></i>Actualizar
                         </button>

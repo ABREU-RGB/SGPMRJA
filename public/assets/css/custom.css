@@ -1302,19 +1302,19 @@ header#page-topbar,
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   COTIZACIÓN — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
+   WIZARD UNIFICADO  (Cotizaciones · Pedidos)
    Componentes: stepper, step-content, kpis, empty-state, resumen-card,
    tabla resumen, footer del wizard. Light + dark mode.
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── Stepper visual ─────────────────────────────────────────────── */
-.cot-stepper-wrapper {
+.wiz-stepper-wrapper {
     background: linear-gradient(180deg, #f6f9fd 0%, #ffffff 100%);
     padding: 18px 24px 16px;
     border-bottom: 1px solid rgba(30, 60, 114, 0.08);
 }
 
-.cot-stepper {
+.wiz-stepper {
     display: flex;
     align-items: flex-start;
     max-width: 540px;
@@ -1322,7 +1322,7 @@ header#page-topbar,
     gap: 4px;
 }
 
-.cot-step-marker {
+.wiz-step-marker {
     flex: 0 0 auto;
     background: transparent;
     border: 0;
@@ -1336,9 +1336,9 @@ header#page-topbar,
     transition: color 0.2s ease;
 }
 
-.cot-step-marker:hover { color: #1e3c72; }
+.wiz-step-marker:hover { color: #1e3c72; }
 
-.cot-step-marker .cot-step-dot {
+.wiz-step-marker .wiz-step-dot {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -1354,7 +1354,7 @@ header#page-topbar,
     position: relative;
 }
 
-.cot-step-marker .cot-step-label {
+.wiz-step-marker .wiz-step-label {
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -1362,11 +1362,11 @@ header#page-topbar,
     color: inherit;
 }
 
-.cot-step-marker.is-active {
+.wiz-step-marker.is-active {
     color: #1e3c72;
 }
-.cot-step-marker.is-active .cot-step-label { color: #1e3c72; }
-.cot-step-marker.is-active .cot-step-dot {
+.wiz-step-marker.is-active .wiz-step-label { color: #1e3c72; }
+.wiz-step-marker.is-active .wiz-step-dot {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     border-color: #1e3c72;
     color: #ffffff;
@@ -1374,12 +1374,12 @@ header#page-topbar,
     transform: scale(1.05);
 }
 
-.cot-step-marker.is-complete .cot-step-dot {
+.wiz-step-marker.is-complete .wiz-step-dot {
     background: #00d9a5;
     border-color: #00d9a5;
     color: transparent;
 }
-.cot-step-marker.is-complete .cot-step-dot::after {
+.wiz-step-marker.is-complete .wiz-step-dot::after {
     content: "✓";
     position: absolute;
     inset: 0;
@@ -1390,10 +1390,10 @@ header#page-topbar,
     font-size: 1rem;
     font-weight: 700;
 }
-.cot-step-marker.is-complete { color: #006b52; }
-.cot-step-marker.is-complete .cot-step-label { color: #006b52; }
+.wiz-step-marker.is-complete { color: #006b52; }
+.wiz-step-marker.is-complete .wiz-step-label { color: #006b52; }
 
-.cot-step-line {
+.wiz-step-line {
     flex: 1 1 auto;
     height: 2px;
     background: #e2e8f0;
@@ -1403,7 +1403,7 @@ header#page-topbar,
     overflow: hidden;
 }
 
-.cot-step-line-fill {
+.wiz-step-line-fill {
     display: block;
     height: 100%;
     width: 0%;
@@ -1412,14 +1412,14 @@ header#page-topbar,
 }
 
 /* ── Wizard body & step content ─────────────────────────────────── */
-.cot-wizard-body {
+.wiz-wizard-body {
     padding: 24px 28px !important;
     min-height: 460px;
     background: #fafbfd;
 }
 
-.cot-step-content { display: none; }
-.cot-step-content.is-active {
+.wiz-step-content { display: none; }
+.wiz-step-content.is-active {
     display: block;
     animation: cotStepIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1429,8 +1429,8 @@ header#page-topbar,
     to   { opacity: 1; transform: translateX(0); }
 }
 
-.cot-step-header { margin-bottom: 22px; }
-.cot-step-tag {
+.wiz-step-header { margin-bottom: 22px; }
+.wiz-step-tag {
     display: inline-block;
     font-size: 0.66rem;
     letter-spacing: 0.18em;
@@ -1439,14 +1439,14 @@ header#page-topbar,
     font-weight: 700;
     margin-bottom: 6px;
 }
-.cot-step-title {
+.wiz-step-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: #1e3c72;
     margin: 0 0 4px;
     line-height: 1.2;
 }
-.cot-step-desc {
+.wiz-step-desc {
     font-size: 0.85rem;
     color: #64748b;
     margin: 0;
@@ -1653,7 +1653,7 @@ header#page-topbar,
 [data-bs-theme="dark"] .cot-resumen-unit-note { color: #64748b; }
 
 /* ── Footer del wizard ─────────────────────────────────────────── */
-.cot-wizard-footer {
+.wiz-wizard-footer {
     background: #f8fafc !important;
     border-top: 1px solid rgba(30, 60, 114, 0.1) !important;
     display: flex;
@@ -1663,8 +1663,8 @@ header#page-topbar,
     flex-wrap: wrap;
     gap: 10px;
 }
-.cot-wizard-footer-info { color: #64748b; font-size: 0.78rem; }
-.cot-wizard-step-info {
+.wiz-wizard-footer-info { color: #64748b; font-size: 0.78rem; }
+.wiz-wizard-step-info {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1676,7 +1676,7 @@ header#page-topbar,
     color: #1e3c72;
     font-variant-numeric: tabular-nums;
 }
-.cot-wizard-step-info::before {
+.wiz-wizard-step-info::before {
     content: "PASO";
     font-size: 0.65rem;
     font-weight: 600;
@@ -1684,32 +1684,32 @@ header#page-topbar,
     letter-spacing: 0.12em;
     margin-right: 2px;
 }
-.cot-wizard-footer-actions {
+.wiz-wizard-footer-actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }
 
 /* ── Dark mode — Wizard cotización ───────────────────────────── */
-[data-bs-theme="dark"] .cot-stepper-wrapper {
+[data-bs-theme="dark"] .wiz-stepper-wrapper {
     background: linear-gradient(180deg, #161b26 0%, #0f1521 100%);
     border-bottom-color: rgba(255, 255, 255, 0.06);
 }
-[data-bs-theme="dark"] .cot-step-marker { color: #64748b; }
-[data-bs-theme="dark"] .cot-step-marker:hover { color: #cbd5e1; }
-[data-bs-theme="dark"] .cot-step-marker .cot-step-dot {
+[data-bs-theme="dark"] .wiz-step-marker { color: #64748b; }
+[data-bs-theme="dark"] .wiz-step-marker:hover { color: #cbd5e1; }
+[data-bs-theme="dark"] .wiz-step-marker .wiz-step-dot {
     background: #1f2937;
     border-color: #334155;
     color: #94a3b8;
 }
-[data-bs-theme="dark"] .cot-step-marker.is-active .cot-step-label { color: #cbd5e1; }
-[data-bs-theme="dark"] .cot-step-marker.is-complete .cot-step-label { color: #34d399; }
-[data-bs-theme="dark"] .cot-step-line { background: #334155; }
+[data-bs-theme="dark"] .wiz-step-marker.is-active .wiz-step-label { color: #cbd5e1; }
+[data-bs-theme="dark"] .wiz-step-marker.is-complete .wiz-step-label { color: #34d399; }
+[data-bs-theme="dark"] .wiz-step-line { background: #334155; }
 
-[data-bs-theme="dark"] .cot-wizard-body { background: #0f1521; }
-[data-bs-theme="dark"] .cot-step-title { color: #e2e8f0; }
-[data-bs-theme="dark"] .cot-step-desc { color: #94a3b8; }
-[data-bs-theme="dark"] .cot-step-tag { color: #34d399; }
+[data-bs-theme="dark"] .wiz-wizard-body { background: #0f1521; }
+[data-bs-theme="dark"] .wiz-step-title { color: #e2e8f0; }
+[data-bs-theme="dark"] .wiz-step-desc { color: #94a3b8; }
+[data-bs-theme="dark"] .wiz-step-tag { color: #34d399; }
 
 [data-bs-theme="dark"] .cot-kpi {
     background: #1f2937;
@@ -1738,17 +1738,17 @@ header#page-topbar,
     border-bottom-color: rgba(255, 255, 255, 0.05);
 }
 
-[data-bs-theme="dark"] .cot-wizard-footer {
+[data-bs-theme="dark"] .wiz-wizard-footer {
     background: #0f1521 !important;
     border-top-color: rgba(255, 255, 255, 0.06) !important;
 }
-[data-bs-theme="dark"] .cot-wizard-footer-info { color: #64748b; }
-[data-bs-theme="dark"] .cot-wizard-step-info {
+[data-bs-theme="dark"] .wiz-wizard-footer-info { color: #64748b; }
+[data-bs-theme="dark"] .wiz-wizard-step-info {
     background: #1f2937;
     border-color: rgba(255, 255, 255, 0.08);
     color: #e2e8f0;
 }
-[data-bs-theme="dark"] .cot-wizard-step-info::before { color: #64748b; }
+[data-bs-theme="dark"] .wiz-wizard-step-info::before { color: #64748b; }
 
 /* ════════════════════════════════════════════════════════════════════
    STEP 1 — UX MEJORADA
