@@ -68,6 +68,45 @@
         color: #0ea5e9 !important;
     }
 
+    /* ── HOVER por sección (Light Mode) ──
+       Sutil (opacidad ~0.06) para no competir con el activo (~0.12).
+       Selectores reforzados para superar la regla genérica de Velzon. */
+    .navbar-menu .navbar-nav .section-maestros .nav-link:hover {
+        background: rgba(30, 60, 114, 0.06) !important;
+        color: #1e3c72 !important;
+    }
+    .navbar-menu .navbar-nav .section-maestros .nav-link:hover i {
+        color: #1e3c72 !important;
+    }
+    .navbar-menu .navbar-nav .section-maestros .nav-sm .nav-link:hover::before {
+        background-color: #1e3c72 !important;
+        opacity: 1;
+    }
+
+    .navbar-menu .navbar-nav .section-operativa .nav-link:hover {
+        background: rgba(16, 185, 129, 0.06) !important;
+        color: #059669 !important;
+    }
+    .navbar-menu .navbar-nav .section-operativa .nav-link:hover i {
+        color: #10b981 !important;
+    }
+    .navbar-menu .navbar-nav .section-operativa .nav-sm .nav-link:hover::before {
+        background-color: #10b981 !important;
+        opacity: 1;
+    }
+
+    .navbar-menu .navbar-nav .section-reportes .nav-link:hover {
+        background: rgba(14, 165, 233, 0.06) !important;
+        color: #0369a1 !important;
+    }
+    .navbar-menu .navbar-nav .section-reportes .nav-link:hover i {
+        color: #0ea5e9 !important;
+    }
+    .navbar-menu .navbar-nav .section-reportes .nav-sm .nav-link:hover::before {
+        background-color: #0ea5e9 !important;
+        opacity: 1;
+    }
+
     /* ── Espaciado entre items y subitems ── */
     .menu-dropdown {
         margin-top: 8px;

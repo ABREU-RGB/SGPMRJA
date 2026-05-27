@@ -4995,6 +4995,45 @@ header#page-topbar,
 }
 [data-bs-theme="dark"] .section-reportes.section-is-active > .menu-link i { color: #38bdf8 !important; }
 
+/* ── SIDEBAR — Hover por sección (Dark Mode) ────────────────
+   Hover sutil (~0.10) inferior a active (~0.22) para no competir.
+──────────────────────────────────────────────────────────── */
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-maestros .nav-link:hover {
+    background: rgba(78, 122, 199, 0.12) !important;
+    color: #93c5fd !important;
+}
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-maestros .nav-link:hover i {
+    color: #93c5fd !important;
+}
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-maestros .nav-sm .nav-link:hover::before {
+    background-color: #93c5fd !important;
+    opacity: 1;
+}
+
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-operativa .nav-link:hover {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #6ee7b7 !important;
+}
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-operativa .nav-link:hover i {
+    color: #6ee7b7 !important;
+}
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-operativa .nav-sm .nav-link:hover::before {
+    background-color: #6ee7b7 !important;
+    opacity: 1;
+}
+
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-reportes .nav-link:hover {
+    background: rgba(14, 165, 233, 0.12) !important;
+    color: #7dd3fc !important;
+}
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-reportes .nav-link:hover i {
+    color: #7dd3fc !important;
+}
+[data-bs-theme="dark"] .navbar-menu .navbar-nav .section-reportes .nav-sm .nav-link:hover::before {
+    background-color: #7dd3fc !important;
+    opacity: 1;
+}
+
 [data-bs-theme="dark"] .menu-dropdown {
     background-color: #1f2229 !important;
 }
