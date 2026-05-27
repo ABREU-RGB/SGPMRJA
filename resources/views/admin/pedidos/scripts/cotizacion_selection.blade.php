@@ -113,10 +113,22 @@
         renderCotizaciones(filtradas);
     });
 
-    // Handler para seleccionar cotización — usa conversión atómica
+    // Handler para seleccionar cotización — importar o conversión atómica
     $(document).on('click', '.seleccionar-cotizacion-btn', function () {
         const card = $(this).closest('.cotizacion-card');
         const cotizacionId = card.data('cotizacion-id');
+
+        // Modo importar: hidratar paso 2 del wizard en lugar de convertir
+        if (window.pedWizardImportMode) {
+            window.pedWizardImportMode = false;
+            $('#seleccionarCotizacionModal').modal('hide');
+            setTimeout(function () {
+                if (typeof window.pedHidratarDesde === 'function') {
+                    window.pedHidratarDesde(cotizacionId);
+                }
+            }, 300);
+            return;
+        }
 
         // Encontrar datos de la cotización seleccionada
         const cotData = cotizacionesDisponibles.find(c => c.id == cotizacionId);

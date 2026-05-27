@@ -108,7 +108,19 @@ $(document).ready(function () {
                 }
                 return true;
             }
-            // Pasos 2–4 se implementan en TASK-012/013/014
+            if (n === 2) {
+                var items = (window.pedProdState && window.pedProdState.items) || [];
+                if (!items.length) {
+                    Swal.fire({
+                        icon: 'warning', title: 'Sin productos',
+                        text: 'Debes agregar al menos un producto antes de continuar.',
+                        timer: 2200, showConfirmButton: false
+                    });
+                    return false;
+                }
+                return true;
+            }
+            // Pasos 3–4 se implementan en TASK-013/014
             return true;
         }
 
@@ -650,6 +662,299 @@ $(document).ready(function () {
                 }
             });
         });
+
+    })();
+
+
+    // ╔══════════════════════════════════════════════════════════════════
+    // ║ PEDIDO WIZARD — PASO 2: Productos
+    // ║ Estado en memoria, CRUD de productos, importar desde cotización
+    // ╚══════════════════════════════════════════════════════════════════
+    (function () {
+        'use strict';
+
+        var pedProdItems = [];
+        var pedProdSearchTimeout = null;
+        var pedProdCatalogo = window.products || [];
+
+        var pedTallasCatalogo = @json($tallas->mapWithKeys(function ($t) {
+            return [$t->id => ($t->etiqueta ?: $t->nombre)];
+        }));
+        var pedColoresCatalogo = @json($colores->mapWithKeys(function ($c) {
+            return [$c->id => $c->nombre];
+        }));
+
+        function pedFmt(n) {
+            return '$' + parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function pedRecalcularSubtotal() {
+            var cant   = parseFloat($('#ped-prod-cantidad-field').val()) || 0;
+            var precio = parseFloat($('#ped-prod-precio-field').val()) || 0;
+            $('#ped-prod-subtotal-display').text(pedFmt(cant * precio));
+        }
+
+        function pedRecalcularTotal() {
+            var total = pedProdItems.reduce(function (acc, it) { return acc + (it.subtotal || 0); }, 0);
+            $('#ped-kpi-lineas').text(pedProdItems.length);
+            $('#ped-kpi-total').text(pedFmt(total));
+            window.pedProdState = { items: pedProdItems, total: total };
+        }
+
+        function pedRenderProductos() {
+            var $list  = $('#ped-productos-list');
+            var $empty = $('#ped-productos-empty');
+            var $row   = $('#ped-agregar-prod-row');
+
+            $list.empty();
+            pedRecalcularTotal();
+
+            if (!pedProdItems.length) {
+                $empty.show();
+                $row.attr('hidden', true);
+                return;
+            }
+            $empty.hide();
+            $row.removeAttr('hidden');
+
+            pedProdItems.forEach(function (item, idx) {
+                var badge = item.heredado_cotizacion_id
+                    ? '<span class="ped-inherited-badge ms-1">Heredado de #' + item.heredado_cotizacion_id + '</span>'
+                    : '';
+                var tallaAttr = item.talla_label
+                    ? '<span class="ped-prod-attr"><i class="ri-ruler-2-line me-1"></i>' + item.talla_label + '</span>'
+                    : '';
+                var colorAttr = item.color_label
+                    ? '<span class="ped-prod-attr"><i class="ri-palette-line me-1"></i>' + item.color_label + '</span>'
+                    : '';
+                $list.append(
+                    '<div class="ped-prod-card">' +
+                    '<div class="ped-prod-icon"><i class="ri-shopping-bag-3-line"></i></div>' +
+                    '<div class="ped-prod-meta">' +
+                    '<p class="ped-prod-nombre mb-0">' + item.nombre + badge + '</p>' +
+                    '<div class="ped-prod-attrs mt-1">' +
+                    '<span class="ped-prod-attr">Cant: ' + item.cantidad + '</span>' +
+                    tallaAttr + colorAttr +
+                    '<span class="ped-prod-attr">' + pedFmt(item.precio_unitario) + ' c/u</span>' +
+                    '</div></div>' +
+                    '<div class="ped-prod-subtotal">' + pedFmt(item.subtotal) + '</div>' +
+                    '<div class="ped-prod-actions">' +
+                    '<button type="button" class="btn btn-outline-primary btn-sm ped-prod-edit-btn" data-idx="' + idx + '" title="Editar"><i class="ri-pencil-line"></i></button>' +
+                    '<button type="button" class="btn btn-outline-danger btn-sm ped-prod-del-btn" data-idx="' + idx + '" title="Eliminar"><i class="ri-delete-bin-line"></i></button>' +
+                    '</div></div>'
+                );
+            });
+        }
+
+        function pedAbrirModalProducto(idx) {
+            var item = (idx !== null && idx !== undefined && pedProdItems[idx]) ? pedProdItems[idx] : null;
+            $('#ped-prod-edit-idx').val(idx !== null && idx !== undefined ? idx : '');
+            if (item) {
+                $('#ped-agregar-prod-title').text('Editar Producto');
+                $('#ped-prod-search-input').val(item.nombre);
+                $('#ped-prod-id-field').val(item.producto_id || '');
+                $('#ped-prod-nombre-field').val(item.nombre);
+                $('#ped-prod-cantidad-field').val(item.cantidad);
+                $('#ped-prod-talla-field').val(item.talla_id || '');
+                $('#ped-prod-color-field').val(item.color_id || '');
+                $('#ped-prod-precio-field').val(item.precio_unitario);
+                pedRecalcularSubtotal();
+            } else {
+                $('#ped-agregar-prod-title').text('Agregar Producto');
+                $('#ped-prod-search-input').val('');
+                $('#ped-prod-id-field').val('');
+                $('#ped-prod-nombre-field').val('');
+                $('#ped-prod-cantidad-field').val(1);
+                $('#ped-prod-talla-field').val('');
+                $('#ped-prod-color-field').val('');
+                $('#ped-prod-precio-field').val('');
+                $('#ped-prod-subtotal-display').text('$0.00');
+            }
+            $('#ped-prod-search-list').empty().hide();
+            $('#ped-agregar-producto-modal').modal('show');
+        }
+
+        // Autocomplete de productos del catálogo (window.products)
+        $('#ped-prod-search-input').on('input', function () {
+            var q = $(this).val().toLowerCase().trim();
+            $('#ped-prod-id-field').val('');
+            $('#ped-prod-nombre-field').val('');
+            clearTimeout(pedProdSearchTimeout);
+            if (!q) { $('#ped-prod-search-list').empty().hide(); return; }
+            pedProdSearchTimeout = setTimeout(function () {
+                var matches = pedProdCatalogo.filter(function (p) {
+                    return (p.nombre || '').toLowerCase().indexOf(q) !== -1 ||
+                           (p.codigo || '').toLowerCase().indexOf(q) !== -1;
+                }).slice(0, 10);
+                var html = '';
+                if (matches.length) {
+                    matches.forEach(function (p) {
+                        html += '<button type="button" class="list-group-item list-group-item-action ped-prod-ac-item"' +
+                            ' data-id="' + p.id + '"' +
+                            ' data-nombre="' + String(p.nombre || '').replace(/"/g, '&quot;') + '"' +
+                            ' data-precio="' + (p.precio_base || 0) + '">' +
+                            '<span class="fw-semibold">' + (p.nombre || '') + '</span>' +
+                            (p.codigo ? '<small class="text-muted ms-2">' + p.codigo + '</small>' : '') +
+                            '</button>';
+                    });
+                } else {
+                    html = '<div class="list-group-item disabled text-muted small">Sin resultados</div>';
+                }
+                $('#ped-prod-search-list').html(html).show();
+            }, 200);
+        });
+
+        $(document).on('click', '.ped-prod-ac-item', function () {
+            var nombre = $(this).data('nombre');
+            var precio = $(this).data('precio');
+            $('#ped-prod-id-field').val($(this).data('id'));
+            $('#ped-prod-nombre-field').val(nombre);
+            $('#ped-prod-search-input').val(nombre);
+            if (!$('#ped-prod-precio-field').val()) {
+                $('#ped-prod-precio-field').val(parseFloat(precio).toFixed(2));
+            }
+            $('#ped-prod-search-list').empty().hide();
+            pedRecalcularSubtotal();
+        });
+
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('#ped-prod-search-input, #ped-prod-search-list').length) {
+                $('#ped-prod-search-list').empty().hide();
+            }
+        });
+
+        // Recalcular subtotal al cambiar cantidad o precio
+        $(document).on('input', '#ped-prod-cantidad-field, #ped-prod-precio-field', pedRecalcularSubtotal);
+
+        // Guardar producto (agregar o editar)
+        $(document).on('click', '#ped-prod-guardar-btn', function () {
+            var nombre   = $('#ped-prod-nombre-field').val() || $('#ped-prod-search-input').val().trim();
+            var cantidad = parseInt($('#ped-prod-cantidad-field').val(), 10);
+            var precio   = parseFloat($('#ped-prod-precio-field').val());
+            var tallaId  = $('#ped-prod-talla-field').val() || null;
+            var colorId  = $('#ped-prod-color-field').val() || null;
+
+            if (!nombre) {
+                Swal.fire({ icon: 'warning', title: 'Producto requerido',
+                    text: 'Selecciona un producto del catálogo.', timer: 2000, showConfirmButton: false });
+                $('#ped-prod-search-input').trigger('focus');
+                return;
+            }
+            if (!cantidad || cantidad < 1) {
+                Swal.fire({ icon: 'warning', title: 'Cantidad inválida',
+                    text: 'La cantidad debe ser al menos 1.', timer: 2000, showConfirmButton: false });
+                return;
+            }
+            if (isNaN(precio) || precio < 0) {
+                Swal.fire({ icon: 'warning', title: 'Precio inválido',
+                    text: 'Ingresa un precio unitario válido.', timer: 2000, showConfirmButton: false });
+                return;
+            }
+
+            var item = {
+                producto_id:  $('#ped-prod-id-field').val() || null,
+                nombre:       nombre,
+                cantidad:     cantidad,
+                talla_id:     tallaId ? parseInt(tallaId, 10) : null,
+                talla_label:  tallaId ? (pedTallasCatalogo[tallaId] || '') : '',
+                color_id:     colorId ? parseInt(colorId, 10) : null,
+                color_label:  colorId ? (pedColoresCatalogo[colorId] || '') : '',
+                precio_unitario: precio,
+                subtotal:     cantidad * precio,
+                heredado_cotizacion_id: null
+            };
+
+            var idxStr = $('#ped-prod-edit-idx').val();
+            var idx    = (idxStr !== '') ? parseInt(idxStr, 10) : null;
+            if (idx !== null && pedProdItems[idx]) {
+                item.heredado_cotizacion_id = pedProdItems[idx].heredado_cotizacion_id;
+                pedProdItems[idx] = item;
+            } else {
+                pedProdItems.push(item);
+            }
+
+            pedRenderProductos();
+            $('#ped-agregar-producto-modal').modal('hide');
+        });
+
+        // Editar / eliminar producto desde la lista
+        $(document).on('click', '.ped-prod-edit-btn', function () {
+            pedAbrirModalProducto(parseInt($(this).data('idx'), 10));
+        });
+        $(document).on('click', '.ped-prod-del-btn', function () {
+            var idx = parseInt($(this).data('idx'), 10);
+            pedProdItems.splice(idx, 1);
+            pedRenderProductos();
+        });
+
+        // Abrir modal agregar
+        $(document).on('click', '#ped-btn-agregar-prod, #ped-btn-agregar-prod-empty', function () {
+            pedAbrirModalProducto(null);
+        });
+
+        // Importar: activar flag y abrir modal de selección de cotización
+        $(document).on('click', '#ped-btn-importar-cotizacion', function () {
+            window.pedWizardImportMode = true;
+            $('#seleccionarCotizacionModal').modal('show');
+        });
+
+        // Hidratar productos desde cotización seleccionada
+        window.pedHidratarDesde = function (cotizacionId) {
+            window.pedWizardImportMode = false;
+            $.ajax({
+                url: '{{ route("cotizaciones.datosParaPedido", ":id") }}'.replace(':id', cotizacionId),
+                method: 'GET',
+                success: function (data) {
+                    if (!data || !data.productos || !data.productos.length) {
+                        Swal.fire({ icon: 'info', title: 'Sin productos',
+                            text: 'La cotización no tiene productos para importar.',
+                            timer: 2400, showConfirmButton: false });
+                        return;
+                    }
+                    data.productos.forEach(function (p) {
+                        var cant    = parseInt(p.cantidad, 10);
+                        var precio  = parseFloat(p.precio_unitario);
+                        pedProdItems.push({
+                            producto_id:  p.producto_id,
+                            nombre:       p.producto_nombre,
+                            cantidad:     cant,
+                            talla_id:     p.talla_id || null,
+                            talla_label:  p.talla_id ? (pedTallasCatalogo[p.talla_id] || '') : '',
+                            color_id:     p.color_id || null,
+                            color_label:  p.color_id ? (pedColoresCatalogo[p.color_id] || '') : '',
+                            precio_unitario: precio,
+                            subtotal:     cant * precio,
+                            heredado_cotizacion_id: cotizacionId
+                        });
+                    });
+                    pedRenderProductos();
+                    Swal.fire({
+                        icon: 'success', title: 'Productos importados',
+                        text: data.productos.length + ' producto(s) importados desde cotización #' + cotizacionId + '.',
+                        timer: 2200, showConfirmButton: false
+                    });
+                },
+                error: function (xhr) {
+                    window.pedWizardImportMode = false;
+                    var msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                        || 'No se pudo obtener los datos de la cotización.';
+                    Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                }
+            });
+        };
+
+        // Reset al abrir el wizard en modo crear
+        var $wizModal = $(document).find('#pedidoForm').closest('.modal');
+        if (!$wizModal.length) $wizModal = $('#showModal');
+        $wizModal.on('show.bs.modal', function () {
+            if (!$('#ped-wiz-id-field').val()) {
+                pedProdItems = [];
+                pedRenderProductos();
+            }
+        });
+
+        // Estado global expuesto para paso 3 y validateStep
+        window.pedProdState = { items: pedProdItems, total: 0 };
 
     })();
 

@@ -260,13 +260,58 @@
                             <h4 class="wiz-step-title">Productos del pedido</h4>
                             <p class="wiz-step-desc">Agrega los productos manualmente o importa desde una cotización existente.</p>
                         </div>
-                        <div class="row g-3">
-                            {{-- Implementar en TASK-012 --}}
-                            <div class="col-12 text-center text-muted py-5">
-                                <i class="ri-shopping-bag-3-line fs-1 opacity-25"></i>
-                                <p class="mt-2 mb-0 small">Grilla de productos e importación — se implementan en TASK-012</p>
+
+                        {{-- Banner importar cotización --}}
+                        <div class="ped-import-cot-banner mb-3">
+                            <div class="ped-import-cot-banner-icon">
+                                <i class="ri-file-transfer-line"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <p class="ped-import-cot-banner-title">¿Importar productos desde una cotización?</p>
+                                <p class="ped-import-cot-banner-desc">Selecciona una cotización aprobada para pre-cargar sus productos.</p>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-success flex-shrink-0"
+                                id="ped-btn-importar-cotizacion">
+                                <i class="ri-download-line me-1"></i>Importar
+                            </button>
+                        </div>
+
+                        {{-- KPI bar — líneas + total --}}
+                        <div class="cot-kpi-grid mb-3">
+                            <div class="cot-kpi">
+                                <span class="cot-kpi-label">Líneas</span>
+                                <span class="cot-kpi-value" id="ped-kpi-lineas">0</span>
+                            </div>
+                            <div class="cot-kpi cot-kpi--total">
+                                <span class="cot-kpi-label">Total del pedido</span>
+                                <span class="cot-kpi-value" id="ped-kpi-total">$0.00</span>
                             </div>
                         </div>
+
+                        {{-- Empty state (visible sin productos) --}}
+                        <div class="cot-empty-state" id="ped-productos-empty">
+                            <div class="cot-empty-icon">
+                                <i class="ri-shopping-bag-3-line"></i>
+                            </div>
+                            <h6 class="cot-empty-title">Sin productos aún</h6>
+                            <p class="cot-empty-desc">Agrega productos manualmente o importa desde una cotización aprobada.</p>
+                            <button type="button" class="btn btn-sm btn-atlantico-brand"
+                                id="ped-btn-agregar-prod-empty">
+                                <i class="ri-add-line me-1"></i>Agregar producto
+                            </button>
+                        </div>
+
+                        {{-- Lista de tarjetas de productos (renderizada por JS) --}}
+                        <div id="ped-productos-list" class="d-flex flex-column gap-2"></div>
+
+                        {{-- Botón agregar (visible cuando hay al menos 1 producto) --}}
+                        <div class="mt-3" id="ped-agregar-prod-row" hidden>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                id="ped-btn-agregar-prod">
+                                <i class="ri-add-line me-1"></i>Agregar otro producto
+                            </button>
+                        </div>
+
                     </section>
 
                     {{-- ════════════════════════ PASO 3 — PAGO ════════════════════════ --}}
@@ -814,6 +859,90 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════════════
+     Modal Agregar / Editar Producto — paso 2 del wizard de pedidos
+     ═══════════════════════════════════════════════════════════════════ --}}
+<div class="modal fade atlantico-modal" id="ped-agregar-producto-modal" tabindex="-1"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="ped-agregar-prod-title">Agregar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="ped-prod-edit-idx" value="" />
+
+                {{-- Buscar producto del catálogo --}}
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold mb-1">
+                        Producto <span class="text-danger">*</span>
+                    </label>
+                    <div class="position-relative">
+                        <input type="text" id="ped-prod-search-input" class="form-control"
+                            placeholder="Buscar por nombre o código..." autocomplete="off" />
+                        <div id="ped-prod-search-list" class="list-group position-absolute w-100"
+                            style="z-index:1200; top:100%; max-height:200px; overflow-y:auto;"></div>
+                    </div>
+                    <input type="hidden" id="ped-prod-id-field" />
+                    <input type="hidden" id="ped-prod-nombre-field" />
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label for="ped-prod-cantidad-field" class="form-label small fw-semibold mb-1">
+                            Cantidad <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" id="ped-prod-cantidad-field" class="form-control"
+                            min="1" step="1" value="1" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ped-prod-talla-field" class="form-label small fw-semibold mb-1">Talla</label>
+                        <select id="ped-prod-talla-field" class="form-select">
+                            <option value="">Sin talla</option>
+                            @foreach($tallas as $talla)
+                                <option value="{{ $talla->id }}">{{ $talla->etiqueta ?: $talla->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ped-prod-color-field" class="form-label small fw-semibold mb-1">Color</label>
+                        <select id="ped-prod-color-field" class="form-select">
+                            <option value="">Sin color</option>
+                            @foreach($colores as $color)
+                                <option value="{{ $color->id }}">{{ $color->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ped-prod-precio-field" class="form-label small fw-semibold mb-1">
+                            Precio unitario ($) <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" id="ped-prod-precio-field" class="form-control"
+                            min="0" step="0.01" placeholder="0.00" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold mb-1">Subtotal</label>
+                        <div class="form-control bg-light fw-semibold" id="ped-prod-subtotal-display">
+                            $0.00
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <div class="hstack gap-2 justify-content-end">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-atlantico-brand" id="ped-prod-guardar-btn">
+                        <i class="ri-check-line me-1"></i>Guardar producto
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

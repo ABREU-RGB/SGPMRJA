@@ -6097,3 +6097,154 @@ header#page-topbar,
     .topbar-brand-subtitle { font-size: 11.5px; }
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   PEDIDO WIZARD — PASO 2: PRODUCTOS
+   Banner importar, tarjetas de producto, KPI total
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Banner importar desde cotización ───────────────────────── */
+.ped-import-cot-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(30,60,114,0.05) 0%, rgba(0,217,165,0.05) 100%);
+    border: 1px dashed rgba(30,60,114,0.28);
+    border-radius: 10px;
+    transition: border-color 0.18s, background 0.18s;
+}
+.ped-import-cot-banner:hover {
+    border-color: rgba(0,217,165,0.5);
+    background: rgba(0,217,165,0.05);
+}
+.ped-import-cot-banner-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(0,217,165,0.14);
+    color: #00b88c;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.ped-import-cot-banner-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 2px;
+}
+.ped-import-cot-banner-desc {
+    font-size: 0.74rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* ── Tarjeta de producto ─────────────────────────────────────── */
+.ped-prod-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid rgba(30,60,114,0.12);
+    border-radius: 10px;
+    transition: box-shadow 0.18s;
+}
+.ped-prod-card:hover { box-shadow: 0 4px 14px -6px rgba(30,60,114,0.18); }
+
+.ped-prod-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(30,60,114,0.08);
+    color: #1e3c72;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.ped-prod-meta { flex: 1; min-width: 0; }
+.ped-prod-nombre {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #1e3c72;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+.ped-prod-attrs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+.ped-prod-attr {
+    font-size: 0.72rem;
+    color: #64748b;
+    background: rgba(0,0,0,0.04);
+    border-radius: 4px;
+    padding: 1px 7px;
+}
+.ped-inherited-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(0,217,165,0.14);
+    color: #006b52;
+    border-radius: 4px;
+    padding: 1px 7px;
+}
+.ped-prod-subtotal {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1e3c72;
+    white-space: nowrap;
+    align-self: center;
+    min-width: 76px;
+    text-align: right;
+}
+.ped-prod-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    align-self: center;
+}
+.ped-prod-actions .btn { padding: 3px 8px; font-size: 0.74rem; }
+
+/* ── Dark mode — Paso 2 productos ───────────────────────────── */
+[data-bs-theme="dark"] .ped-import-cot-banner {
+    background: linear-gradient(135deg, rgba(30,60,114,0.14) 0%, rgba(0,217,165,0.08) 100%);
+    border-color: rgba(0,217,165,0.22);
+}
+[data-bs-theme="dark"] .ped-import-cot-banner:hover {
+    border-color: rgba(0,217,165,0.48);
+    background: rgba(0,217,165,0.09);
+}
+[data-bs-theme="dark"] .ped-import-cot-banner-icon {
+    background: rgba(0,217,165,0.18);
+    color: #34d399;
+}
+[data-bs-theme="dark"] .ped-import-cot-banner-title { color: #e2e8f0; }
+[data-bs-theme="dark"] .ped-import-cot-banner-desc  { color: #64748b; }
+
+[data-bs-theme="dark"] .ped-prod-card {
+    background: #1f2937;
+    border-color: rgba(255,255,255,0.07);
+}
+[data-bs-theme="dark"] .ped-prod-card:hover { box-shadow: 0 4px 14px -6px rgba(0,0,0,0.45); }
+[data-bs-theme="dark"] .ped-prod-icon {
+    background: rgba(255,255,255,0.08);
+    color: #cbd5e1;
+}
+[data-bs-theme="dark"] .ped-prod-nombre   { color: #e2e8f0; }
+[data-bs-theme="dark"] .ped-prod-attr     { color: #94a3b8; background: rgba(255,255,255,0.05); }
+[data-bs-theme="dark"] .ped-inherited-badge {
+    background: rgba(0,217,165,0.18);
+    color: #34d399;
+}
+[data-bs-theme="dark"] .ped-prod-subtotal { color: #ffffff; }
+
