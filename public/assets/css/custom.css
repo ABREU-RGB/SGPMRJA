@@ -5899,3 +5899,118 @@ header#page-topbar,
     color: #bfdbfe !important;
     box-shadow: 0 3px 10px rgba(78, 122, 199, 0.15);
 }
+
+/* ================================================================
+   NOTIFICACIONES — Dropdown del header (campanita)
+   Paleta navy institucional, alineada con .atlantico-modal.
+   ================================================================ */
+.notif-dropdown-head {
+    position: relative;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: #ffffff;
+    padding: 0.85rem 1rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    overflow: hidden;
+}
+
+/* Decoración sutil: dos blobs radiales tipo brillo, sin imágenes */
+.notif-dropdown-head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.12) 0%, transparent 38%),
+        radial-gradient(circle at 88% 80%, rgba(255, 255, 255, 0.07) 0%, transparent 42%);
+    pointer-events: none;
+}
+
+.notif-dropdown-head > * { position: relative; z-index: 1; }
+
+.notif-dropdown-head .notif-title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+}
+
+.notif-dropdown-head .notif-title i {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.notif-dropdown-head .notif-subtitle {
+    margin: 0.15rem 0 0;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.2px;
+}
+
+/* Botón refresh — ghost light sobre fondo navy */
+.notif-dropdown-head .btn-notif-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-radius: 50%;
+    transition: all 0.18s ease;
+}
+
+.notif-dropdown-head .btn-notif-action:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.35);
+    transform: rotate(180deg);
+}
+
+.notif-dropdown-head .btn-notif-action i {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+/* Footer link "Ver todas" */
+.notif-footer {
+    padding: 0.55rem 0.85rem;
+    border-top: 1px solid rgba(30, 60, 114, 0.08);
+    text-align: center;
+    background: rgba(30, 60, 114, 0.025);
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.notif-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #1e3c72;
+    text-decoration: none;
+    letter-spacing: 0.2px;
+    transition: color 0.15s ease;
+}
+
+.notif-footer a:hover { color: #2a5298; }
+
+.notif-footer a i { font-size: 0.95rem; transition: transform 0.18s ease; }
+.notif-footer a:hover i { transform: translateX(3px); }
+
+/* ── DARK MODE ───────────────────────────────────────────────── */
+[data-bs-theme="dark"] .notif-dropdown-head {
+    background: linear-gradient(135deg, #132649 0%, #1e3c72 100%);
+}
+
+[data-bs-theme="dark"] .notif-footer {
+    border-top-color: rgba(78, 122, 199, 0.18);
+    background: rgba(78, 122, 199, 0.06);
+}
+
+[data-bs-theme="dark"] .notif-footer a { color: #93c5fd; }
+[data-bs-theme="dark"] .notif-footer a:hover { color: #bfdbfe; }
+

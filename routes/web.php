@@ -4,6 +4,7 @@ use App\Http\Controllers\DetalleOrdenInsumoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InsumoController;
 use App\Http\Controllers\MovimientoInsumoController;
+use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\OrdenProduccionController;
 use App\Http\Controllers\ProduccionDiariaController;
 use App\Http\Controllers\ProfileController;
@@ -242,6 +243,9 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::get('inventario/reporte', [MovimientoInsumoController::class, 'reporteExistencia'])->name('inventario.reporte');
         Route::get('inventario/alertas', [MovimientoInsumoController::class, 'alertasStock'])->name('inventario.alertas');
         Route::get('inventario/movimientos/historial/{id}', [MovimientoInsumoController::class, 'historialInsumo'])->name('inventario.movimientos.historial');
+
+        // Notificaciones (campanita del header)
+        Route::get('notificaciones/sistema', [NotificacionController::class, 'sistema'])->name('notificaciones.sistema');
 
         // Reportes
         Route::prefix('reportes')->group(function () {

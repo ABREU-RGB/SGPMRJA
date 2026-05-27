@@ -154,6 +154,11 @@
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
 
+    <!-- Notificaciones del header (campanita) -->
+    @auth
+        <script src="{{ asset('assets/js/pages/notifications.js') }}"></script>
+    @endauth
+
     <!-- Alpine.js (necesario para x-data, x-show, x-init en perfil y otros) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
 
