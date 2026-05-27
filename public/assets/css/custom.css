@@ -6014,3 +6014,47 @@ header#page-topbar,
 [data-bs-theme="dark"] .notif-footer a { color: #93c5fd; }
 [data-bs-theme="dark"] .notif-footer a:hover { color: #bfdbfe; }
 
+/* ================================================================
+   HEADER — Pills informativos (fecha, BCV)
+   Fix: con la campanita visible queda menos espacio horizontal y
+   "Bs. 535,39" se rompía en 2 líneas, inflando los pills.
+   ================================================================ */
+.topbar-info-pill {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.topbar-info-pill,
+.topbar-info-pill * {
+    white-space: nowrap;
+}
+
+/* Pill del usuario (nombre + rol) — evita que el nombre se parta en 2 líneas */
+.topbar-user .header-profile-user ~ * ,
+.topbar-user span {
+    white-space: nowrap;
+}
+
+/* ── Bloque central del topbar (nombre del sistema + subtítulo) ── */
+.topbar-brand-title {
+    font-size: 19px;
+    line-height: 1.25;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+    margin-bottom: 2px !important;
+}
+
+.topbar-brand-subtitle {
+    font-size: 12.5px;
+    line-height: 1.3;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+    opacity: 0.78;
+}
+
+@media (max-width: 1400px) {
+    .topbar-brand-title    { font-size: 17px; }
+    .topbar-brand-subtitle { font-size: 11.5px; }
+}
+

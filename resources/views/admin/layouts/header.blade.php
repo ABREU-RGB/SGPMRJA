@@ -130,12 +130,12 @@
             </div>
 
             <!-- CENTER SECTION: Company Info -->
-            <div class="d-none d-lg-flex flex-grow-1 justify-content-center align-items-center px-4">
+            <div class="d-none d-lg-flex flex-grow-1 justify-content-center align-items-center px-4 topbar-brand-info">
                 <div class="text-center">
-                    <h4 class="mb-1 text-white fw-bold" style="font-size: 20px; letter-spacing: 0.5px;">
+                    <h4 class="topbar-brand-title mb-1 text-white fw-bold">
                         Manufacturas R.J. Atlántico
                     </h4>
-                    <p class="mb-0 text-white-50" style="font-size: 15px; font-weight: 500;">
+                    <p class="topbar-brand-subtitle mb-0 text-white-50">
                         Software para la gestión de pedidos en Manufacturas R.J Atlántico C.A
                     </p>
                 </div>
