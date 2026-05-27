@@ -297,7 +297,7 @@
                                     alt="Header Avatar">
                                 <span class="text-start ms-xl-2">
                                     <span
-                                        class="d-none d-xl-inline-block ms-1 fw-semibold text-white">{{ Auth::user()->name }}</span>
+                                        class="d-none d-xl-inline-block ms-1 fw-semibold text-white">Configuración</span>
                                     <span class="d-none d-xl-block ms-1 fs-13 text-white-50">{{ Auth::user()->role }}</span>
                                 </span>
                                 <i class="mdi mdi-chevron-down text-white-50 ms-2 d-none d-xl-inline-block"></i>
@@ -313,7 +313,7 @@
                             <div class="py-1">
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
                                     <i class="mdi mdi-account-circle fs-16 align-middle me-2 text-primary"></i>
-                                    <span class="align-middle">Perfil</span>
+                                    <span class="align-middle">Configuración de perfil</span>
                                 </a>
                                 {{-- <a class="dropdown-item" href="apps-chat.html"><i
                                         class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
@@ -338,7 +338,7 @@
                                 @if (Auth::user()->isAdmin())
                                     <a class="dropdown-item d-flex align-items-center" href="{{ url('users') }}">
                                         <i class="mdi mdi-account-group-outline fs-16 align-middle me-2 text-primary"></i>
-                                        <span class="align-middle">Usuarios</span>
+                                        <span class="align-middle">Configuración de usuarios</span>
                                     </a>
                                 @endif
                             </div>
