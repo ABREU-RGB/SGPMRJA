@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: TASK-017
@@ -142,11 +142,20 @@ El doc `wizard-pattern.md` debe cubrir:
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
-
-**Completado por**:
-**Fecha**:
-**Commits**:
+**Completado por**: Emmanuel (continuando el trabajo de Santiago)
+**Fecha**: 2026-05-27
+**Commits**: (este commit + TASK-017 `0c66e6c`)
 **Notas**:
+- **Doc del patrón creado**: `docs/conventions/wizard-pattern.md` — cubre cuándo usar el wizard, arquitectura de archivos (index delgado + modals + scripts/listado + scripts/main), estructura HTML del stepper `.wiz-*`, tabla de clases CSS, patrón JS de navegación (`showStep`/`validateStep`/`next`/`prev`/click en marker/lifecycle/`window.<pref>Wizard`), reglas clave (back libre, forward valida; reset gated por `!isEditMode()`; modos crear/editar/completar) y las 2 implementaciones de referencia (cotizaciones, pedidos).
+- **Índice actualizado**: `docs/conventions/README.md` → entrada `wizard-pattern.md` en sección "Visual y UI" (ahora 18 docs).
+- **Verificación de no-regresión del rename `.cot-* → .wiz-*` (TASK-009)**: cotizaciones usa el scaffold `.wiz-*` (confirmado por grep); el scaffold viejo (`cot-step-marker`, `cot-stepper`, `cot-wizard-*`) ya no existe. Los `cot-*` restantes son clases de contenido específicas de cotización (kpi, skeleton, resumen, priority-chip) — correctas, no son scaffold. El CSS `.wiz-*` sirve a ambos wizards.
+- **QA de render (runtime, vía tinker `actingAs` admin)** — la vista `/pedidos` renderiza sin errores (332KB) y se confirmó el contrato de IDs tras el refactor:
+  - `#showModal` = 1, `#viewModal` = 1, `#pedidoForm` = 1, `#seleccionarCotizacionModal` = 1, `#pedidos-table` = 1, `#productosModal` (viejo) = 0.
+  - `window.products` definido (dependencia de `main.blade.php:735`), `pedAbrirEnEdit` referenciado, `#create-btn` apunta a `#showModal`.
+- **Bug corregido durante QA**: `#seleccionarCotizacionModal` se renderizaba 2× (ID duplicado) — lo incluían a la vez `index.blade.php` y `modals.blade.php`. Era pre-existente (el index viejo también). Fix: dejar el include solo en `modals.blade.php` (enmendado en el commit de TASK-017).
+- `php artisan view:cache` compila todas las vistas sin errores; rutas `pedidos.data/show/update/destroy/reporte.pdf/{id}/pdf` confirmadas en `route:list`.
 
 **Desviaciones del spec**:
+- **QA manual interactivo en navegador PENDIENTE de Emmanuel**: el click-through de los 3 modos (crear / completar-desde-cotización / editar) × light/dark × mobile (modal-fullscreen-sm-down) × edge cases (cancelar a media, abono 0/total/>total, sin productos, modal anidado) NO se ejecutó interactivamente — la verificación fue estática + a nivel de render (sin browser disponible en la sesión). El contrato de IDs/dependencias está verificado; falta el smoke visual y de interacción. **Recomendado correr antes de mergear a `main`.**
+- **Limitación de bordados (heredada de TASK-012/014, flageada en TASK-016)**: `pedConstruirPayload()` no envía bordados ni en crear ni en editar — el modelo de productos del wizard aún no los captura. Editar+guardar un pedido con bordados los perdería. Es deuda aparte del wizard; **debe abordarse en un spec/task propio**, no bloquea esta entrega de UX del wizard.
+- **PR**: preparada para abrir `feat/pedidos-wizard` → `enmanuel` (9 commits, TASK-009→018). Apertura pendiente de confirmación del owner.
