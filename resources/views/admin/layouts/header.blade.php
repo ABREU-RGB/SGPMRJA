@@ -298,7 +298,7 @@
                                 <span class="text-start ms-xl-2">
                                     <span
                                         class="d-none d-xl-inline-block ms-1 fw-semibold text-white">Configuración</span>
-                                    <span class="d-none d-xl-block ms-1 fs-13 text-white-50">{{ Auth::user()->role }}</span>
+                                    <span class="d-none d-xl-block ms-1 fs-13 text-white-50">{{ Auth::user()->name }}</span>
                                 </span>
                                 <i class="mdi mdi-chevron-down text-white-50 ms-2 d-none d-xl-inline-block"></i>
                             </span>
@@ -306,9 +306,8 @@
                         <div class="dropdown-menu dropdown-menu-end p-0 overflow-hidden border-0 shadow-lg profile-dropdown-menu"
                             id="profile-dropdown-menu" aria-labelledby="page-header-user-dropdown"
                             style="min-width: 240px;">
-                            <div class="profile-dropdown-header px-3 pt-1 pb-0 border-bottom bg-light-subtle">
-                                <h6 class="profile-dropdown-title mb-0">{{ Auth::user()->name }}</h6>
-                                <small class="profile-dropdown-subtitle text-muted">{{ Auth::user()->role }}</small>
+                            <div class="profile-dropdown-header px-3 pt-2 pb-2 border-bottom bg-light-subtle">
+                                <h6 class="profile-dropdown-title mb-0">{{ Auth::user()->role }}</h6>
                             </div>
                             <div class="py-1">
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
