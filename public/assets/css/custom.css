@@ -6248,6 +6248,18 @@ header#page-topbar,
 }
 [data-bs-theme="dark"] .ped-prod-subtotal { color: #ffffff; }
 
+/* ── Modo edición (TASK-016): campos protegidos read-only ──────────────
+   Al editar un pedido, cliente y productos no se modifican: se ocultan
+   las acciones de agregar/editar/eliminar producto, el importar y el
+   cambiar cliente. Solo fecha entrega, prioridad, estado y pago editan. */
+.ped-wiz-edit-mode .ped-prod-actions,
+.ped-wiz-edit-mode .ped-import-cot-banner,
+.ped-wiz-edit-mode #ped-agregar-prod-row,
+.ped-wiz-edit-mode #ped-btn-agregar-prod-empty,
+.ped-wiz-edit-mode #ped-cliente-change-btn {
+    display: none !important;
+}
+
 /* ════════════════════════════════════════════════════════════════════
    PEDIDO WIZARD — PASO 3: PAGO
    Chips de método (radio-style, selección única)

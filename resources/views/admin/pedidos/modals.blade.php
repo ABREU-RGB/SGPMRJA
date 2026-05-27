@@ -238,20 +238,20 @@
                                                 class="cot-estado-chip ped-estado-chip cot-estado-chip--pendiente is-active"
                                                 data-value="Pendiente" role="radio" aria-checked="true">Pendiente</button>
                                             <button type="button"
+                                                class="cot-estado-chip ped-estado-chip"
+                                                data-value="Procesando" role="radio" aria-checked="false">Procesando</button>
+                                            <button type="button"
                                                 class="cot-estado-chip ped-estado-chip cot-estado-chip--aprobada"
-                                                data-value="Aprobado" role="radio" aria-checked="false">Aprobado</button>
+                                                data-value="Completado" role="radio" aria-checked="false">Completado</button>
                                             <button type="button"
                                                 class="cot-estado-chip ped-estado-chip cot-estado-chip--cancelada"
                                                 data-value="Cancelado" role="radio" aria-checked="false">Cancelado</button>
-                                            <button type="button"
-                                                class="cot-estado-chip ped-estado-chip"
-                                                data-value="Entregado" role="radio" aria-checked="false">Entregado</button>
                                         </div>
                                         <select id="ped-estado-field" name="estado" class="d-none" tabindex="-1">
                                             <option value="Pendiente">Pendiente</option>
-                                            <option value="Aprobado">Aprobado</option>
+                                            <option value="Procesando">Procesando</option>
+                                            <option value="Completado">Completado</option>
                                             <option value="Cancelado">Cancelado</option>
-                                            <option value="Entregado">Entregado</option>
                                         </select>
                                         <small class="text-muted d-block mt-2">
                                             <i class="ri-information-line me-1"></i>Cambia el estado actual del pedido.

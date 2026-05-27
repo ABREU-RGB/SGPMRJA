@@ -1280,19 +1280,29 @@ $(document).ready(function () {
             return 4;
         }
 
-        // Submit: crear pedido (POST /pedidos)
+        // Submit: crear (POST /pedidos) o editar (PUT /pedidos/{id})
         $(document).on('click', '#ped-wiz-add-btn', function () {
             var $btn = $(this).prop('disabled', true);
             var payload = pedConstruirPayload();
 
+            // Modo edición: id presente → PUT a pedidos.update con estado
+            var editId = $('#ped-wiz-id-field').val();
+            var esEdit = !!editId;
+            var url    = '{{ route("pedidos.store") }}';
+            if (esEdit) {
+                payload._method = 'PUT';
+                payload.estado  = $('#ped-estado-field').val() || 'Pendiente';
+                url = '{{ url("pedidos") }}/' + editId;
+            }
+
             $.ajax({
-                url: '{{ route("pedidos.store") }}',
+                url: url,
                 method: 'POST',
                 data: payload,
                 success: function (response) {
                     $btn.prop('disabled', false);
                     Swal.fire({
-                        icon: 'success', title: '¡Pedido creado!',
+                        icon: 'success', title: esEdit ? '¡Pedido actualizado!' : '¡Pedido creado!',
                         text: response.success,
                         showConfirmButton: false, timer: 1800
                     });
@@ -1428,6 +1438,165 @@ $(document).ready(function () {
                 window.pedAbrirDesdeCotizacion(convertirId);
             }, 450);
         }
+
+    })();
+
+
+    // ╔══════════════════════════════════════════════════════════════════
+    // ║ PEDIDO WIZARD — TASK-016: Modo edición (campos protegidos)
+    // ║ GET pedidos.show, hidrata los 4 pasos, paso 1 y 2 read-only,
+    // ║ estado editable, submit PUT. Reabre cualquier estado.
+    // ╚══════════════════════════════════════════════════════════════════
+    (function () {
+        'use strict';
+
+        var pedPendingEdit = null;
+
+        // Abrir el wizard en modo edición con un pedido existente
+        window.pedAbrirEnEdit = function (pedidoId) {
+            Swal.fire({
+                title: 'Cargando pedido...',
+                text: 'Preparando datos para edición',
+                allowOutsideClick: false,
+                didOpen: function () { Swal.showLoading(); }
+            });
+
+            $.ajax({
+                url: '{{ url("pedidos") }}/' + pedidoId,
+                method: 'GET',
+                success: function (data) {
+                    Swal.close();
+                    if (!data || !data.id) {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cargar el pedido.' });
+                        return;
+                    }
+                    pedPendingEdit = data;
+                    // Marca edit ANTES de abrir → los resets de modo crear (show.bs.modal) se saltan
+                    $('#ped-wiz-id-field').val(data.id);
+                    $('#showModal').modal('show');
+                },
+                error: function (xhr) {
+                    Swal.close();
+                    var msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message))
+                        || 'No se pudo cargar el pedido.';
+                    Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                }
+            });
+        };
+
+        // Hidratar después de que se abra el modal (los resets de crear ya se saltaron)
+        $('#showModal').on('shown.bs.modal', function () {
+            if (!pedPendingEdit) return;
+            var data = pedPendingEdit;
+            pedPendingEdit = null;
+
+            // Marca de modo edición en el modal → CSS oculta acciones de productos/cliente
+            $('#showModal').addClass('ped-wiz-edit-mode');
+
+            // ── Paso 1: cliente (construir "persona" desde campos normalizados) ──
+            var persona = {
+                nombre:         data.cliente_nombre_completo || '',
+                apellido:       '',
+                documento:      data.cliente_documento || '',
+                telefono:       data.cliente_telefono_normalizado || '',
+                email:          data.cliente_email_normalizado || '',
+                tipo_documento: String(data.cliente_documento || '').substring(0, 2),
+                roles:          ['cliente']
+            };
+            if (typeof window.pedAplicarPersonaAPedido === 'function') {
+                window.pedAplicarPersonaAPedido(persona, data.cliente_id);
+            }
+
+            // Fechas + prioridad
+            $('#ped-fecha-pedido-field').val(data.fecha_pedido || '');
+            $('#ped-fecha-entrega-field').val(data.fecha_entrega_estimada || '');
+            if (data.prioridad) {
+                $('#ped-prioridad-field').val(data.prioridad);
+                $('.ped-priority-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $('.ped-priority-chip[data-value="' + data.prioridad + '"]').addClass('is-active').attr('aria-checked', 'true');
+            }
+
+            // ── Estado: mostrar card (solo edit) y marcar chip ──
+            $('#ped-estado-field-wrapper').show();
+            if (data.estado) {
+                $('#ped-estado-field').val(data.estado);
+                $('.ped-estado-chip').removeClass('is-active').attr('aria-checked', 'false');
+                $('.ped-estado-chip[data-value="' + data.estado + '"]').addClass('is-active').attr('aria-checked', 'true');
+            }
+
+            // ── Paso 2: productos (mapear formato show() → el esperado por hidratar) ──
+            if (data.productos && data.productos.length && typeof window.pedHidratarProductosDesde === 'function') {
+                var prods = data.productos.map(function (d) {
+                    return {
+                        producto_id:     d.producto_id,
+                        producto_nombre: (d.producto && d.producto.nombre) ? d.producto.nombre : ('Producto #' + d.producto_id),
+                        cantidad:        d.cantidad,
+                        talla_id:        d.talla_id || null,
+                        color_id:        d.color_id || null,
+                        precio_unitario: d.precio_unitario
+                    };
+                });
+                window.pedHidratarProductosDesde(prods, null); // null = sin badge "heredado"
+            }
+
+            // ── Paso 3: pago (abono total + primer pago si existe) ──
+            var abono = parseFloat(data.abono || 0);
+            $('#ped-pago-abono-field').val(abono.toFixed(2));
+            $('.ped-metodo-chip').removeClass('is-active').attr('aria-checked', 'false');
+            $('#ped-pago-metodo-field').val('');
+            $('#ped-pago-cond-transferencia').attr('hidden', true);
+            $('#ped-pago-cond-pago-movil').attr('hidden', true);
+            if (data.pagos && data.pagos.length) {
+                var pago = data.pagos[0];
+                if (pago.metodo) {
+                    $('#ped-pago-metodo-field').val(pago.metodo);
+                    $('.ped-metodo-chip[data-value="' + pago.metodo + '"]').addClass('is-active').attr('aria-checked', 'true');
+                    if (pago.metodo === 'transferencia') {
+                        $('#ped-pago-cond-transferencia').removeAttr('hidden');
+                        $('#ped-pago-transferencia-banco').val(pago.banco_id || '');
+                        $('#ped-pago-transferencia-ref').val(pago.referencia || '');
+                    } else if (pago.metodo === 'pago_movil') {
+                        $('#ped-pago-cond-pago-movil').removeAttr('hidden');
+                        $('#ped-pago-movil-banco').val(pago.banco_id || '');
+                        $('#ped-pago-movil-ref').val(pago.referencia || '');
+                    }
+                }
+            }
+            if (typeof window.pedSincronizarTotalPago === 'function') {
+                window.pedSincronizarTotalPago();
+            }
+
+            // ── Campos protegidos: documento del cliente + fecha del pedido ──
+            $('#ped-fecha-pedido-field').prop('readonly', true).addClass('campo-protegido');
+            $('#ped-ci-rif-number-field').prop('readonly', true).addClass('campo-protegido');
+            $('#ped-ci-rif-prefix-field').prop('disabled', true).addClass('campo-protegido');
+
+            // Título según estado
+            var titulo = (data.estado === 'Pendiente')
+                ? ('Completar Pedido #' + data.id)
+                : ('Editar Pedido #' + data.id);
+            $('#modalTitle').text(titulo);
+
+            // Texto del botón de submit
+            $('#ped-wiz-add-btn').html('<i class="ri-save-line me-1"></i>Actualizar pedido');
+
+            // Empezar en el paso 1
+            if (typeof window.pedWizard !== 'undefined') {
+                window.pedWizard.show(1);
+            }
+        });
+
+        // Limpiar estado de edición al cerrar (deja el wizard listo para modo crear)
+        $('#showModal').on('hidden.bs.modal', function () {
+            $('#showModal').removeClass('ped-wiz-edit-mode');
+            $('#ped-wiz-id-field').val('');
+            $('#ped-estado-field-wrapper').hide();
+            $('#ped-fecha-pedido-field').prop('readonly', false).removeClass('campo-protegido');
+            $('#ped-ci-rif-number-field').prop('readonly', false).removeClass('campo-protegido');
+            $('#ped-ci-rif-prefix-field').prop('disabled', false).removeClass('campo-protegido');
+            $('#ped-wiz-add-btn').html('<i class="ri-check-line me-1"></i>Crear pedido');
+            $('#modalTitle').text('Nuevo Pedido');
+        });
 
     })();
 
