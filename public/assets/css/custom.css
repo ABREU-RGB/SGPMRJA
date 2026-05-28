@@ -6140,11 +6140,30 @@ header#page-topbar,
 
 /* ================================================================
    SELECT2 — Limitar altura del dropdown a ~5 opciones visibles
+   El select2-bootstrap-5-theme (CDN, cargado vía @stack) define
+   max-height: 15rem (240px) después de custom.css, por eso !important.
    ================================================================ */
 .select2-container .select2-dropdown .select2-results__options,
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options {
-    max-height: 195px;
-    overflow-y: auto;
+    max-height: 195px !important;
+    overflow-y: auto !important;
+}
+
+/* ================================================================
+   SIDEBAR — Ítem "Inicio" estado activo con color navy
+   Velzon define --vz-vertical-menu-item-active-color (#695eef) en
+   app.min.css. Sobreescribimos la variable Y el color directamente.
+   Selector reforzado a (0,6,0) para ganar cascada sobre (0,4,0).
+   ================================================================ */
+.navbar-menu .navbar-nav .nav-item:not([class*="section-"]) .menu-link.nav-link.active {
+    --vz-vertical-menu-item-active-color: #1e3c72;
+    color: #1e3c72 !important;
+    background-color: rgba(30, 60, 114, 0.12) !important;
+    border-left-color: #1e3c72 !important;
+    font-weight: 600 !important;
+}
+.navbar-menu .navbar-nav .nav-item:not([class*="section-"]) .menu-link.nav-link.active i {
+    color: #1e3c72 !important;
 }
 
 /* ================================================================
