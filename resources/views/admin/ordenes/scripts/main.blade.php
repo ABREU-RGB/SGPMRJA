@@ -37,8 +37,8 @@
         }
     });
 
-    // Validación al cerrar Select2 — insumo obligatorio
-    $(document).on('select2:close', '.insumo-select', function () {
+    // Validación al cerrar Select2 — insumo obligatorio (modal nested)
+    $(document).on('select2:close', '#insumo-add-select', function () {
         if (!$(this).val()) {
             marcarInvalido($(this), 'Seleccione un insumo.');
         } else {
@@ -46,8 +46,8 @@
         }
     });
 
-    // Validación onblur: cantidad_estimada por fila — mayor a 0
-    $(document).on('blur', 'input[name*="[cantidad_estimada]"]', function () {
+    // Validación onblur: cantidad del insumo en el modal nested
+    $(document).on('blur', '#insumo-add-cantidad', function () {
         let val = parseFloat($(this).val());
         if (isNaN(val) || val <= 0) {
             marcarInvalido($(this), 'La cantidad debe ser mayor a cero.');
@@ -89,16 +89,6 @@
         // ══════════════════════════════════════════════════════
         // Helpers
         // ══════════════════════════════════════════════════════
-        function initializeSelect2(selector) {
-            $(selector).select2({
-                theme: 'bootstrap-5',
-                placeholder: 'Seleccione insumo...',
-                width: '100%',
-                dropdownParent: $('#showModal')
-            });
-        }
-        initializeSelect2('.insumo-select');
-
         function fmtMoneda(n) {
             return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
@@ -109,29 +99,81 @@
             return date.toISOString().split('T')[0];
         };
 
-        // Plantilla de fila de insumo vacía
-        function insumoRowHtml(index) {
-            return `
-                <div class="row insumo-row mt-2">
-                    <div class="col-md-6">
-                        <select name="insumos[${index}][id]" class="form-control insumo-select" required>
-                            <option value="">Seleccione insumo...</option>
-                            @foreach($insumos as $insumo)
-                                <option value="{{ $insumo->id }}">{{ $insumo->nombre }} ({{ $insumo->unidad_medida }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="number" name="insumos[${index}][cantidad_estimada]" class="form-control" placeholder="Cantidad" step="0.01" min="0.01" required />
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger remove-insumo"><i class="ri-delete-bin-line"></i></button>
-                    </div>
-                </div>`;
+        // ── Insumos: estado + grilla + nested modal ──────────────────
+        // Estado en memoria. Render → tabla visible + hidden inputs en #insumos-container
+        // (fuente de verdad para FormData).
+        let ordenInsumosState = []; // [{ id, nombre, unidad, cantidad }]
+
+        // Select2 dentro del nested modal de agregar
+        $('#insumo-add-select').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Seleccione insumo...',
+            width: '100%',
+            dropdownParent: $('#insumoAddModal')
+        });
+
+        function renderInsumosGrid() {
+            const $tbody    = $('#orden-insumos-tbody');
+            const $empty    = $('#orden-insumos-empty');
+            const $wrap     = $('#orden-insumos-table-wrap');
+            const $hidden   = $('#insumos-container');
+            $('#orden-insumos-count').text('(' + ordenInsumosState.length + ')');
+
+            if (!ordenInsumosState.length) {
+                $tbody.empty();
+                $hidden.empty();
+                $wrap.attr('hidden', true);
+                $empty.show();
+                return;
+            }
+            $empty.hide();
+            $wrap.removeAttr('hidden');
+
+            $tbody.html(ordenInsumosState.map(function (it, idx) {
+                const cant = parseFloat(it.cantidad).toFixed(2);
+                return '<tr>' +
+                    '<td class="cot-col-num">' + (idx + 1) + '</td>' +
+                    '<td class="cot-col-prod">' +
+                        '<div class="fw-semibold">' + escHtml(it.nombre) + '</div>' +
+                        (it.unidad ? '<small class="text-muted">' + escHtml(it.unidad) + '</small>' : '') +
+                    '</td>' +
+                    '<td class="cot-col-num text-end fw-semibold">' + cant + '</td>' +
+                    '<td class="cot-col-acc text-center">' +
+                        '<button type="button" class="btn btn-sm btn-soft-primary edit-insumo-btn me-1" data-idx="' + idx + '" title="Editar"><i class="ri-pencil-line"></i></button>' +
+                        '<button type="button" class="btn btn-sm btn-soft-danger remove-insumo" data-idx="' + idx + '" title="Quitar"><i class="ri-delete-bin-line"></i></button>' +
+                    '</td>' +
+                '</tr>';
+            }).join(''));
+
+            // Sincronizar hidden inputs (fuente de verdad para FormData)
+            $hidden.html(ordenInsumosState.map(function (it, idx) {
+                return '<input type="hidden" name="insumos[' + idx + '][id]" value="' + it.id + '">' +
+                       '<input type="hidden" name="insumos[' + idx + '][cantidad_estimada]" value="' + it.cantidad + '">';
+            }).join(''));
         }
+
         function resetInsumos() {
-            $('#insumos-container').html(insumoRowHtml(0).replace('insumo-row mt-2', 'insumo-row'));
-            initializeSelect2('.insumo-select');
+            ordenInsumosState = [];
+            renderInsumosGrid();
+        }
+
+        function abrirInsumoAddModal(idx) {
+            $('#insumoAddModal').find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
+            if (idx != null && ordenInsumosState[idx]) {
+                const it = ordenInsumosState[idx];
+                $('#insumo-add-edit-idx').val(idx);
+                $('#insumoAddModal-title').text('Editar insumo');
+                $('#insumo-add-confirm-label').text('Guardar');
+                $('#insumo-add-select').val(it.id).trigger('change');
+                $('#insumo-add-cantidad').val(it.cantidad);
+            } else {
+                $('#insumo-add-edit-idx').val('');
+                $('#insumoAddModal-title').text('Agregar insumo');
+                $('#insumo-add-confirm-label').text('Agregar');
+                $('#insumo-add-select').val('').trigger('change');
+                $('#insumo-add-cantidad').val('');
+            }
+            $('#insumoAddModal').modal('show');
         }
 
         // ══════════════════════════════════════════════════════
@@ -257,11 +299,13 @@
             $('#orden-linea-producto').text(d.producto_nombre || '—');
             $('#orden-linea-cantidad').text(d.cantidad != null ? d.cantidad : 0);
 
+            // Chips translúcidos sobre el gradiente del hero
+            const chipCls = 'badge rounded-pill bg-white bg-opacity-10 text-white fw-normal';
             const chips = [];
-            chips.push('<span><i class="ri-palette-line"></i> ' + escHtml(d.color || 'Sin color') + '</span>');
-            chips.push('<span><i class="ri-ruler-line"></i> ' + escHtml(d.talla || 'Talla única') + '</span>');
+            chips.push('<span class="' + chipCls + '"><i class="ri-palette-line me-1"></i>' + escHtml(d.color || 'Sin color') + '</span>');
+            chips.push('<span class="' + chipCls + '"><i class="ri-ruler-line me-1"></i>' + escHtml(d.talla || 'Talla única') + '</span>');
             if (d.lleva_bordado) {
-                chips.push('<span class="text-info"><i class="ri-scissors-cut-line"></i> ' + (d.bordados_count || 0) + ' bordado(s)</span>');
+                chips.push('<span class="' + chipCls + '"><i class="ri-scissors-cut-line me-1"></i>' + (d.bordados_count || 0) + ' bordado(s)</span>');
             }
             $('#orden-linea-meta').html(chips.join(''));
         }
@@ -447,15 +491,62 @@
         updateFilterBadge();
 
         // ══════════════════════════════════════════════════════
-        // Insumos: agregar / quitar fila
+        // Insumos: abrir/editar/eliminar/confirmar (vía nested modal)
         // ══════════════════════════════════════════════════════
-        $('#add-insumo-btn').click(function () {
-            let index = $('.insumo-row').length;
-            $('#insumos-container').append(insumoRowHtml(index));
-            initializeSelect2('.insumo-select:last');
+        $(document).on('click', '#add-insumo-btn', function () {
+            abrirInsumoAddModal(null);
+        });
+        $(document).on('click', '.edit-insumo-btn', function () {
+            abrirInsumoAddModal(parseInt($(this).data('idx'), 10));
         });
         $(document).on('click', '.remove-insumo', function () {
-            $(this).closest('.insumo-row').remove();
+            const idx = parseInt($(this).data('idx'), 10);
+            if (isNaN(idx)) return;
+            ordenInsumosState.splice(idx, 1);
+            renderInsumosGrid();
+        });
+        $(document).on('click', '#insumo-add-confirm', function () {
+            const $sel = $('#insumo-add-select');
+            const id = $sel.val();
+            const cantidad = parseFloat($('#insumo-add-cantidad').val());
+            if (!id) {
+                marcarInvalido($sel, 'Selecciona un insumo.');
+                return;
+            }
+            if (isNaN(cantidad) || cantidad <= 0) {
+                marcarInvalido($('#insumo-add-cantidad'), 'La cantidad debe ser mayor a cero.');
+                return;
+            }
+
+            const $opt = $sel.find('option:selected');
+            const item = {
+                id: parseInt(id, 10),
+                nombre: $opt.data('nombre') || $opt.text().replace(/\s*\(.*\)\s*$/, ''),
+                unidad: $opt.data('unidad') || '',
+                cantidad: +cantidad.toFixed(2)
+            };
+
+            const idxStr = $('#insumo-add-edit-idx').val();
+            if (idxStr !== '') {
+                ordenInsumosState[parseInt(idxStr, 10)] = item;
+            } else {
+                // Si el insumo ya estaba en la lista, sumamos las cantidades
+                const existing = ordenInsumosState.findIndex(x => x.id === item.id);
+                if (existing !== -1) {
+                    ordenInsumosState[existing].cantidad = +(ordenInsumosState[existing].cantidad + item.cantidad).toFixed(2);
+                } else {
+                    ordenInsumosState.push(item);
+                }
+            }
+
+            renderInsumosGrid();
+            $('#insumoAddModal').modal('hide');
+        });
+        $('#insumoAddModal').on('hidden.bs.modal', function () {
+            $('#insumo-add-edit-idx').val('');
+            $('#insumo-add-select').val('').trigger('change');
+            $('#insumo-add-cantidad').val('');
+            $('#insumoAddModal').find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
         });
 
         // ══════════════════════════════════════════════════════
@@ -494,18 +585,11 @@
             else if (costoVal <= 0) { marcarInvalido($costo, 'El costo estimado debe ser mayor a cero.'); esValido = false; }
             else { marcarValido($costo); }
 
-            // Insumos
-            let insumoValido = true;
-            $('#insumos-container .insumo-row').each(function () {
-                let $select = $(this).find('.insumo-select');
-                let $cantidad = $(this).find('input[name*="[cantidad_estimada]"]');
-                if (!$select.val()) { marcarInvalido($select, 'Seleccione un insumo.'); insumoValido = false; }
-                else { marcarValido($select); }
-                let cantVal = parseFloat($cantidad.val());
-                if (isNaN(cantVal) || cantVal <= 0) { marcarInvalido($cantidad, 'La cantidad debe ser mayor a cero.'); insumoValido = false; }
-                else { marcarValido($cantidad); }
-            });
-            if (!insumoValido) esValido = false;
+            // Insumos: al menos 1 en el estado (cada uno se valida al agregarlo)
+            if (!ordenInsumosState.length) {
+                Swal.fire({ icon: 'warning', title: 'Sin insumos', text: 'Agrega al menos un insumo a la orden.', timer: 2200, showConfirmButton: false });
+                esValido = false;
+            }
 
             return esValido;
         }
@@ -582,16 +666,16 @@
                 $('#estado-field').val(data.estado);
                 $('#notas-field').val(data.notas);
 
-                // Insumos
-                $('#insumos-container').empty();
-                (data.insumos || []).forEach((insumo, index) => {
-                    $('#add-insumo-btn').click();
-                    setTimeout(() => {
-                        $(`select[name="insumos[${index}][id]"]`).val(insumo.id).trigger('change');
-                        $(`input[name="insumos[${index}][cantidad_estimada]"]`).val(insumo.pivot.cantidad_estimada);
-                    }, 100);
+                // Insumos: hidratar estado desde la orden y rerenderear la grilla
+                ordenInsumosState = (data.insumos || []).map(function (i) {
+                    return {
+                        id: i.id,
+                        nombre: i.nombre || ('Insumo #' + i.id),
+                        unidad: i.unidad_medida || '',
+                        cantidad: parseFloat(i.pivot && i.pivot.cantidad_estimada) || 0
+                    };
                 });
-                if (!data.insumos || !data.insumos.length) { resetInsumos(); }
+                renderInsumosGrid();
 
                 $('#estado-container').show();
                 $('#add-btn').hide();

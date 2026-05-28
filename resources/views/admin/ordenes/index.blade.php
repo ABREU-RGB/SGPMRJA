@@ -130,6 +130,7 @@
 
     @include('admin.ordenes.modals.seleccionar_pedido')
     @include('admin.ordenes.modals.create')
+    @include('admin.ordenes.modals.insumo_add')
     @include('admin.ordenes.modals.view')
     @include('admin.ordenes.modals.avance')
 @endsection
