@@ -628,14 +628,14 @@
     </div>
 
     {{-- Modal: Exportar PDF con filtros --}}
-    <div class="modal fade" id="pdfExportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade atlantico-modal" id="pdfExportModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 360px;">
-            <div class="modal-content" style="border-radius: 0.75rem; overflow: hidden;">
-                <div class="modal-header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                    <h5 class="modal-title text-white fw-semibold">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
                         <i class="ri-file-pdf-line me-2"></i>Exportar PDF
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-3">Filtra qué clientes incluir en el reporte.</p>
