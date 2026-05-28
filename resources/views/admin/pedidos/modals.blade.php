@@ -190,6 +190,15 @@
                                                     name="fecha_entrega_estimada"
                                                     class="form-control form-control-sm" />
                                             </div>
+                                            <div class="col-12">
+                                                <div class="cot-date-shortcuts" id="ped-date-shortcuts">
+                                                    <span class="cot-date-shortcuts-label">Entrega:</span>
+                                                    <button type="button" class="cot-date-chip ped-date-chip" data-days="0">Hoy</button>
+                                                    <button type="button" class="cot-date-chip ped-date-chip" data-days="15">+15 días</button>
+                                                    <button type="button" class="cot-date-chip ped-date-chip" data-days="30">+30 días</button>
+                                                    <button type="button" class="cot-date-chip ped-date-chip" data-days="60">+60 días</button>
+                                                </div>
+                                            </div>
                                             <div class="col-12 mt-2">
                                                 <label class="form-label small fw-semibold mb-1">Prioridad</label>
                                                 <div class="cot-priority-chips" role="radiogroup"

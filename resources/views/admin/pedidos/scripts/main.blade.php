@@ -521,6 +521,19 @@ $(document).ready(function () {
             $('#ped-ci-rif-number-field').val('').trigger('focus');
         });
 
+        // === Atajos de fecha (entrega estimada) =========================
+        $(document).on('click', '.ped-date-chip', function () {
+            var days = parseInt($(this).data('days'), 10) || 0;
+            var pedidoVal = $('#ped-fecha-pedido-field').val();
+            var base = pedidoVal ? new Date(pedidoVal + 'T00:00:00') : new Date();
+            if (isNaN(base.getTime())) base = new Date();
+            base.setDate(base.getDate() + days);
+            var iso = base.toISOString().split('T')[0];
+            $('#ped-fecha-entrega-field').val(iso).trigger('change').trigger('blur');
+            $('.ped-date-chip').removeClass('is-active');
+            $(this).addClass('is-active');
+        });
+
         // === Chips de prioridad ==========================================
         $(document).on('click', '.ped-priority-chip', function () {
             var $b = $(this), val = $b.data('value');
@@ -561,6 +574,7 @@ $(document).ready(function () {
                 $('.ped-priority-chip').removeClass('is-active').attr('aria-checked', 'false');
                 $('.ped-priority-chip[data-value="Normal"]').addClass('is-active').attr('aria-checked', 'true');
                 $('#ped-prioridad-field').val('Normal');
+                $('.ped-date-chip').removeClass('is-active');
             }
         });
 
