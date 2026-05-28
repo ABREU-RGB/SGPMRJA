@@ -445,11 +445,13 @@
                             ? `<button class="btn-tbl-action text-warning avance-btn" data-id="${data}" title="Registrar Avance"><i class="ri-add-circle-line"></i></button>`
                             : '';
                         return `
-                            <div class="d-flex gap-1 justify-content-center align-items-center">
+                            <div class="d-flex gap-2 justify-content-center align-items-center">
                                 ${avanceBtn}
-                                <button class="btn-tbl-action text-info view-btn" data-id="${data}" title="Ver detalle"><i class="ri-eye-line"></i></button>
-                                <button class="btn-tbl-action text-success edit-btn" data-id="${data}" title="Editar"><i class="ri-pencil-line"></i></button>
-                                <button class="btn-tbl-action text-danger remove-btn" data-id="${data}" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+                                <div class="inline-flex">
+                                    <button class="bg-white border border-gray-200 rounded-l-lg px-2.5 py-1.5 cursor-pointer hover:bg-gray-100 transition-colors view-btn" data-id="${data}" title="Ver detalle"><i class="ri-eye-line text-blue-500"></i></button>
+                                    <button class="bg-white border-t border-b border-gray-200 px-2.5 py-1.5 cursor-pointer hover:bg-gray-100 transition-colors edit-btn" data-id="${data}" title="Editar"><i class="ri-pencil-line text-green-600"></i></button>
+                                    <button class="bg-white border border-gray-200 rounded-r-lg px-2.5 py-1.5 cursor-pointer hover:bg-gray-100 transition-colors remove-btn" data-id="${data}" title="Eliminar"><i class="ri-delete-bin-line text-red-500"></i></button>
+                                </div>
                             </div>
                         `;
                     }
