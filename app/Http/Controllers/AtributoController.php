@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Atributo;
+use App\Models\TipoProducto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,20 +16,29 @@ class AtributoController extends Controller
     {
         if ($request->wantsJson() || $request->ajax()) {
             $atributos = Atributo::withCount(['valores', 'tiposProducto'])
+                ->with(['tiposProducto:id'])
                 ->orderBy('nombre')
                 ->get();
-            return response()->json($atributos);
+
+            return response()->json($atributos->map(function ($a) {
+                $data = $a->only(['id', 'nombre', 'codigo', 'descripcion', 'valores_count', 'tipos_producto_count']);
+                $data['tipos_producto_ids'] = $a->tiposProducto->pluck('id')->values();
+                return $data;
+            }));
         }
 
-        return view('admin.atributos.index');
+        $tiposProducto = TipoProducto::orderBy('nombre')->get(['id', 'nombre']);
+        return view('admin.atributos.index', compact('tiposProducto'));
     }
 
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'nombre' => 'required|string|min:3|max:80|unique:atributo,nombre',
-            'codigo' => 'required|string|min:2|max:8|unique:atributo,codigo|regex:/^[A-Z0-9]+$/',
-            'descripcion' => 'nullable|string|max:191',
+            'nombre'          => 'required|string|min:3|max:80|unique:atributo,nombre',
+            'codigo'          => 'required|string|min:2|max:8|unique:atributo,codigo|regex:/^[A-Z0-9]+$/',
+            'descripcion'     => 'nullable|string|max:191',
+            'tipos_producto'  => 'nullable|array',
+            'tipos_producto.*'=> 'integer|exists:tipo_producto,id',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.unique'   => 'Ya existe un atributo con este nombre.',
@@ -42,6 +52,8 @@ class AtributoController extends Controller
             'codigo'      => strtoupper(trim($request->codigo)),
             'descripcion' => $request->descripcion ? trim($request->descripcion) : null,
         ]);
+
+        $atributo->tiposProducto()->sync($request->input('tipos_producto', []));
 
         return response()->json([
             'success'  => true,
@@ -60,9 +72,10 @@ class AtributoController extends Controller
     public function update(Request $request, Atributo $atributo): JsonResponse
     {
         $request->validate([
-            'nombre'      => 'required|string|min:3|max:80|unique:atributo,nombre,' . $atributo->id,
-            // Código es inmutable para preservar integridad de SKUs históricos.
-            'descripcion' => 'nullable|string|max:191',
+            'nombre'          => 'required|string|min:3|max:80|unique:atributo,nombre,' . $atributo->id,
+            'descripcion'     => 'nullable|string|max:191',
+            'tipos_producto'  => 'nullable|array',
+            'tipos_producto.*'=> 'integer|exists:tipo_producto,id',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.unique'   => 'Ya existe otro atributo con este nombre.',
@@ -72,6 +85,8 @@ class AtributoController extends Controller
             'nombre'      => trim($request->nombre),
             'descripcion' => $request->descripcion ? trim($request->descripcion) : null,
         ]);
+
+        $atributo->tiposProducto()->sync($request->input('tipos_producto', []));
 
         return response()->json([
             'success'  => true,
