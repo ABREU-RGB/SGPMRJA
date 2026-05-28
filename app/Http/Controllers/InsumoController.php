@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Insumo;
-use App\Models\Proveedor;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -11,30 +10,21 @@ class InsumoController extends Controller
 {
     public function index()
     {
-        $proveedores = Proveedor::with('persona')->where('estado', true)->get();
-        return view('admin.insumos.index', compact('proveedores'));
+        return view('admin.insumos.index');
     }
 
     public function getInsumos(Request $request)
     {
-        // ── Base query con relaciones ──
-        $query = Insumo::with('proveedor.persona');
+        $query = Insumo::query();
 
         // ══════════════════════════════════════════════════════════
         // FILTROS AVANZADOS — Server-Side (Patrón Maestro S-07)
         // ══════════════════════════════════════════════════════════
 
-        // Filtro: Tipo de Insumo (Tela, Hilo, Boton, Cierre, Etiqueta)
         if ($request->filled('filter_tipo')) {
             $query->where('tipo', $request->input('filter_tipo'));
         }
 
-        // Filtro: Proveedor
-        if ($request->filled('filter_proveedor')) {
-            $query->where('proveedor_id', $request->input('filter_proveedor'));
-        }
-
-        // Filtro: Disponibilidad de Stock
         if ($request->filled('filter_stock')) {
             $stock = $request->input('filter_stock');
             if ($stock === 'con_stock') {
@@ -44,12 +34,7 @@ class InsumoController extends Controller
             }
         }
 
-        // ══════════════════════════════════════════════════════════
-        // ORDENAMIENTO — Selector "Ordenar por" del frontend
-        // Fallback: más recientes primero (created_at DESC)
-        // ══════════════════════════════════════════════════════════
         $orden = $request->input('filter_orden', 'recientes');
-
         switch ($orden) {
             case 'mayor_costo':
                 $query->orderBy('insumo.costo_unitario', 'desc');
@@ -70,9 +55,6 @@ class InsumoController extends Controller
         }
 
         return DataTables::of($query)
-            ->addColumn('proveedor_nombre', function ($insumo) {
-                return $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'Sin proveedor';
-            })
             ->addColumn('stock_status', function ($insumo) {
                 if ($insumo->stock_actual <= $insumo->stock_minimo) {
                     return 'bajo';
@@ -116,7 +98,7 @@ class InsumoController extends Controller
 
     public function show($id)
     {
-        $insumo = Insumo::with('proveedor.persona')->findOrFail($id);
+        $insumo = Insumo::findOrFail($id);
         return response()->json($insumo);
     }
 
@@ -175,7 +157,7 @@ class InsumoController extends Controller
 
     public function reportePdf()
     {
-        $insumos = Insumo::with('proveedor.persona')->get();
+        $insumos = Insumo::all();
         $pdf = \PDF::loadView('admin.insumos.reporte_pdf', compact('insumos'))
             ->setPaper('a4', 'landscape');
         return $pdf->download('insumos_' . now()->format('Y-m-d_H-i-s') . '.pdf');

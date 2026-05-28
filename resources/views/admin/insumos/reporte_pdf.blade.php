@@ -5,37 +5,32 @@
 
 @section('extra-styles')
     .col-nombre-insumo {
-        width: 18%;
+        width: 25%;
         font-weight: 600;
     }
 
     .col-tipo {
-        width: 10%;
+        width: 13%;
     }
 
     .col-unidad {
-        width: 8%;
+        width: 12%;
         text-align: center;
     }
 
     .col-costo {
-        width: 10%;
+        width: 14%;
         text-align: right;
     }
 
     .col-stock {
-        width: 9%;
+        width: 12%;
         text-align: center;
     }
 
     .col-stock-min {
-        width: 9%;
+        width: 12%;
         text-align: center;
-    }
-
-    .col-proveedor {
-        width: 18%;
-        font-size: 8px;
     }
 
     .col-estatus {
@@ -81,7 +76,6 @@
                 <th class="col-costo">Costo Unit.</th>
                 <th class="col-stock">Stock Actual</th>
                 <th class="col-stock-min">Stock Mín.</th>
-                <th class="col-proveedor">Proveedor</th>
                 <th class="col-estatus">Estado</th>
             </tr>
         </thead>
@@ -103,7 +97,6 @@
                         @endif
                     </td>
                     <td class="col-stock-min">{{ $insumo->stock_minimo }}</td>
-                    <td class="col-proveedor">{{ $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'Sin proveedor' }}</td>
                     <td class="col-estatus">
                         <span class="{{ $insumo->estado ? 'badge-activo' : 'badge-inactivo' }}">
                             {{ $insumo->estado ? 'Activo' : 'Inactivo' }}

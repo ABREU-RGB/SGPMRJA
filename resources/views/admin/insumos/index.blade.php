@@ -7,11 +7,11 @@
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet"
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    {{-- Grid responsivo para filtros: 1 col mobile → 4 cols desktop --}}
+    {{-- Grid responsivo para filtros: 1 col mobile → 3 cols desktop --}}
     <style>
         @media (min-width: 768px) {
             .navy-filter-grid {
-                grid-template-columns: repeat(4, 1fr) !important;
+                grid-template-columns: repeat(3, 1fr) !important;
             }
         }
     </style>
@@ -102,19 +102,7 @@
                                             <option value="Etiqueta">Etiqueta</option>
                                         </select>
                                     </div>
-                                    {{-- Filtro 2: Proveedor --}}
-                                    <div>
-                                        <label class="navy-filter-label" for="filter-proveedor">
-                                            <i class="ri-building-2-line"></i> Proveedor
-                                        </label>
-                                        <select class="form-select navy-filter-select" id="filter-proveedor">
-                                            <option value="">Todos</option>
-                                            @foreach($proveedores as $prov)
-                                                <option value="{{ $prov->id }}">{{ $prov->nombre_completo }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    {{-- Filtro 3: Disponibilidad --}}
+                                    {{-- Filtro 2: Disponibilidad --}}
                                     <div>
                                         <label class="navy-filter-label" for="filter-stock">
                                             <i class="ri-store-3-line"></i> Disponibilidad
@@ -125,7 +113,7 @@
                                             <option value="agotado">Agotados</option>
                                         </select>
                                     </div>
-                                    {{-- Filtro 4: Ordenar por --}}
+                                    {{-- Filtro 3: Ordenar por --}}
                                     <div>
                                         <label class="navy-filter-label" for="filter-orden">
                                             <i class="ri-sort-asc"></i> Ordenar por
@@ -162,7 +150,6 @@
                                     <th>Tipo</th>
                                     <th>Stock Actual</th>
                                     <th>Costo Unit.</th>
-                                    <th>Proveedor</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -230,18 +217,6 @@
                                                 <div>
                                                     <small class="text-muted d-block">Unidad de Medida</small>
                                                     <span class="fw-semibold" id="view-unidad-medida">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-building-2-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Proveedor</small>
-                                                    <span class="fw-semibold" id="view-proveedor">-</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -473,34 +448,32 @@
                 ajax: {
                     url: "{{ route('insumos.data') }}",
                     data: function (d) {
-                        // ── Filtros avanzados: enviar valores al server ──
-                        d.filter_tipo       = $('#filter-tipo').val();
-                        d.filter_proveedor  = $('#filter-proveedor').val();
-                        d.filter_stock      = $('#filter-stock').val();
-                        d.filter_orden      = $('#filter-orden').val();
+                        d.filter_tipo   = $('#filter-tipo').val();
+                        d.filter_stock  = $('#filter-stock').val();
+                        d.filter_orden  = $('#filter-orden').val();
                     }
                 },
                 dom: 'rtip',
                 buttons: [
                     {
                         extend: 'copy',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'csv',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'excel',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'pdf',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'print',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     }
                 ],
                 columns: [
@@ -549,17 +522,9 @@
                     {
                         data: 'costo_unitario',
                         name: 'costo_unitario',
-                        width: '14%',
+                        width: '20%',
                         render: function (data) {
                             return '$/ ' + parseFloat(data).toFixed(2);
-                        }
-                    },
-                    {
-                        data: 'proveedor_nombre',
-                        name: 'proveedor_nombre',
-                        width: '28%',
-                        render: function (data) {
-                            return renderEllipsis(data);
                         }
                     },
                     {
@@ -586,10 +551,9 @@
             // ── Badge: actualizar contador de filtros activos + punto rojo ──
             function updateFilterBadge() {
                 var count = 0;
-                if ($('#filter-tipo').val() !== '')                                  count++;
-                if ($('#filter-proveedor').val() !== '')                             count++;
-                if ($('#filter-stock').val() !== '')                                 count++;
-                if ($('#filter-orden').val() !== 'recientes')                        count++;
+                if ($('#filter-tipo').val() !== '')           count++;
+                if ($('#filter-stock').val() !== '')          count++;
+                if ($('#filter-orden').val() !== 'recientes') count++;
                 var $badge = $('#active-filter-count');
                 var $dot   = $('#filter-dot-indicator');
                 if (count > 0) {
@@ -627,7 +591,6 @@
             // ── Botón limpiar: resetea búsqueda + filtros + orden ──
             $('#btn-clear-filters').on('click', function () {
                 $('#filter-tipo').val('');
-                $('#filter-proveedor').val('');
                 $('#filter-stock').val('');
                 $('#filter-orden').val('recientes');
                 $('#custom-search-input').val('');
@@ -670,7 +633,6 @@
                     $("#view-stock-actual").text(parseFloat(data.stock_actual).toFixed(2));
                     $("#view-stock-minimo").text(parseFloat(data.stock_minimo).toFixed(2));
                     $("#view-costo-unitario").text('$/ ' + parseFloat(data.costo_unitario).toFixed(2));
-                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor asignado');
                     $("#view-created").text(formatDate(data.created_at));
                     $("#viewModal").modal('show');
                 });

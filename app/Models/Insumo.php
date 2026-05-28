@@ -21,7 +21,6 @@ class Insumo extends Model
         'costo_unitario',
         'stock_actual',
         'stock_minimo',
-        'proveedor_id',
         'estado',
     ];
 
@@ -32,11 +31,6 @@ class Insumo extends Model
         'stock_actual' => 'decimal:2',
         'stock_minimo' => 'decimal:2',
     ];
-
-    public function proveedor()
-    {
-        return $this->belongsTo(Proveedor::class);
-    }
 
     public function ordenesProduccion()
     {
