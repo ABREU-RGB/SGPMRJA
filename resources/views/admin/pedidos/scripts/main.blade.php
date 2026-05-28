@@ -1031,6 +1031,16 @@ $(document).ready(function () {
             $('#seleccionarCotizacionModal').modal('show');
         });
 
+        // Recargo de bordado por unidad: Σ(precio_aplicado × cantidad)
+        // Coincide con BordadoPricingService::calcularRecargoBordadoUnitario del backend.
+        function pedRecargoBordado(bordados) {
+            return (bordados || []).reduce(function (acc, b) {
+                var precio = parseFloat(b.precio_aplicado) || 0;
+                var cant   = Math.max(1, parseInt(b.cantidad || 1, 10));
+                return acc + precio * cant;
+            }, 0);
+        }
+
         // Hidratar productos desde cotización seleccionada
         window.pedHidratarDesde = function (cotizacionId) {
             window.pedWizardImportMode = false;
@@ -1080,8 +1090,10 @@ $(document).ready(function () {
         window.pedHidratarProductosDesde = function (productos, cotizacionId) {
             pedProdItems = [];
             productos.forEach(function (p) {
-                var cant   = parseInt(p.cantidad, 10);
-                var precio = parseFloat(p.precio_unitario);
+                var cant    = parseInt(p.cantidad, 10);
+                var precio  = parseFloat(p.precio_unitario);                 // precio FINAL (incluye bordado)
+                var bordados = Array.isArray(p.bordados) ? p.bordados : [];
+                var recargo = pedRecargoBordado(bordados);                   // recargo bordado por unidad
                 pedProdItems.push({
                     producto_id:  p.producto_id,
                     nombre:       p.producto_nombre,
@@ -1090,9 +1102,11 @@ $(document).ready(function () {
                     talla_label:  p.talla_id ? (pedTallasCatalogo[p.talla_id] || '') : '',
                     color_id:     p.color_id || null,
                     color_label:  p.color_id ? (pedColoresCatalogo[p.color_id] || '') : '',
-                    precio_unitario: precio,
+                    precio_unitario: precio,                                 // final → display/subtotal
+                    precio_base:  +(precio - recargo).toFixed(2),            // base → payload (el backend re-suma el bordado)
+                    lleva_bordado: bordados.length > 0,
+                    bordados:     bordados,
                     subtotal:     cant * precio,
-                    bordados:     Array.isArray(p.bordados) ? p.bordados : [],
                     heredado_cotizacion_id: cotizacionId
                 });
             });
@@ -1370,12 +1384,30 @@ $(document).ready(function () {
                 prioridad:              $('#ped-prioridad-field').val(),
                 pagos:                  pagos,
                 productos:              items.map(function (it) {
-                    return {
+                    var bordados = Array.isArray(it.bordados) ? it.bordados : [];
+                    var prod = {
                         producto_id: it.producto_id,
                         cantidad:    it.cantidad,
                         talla_id:    it.talla_id || null,
-                        color_id:    it.color_id || null
+                        color_id:    it.color_id || null,
+                        // precio_unitario = BASE (sin bordado); el backend re-suma el recargo.
+                        // Si por algún motivo no hay precio_base, cae al precio mostrado.
+                        precio_unitario: (it.precio_base != null ? it.precio_base : it.precio_unitario),
+                        lleva_bordado:   bordados.length > 0
                     };
+                    if (bordados.length) {
+                        prod.bordados = bordados.map(function (b) {
+                            return {
+                                ubicacion_bordado_id: b.ubicacion_bordado_id || null,
+                                logo_id:              b.logo_id || null,
+                                nombre_aplicado:      b.nombre_aplicado || '',
+                                es_personalizada:     !!b.es_personalizada,
+                                cantidad:             Math.max(1, parseInt(b.cantidad || 1, 10)),
+                                precio_aplicado:      parseFloat(b.precio_aplicado) || 0
+                            };
+                        });
+                    }
+                    return prod;
                 })
             };
         }
