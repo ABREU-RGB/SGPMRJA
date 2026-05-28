@@ -17,6 +17,7 @@ class Insumo extends Model
         'codigo',
         'tipo',
         'unidad_medida',
+        'is_inventoriable',
         'costo_unitario',
         'stock_actual',
         'stock_minimo',
@@ -26,6 +27,7 @@ class Insumo extends Model
 
     protected $casts = [
         'estado' => 'boolean',
+        'is_inventoriable' => 'boolean',
         'costo_unitario' => 'decimal:2',
         'stock_actual' => 'decimal:2',
         'stock_minimo' => 'decimal:2',

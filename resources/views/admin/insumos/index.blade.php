@@ -369,13 +369,9 @@
                             </div>
 
                             <div class="row mb-0">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <x-forms.select name="unidad_medida" label="Unidad de Medida" required
                                         :options="['Metro' => 'Metro (m)', 'Kg' => 'Kilogramo (Kg)', 'Gramo' => 'Gramo (g)', 'Unidad' => 'Unidad (Und)', 'Rollo' => 'Rollo', 'Cono' => 'Cono', 'Docena' => 'Docena']" />
-                                </div>
-                                <div class="col-md-6">
-                                    <x-forms.select name="proveedor_id" label="Proveedor" required
-                                        :options="$proveedores->mapWithKeys(fn($p) => [$p->id => $p->nombre_completo])->toArray()" />
                                 </div>
                             </div>
                         </div>
@@ -383,22 +379,32 @@
                         <div class="modal-form-section mb-0">
                             <div class="modal-form-section-title"><i class="ri-bar-chart-grouped-line"></i>Control de Inventario y Costo</div>
 
-                            <div class="row mb-0">
-                                <div class="col-md-4">
-                                    <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0"
-                                        required />
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="is-inventoriable-switch"
+                                        name="is_inventoriable" value="1" checked>
+                                    <label class="form-check-label" for="is-inventoriable-switch">
+                                        Inventariable <small class="text-muted">(gestionar stock)</small>
+                                    </label>
                                 </div>
-                                <div class="col-md-4">
-                                    <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0"
-                                        required />
-                                </div>
-                                <div class="col-md-4">
-                                    <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0"
-                                        required />
+                            </div>
+
+                            <div id="stock-fields-wrapper">
+                                <div class="row mb-0">
+                                    <div class="col-md-6">
+                                        <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0" />
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0"
+                                        required />
+                                </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="estado" label="Estado" required
                                         :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1" />
@@ -678,14 +684,15 @@
                     $("#id-field").val(data.id);
                     $("#field-nombre").val(data.nombre);
                     $("#codigo-field").val(data.codigo || '');
-                    // Código inmutable después de crear: si ya tiene valor, deshabilitar
                     $("#codigo-field").prop('readonly', !!data.codigo);
                     $("#field-tipo").val(data.tipo);
                     $("#field-unidad_medida").val(data.unidad_medida);
+                    var inventoriable = data.is_inventoriable !== false && data.is_inventoriable !== 0;
+                    $("#is-inventoriable-switch").prop('checked', inventoriable);
+                    $("#stock-fields-wrapper").toggle(inventoriable);
                     $("#field-stock_actual").val(data.stock_actual);
                     $("#field-stock_minimo").val(data.stock_minimo);
                     $("#field-costo_unitario").val(data.costo_unitario);
-                    $("#field-proveedor_id").val(data.proveedor_id);
                     $("#field-estado").val(data.estado ? '1' : '0');
 
                     $("#add-btn").hide();
@@ -815,12 +822,19 @@
                 });
             });
 
+            // Toggle inventariable: muestra/oculta campos de stock
+            $(document).on('change', '#is-inventoriable-switch', function () {
+                $('#stock-fields-wrapper').toggle($(this).is(':checked'));
+            });
+
             // Limpiar modal al cerrar
             $("#showModal").on("hidden.bs.modal", function () {
                 $("#modalTitle").text("Agregar Insumo");
                 $("#insumoForm")[0].reset();
                 $("#id-field").val("");
                 $("#codigo-field").prop('readonly', false);
+                $("#is-inventoriable-switch").prop('checked', true);
+                $("#stock-fields-wrapper").show();
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 $('#insumoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
@@ -880,23 +894,14 @@
                 }
             });
 
-            // Proveedor — obligatorio
-            $(document).on('blur', '#field-proveedor_id', function () {
-                if (!$(this).val()) {
-                    marcarInvalido($(this), 'El proveedor es obligatorio.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Stock Actual — no negativo
+            // Stock Actual — no negativo (solo si inventariable)
             $(document).on('blur', '#field-stock_actual', function () {
+                if (!$('#is-inventoriable-switch').is(':checked')) return;
                 var val = parseFloat($(this).val());
                 if (isNaN(val) || val < 0) {
                     marcarInvalido($(this), 'El stock no puede ser negativo.');
                 } else {
                     marcarValido($(this));
-                    // Re-validar stock mínimo si ya tiene valor
                     var $min = $('#field-stock_minimo');
                     if ($min.val() !== '') {
                         var minVal = parseFloat($min.val());
@@ -911,6 +916,7 @@
 
             // Stock Mínimo — no negativo + no mayor al stock actual
             $(document).on('blur', '#field-stock_minimo', function () {
+                if (!$('#is-inventoriable-switch').is(':checked')) return;
                 var val = parseFloat($(this).val());
                 var stockActual = parseFloat($('#field-stock_actual').val());
                 if (isNaN(val) || val < 0) {
@@ -937,6 +943,7 @@
             // ══════════════════════════════════════════════════════
             function validarFormularioInsumo() {
                 let esValido = true;
+                let inventoriable = $('#is-inventoriable-switch').is(':checked');
 
                 let $nombre = $('#field-nombre');
                 let nombre = $nombre.val().trim();
@@ -960,28 +967,24 @@
                     esValido = false;
                 } else { marcarValido($unidad); }
 
-                let $proveedor = $('#field-proveedor_id');
-                if (!$proveedor.val()) {
-                    marcarInvalido($proveedor, 'El proveedor es obligatorio.');
-                    esValido = false;
-                } else { marcarValido($proveedor); }
+                if (inventoriable) {
+                    let $stockActual = $('#field-stock_actual');
+                    let stockActual = parseFloat($stockActual.val());
+                    if (isNaN(stockActual) || stockActual < 0) {
+                        marcarInvalido($stockActual, 'El stock actual no puede ser negativo.');
+                        esValido = false;
+                    } else { marcarValido($stockActual); }
 
-                let $stockActual = $('#field-stock_actual');
-                let stockActual = parseFloat($stockActual.val());
-                if (isNaN(stockActual) || stockActual < 0) {
-                    marcarInvalido($stockActual, 'El stock actual no puede ser negativo.');
-                    esValido = false;
-                } else { marcarValido($stockActual); }
-
-                let $stockMin = $('#field-stock_minimo');
-                let stockMin = parseFloat($stockMin.val());
-                if (isNaN(stockMin) || stockMin < 0) {
-                    marcarInvalido($stockMin, 'El stock mínimo no puede ser negativo.');
-                    esValido = false;
-                } else if (!isNaN(stockActual) && stockActual >= 0 && stockMin > stockActual) {
-                    marcarInvalido($stockMin, 'El stock mínimo no puede superar el stock actual.');
-                    esValido = false;
-                } else { marcarValido($stockMin); }
+                    let $stockMin = $('#field-stock_minimo');
+                    let stockMin = parseFloat($stockMin.val());
+                    if (isNaN(stockMin) || stockMin < 0) {
+                        marcarInvalido($stockMin, 'El stock mínimo no puede ser negativo.');
+                        esValido = false;
+                    } else if (!isNaN(stockActual) && stockActual >= 0 && stockMin > stockActual) {
+                        marcarInvalido($stockMin, 'El stock mínimo no puede superar el stock actual.');
+                        esValido = false;
+                    } else { marcarValido($stockMin); }
+                }
 
                 let $costo = $('#field-costo_unitario');
                 let costo = parseFloat($costo.val());

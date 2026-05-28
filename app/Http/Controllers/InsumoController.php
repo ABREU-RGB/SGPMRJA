@@ -88,26 +88,26 @@ class InsumoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'codigo' => 'nullable|string|min:2|max:8|regex:/^[A-Z0-9]+$/|unique:insumo,codigo',
-            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
-            'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
-            'costo_unitario' => 'required|numeric|min:0.01',
-            'stock_actual' => 'required|numeric|min:0',
-            'stock_minimo' => 'required|numeric|min:0',
-            'proveedor_id' => 'nullable|exists:proveedor,id',
-            'estado' => 'nullable|boolean',
+            'nombre'          => 'required|string|max:100',
+            'codigo'          => 'nullable|string|min:2|max:8|regex:/^[A-Z0-9]+$/|unique:insumo,codigo',
+            'tipo'            => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
+            'unidad_medida'   => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
+            'is_inventoriable'=> 'nullable|boolean',
+            'costo_unitario'  => 'required|numeric|min:0.01',
+            'stock_actual'    => 'nullable|numeric|min:0',
+            'stock_minimo'    => 'nullable|numeric|min:0',
+            'estado'          => 'nullable|boolean',
         ], [
-            'codigo.regex' => 'El código solo admite letras mayúsculas y números.',
+            'codigo.regex'  => 'El código solo admite letras mayúsculas y números.',
             'codigo.unique' => 'Ya existe un insumo con este código.',
         ]);
 
-        $data = $request->only([
-            'nombre', 'tipo', 'unidad_medida', 'costo_unitario',
-            'stock_actual', 'stock_minimo', 'proveedor_id', 'estado'
-        ]);
-        // Código en mayúsculas, vacío como NULL
-        $data['codigo'] = $request->filled('codigo') ? strtoupper(trim($request->codigo)) : null;
+        $inventoriable = $request->boolean('is_inventoriable', true);
+        $data = $request->only(['nombre', 'tipo', 'unidad_medida', 'costo_unitario', 'estado']);
+        $data['codigo']           = $request->filled('codigo') ? strtoupper(trim($request->codigo)) : null;
+        $data['is_inventoriable'] = $inventoriable;
+        $data['stock_actual']     = $inventoriable ? ($request->input('stock_actual', 0)) : 0;
+        $data['stock_minimo']     = $inventoriable ? ($request->input('stock_minimo', 0)) : 0;
 
         $insumo = Insumo::create($data);
 
@@ -125,25 +125,25 @@ class InsumoController extends Controller
         $insumo = Insumo::findOrFail($id);
 
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'codigo' => 'nullable|string|min:2|max:8|regex:/^[A-Z0-9]+$/|unique:insumo,codigo,' . $insumo->id,
-            'tipo' => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
-            'unidad_medida' => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
-            'costo_unitario' => 'required|numeric|min:0.01',
-            'stock_actual' => 'required|numeric|min:0',
-            'stock_minimo' => 'required|numeric|min:0',
-            'proveedor_id' => 'nullable|exists:proveedor,id',
-            'estado' => 'nullable|boolean',
+            'nombre'          => 'required|string|max:100',
+            'codigo'          => 'nullable|string|min:2|max:8|regex:/^[A-Z0-9]+$/|unique:insumo,codigo,' . $insumo->id,
+            'tipo'            => 'required|in:Tela,Hilo,Boton,Cierre,Etiqueta',
+            'unidad_medida'   => 'required|in:Metro,Kg,Gramo,Unidad,Rollo,Cono,Docena',
+            'is_inventoriable'=> 'nullable|boolean',
+            'costo_unitario'  => 'required|numeric|min:0.01',
+            'stock_actual'    => 'nullable|numeric|min:0',
+            'stock_minimo'    => 'nullable|numeric|min:0',
+            'estado'          => 'nullable|boolean',
         ], [
-            'codigo.regex' => 'El código solo admite letras mayúsculas y números.',
+            'codigo.regex'  => 'El código solo admite letras mayúsculas y números.',
             'codigo.unique' => 'Ya existe un insumo con este código.',
         ]);
 
-        $data = $request->only([
-            'nombre', 'tipo', 'unidad_medida', 'costo_unitario',
-            'stock_actual', 'stock_minimo', 'proveedor_id', 'estado'
-        ]);
-        // Código inmutable: solo se asigna si el insumo no tenía uno previamente
+        $inventoriable = $request->boolean('is_inventoriable', true);
+        $data = $request->only(['nombre', 'tipo', 'unidad_medida', 'costo_unitario', 'estado']);
+        $data['is_inventoriable'] = $inventoriable;
+        $data['stock_actual']     = $inventoriable ? ($request->input('stock_actual', 0)) : 0;
+        $data['stock_minimo']     = $inventoriable ? ($request->input('stock_minimo', 0)) : 0;
         if (empty($insumo->codigo) && $request->filled('codigo')) {
             $data['codigo'] = strtoupper(trim($request->codigo));
         }
