@@ -60,9 +60,9 @@
                                         <i class="ri-add-line align-bottom me-1"></i> Agregar Proveedor
                                     </button>
                                 @endif
-                                <a href="{{ route('proveedores.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#pdfExportModal">
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -727,6 +727,45 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal: Exportar PDF con filtros --}}
+    <div class="modal fade atlantico-modal" id="pdfExportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-file-pdf-line me-2"></i>Exportar PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Filtra qué proveedores incluir en el reporte.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="pdf-filter-tipo">Tipo de Proveedor</label>
+                        <select class="form-select" id="pdf-filter-tipo">
+                            <option value="">Todos los tipos</option>
+                            <option value="natural">Natural</option>
+                            <option value="juridico">Jurídico</option>
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-semibold" for="pdf-filter-estatus">Estatus</label>
+                        <select class="form-select" id="pdf-filter-estatus">
+                            <option value="">Todos</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btn-generar-pdf">
+                        <i class="ri-file-pdf-fill me-1"></i>Generar PDF
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1619,6 +1658,23 @@
                 return esValido;
             }
 
+        });
+    </script>
+    <script>
+        // PDF Export Modal — Proveedores
+        $('#btn-generar-pdf').on('click', function () {
+            var baseUrl = '{{ route('proveedores.reporte.pdf') }}';
+            var params  = [];
+            var tipo    = $('#pdf-filter-tipo').val();
+            var estatus = $('#pdf-filter-estatus').val();
+            if (tipo)    params.push('tipo_proveedor=' + encodeURIComponent(tipo));
+            if (estatus !== '') params.push('estatus=' + encodeURIComponent(estatus));
+            window.open(baseUrl + (params.length ? '?' + params.join('&') : ''), '_blank');
+            bootstrap.Modal.getInstance(document.getElementById('pdfExportModal'))?.hide();
+        });
+        $('#pdfExportModal').on('show.bs.modal', function () {
+            $('#pdf-filter-tipo').val('');
+            $('#pdf-filter-estatus').val('');
         });
     </script>
 @endpush

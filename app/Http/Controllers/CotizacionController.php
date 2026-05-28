@@ -335,16 +335,21 @@ class CotizacionController extends Controller
         return response()->json(['success' => 'Cotización eliminada exitosamente.']);
     }
 
-    public function reportePdf()
+    public function reportePdf(Request $request)
     {
-        // Obtener todas las cotizaciones con cliente y usuario asociado
-        $cotizaciones = Cotizacion::with(['user:id,name', 'cliente.persona'])->get();
-
-        // Cargar la vista y generar el PDF (A4 vertical)
+        $query = Cotizacion::with(['user:id,name', 'cliente.persona']);
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('created_at', '>=', $request->fecha_desde);
+        }
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('created_at', '<=', $request->fecha_hasta);
+        }
+        $cotizaciones = $query->get();
         $pdf = PDF::loadView('admin.cotizaciones.reporte_pdf', compact('cotizaciones'))
             ->setPaper('a4', 'portrait');
-
-        // Descargar el archivo con una marca de tiempo para evitar colisiones
         return $pdf->download('reporte_cotizaciones_' . now()->format('Ymd_His') . '.pdf');
     }
 

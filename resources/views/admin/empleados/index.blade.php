@@ -53,9 +53,9 @@
                                     data-bs-target="#showModal">
                                     <i class="ri-add-line align-bottom me-1"></i> Agregar Empleado
                                 </button>
-                                <a href="{{ route('empleados.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#pdfExportModal">
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -662,6 +662,54 @@
     </div>
     {{-- Modales de gestión completa (CRUD) de Departamentos y Cargos movidos a /departamentos y /cargos. Los mini-modales addDepartamentoModal y addCargoModal de arriba se mantienen para creación rápida desde el form de empleado. --}}
 
+    {{-- Modal: Exportar PDF con filtros --}}
+    <div class="modal fade atlantico-modal" id="pdfExportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-file-pdf-line me-2"></i>Exportar PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Filtra qué empleados incluir en el reporte.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="pdf-filter-departamento">Departamento</label>
+                        <select class="form-select" id="pdf-filter-departamento">
+                            <option value="">Todos los departamentos</option>
+                            @foreach($departamentos as $id => $nombre)
+                                <option value="{{ $id }}">{{ $nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="pdf-filter-cargo">Cargo</label>
+                        <select class="form-select" id="pdf-filter-cargo">
+                            <option value="">Todos los cargos</option>
+                            @foreach($cargos as $id => $nombre)
+                                <option value="{{ $id }}">{{ $nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-semibold" for="pdf-filter-estatus">Estatus</label>
+                        <select class="form-select" id="pdf-filter-estatus">
+                            <option value="">Todos</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btn-generar-pdf">
+                        <i class="ri-file-pdf-fill me-1"></i>Generar PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -1459,5 +1507,23 @@
             });
         }
 
+        // PDF Export Modal — Empleados
+        $('#btn-generar-pdf').on('click', function () {
+            var baseUrl = '{{ route('empleados.reporte.pdf') }}';
+            var params  = [];
+            var dep     = $('#pdf-filter-departamento').val();
+            var cargo   = $('#pdf-filter-cargo').val();
+            var estatus = $('#pdf-filter-estatus').val();
+            if (dep)            params.push('departamento_id=' + encodeURIComponent(dep));
+            if (cargo)          params.push('cargo_id='        + encodeURIComponent(cargo));
+            if (estatus !== '') params.push('estatus='         + encodeURIComponent(estatus));
+            window.open(baseUrl + (params.length ? '?' + params.join('&') : ''), '_blank');
+            bootstrap.Modal.getInstance(document.getElementById('pdfExportModal'))?.hide();
+        });
+        $('#pdfExportModal').on('show.bs.modal', function () {
+            $('#pdf-filter-departamento').val('');
+            $('#pdf-filter-cargo').val('');
+            $('#pdf-filter-estatus').val('');
+        });
     </script>
 @endpush

@@ -307,9 +307,16 @@ class ClienteController extends Controller
     /**
      * Exportar reporte de clientes en PDF
      */
-    public function exportarPDF()
+    public function exportarPDF(Request $request)
     {
-        $clientes = Cliente::with('persona')->get();
+        $query = Cliente::with('persona');
+        if ($request->filled('estado')) {
+            $query->where('estatus', (int) $request->estado);
+        }
+        if ($request->filled('tipo_cliente')) {
+            $query->where('tipo_cliente', $request->tipo_cliente);
+        }
+        $clientes = $query->get();
         $pdf = Pdf::loadView('admin.clientes.reporte_pdf', compact('clientes'))->setPaper('a4', 'landscape');
         return $pdf->download('reporte_clientes_' . now()->format('Ymd_His') . '.pdf');
     }

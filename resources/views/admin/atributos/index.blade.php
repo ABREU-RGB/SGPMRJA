@@ -138,9 +138,18 @@
                             <div id="atr-codigo-error" class="invalid-feedback"></div>
                             <small class="text-muted">2-8 caracteres, solo letras mayúsculas y números. <strong>Inmutable</strong> después de crear.</small>
                         </div>
-                        <div class="mb-0">
+                        <div class="mb-3">
                             <label for="atr-descripcion" class="form-label">Descripción</label>
                             <textarea id="atr-descripcion" class="form-control" rows="2" maxlength="191" placeholder="Opcional"></textarea>
+                        </div>
+                        <div class="mb-0">
+                            <label for="atr-tipos-producto" class="form-label">Tipos de Producto</label>
+                            <select id="atr-tipos-producto" class="form-select" multiple style="min-height: 90px;">
+                                @foreach($tiposProducto as $tp)
+                                    <option value="{{ $tp->id }}">{{ $tp->nombre }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">Selecciona uno o varios. Mantén <kbd>Ctrl</kbd> para selección múltiple.</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -302,6 +311,11 @@
             $('#atr-nombre').val(atr?.nombre || '').removeClass('is-invalid');
             $('#atr-codigo').val(atr?.codigo || '').removeClass('is-invalid').prop('readonly', isEdit);
             $('#atr-descripcion').val(atr?.descripcion || '');
+            // Pre-seleccionar tipos de producto asociados
+            const ids = (atr?.tipos_producto_ids || []).map(String);
+            $('#atr-tipos-producto option').each(function() {
+                $(this).prop('selected', ids.includes($(this).val()));
+            });
             $('#btn-save-atributo .btn-label').text(isEdit ? 'Actualizar' : 'Crear');
             new bootstrap.Modal('#atributoModal').show();
         }
@@ -313,6 +327,7 @@
             const nombre = $('#atr-nombre').val().trim();
             const codigo = $('#atr-codigo').val().trim().toUpperCase();
             const descripcion = $('#atr-descripcion').val().trim();
+            const tiposProducto = $('#atr-tipos-producto').val() || [];
 
             $('#atr-nombre, #atr-codigo').removeClass('is-invalid');
 
@@ -333,7 +348,8 @@
 
             $.ajax({
                 url, method,
-                data: { ...payload, _token: csrfToken },
+                data: { ...payload, _token: csrfToken, 'tipos_producto': tiposProducto },
+                traditional: false,
                 success: (resp) => {
                     bootstrap.Modal.getInstance('#atributoModal')?.hide();
                     toast(resp.message);

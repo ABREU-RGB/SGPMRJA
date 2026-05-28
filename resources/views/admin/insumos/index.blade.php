@@ -7,11 +7,11 @@
     <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" rel="stylesheet"
         type="text/css" />
     <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    {{-- Grid responsivo para filtros: 1 col mobile → 4 cols desktop --}}
+    {{-- Grid responsivo para filtros: 1 col mobile → 3 cols desktop --}}
     <style>
         @media (min-width: 768px) {
             .navy-filter-grid {
-                grid-template-columns: repeat(4, 1fr) !important;
+                grid-template-columns: repeat(3, 1fr) !important;
             }
         }
     </style>
@@ -45,9 +45,9 @@
                                     data-bs-target="#showModal">
                                     <i class="ri-add-line align-bottom me-1"></i> Agregar Insumo
                                 </button>
-                                <a href="{{ route('insumos.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#pdfExportModal">
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -102,19 +102,7 @@
                                             <option value="Etiqueta">Etiqueta</option>
                                         </select>
                                     </div>
-                                    {{-- Filtro 2: Proveedor --}}
-                                    <div>
-                                        <label class="navy-filter-label" for="filter-proveedor">
-                                            <i class="ri-building-2-line"></i> Proveedor
-                                        </label>
-                                        <select class="form-select navy-filter-select" id="filter-proveedor">
-                                            <option value="">Todos</option>
-                                            @foreach($proveedores as $prov)
-                                                <option value="{{ $prov->id }}">{{ $prov->nombre_completo }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    {{-- Filtro 3: Disponibilidad --}}
+                                    {{-- Filtro 2: Disponibilidad --}}
                                     <div>
                                         <label class="navy-filter-label" for="filter-stock">
                                             <i class="ri-store-3-line"></i> Disponibilidad
@@ -125,7 +113,7 @@
                                             <option value="agotado">Agotados</option>
                                         </select>
                                     </div>
-                                    {{-- Filtro 4: Ordenar por --}}
+                                    {{-- Filtro 3: Ordenar por --}}
                                     <div>
                                         <label class="navy-filter-label" for="filter-orden">
                                             <i class="ri-sort-asc"></i> Ordenar por
@@ -162,7 +150,6 @@
                                     <th>Tipo</th>
                                     <th>Stock Actual</th>
                                     <th>Costo Unit.</th>
-                                    <th>Proveedor</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -230,18 +217,6 @@
                                                 <div>
                                                     <small class="text-muted d-block">Unidad de Medida</small>
                                                     <span class="fw-semibold" id="view-unidad-medida">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-building-2-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Proveedor</small>
-                                                    <span class="fw-semibold" id="view-proveedor">-</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -369,13 +344,9 @@
                             </div>
 
                             <div class="row mb-0">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <x-forms.select name="unidad_medida" label="Unidad de Medida" required
                                         :options="['Metro' => 'Metro (m)', 'Kg' => 'Kilogramo (Kg)', 'Gramo' => 'Gramo (g)', 'Unidad' => 'Unidad (Und)', 'Rollo' => 'Rollo', 'Cono' => 'Cono', 'Docena' => 'Docena']" />
-                                </div>
-                                <div class="col-md-6">
-                                    <x-forms.select name="proveedor_id" label="Proveedor" required
-                                        :options="$proveedores->mapWithKeys(fn($p) => [$p->id => $p->nombre_completo])->toArray()" />
                                 </div>
                             </div>
                         </div>
@@ -383,22 +354,32 @@
                         <div class="modal-form-section mb-0">
                             <div class="modal-form-section-title"><i class="ri-bar-chart-grouped-line"></i>Control de Inventario y Costo</div>
 
-                            <div class="row mb-0">
-                                <div class="col-md-4">
-                                    <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0"
-                                        required />
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="is-inventoriable-switch"
+                                        name="is_inventoriable" value="1" checked>
+                                    <label class="form-check-label" for="is-inventoriable-switch">
+                                        Inventariable <small class="text-muted">(gestionar stock)</small>
+                                    </label>
                                 </div>
-                                <div class="col-md-4">
-                                    <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0"
-                                        required />
-                                </div>
-                                <div class="col-md-4">
-                                    <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0"
-                                        required />
+                            </div>
+
+                            <div id="stock-fields-wrapper">
+                                <div class="row mb-0">
+                                    <div class="col-md-6">
+                                        <x-forms.input name="stock_actual" label="Stock Actual" type="number" step="0.01" min="0" value="0" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <x-forms.input name="stock_minimo" label="Stock Mínimo" type="number" step="0.01" min="0" />
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="row mb-0">
+                                <div class="col-md-6">
+                                    <x-forms.input name="costo_unitario" label="Costo Unitario" type="number" step="0.01" min="0"
+                                        required />
+                                </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="estado" label="Estado" required
                                         :options="['1' => 'Activo', '0' => 'Inactivo']" placeholder="" value="1" />
@@ -417,6 +398,48 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal: Exportar PDF con filtros --}}
+    <div class="modal fade atlantico-modal" id="pdfExportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 360px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-file-pdf-line me-2"></i>Exportar PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Filtra qué insumos incluir en el reporte.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="pdf-filter-tipo">Tipo de Insumo</label>
+                        <select class="form-select" id="pdf-filter-tipo">
+                            <option value="">Todos los tipos</option>
+                            <option value="Tela">Tela</option>
+                            <option value="Hilo">Hilo</option>
+                            <option value="Boton">Botón</option>
+                            <option value="Cierre">Cierre</option>
+                            <option value="Etiqueta">Etiqueta</option>
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-semibold" for="pdf-filter-stock">Disponibilidad</label>
+                        <select class="form-select" id="pdf-filter-stock">
+                            <option value="">Todos</option>
+                            <option value="con_stock">Con Stock</option>
+                            <option value="agotado">Agotados</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btn-generar-pdf">
+                        <i class="ri-file-pdf-fill me-1"></i>Generar PDF
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -467,34 +490,32 @@
                 ajax: {
                     url: "{{ route('insumos.data') }}",
                     data: function (d) {
-                        // ── Filtros avanzados: enviar valores al server ──
-                        d.filter_tipo       = $('#filter-tipo').val();
-                        d.filter_proveedor  = $('#filter-proveedor').val();
-                        d.filter_stock      = $('#filter-stock').val();
-                        d.filter_orden      = $('#filter-orden').val();
+                        d.filter_tipo   = $('#filter-tipo').val();
+                        d.filter_stock  = $('#filter-stock').val();
+                        d.filter_orden  = $('#filter-orden').val();
                     }
                 },
                 dom: 'rtip',
                 buttons: [
                     {
                         extend: 'copy',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'csv',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'excel',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'pdf',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     },
                     {
                         extend: 'print',
-                        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4] }
                     }
                 ],
                 columns: [
@@ -543,17 +564,9 @@
                     {
                         data: 'costo_unitario',
                         name: 'costo_unitario',
-                        width: '14%',
+                        width: '20%',
                         render: function (data) {
                             return '$/ ' + parseFloat(data).toFixed(2);
-                        }
-                    },
-                    {
-                        data: 'proveedor_nombre',
-                        name: 'proveedor_nombre',
-                        width: '28%',
-                        render: function (data) {
-                            return renderEllipsis(data);
                         }
                     },
                     {
@@ -580,10 +593,9 @@
             // ── Badge: actualizar contador de filtros activos + punto rojo ──
             function updateFilterBadge() {
                 var count = 0;
-                if ($('#filter-tipo').val() !== '')                                  count++;
-                if ($('#filter-proveedor').val() !== '')                             count++;
-                if ($('#filter-stock').val() !== '')                                 count++;
-                if ($('#filter-orden').val() !== 'recientes')                        count++;
+                if ($('#filter-tipo').val() !== '')           count++;
+                if ($('#filter-stock').val() !== '')          count++;
+                if ($('#filter-orden').val() !== 'recientes') count++;
                 var $badge = $('#active-filter-count');
                 var $dot   = $('#filter-dot-indicator');
                 if (count > 0) {
@@ -621,7 +633,6 @@
             // ── Botón limpiar: resetea búsqueda + filtros + orden ──
             $('#btn-clear-filters').on('click', function () {
                 $('#filter-tipo').val('');
-                $('#filter-proveedor').val('');
                 $('#filter-stock').val('');
                 $('#filter-orden').val('recientes');
                 $('#custom-search-input').val('');
@@ -664,7 +675,6 @@
                     $("#view-stock-actual").text(parseFloat(data.stock_actual).toFixed(2));
                     $("#view-stock-minimo").text(parseFloat(data.stock_minimo).toFixed(2));
                     $("#view-costo-unitario").text('$/ ' + parseFloat(data.costo_unitario).toFixed(2));
-                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor asignado');
                     $("#view-created").text(formatDate(data.created_at));
                     $("#viewModal").modal('show');
                 });
@@ -678,14 +688,15 @@
                     $("#id-field").val(data.id);
                     $("#field-nombre").val(data.nombre);
                     $("#codigo-field").val(data.codigo || '');
-                    // Código inmutable después de crear: si ya tiene valor, deshabilitar
                     $("#codigo-field").prop('readonly', !!data.codigo);
                     $("#field-tipo").val(data.tipo);
                     $("#field-unidad_medida").val(data.unidad_medida);
+                    var inventoriable = data.is_inventoriable !== false && data.is_inventoriable !== 0;
+                    $("#is-inventoriable-switch").prop('checked', inventoriable);
+                    $("#stock-fields-wrapper").toggle(inventoriable);
                     $("#field-stock_actual").val(data.stock_actual);
                     $("#field-stock_minimo").val(data.stock_minimo);
                     $("#field-costo_unitario").val(data.costo_unitario);
-                    $("#field-proveedor_id").val(data.proveedor_id);
                     $("#field-estado").val(data.estado ? '1' : '0');
 
                     $("#add-btn").hide();
@@ -815,12 +826,19 @@
                 });
             });
 
+            // Toggle inventariable: muestra/oculta campos de stock
+            $(document).on('change', '#is-inventoriable-switch', function () {
+                $('#stock-fields-wrapper').toggle($(this).is(':checked'));
+            });
+
             // Limpiar modal al cerrar
             $("#showModal").on("hidden.bs.modal", function () {
                 $("#modalTitle").text("Agregar Insumo");
                 $("#insumoForm")[0].reset();
                 $("#id-field").val("");
                 $("#codigo-field").prop('readonly', false);
+                $("#is-inventoriable-switch").prop('checked', true);
+                $("#stock-fields-wrapper").show();
                 $("#add-btn").show();
                 $("#edit-btn").hide();
                 $('#insumoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
@@ -880,23 +898,14 @@
                 }
             });
 
-            // Proveedor — obligatorio
-            $(document).on('blur', '#field-proveedor_id', function () {
-                if (!$(this).val()) {
-                    marcarInvalido($(this), 'El proveedor es obligatorio.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Stock Actual — no negativo
+            // Stock Actual — no negativo (solo si inventariable)
             $(document).on('blur', '#field-stock_actual', function () {
+                if (!$('#is-inventoriable-switch').is(':checked')) return;
                 var val = parseFloat($(this).val());
                 if (isNaN(val) || val < 0) {
                     marcarInvalido($(this), 'El stock no puede ser negativo.');
                 } else {
                     marcarValido($(this));
-                    // Re-validar stock mínimo si ya tiene valor
                     var $min = $('#field-stock_minimo');
                     if ($min.val() !== '') {
                         var minVal = parseFloat($min.val());
@@ -911,6 +920,7 @@
 
             // Stock Mínimo — no negativo + no mayor al stock actual
             $(document).on('blur', '#field-stock_minimo', function () {
+                if (!$('#is-inventoriable-switch').is(':checked')) return;
                 var val = parseFloat($(this).val());
                 var stockActual = parseFloat($('#field-stock_actual').val());
                 if (isNaN(val) || val < 0) {
@@ -937,6 +947,7 @@
             // ══════════════════════════════════════════════════════
             function validarFormularioInsumo() {
                 let esValido = true;
+                let inventoriable = $('#is-inventoriable-switch').is(':checked');
 
                 let $nombre = $('#field-nombre');
                 let nombre = $nombre.val().trim();
@@ -960,28 +971,24 @@
                     esValido = false;
                 } else { marcarValido($unidad); }
 
-                let $proveedor = $('#field-proveedor_id');
-                if (!$proveedor.val()) {
-                    marcarInvalido($proveedor, 'El proveedor es obligatorio.');
-                    esValido = false;
-                } else { marcarValido($proveedor); }
+                if (inventoriable) {
+                    let $stockActual = $('#field-stock_actual');
+                    let stockActual = parseFloat($stockActual.val());
+                    if (isNaN(stockActual) || stockActual < 0) {
+                        marcarInvalido($stockActual, 'El stock actual no puede ser negativo.');
+                        esValido = false;
+                    } else { marcarValido($stockActual); }
 
-                let $stockActual = $('#field-stock_actual');
-                let stockActual = parseFloat($stockActual.val());
-                if (isNaN(stockActual) || stockActual < 0) {
-                    marcarInvalido($stockActual, 'El stock actual no puede ser negativo.');
-                    esValido = false;
-                } else { marcarValido($stockActual); }
-
-                let $stockMin = $('#field-stock_minimo');
-                let stockMin = parseFloat($stockMin.val());
-                if (isNaN(stockMin) || stockMin < 0) {
-                    marcarInvalido($stockMin, 'El stock mínimo no puede ser negativo.');
-                    esValido = false;
-                } else if (!isNaN(stockActual) && stockActual >= 0 && stockMin > stockActual) {
-                    marcarInvalido($stockMin, 'El stock mínimo no puede superar el stock actual.');
-                    esValido = false;
-                } else { marcarValido($stockMin); }
+                    let $stockMin = $('#field-stock_minimo');
+                    let stockMin = parseFloat($stockMin.val());
+                    if (isNaN(stockMin) || stockMin < 0) {
+                        marcarInvalido($stockMin, 'El stock mínimo no puede ser negativo.');
+                        esValido = false;
+                    } else if (!isNaN(stockActual) && stockActual >= 0 && stockMin > stockActual) {
+                        marcarInvalido($stockMin, 'El stock mínimo no puede superar el stock actual.');
+                        esValido = false;
+                    } else { marcarValido($stockMin); }
+                }
 
                 let $costo = $('#field-costo_unitario');
                 let costo = parseFloat($costo.val());
@@ -992,6 +999,22 @@
 
                 return esValido;
             }
+        });
+
+        // PDF Export Modal
+        $('#btn-generar-pdf').on('click', function () {
+            var baseUrl = '{{ route('insumos.reporte.pdf') }}';
+            var params = [];
+            var tipo  = $('#pdf-filter-tipo').val();
+            var stock = $('#pdf-filter-stock').val();
+            if (tipo)  params.push('tipo='  + encodeURIComponent(tipo));
+            if (stock) params.push('stock=' + encodeURIComponent(stock));
+            window.open(baseUrl + (params.length ? '?' + params.join('&') : ''), '_blank');
+            bootstrap.Modal.getInstance(document.getElementById('pdfExportModal'))?.hide();
+        });
+        $('#pdfExportModal').on('show.bs.modal', function () {
+            $('#pdf-filter-tipo').val('');
+            $('#pdf-filter-stock').val('');
         });
     </script>
 @endpush

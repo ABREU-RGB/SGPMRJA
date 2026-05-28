@@ -58,15 +58,15 @@
                                     data-bs-target="#showModal">
                                     <i class="ri-add-line align-bottom me-1"></i> Agregar Cliente
                                 </button>
-                                <a href="{{ route('clientes.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#pdfExportModal">
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                                </a>
+                                </button>
                             </div>
                             @else
                             <div class="d-flex gap-2">
-                                <a href="{{ route('clientes.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#pdfExportModal">
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                                </a>
+                                </button>
                             </div>
                             @endif
                         </div>
@@ -624,6 +624,48 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    {{-- Modal: Exportar PDF con filtros --}}
+    <div class="modal fade atlantico-modal" id="pdfExportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 360px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="ri-file-pdf-line me-2"></i>Exportar PDF
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Filtra qué clientes incluir en el reporte.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="pdf-filter-estado">Estado</label>
+                        <select class="form-select" id="pdf-filter-estado">
+                            <option value="">Todos los estados</option>
+                            <option value="1">Solo Activos</option>
+                            <option value="0">Solo Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-semibold" for="pdf-filter-tipo">Tipo de Cliente</label>
+                        <select class="form-select" id="pdf-filter-tipo">
+                            <option value="">Todos los tipos</option>
+                            <option value="natural">Natural</option>
+                            <option value="juridico">Jurídico</option>
+                            <option value="gubernamental">Gubernamental</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btn-generar-pdf">
+                        <i class="ri-file-pdf-fill me-1"></i>Generar PDF
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -1524,6 +1566,23 @@
                 $('#clienteForm').find('.invalid-feedback').hide();
             });
             $("#edit-btn").on("click", function () { $("#clienteForm").submit(); });
+        });
+
+        // PDF Export Modal
+        $('#btn-generar-pdf').on('click', function () {
+            var baseUrl = '{{ route('clientes.reporte.pdf') }}';
+            var params = [];
+            var estado = $('#pdf-filter-estado').val();
+            var tipo   = $('#pdf-filter-tipo').val();
+            if (estado !== '') params.push('estado=' + encodeURIComponent(estado));
+            if (tipo   !== '') params.push('tipo_cliente=' + encodeURIComponent(tipo));
+            var url = baseUrl + (params.length ? '?' + params.join('&') : '');
+            window.open(url, '_blank');
+            bootstrap.Modal.getInstance(document.getElementById('pdfExportModal'))?.hide();
+        });
+        $('#pdfExportModal').on('show.bs.modal', function () {
+            $('#pdf-filter-estado').val('');
+            $('#pdf-filter-tipo').val('');
         });
     </script>
 @endpush

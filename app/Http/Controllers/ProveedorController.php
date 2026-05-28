@@ -233,9 +233,16 @@ class ProveedorController extends Controller
         return response()->json(['success' => 'Proveedor restaurado exitosamente.']);
     }
 
-    public function reportePdf()
+    public function reportePdf(Request $request)
     {
-        $proveedores = Proveedor::with('persona.telefonos', 'persona.direcciones')->get();
+        $query = Proveedor::with('persona.telefonos', 'persona.direcciones');
+        if ($request->filled('tipo_proveedor')) {
+            $query->where('tipo_proveedor', $request->tipo_proveedor);
+        }
+        if ($request->filled('estatus')) {
+            $query->where('estado', (int) $request->estatus);
+        }
+        $proveedores = $query->get();
         $pdf = \PDF::loadView('admin.proveedores.reporte_pdf', compact('proveedores'))
             ->setPaper('a4', 'landscape');
         return $pdf->download('proveedores_' . now()->format('Y-m-d_H-i-s') . '.pdf');
