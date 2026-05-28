@@ -1393,7 +1393,9 @@ $(document).ready(function () {
                         // precio_unitario = BASE (sin bordado); el backend re-suma el recargo.
                         // Si por algún motivo no hay precio_base, cae al precio mostrado.
                         precio_unitario: (it.precio_base != null ? it.precio_base : it.precio_unitario),
-                        lleva_bordado:   bordados.length > 0
+                        // Entero 1/0: jQuery serializa los booleanos JS como "true"/"false",
+                        // que la regla `boolean` de Laravel rechaza (solo acepta 1/0/"1"/"0").
+                        lleva_bordado:   bordados.length > 0 ? 1 : 0
                     };
                     if (bordados.length) {
                         prod.bordados = bordados.map(function (b) {
@@ -1401,7 +1403,7 @@ $(document).ready(function () {
                                 ubicacion_bordado_id: b.ubicacion_bordado_id || null,
                                 logo_id:              b.logo_id || null,
                                 nombre_aplicado:      b.nombre_aplicado || '',
-                                es_personalizada:     !!b.es_personalizada,
+                                es_personalizada:     b.es_personalizada ? 1 : 0,
                                 cantidad:             Math.max(1, parseInt(b.cantidad || 1, 10)),
                                 precio_aplicado:      parseFloat(b.precio_aplicado) || 0
                             };
