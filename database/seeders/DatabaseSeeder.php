@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             InsumoSeeder::class,
             OrdenProduccionSeeder::class,
             DetalleOrdenInsumoSeeder::class,
-            ProduccionDiariaSeeder::class,
             MovimientoInsumoSeeder::class,
             LogoSeeder::class,
             ColorSeeder::class,

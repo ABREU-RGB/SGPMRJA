@@ -78,6 +78,40 @@ class Pedido extends Model
         return $this->belongsTo(Cotizacion::class);
     }
 
+    /**
+     * Órdenes de producción del pedido (1 por línea de producto).
+     */
+    public function ordenes()
+    {
+        return $this->hasMany(OrdenProduccion::class);
+    }
+
+    /**
+     * Progreso de producción del pedido (0..100), agregado desde sus órdenes.
+     *
+     * El pedido es "apto" para tantas órdenes como líneas de producto tiene.
+     * Cada línea aporta 1/N: una orden completa de una línea = +100/N. Las
+     * líneas sin orden aún aportan 0. Promedio sobre el total de líneas.
+     */
+    public function getProgresoProduccionAttribute(): float
+    {
+        $totalLineas = $this->relationLoaded('productos')
+            ? $this->productos->count()
+            : $this->productos()->count();
+
+        if ($totalLineas === 0) {
+            return 0.0;
+        }
+
+        $ordenes = $this->relationLoaded('ordenes')
+            ? $this->ordenes
+            : $this->ordenes()->get();
+
+        $suma = $ordenes->sum(fn ($orden) => $orden->progreso); // fracción 0..1 por orden
+
+        return round(min(1.0, $suma / $totalLineas) * 100, 1);
+    }
+
     // ============================================
     // ACCESSORS para obtener datos del cliente
     // ============================================

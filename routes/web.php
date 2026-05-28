@@ -6,7 +6,6 @@ use App\Http\Controllers\InsumoController;
 use App\Http\Controllers\MovimientoInsumoController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\OrdenProduccionController;
-use App\Http\Controllers\ProduccionDiariaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
@@ -216,9 +215,11 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::get('insumos/check-nombre', [InsumoController::class, 'checkNombre'])->name('insumos.check-nombre');
 
         // Órdenes de Producción
-        Route::resource('ordenes', OrdenProduccionController::class);
+        // (rutas específicas ANTES del resource para que no colisionen con ordenes/{orden})
+        Route::get('ordenes/pedidos-disponibles', [OrdenProduccionController::class, 'pedidosDisponibles'])->name('ordenes.pedidos-disponibles');
         Route::get('ordenes-data', [OrdenProduccionController::class, 'getOrdenes'])->name('ordenes.data');
-        Route::get('pedidos/{pedido}/data-for-orden', [OrdenProduccionController::class, 'getPedidoData'])->name('pedidos.data-for-orden');
+        Route::post('ordenes/{orden}/avance', [OrdenProduccionController::class, 'registrarAvance'])->name('ordenes.avance');
+        Route::resource('ordenes', OrdenProduccionController::class);
 
         // Control de Insumos por Orden
         Route::get('ordenes/{orden}/insumos', [DetalleOrdenInsumoController::class, 'index'])->name('ordenes.insumos.index');
@@ -226,14 +227,6 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::post('ordenes/{orden}/insumos', [DetalleOrdenInsumoController::class, 'store'])->name('ordenes.insumos.store');
         Route::put('ordenes/insumos/{id}', [DetalleOrdenInsumoController::class, 'update'])->name('ordenes.insumos.update');
         Route::delete('ordenes/insumos/{id}', [DetalleOrdenInsumoController::class, 'destroy'])->name('ordenes.insumos.destroy');
-
-        // Producción Diaria
-        Route::get('produccion/diaria', [ProduccionDiariaController::class, 'index'])->name('produccion.diaria.index');
-        Route::get('produccion/diaria/data', [ProduccionDiariaController::class, 'getRegistros'])->name('produccion.diaria.data');
-        Route::post('produccion/diaria', [ProduccionDiariaController::class, 'store'])->name('produccion.diaria.store');
-        Route::get('produccion/diaria/{id}', [ProduccionDiariaController::class, 'show'])->name('produccion.diaria.show');
-        Route::put('produccion/diaria/{id}', [ProduccionDiariaController::class, 'update'])->name('produccion.diaria.update');
-        Route::delete('produccion/diaria/{id}', [ProduccionDiariaController::class, 'destroy'])->name('produccion.diaria.destroy');
 
         // Inventario
         Route::get('inventario/movimientos', [MovimientoInsumoController::class, 'index'])->name('inventario.movimientos.index');

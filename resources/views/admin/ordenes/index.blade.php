@@ -38,7 +38,7 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <div>
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
-                                    data-bs-target="#showModal">
+                                    data-bs-target="#seleccionarPedidoModal">
                                     <i class="ri-add-line align-bottom me-1"></i> Nueva Orden
                                 </button>
                             </div>
@@ -112,6 +112,7 @@
                             <tr>
                                 <th>Nro. Orden</th>
                                 <th>Nro. Pedido</th>
+                                <th>Producto / Empleado</th>
                                 <th>Cant. Solicitada</th>
                                 <th>Progreso</th>
                                 <th>Fecha Fin Estimada</th>
@@ -127,6 +128,7 @@
         </div>
     </div>
 
+    @include('admin.ordenes.modals.seleccionar_pedido')
     @include('admin.ordenes.modals.create')
     @include('admin.ordenes.modals.view')
     @include('admin.ordenes.modals.avance')

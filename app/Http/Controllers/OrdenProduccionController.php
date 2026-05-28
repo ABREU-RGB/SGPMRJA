@@ -3,30 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrdenProduccion;
-use App\Models\Producto;
 use App\Models\Insumo;
 use App\Models\Pedido;
-use App\Models\Logo;
+use App\Models\DetallePedido;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class OrdenProduccionController extends Controller
 {
     public function index()
     {
-        $productos = Producto::where('estado', true)->get();
         $insumos = Insumo::where('estado', true)->get();
-        // Obtener pedidos que no estén cancelados o completados
-        $pedidos = Pedido::whereNotIn('estado', ['Cancelado', 'Completado'])
-            ->with(['productos.producto'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        // Filtrar empleados del departamento de Producción a través de la FK
-        // departamento_id (la columna departamento varchar fue eliminada en la
-        // auditoría DB; este controlador no se había actualizado).
+
+        // Empleados del departamento de Producción (asignables a una orden)
         $empleados = Empleado::with('persona')
             ->whereHas('departamento', fn($q) => $q->whereRaw("LOWER(nombre) LIKE 'producc%'"))
             ->where('estado', 1)
@@ -35,13 +26,14 @@ class OrdenProduccionController extends Controller
                 'id'   => $e->id,
                 'name' => $e->persona->nombre_completo ?? 'Sin nombre',
             ]);
-        $logos = Logo::orderBy('name')->get(['id', 'name']);
-        return view('admin.ordenes.index', compact('productos', 'insumos', 'pedidos', 'empleados', 'logos'));
+
+        return view('admin.ordenes.index', compact('insumos', 'empleados'));
     }
 
     public function getOrdenes(Request $request)
     {
-        $ordenes = OrdenProduccion::with(['producto.tipoProducto', 'creadoPor:id,name', 'pedido.cliente.persona'])->select('orden_produccion.*');
+        $ordenes = OrdenProduccion::with(['producto.tipoProducto', 'empleado.persona', 'creadoPor:id,name', 'pedido.cliente.persona'])
+            ->select('orden_produccion.*');
 
         if ($request->filled('filter_estado')) {
             $ordenes->where('orden_produccion.estado', $request->input('filter_estado'));
@@ -74,9 +66,19 @@ class OrdenProduccionController extends Controller
             ->addColumn('pedido_info', function ($orden) {
                 if ($orden->pedido_id && $orden->pedido) {
                     return '<div class="fw-medium text-center">Pedido #' . $orden->pedido->id . '</div>';
-                } else {
-                    return '<div class="fw-medium text-center text-muted">Orden Manual</div>';
                 }
+                return '<div class="fw-medium text-center text-muted">Orden Manual</div>';
+            })
+            ->addColumn('producto_info', function ($orden) {
+                $producto = $orden->producto ? $orden->producto->nombre : 'N/A';
+                $empleado = $orden->empleado && $orden->empleado->persona
+                    ? $orden->empleado->persona->nombre_completo
+                    : null;
+                $html = '<div class="fw-medium">' . e($producto) . '</div>';
+                if ($empleado) {
+                    $html .= '<small class="text-muted"><i class="ri-user-line"></i> ' . e($empleado) . '</small>';
+                }
+                return $html;
             })
             ->addColumn('creado_por', function ($orden) {
                 return $orden->creadoPor ? $orden->creadoPor->name : 'N/A';
@@ -93,116 +95,228 @@ class OrdenProduccionController extends Controller
                 $actions .= '</div>';
                 return $actions;
             })
-            ->rawColumns(['pedido_info', 'actions'])
+            ->rawColumns(['pedido_info', 'producto_info', 'actions'])
             ->make(true);
+    }
+
+    /**
+     * Pedidos activos con sus líneas de producto, marcando cuáles ya tienen
+     * orden de producción. Alimenta el modal de selección (1 orden por línea).
+     */
+    public function pedidosDisponibles()
+    {
+        $pedidos = Pedido::with([
+                'cliente.persona',
+                'productos.producto',
+                'productos.color',
+                'productos.talla',
+                'productos.bordados',
+            ])
+            ->whereNotIn('estado', ['Cancelado', 'Completado'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // [detalle_pedido_id => orden_id] de las líneas con orden activa (no cancelada)
+        $detallesConOrden = OrdenProduccion::whereIn('pedido_id', $pedidos->pluck('id'))
+            ->whereNotNull('detalle_pedido_id')
+            ->where('estado', '!=', 'Cancelado')
+            ->pluck('id', 'detalle_pedido_id');
+
+        $data = $pedidos->map(function ($pedido) use ($detallesConOrden) {
+            $lineas = $pedido->productos->map(function ($d) use ($detallesConOrden) {
+                return [
+                    'detalle_id'      => $d->id,
+                    'producto_id'     => $d->producto_id,
+                    'producto_nombre' => $d->producto->nombre ?? ('Producto #' . $d->producto_id),
+                    'cantidad'        => $d->cantidad,
+                    'color'           => $d->color->nombre ?? null,
+                    'talla'           => $d->talla ? ($d->talla->etiqueta ?: $d->talla->nombre) : null,
+                    'precio_unitario' => (float) $d->precio_unitario,
+                    'subtotal'        => round($d->cantidad * $d->precio_unitario, 2),
+                    'lleva_bordado'   => (bool) $d->lleva_bordado,
+                    'bordados_count'  => $d->bordados->count(),
+                    'orden_id'        => $detallesConOrden[$d->id] ?? null,
+                ];
+            })->values();
+
+            return [
+                'id'                => $pedido->id,
+                'cliente_nombre'    => $pedido->cliente_nombre_completo,
+                'cliente_documento' => $pedido->cliente_documento ?? 'N/A',
+                'fecha_pedido'      => optional($pedido->fecha_pedido)->format('d/m/Y'),
+                'fecha_entrega'     => optional($pedido->fecha_entrega_estimada)->format('Y-m-d'),
+                'estado'            => $pedido->estado,
+                'total_lineas'      => $lineas->count(),
+                'lineas_pendientes' => $lineas->whereNull('orden_id')->count(),
+                'progreso'          => $pedido->progreso_produccion,
+                'lineas'            => $lineas,
+            ];
+        })->values();
+
+        return response()->json($data);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'pedido_id' => 'nullable|exists:pedido,id',
-            'producto_id' => 'required|exists:producto,id',
-            'cantidad_solicitada' => 'required|integer|min:1',
+        $validated = $request->validate([
+            'detalle_pedido_id' => 'required|exists:detalle_pedido,id',
+            'empleado_id' => 'required|exists:empleado,id',
             'fecha_inicio' => 'required|date',
             'fecha_fin_estimada' => 'required|date|after:fecha_inicio',
             'costo_estimado' => 'required|numeric|min:0',
-            'logo_id' => 'nullable|exists:logo,id',
             'notas' => 'nullable|string',
-            'insumos' => 'required|array',
+            'insumos' => 'required|array|min:1',
             'insumos.*.id' => 'required|exists:insumo,id',
-            'insumos.*.cantidad_estimada' => 'required|numeric|min:0.01'
+            'insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
         ]);
 
+        $detalle = DetallePedido::findOrFail($validated['detalle_pedido_id']);
+
+        // Una línea de pedido solo puede tener una orden activa a la vez
+        $yaTieneOrden = OrdenProduccion::where('detalle_pedido_id', $detalle->id)
+            ->where('estado', '!=', 'Cancelado')
+            ->exists();
+        if ($yaTieneOrden) {
+            return response()->json([
+                'message' => 'Este producto del pedido ya tiene una orden de producción activa.'
+            ], 422);
+        }
+
+        // producto y cantidad se derivan de la línea (autoritativo, no del cliente)
         $orden = OrdenProduccion::create([
-            'pedido_id' => $request->pedido_id,
-            'producto_id' => $request->producto_id,
-            'cantidad_solicitada' => $request->cantidad_solicitada,
+            'pedido_id' => $detalle->pedido_id,
+            'detalle_pedido_id' => $detalle->id,
+            'producto_id' => $detalle->producto_id,
+            'empleado_id' => $validated['empleado_id'],
+            'cantidad_solicitada' => $detalle->cantidad,
             'cantidad_producida' => 0,
-            'fecha_inicio' => $request->fecha_inicio,
-            'fecha_fin_estimada' => $request->fecha_fin_estimada,
+            'fecha_inicio' => $validated['fecha_inicio'],
+            'fecha_fin_estimada' => $validated['fecha_fin_estimada'],
             'estado' => 'Pendiente',
-            'costo_estimado' => $request->costo_estimado,
-            'logo_id' => $request->logo_id,
-            'notas' => $request->notas,
-            'created_by' => Auth::id()
+            'costo_estimado' => $validated['costo_estimado'],
+            'notas' => $validated['notas'] ?? null,
+            'created_by' => Auth::id(),
         ]);
 
         foreach ($request->insumos as $insumo) {
             $orden->insumos()->attach($insumo['id'], [
                 'cantidad_estimada' => $insumo['cantidad_estimada'],
-                'cantidad_utilizada' => 0
+                'cantidad_utilizada' => 0,
             ]);
         }
 
-        return response()->json(['success' => 'Orden de producción creada exitosamente.']);
+        return response()->json(['message' => 'Orden de producción creada exitosamente.']);
     }
 
     public function show($id)
     {
         $orden = OrdenProduccion::with([
                 'producto.tipoProducto',
+                'empleado.persona',
+                'detallePedido.bordados.logo',
+                'detallePedido.color',
+                'detallePedido.talla',
                 'insumos',
                 'creadoPor:id,name',
-                'produccionDiaria.empleado.persona',
-                'logo',
             ])->findOrFail($id);
 
         return response()->json($orden);
     }
 
+    /**
+     * Registrar un avance de producción directamente sobre la orden.
+     * Acumula cantidad_producida / cantidad_defectuosa y actualiza el estado.
+     * El empleado responsable es el asignado a la orden (empleado_id).
+     */
+    public function registrarAvance(Request $request, $id)
+    {
+        $orden = OrdenProduccion::findOrFail($id);
+
+        if (in_array($orden->estado, ['Finalizado', 'Cancelado'])) {
+            return response()->json([
+                'message' => "La orden ya está en estado \"{$orden->estado}\" y no puede recibir más avances."
+            ], 422);
+        }
+
+        $restante = $orden->cantidad_solicitada - $orden->cantidad_producida;
+
+        $validated = $request->validate([
+            'cantidad_producida'  => 'required|integer|min:1|max:' . max(1, $restante),
+            'cantidad_defectuosa' => 'nullable|integer|min:0|lte:cantidad_producida',
+        ]);
+
+        $orden->cantidad_producida += $validated['cantidad_producida'];
+        $orden->cantidad_defectuosa += ($validated['cantidad_defectuosa'] ?? 0);
+
+        if ($orden->cantidad_producida >= $orden->cantidad_solicitada) {
+            $orden->estado = 'Finalizado';
+            $orden->fecha_fin_real = now()->toDateString();
+        } elseif ($orden->estado === 'Pendiente') {
+            $orden->estado = 'En Proceso';
+        }
+        $orden->save();
+
+        return response()->json(['message' => 'Avance registrado correctamente.']);
+    }
+
     public function edit($id)
     {
-        $orden = OrdenProduccion::with(['insumos'])->findOrFail($id);
+        $orden = OrdenProduccion::with([
+                'insumos',
+                'producto',
+                'empleado.persona',
+                'pedido',
+                'detallePedido.color',
+                'detallePedido.talla',
+                'detallePedido.bordados',
+            ])->findOrFail($id);
+
         return response()->json($orden);
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'producto_id' => 'required|exists:producto,id',
-            'cantidad_solicitada' => 'required|integer|min:1',
+        $orden = OrdenProduccion::findOrFail($id);
+
+        $validated = $request->validate([
+            'empleado_id' => 'required|exists:empleado,id',
             'fecha_inicio' => 'required|date',
             'fecha_fin_estimada' => 'required|date|after:fecha_inicio',
             'estado' => 'required|in:Pendiente,En Proceso,Finalizado,Cancelado',
             'costo_estimado' => 'required|numeric|min:0',
-            'logo_id' => 'nullable|exists:logo,id',
             'notas' => 'nullable|string',
-            'insumos' => 'required|array',
+            'insumos' => 'required|array|min:1',
             'insumos.*.id' => 'required|exists:insumo,id',
-            'insumos.*.cantidad_estimada' => 'required|numeric|min:0.01'
+            'insumos.*.cantidad_estimada' => 'required|numeric|min:0.01',
         ]);
 
-        $orden = OrdenProduccion::findOrFail($id);
-
         $fechaFinReal = $orden->fecha_fin_real;
-        if ($request->estado === 'Finalizado' && is_null($fechaFinReal)) {
+        if ($validated['estado'] === 'Finalizado' && is_null($fechaFinReal)) {
             $fechaFinReal = now()->toDateString();
-        } elseif ($request->estado !== 'Finalizado') {
+        } elseif ($validated['estado'] !== 'Finalizado') {
             $fechaFinReal = null;
         }
 
+        // producto y cantidad quedan ligados a la línea del pedido (no se editan aquí)
         $orden->update([
-            'producto_id' => $request->producto_id,
-            'cantidad_solicitada' => $request->cantidad_solicitada,
-            'fecha_inicio' => $request->fecha_inicio,
-            'fecha_fin_estimada' => $request->fecha_fin_estimada,
-            'estado' => $request->estado,
+            'empleado_id' => $validated['empleado_id'],
+            'fecha_inicio' => $validated['fecha_inicio'],
+            'fecha_fin_estimada' => $validated['fecha_fin_estimada'],
+            'estado' => $validated['estado'],
             'fecha_fin_real' => $fechaFinReal,
-            'costo_estimado' => $request->costo_estimado,
-            'logo_id' => $request->logo_id,
-            'notas' => $request->notas
+            'costo_estimado' => $validated['costo_estimado'],
+            'notas' => $validated['notas'] ?? null,
         ]);
 
-        // Actualizar insumos
         $orden->insumos()->sync([]);
         foreach ($request->insumos as $insumo) {
             $orden->insumos()->attach($insumo['id'], [
                 'cantidad_estimada' => $insumo['cantidad_estimada'],
-                'cantidad_utilizada' => 0
+                'cantidad_utilizada' => 0,
             ]);
         }
 
-        return response()->json(['success' => 'Orden de producción actualizada exitosamente.']);
+        return response()->json(['message' => 'Orden de producción actualizada exitosamente.']);
     }
 
     public function destroy($id)
@@ -211,29 +325,11 @@ class OrdenProduccionController extends Controller
 
         if ($orden->estado !== 'Pendiente') {
             return response()->json([
-                'error' => 'No se puede eliminar una orden que no está en estado Pendiente'
+                'message' => 'No se puede eliminar una orden que no está en estado Pendiente'
             ], 422);
         }
 
         $orden->delete();
-        return response()->json(['success' => 'Orden de producción eliminada exitosamente.']);
+        return response()->json(['message' => 'Orden de producción eliminada exitosamente.']);
     }
-
-    /**
-     * Obtener datos de un pedido para crear orden de producción
-     */
-    public function getPedidoData($pedidoId)
-    {
-        $pedido = Pedido::with([
-            'productos.producto',
-            'productos.insumos' => function ($query) {
-                $query->withPivot('cantidad_estimada');
-            }
-        ])
-            ->findOrFail($pedidoId);
-
-
-        return response()->json($pedido);
-    }
-
 }
