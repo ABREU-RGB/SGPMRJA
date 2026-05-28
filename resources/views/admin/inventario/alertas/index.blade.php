@@ -81,7 +81,6 @@
                                             <th>Stock Actual</th>
                                             <th>Stock Mínimo</th>
                                             <th>Diferencia</th>
-                                            <th>Proveedor</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -100,7 +99,6 @@
                                                     {{ number_format($insumo->stock_actual - $insumo->stock_minimo, 2) }}
                                                     {{ $insumo->unidad_medida }}
                                                 </td>
-                                                <td>{{ $insumo->proveedor ? $insumo->proveedor->nombre_completo : 'No asignado' }}</td>
                                                 <td>
                                                     <div class="dropdown d-inline-block">
                                                         <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
@@ -122,17 +120,6 @@
                                                                     Registrar Entrada
                                                                 </a>
                                                             </li>
-                                                            @if($insumo->proveedor)
-                                                                <li>
-                                                                    <a href="#" class="dropdown-item contact-provider"
-                                                                        data-proveedor="{{ $insumo->proveedor->nombre_completo }}"
-                                                                        data-telefono="{{ $insumo->proveedor->telefono_unificado }}"
-                                                                        data-email="{{ $insumo->proveedor->email_unificado }}">
-                                                                        <i class="ri-phone-line align-bottom me-2 text-muted"></i>
-                                                                        Contactar Proveedor
-                                                                    </a>
-                                                                </li>
-                                                            @endif
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -160,49 +147,6 @@
         </div>
     </div>
 
-    <!-- Modal para mostrar información de contacto del proveedor -->
-    <div class="modal fade atlantico-modal" id="proveedorModal" tabindex="-1" aria-labelledby="proveedorModalLabel" aria-hidden="true"
-        data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="proveedorModalLabel">Información de Contacto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center mb-4">
-                        <div class="avatar-lg mx-auto">
-                            <div class="avatar-title bg-light text-primary display-5 rounded-circle">
-                                <i class="ri-building-line"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-center">
-                        <h5 id="proveedor-nombre"></h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-borderless mb-0">
-                            <tbody>
-                                <tr>
-                                    <th><i class="ri-phone-line fs-16 align-middle me-2"></i> Teléfono:</th>
-                                    <td id="proveedor-telefono"></td>
-                                </tr>
-                                <tr>
-                                    <th><i class="ri-mail-line fs-16 align-middle me-2"></i> Email:</th>
-                                    <td id="proveedor-email"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="ri-close-line me-1"></i>Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')
@@ -264,20 +208,6 @@
 
                 // Redirigir a la página de movimientos y seleccionar el insumo
                 window.location.href = "{{ route('inventario.movimientos.index') }}?insumo_id=" + id + "&tipo=Entrada";
-            });
-
-            // Manejar clic en enlace de contactar proveedor
-            $('.contact-provider').on('click', function (e) {
-                e.preventDefault();
-                var proveedor = $(this).data('proveedor');
-                var telefono = $(this).data('telefono') || 'No disponible';
-                var email = $(this).data('email') || 'No disponible';
-
-                $('#proveedor-nombre').text(proveedor);
-                $('#proveedor-telefono').text(telefono);
-                $('#proveedor-email').text(email);
-
-                $('#proveedorModal').modal('show');
             });
         });
     </script>

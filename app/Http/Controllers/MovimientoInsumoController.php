@@ -14,8 +14,7 @@ class MovimientoInsumoController extends Controller
     public function index()
     {
         $insumos = Insumo::where('estado', true)->get();
-        $proveedores = \App\Models\Proveedor::with('persona')->where('estado', true)->get();
-        return view('admin.inventario.movimientos.index', compact('insumos', 'proveedores'));
+        return view('admin.inventario.movimientos.index', compact('insumos'));
     }
 
     public function getMovimientos(Request $request)
@@ -134,7 +133,8 @@ class MovimientoInsumoController extends Controller
 
     public function reporteExistencia()
     {
-        $insumos = Insumo::with('proveedor.persona')->where('estado', true)->get();
+        // Insumos ya no tienen relación con proveedor (Santiago, e607f64).
+        $insumos = Insumo::where('estado', true)->get();
         return view('admin.inventario.reporte.index', compact('insumos'));
     }
 
@@ -151,9 +151,10 @@ class MovimientoInsumoController extends Controller
 
     public function alertasStock()
     {
+        // El módulo de insumos eliminó la relación con proveedor (Santiago, e607f64).
+        // Aquí solo listamos los insumos en alerta sin info de proveedor.
         $insumosConBajoStock = Insumo::where('estado', true)
             ->whereRaw('stock_actual <= stock_minimo')
-            ->with('proveedor.persona.telefonos', 'proveedor.persona.direcciones')
             ->get();
 
         return view('admin.inventario.alertas.index', compact('insumosConBajoStock'));

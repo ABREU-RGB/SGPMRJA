@@ -329,7 +329,6 @@
                     stock_actual: $('#stock-actual-field-insumo').val(),
                     stock_minimo: $('#stock-minimo-field-insumo').val(),
                     costo_unitario: $('#costo-unitario-field-insumo').val(),
-                    proveedor_id: $('#proveedor-id-field-insumo').val(),
                     estado: 1
                 },
                 success: function (response) {
