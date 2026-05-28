@@ -6401,6 +6401,24 @@ header#page-topbar,
 }
 
 /* ================================================================
+   SIDEBAR — Ítem "Inicio" estado activo con color navy
+   Velzon define --vz-vertical-menu-item-active-color (#695eef) en
+   app.min.css. Sobreescribimos la variable Y el color directamente.
+   SimpleBar inyecta <div.simplebar-content> dentro de navbar-nav,
+   por lo que se usan descendant combinators (no >) en el selector.
+   ================================================================ */
+.navbar-menu .navbar-nav .nav-item:not([class*="section-"]) .menu-link.nav-link.active {
+    --vz-vertical-menu-item-active-color: #1e3c72;
+    color: #1e3c72 !important;
+    background-color: rgba(30, 60, 114, 0.12) !important;
+    border-left-color: #1e3c72 !important;
+    font-weight: 600 !important;
+}
+.navbar-menu .navbar-nav .nav-item:not([class*="section-"]) .menu-link.nav-link.active i {
+    color: #1e3c72 !important;
+}
+
+/* ================================================================
    TABLAS — Botones de acción minimalistas (íconos sin fondo)
    Uso: clase .btn-tbl-action en botones de columna Acciones
    ================================================================ */

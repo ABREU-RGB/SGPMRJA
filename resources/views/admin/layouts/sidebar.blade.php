@@ -107,19 +107,6 @@
         opacity: 1;
     }
 
-    /* ── Inicio (Dashboard) — estado activo con color navy ──
-       El ítem Inicio no está dentro de section-maestros/operativa/reportes,
-       por lo que necesita su propia regla de color activo. */
-    .navbar-menu .navbar-nav > .nav-item > .menu-link.nav-link.active {
-        background: rgba(30, 60, 114, 0.12) !important;
-        color: #1e3c72 !important;
-        border-left-color: #1e3c72 !important;
-        font-weight: 600;
-    }
-    .navbar-menu .navbar-nav > .nav-item > .menu-link.nav-link.active i {
-        color: #1e3c72 !important;
-    }
-
     /* ── Espaciado entre items y subitems ── */
     .menu-dropdown {
         margin-top: 8px;
