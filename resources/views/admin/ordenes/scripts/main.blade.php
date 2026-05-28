@@ -351,8 +351,19 @@
             // Costo sugerido = subtotal de la línea
             $('#costo-estimado-field').val(Number(linea.subtotal || 0).toFixed(2));
 
-            // Insumos + notas
+            // Insumos: prefill desde el template del tipo_producto (si tiene)
             resetInsumos();
+            if (Array.isArray(linea.insumos_default) && linea.insumos_default.length) {
+                ordenInsumosState = linea.insumos_default.map(function (i) {
+                    return {
+                        id: i.id,
+                        nombre: i.nombre,
+                        unidad: i.unidad || '',
+                        cantidad: parseFloat(i.cantidad) || 0
+                    };
+                });
+                renderInsumosGrid();
+            }
             $('#notas-field').val('');
 
             // Limpiar validaciones

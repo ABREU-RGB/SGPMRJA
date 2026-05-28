@@ -18,11 +18,13 @@ class TipoProducto extends Model
         'descripcion',
         'precio_confeccion',
         'requiere_tela',
+        'consumo_tela_por_unidad',
     ];
 
     protected $casts = [
         'precio_confeccion' => 'decimal:2',
         'requiere_tela' => 'boolean',
+        'consumo_tela_por_unidad' => 'decimal:2',
     ];
 
     public function productos()
@@ -40,5 +42,17 @@ class TipoProducto extends Model
             ->withPivot(['es_obligatorio', 'orden'])
             ->withTimestamps()
             ->orderBy('tipo_producto_atributo.orden');
+    }
+
+    /**
+     * Insumos por defecto para una orden de producción de este tipo.
+     * Pivot: tipo_producto_insumo (cantidad_estimada).
+     * Al crear una orden, se prellenan estos insumos con sus cantidades.
+     */
+    public function insumosDefault()
+    {
+        return $this->belongsToMany(Insumo::class, 'tipo_producto_insumo')
+            ->withPivot('cantidad_estimada')
+            ->withTimestamps();
     }
 }

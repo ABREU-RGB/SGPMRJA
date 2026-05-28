@@ -20,9 +20,16 @@ class ProductoController extends Controller
     {
         $tiposProducto = TipoProducto::with(['atributos.valores'])->orderBy('nombre')->get();
         $telasDisponibles = Insumo::telas()->orderBy('nombre')->get(['id', 'nombre', 'codigo', 'costo_unitario', 'unidad_medida']);
+        // Insumos disponibles para el template de orden de producción del tipo.
+        // Excluimos telas: la tela es per-variante (cada producto tiene su insumo_tela_id).
+        // Solo se cataloga al tipo lo constante (hilo, botón, cierre, etiqueta...).
+        $insumosDisponibles = Insumo::where('estado', true)
+            ->where('tipo', '!=', 'Tela')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'unidad_medida']);
         $historial = $request->has('historial');
 
-        return view('admin.productos.index', compact('tiposProducto', 'telasDisponibles', 'historial'));
+        return view('admin.productos.index', compact('tiposProducto', 'telasDisponibles', 'insumosDisponibles', 'historial'));
     }
 
     public function getProductos(Request $request)

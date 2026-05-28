@@ -107,7 +107,8 @@ class OrdenProduccionController extends Controller
     {
         $pedidos = Pedido::with([
                 'cliente.persona',
-                'productos.producto',
+                'productos.producto.tipoProducto.insumosDefault',
+                'productos.producto.tela',
                 'productos.color',
                 'productos.talla',
                 'productos.bordados',
@@ -124,6 +125,31 @@ class OrdenProduccionController extends Controller
 
         $data = $pedidos->map(function ($pedido) use ($detallesConOrden) {
             $lineas = $pedido->productos->map(function ($d) use ($detallesConOrden) {
+                // Insumos por defecto del tipo de producto (template para la orden).
+                // Cantidad pivote = consumo por unidad → multiplicar por las unidades de la línea.
+                $tipo = optional($d->producto)->tipoProducto;
+                $insumosDefault = $tipo
+                    ? $tipo->insumosDefault->map(fn($i) => [
+                        'id'        => $i->id,
+                        'nombre'    => $i->nombre,
+                        'unidad'    => $i->unidad_medida,
+                        'cantidad'  => round((float) $i->pivot->cantidad_estimada * $d->cantidad, 2),
+                    ])->values()
+                    : collect();
+
+                // Auto-prefill de la tela del producto (variante-específica):
+                // si el tipo requiere tela y define consumo por unidad, agregamos la tela
+                // del producto con cantidad = consumo × unidades de la línea.
+                $tela = optional($d->producto)->tela;
+                if ($tipo && $tipo->requiere_tela && $tipo->consumo_tela_por_unidad > 0 && $tela) {
+                    $insumosDefault->prepend([
+                        'id'        => $tela->id,
+                        'nombre'    => $tela->nombre,
+                        'unidad'    => $tela->unidad_medida,
+                        'cantidad'  => round((float) $tipo->consumo_tela_por_unidad * $d->cantidad, 2),
+                    ]);
+                }
+
                 return [
                     'detalle_id'      => $d->id,
                     'producto_id'     => $d->producto_id,
@@ -136,6 +162,7 @@ class OrdenProduccionController extends Controller
                     'lleva_bordado'   => (bool) $d->lleva_bordado,
                     'bordados_count'  => $d->bordados->count(),
                     'orden_id'        => $detallesConOrden[$d->id] ?? null,
+                    'insumos_default' => $insumosDefault,
                 ];
             })->values();
 

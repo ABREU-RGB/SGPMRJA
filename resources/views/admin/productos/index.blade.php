@@ -544,6 +544,22 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- Consumo de tela por unidad (visible solo si requiere tela) --}}
+                            <div class="row g-2 mt-2 mb-0" id="tipo-consumo-tela-row">
+                                <div class="col-md-7">
+                                    <label for="tipo-consumo-tela" class="form-label">Consumo de tela por unidad</label>
+                                    <div class="input-group">
+                                        <input type="number" id="tipo-consumo-tela" name="consumo_tela_por_unidad"
+                                            class="form-control" step="0.01" min="0" max="9999.99" placeholder="0.00" />
+                                        <span class="input-group-text">por unidad</span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Cantidad de tela por cada unidad producida (ej: 2 m para una camisa).
+                                        Al crear la orden se prellena con (consumo × cantidad), usando la tela específica del producto.
+                                    </small>
+                                </div>
+                            </div>
                         </div>
 
                         {{-- Sección: Atributos de confección asociados --}}
@@ -560,6 +576,30 @@
                                 <div class="text-center text-muted py-2" id="tipo-atributos-empty">
                                     <span class="spinner-border spinner-border-sm me-2"></span>Cargando atributos…
                                 </div>
+                            </div>
+                        </div>
+
+                        {{-- Sección: Insumos por defecto (template para órdenes de producción) --}}
+                        <div class="modal-form-section mb-0 mt-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="modal-form-section-title mb-0">
+                                    <i class="ri-tools-line"></i>Insumos por defecto
+                                </div>
+                                <button type="button" class="btn btn-sm btn-soft-primary py-0 px-2" id="tipo-insumo-add-btn">
+                                    <i class="ri-add-line"></i> Agregar insumo
+                                </button>
+                            </div>
+                            <p class="text-muted small mb-2">
+                                Insumos constantes al tipo y su consumo <strong>por unidad producida</strong>
+                                (ej: 8 botones por camisa, 1 etiqueta por chemise). Al crear una orden se prellenan
+                                multiplicados por la cantidad a producir.
+                                <br><span class="text-muted"><i class="ri-information-line me-1"></i>Las telas no aparecen aquí — varían por variante (cada producto tiene su tela).</span>
+                            </p>
+                            <div id="tipo-insumos-list" class="d-flex flex-column gap-1">
+                                {{-- Render dinámico vía JS --}}
+                            </div>
+                            <div id="tipo-insumos-empty" class="text-center text-muted py-2 small" style="display:none;">
+                                <i class="ri-inbox-line me-1"></i>Sin insumos por defecto. Agrega los que se usan al producir.
                             </div>
                         </div>
                     </div>
@@ -1668,13 +1708,112 @@
                 });
             }
 
+            // ════════════════════════════════════════════════════════════
+            // Insumos por defecto (template para órdenes de producción)
+            // ════════════════════════════════════════════════════════════
+            // Catálogo de insumos disponibles (passed from controller)
+            var insumosCatalogo = @json($insumosDisponibles ?? []);
+            var tipoInsumosState = []; // [{ id, nombre, unidad, cantidad }]
+
+            function renderTipoInsumos() {
+                var $list  = $('#tipo-insumos-list');
+                var $empty = $('#tipo-insumos-empty');
+                if (!tipoInsumosState.length) {
+                    $list.empty();
+                    $empty.show();
+                    return;
+                }
+                $empty.hide();
+                var optionsHtml = insumosCatalogo.map(function (i) {
+                    return '<option value="' + i.id + '" data-nombre="' + escapeHtml(i.nombre) + '" data-unidad="' + escapeHtml(i.unidad_medida || '') + '">' +
+                           escapeHtml(i.nombre) + ' (' + escapeHtml(i.unidad_medida || '') + ')</option>';
+                }).join('');
+                $list.html(tipoInsumosState.map(function (it, idx) {
+                    return '<div class="row g-2 align-items-center tipo-insumo-row" data-idx="' + idx + '">' +
+                        '<div class="col-md-7">' +
+                            '<select class="form-select form-select-sm tipo-insumo-select">' +
+                                '<option value="">Seleccione insumo...</option>' + optionsHtml +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="col-md-3">' +
+                            '<input type="number" class="form-control form-control-sm tipo-insumo-cantidad" step="0.01" min="0.01" placeholder="Por unidad" title="Cantidad por unidad producida" value="' + (it.cantidad || '') + '">' +
+                        '</div>' +
+                        '<div class="col-md-2 d-grid">' +
+                            '<button type="button" class="btn btn-sm btn-soft-danger tipo-insumo-remove" title="Quitar"><i class="ri-delete-bin-line"></i></button>' +
+                        '</div>' +
+                    '</div>';
+                }).join(''));
+                // Setear los valores seleccionados después de render
+                tipoInsumosState.forEach(function (it, idx) {
+                    $('.tipo-insumo-row[data-idx="' + idx + '"] .tipo-insumo-select').val(it.id || '');
+                });
+            }
+
+            // Sincroniza el estado desde los inputs visibles (antes de submit/cambios)
+            function sincronizarTipoInsumosState() {
+                tipoInsumosState = [];
+                $('#tipo-insumos-list .tipo-insumo-row').each(function () {
+                    var $row = $(this);
+                    var $sel = $row.find('.tipo-insumo-select');
+                    var id   = parseInt($sel.val(), 10);
+                    var cant = parseFloat($row.find('.tipo-insumo-cantidad').val());
+                    if (!id || isNaN(cant) || cant <= 0) return; // descartar filas vacías
+                    var $opt = $sel.find('option:selected');
+                    tipoInsumosState.push({
+                        id: id,
+                        nombre: $opt.data('nombre') || '',
+                        unidad: $opt.data('unidad') || '',
+                        cantidad: cant
+                    });
+                });
+            }
+
+            // Agregar fila vacía
+            $(document).on('click', '#tipo-insumo-add-btn', function () {
+                tipoInsumosState.push({ id: null, nombre: '', unidad: '', cantidad: '' });
+                renderTipoInsumos();
+                // foco en el último select
+                $('#tipo-insumos-list .tipo-insumo-row:last .tipo-insumo-select').trigger('focus');
+            });
+
+            // Quitar fila
+            $(document).on('click', '.tipo-insumo-remove', function () {
+                var idx = parseInt($(this).closest('.tipo-insumo-row').data('idx'), 10);
+                tipoInsumosState.splice(idx, 1);
+                renderTipoInsumos();
+            });
+
+            // Cambios in-place (no rerenderear para no perder foco)
+            $(document).on('change', '.tipo-insumo-select', function () {
+                var idx = parseInt($(this).closest('.tipo-insumo-row').data('idx'), 10);
+                var $opt = $(this).find('option:selected');
+                tipoInsumosState[idx].id     = parseInt($(this).val(), 10) || null;
+                tipoInsumosState[idx].nombre = $opt.data('nombre') || '';
+                tipoInsumosState[idx].unidad = $opt.data('unidad') || '';
+            });
+            $(document).on('input', '.tipo-insumo-cantidad', function () {
+                var idx = parseInt($(this).closest('.tipo-insumo-row').data('idx'), 10);
+                tipoInsumosState[idx].cantidad = parseFloat($(this).val()) || '';
+            });
+
+            // Toggle visibilidad del campo consumo_tela según requiere_tela
+            function aplicarTipoConsumoTelaVisibility() {
+                $('#tipo-consumo-tela-row').toggle($('#tipo-requiere-tela').is(':checked'));
+            }
+            $(document).on('change', '#tipo-requiere-tela', aplicarTipoConsumoTelaVisibility);
+
             // Cargar atributos al abrir el modal (siempre refresca por si se agregaron en otra pestaña)
             $("#addTipoModal").on("show.bs.modal", function () {
                 $('#tipo-atributos-empty').show();
+                aplicarTipoConsumoTelaVisibility();
                 cargarAtributosDisponibles().then(function () {
                     var idEdit = $("#tipo-id-field").val();
                     // En modo crear: render con cero seleccionados; en edición se rellena en el handler.
-                    if (!idEdit) renderAtributosLista([]);
+                    if (!idEdit) {
+                        renderAtributosLista([]);
+                        tipoInsumosState = [];
+                        renderTipoInsumos();
+                    }
                 });
             });
 
@@ -1684,7 +1823,11 @@
                 $('#tipo-id-field').val('');
                 $('#tipo-precio-confeccion').val('');
                 $('#tipo-requiere-tela').prop('checked', true);
+                $('#tipo-consumo-tela').val('');
+                aplicarTipoConsumoTelaVisibility();
                 $('#tipo-atributos-list').html('');
+                tipoInsumosState = [];
+                renderTipoInsumos();
                 $('#tipoModalTitle').html('<i class="ri-add-line me-2"></i>Agregar Tipo de Producto');
                 $('.is-invalid').removeClass('is-invalid');
                 $('.is-valid').removeClass('is-valid');
@@ -1703,10 +1846,22 @@
                     $("#tipo-descripcion-field").val(tipo.descripcion || '');
                     $("#tipo-precio-confeccion").val(tipo.precio_confeccion || 0);
                     $("#tipo-requiere-tela").prop('checked', !!tipo.requiere_tela);
+                    $("#tipo-consumo-tela").val(tipo.consumo_tela_por_unidad || 0);
+                    aplicarTipoConsumoTelaVisibility();
                     $("#tipoModalTitle").html('<i class="ri-pencil-line me-2"></i>Editar Tipo de Producto');
 
                     var asociados = (tipo.atributos || []).map(function (a) {
                         return { id: a.id, orden: a.pivot ? a.pivot.orden : 1 };
+                    });
+
+                    // Hidratar insumos por defecto desde el tipo
+                    tipoInsumosState = (tipo.insumos_default || []).map(function (i) {
+                        return {
+                            id: i.id,
+                            nombre: i.nombre,
+                            unidad: i.unidad_medida || '',
+                            cantidad: parseFloat(i.pivot && i.pivot.cantidad_estimada) || ''
+                        };
                     });
 
                     $("#tiposModal").modal('hide');
@@ -1715,6 +1870,7 @@
                     // Esperar a que termine la carga de atributos disponibles antes de renderizar
                     cargarAtributosDisponibles().then(function () {
                         renderAtributosLista(asociados);
+                        renderTipoInsumos();
                     });
                 });
             });
@@ -1846,6 +2002,9 @@
                 var url = id ? "{{ url('tipo-productos') }}/" + id : "{{ route('tipo-productos.store') }}";
                 var method = id ? "PUT" : "POST";
 
+                // Sincronizar estado de insumos desde los inputs visibles antes de enviar
+                sincronizarTipoInsumosState();
+
                 $.ajax({
                     url: url,
                     method: method,
@@ -1855,7 +2014,11 @@
                         descripcion: $("#tipo-descripcion-field").val(),
                         precio_confeccion: parseFloat($("#tipo-precio-confeccion").val()) || 0,
                         requiere_tela: $("#tipo-requiere-tela").is(':checked') ? 1 : 0,
-                        atributos: recolectarAtributosSeleccionados()
+                        consumo_tela_por_unidad: parseFloat($("#tipo-consumo-tela").val()) || 0,
+                        atributos: recolectarAtributosSeleccionados(),
+                        insumos_default: tipoInsumosState.map(function (it) {
+                            return { id: it.id, cantidad_estimada: it.cantidad };
+                        })
                     },
                     headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                     success: function (response) {
