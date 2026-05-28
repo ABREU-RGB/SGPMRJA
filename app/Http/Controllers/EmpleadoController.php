@@ -303,13 +303,21 @@ class EmpleadoController extends Controller
         return response()->json(['exists' => $exists, 'other_role' => $otherRole, 'persona' => $personaData]);
     }
 
-    public function reportePdf()
+    public function reportePdf(Request $request)
     {
-        $empleados = Empleado::with(['persona', 'cargo', 'departamento'])->orderBy('codigo_empleado', 'asc')->get();
-
+        $query = Empleado::with(['persona', 'cargo', 'departamento'])->orderBy('codigo_empleado', 'asc');
+        if ($request->filled('departamento_id')) {
+            $query->where('departamento_id', $request->departamento_id);
+        }
+        if ($request->filled('cargo_id')) {
+            $query->where('cargo_id', $request->cargo_id);
+        }
+        if ($request->filled('estatus')) {
+            $query->where('estado', (int) $request->estatus);
+        }
+        $empleados = $query->get();
         $pdf = \PDF::loadView('admin.empleados.reporte_pdf', compact('empleados'))
             ->setPaper('a4', 'landscape');
-
         return $pdf->download('reporte_empleados_' . now()->format('Ymd_His') . '.pdf');
     }
 

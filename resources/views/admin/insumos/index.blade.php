@@ -45,9 +45,9 @@
                                     data-bs-target="#showModal">
                                     <i class="ri-add-line align-bottom me-1"></i> Agregar Insumo
                                 </button>
-                                <a href="{{ route('insumos.reporte.pdf') }}" class="btn btn-danger" target="_blank">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#pdfExportModal">
                                     <i class="ri-file-pdf-fill align-bottom me-1"></i> Exportar PDF
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -398,6 +398,48 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal: Exportar PDF con filtros --}}
+    <div class="modal fade atlantico-modal" id="pdfExportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 360px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-file-pdf-line me-2"></i>Exportar PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Filtra qué insumos incluir en el reporte.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="pdf-filter-tipo">Tipo de Insumo</label>
+                        <select class="form-select" id="pdf-filter-tipo">
+                            <option value="">Todos los tipos</option>
+                            <option value="Tela">Tela</option>
+                            <option value="Hilo">Hilo</option>
+                            <option value="Boton">Botón</option>
+                            <option value="Cierre">Cierre</option>
+                            <option value="Etiqueta">Etiqueta</option>
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-semibold" for="pdf-filter-stock">Disponibilidad</label>
+                        <select class="form-select" id="pdf-filter-stock">
+                            <option value="">Todos</option>
+                            <option value="con_stock">Con Stock</option>
+                            <option value="agotado">Agotados</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="btn-generar-pdf">
+                        <i class="ri-file-pdf-fill me-1"></i>Generar PDF
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -957,6 +999,22 @@
 
                 return esValido;
             }
+        });
+
+        // PDF Export Modal
+        $('#btn-generar-pdf').on('click', function () {
+            var baseUrl = '{{ route('insumos.reporte.pdf') }}';
+            var params = [];
+            var tipo  = $('#pdf-filter-tipo').val();
+            var stock = $('#pdf-filter-stock').val();
+            if (tipo)  params.push('tipo='  + encodeURIComponent(tipo));
+            if (stock) params.push('stock=' + encodeURIComponent(stock));
+            window.open(baseUrl + (params.length ? '?' + params.join('&') : ''), '_blank');
+            bootstrap.Modal.getInstance(document.getElementById('pdfExportModal'))?.hide();
+        });
+        $('#pdfExportModal').on('show.bs.modal', function () {
+            $('#pdf-filter-tipo').val('');
+            $('#pdf-filter-stock').val('');
         });
     </script>
 @endpush

@@ -204,16 +204,21 @@ class PedidoController extends Controller
         return response()->json(['success' => 'Pedido eliminado exitosamente.']);
     }
 
-    public function reportePdf()
+    public function reportePdf(Request $request)
     {
-        // Obtener todos los pedidos con su usuario asociado y cliente
-        $pedidos = Pedido::with(['user:id,name', 'cliente', 'cliente.persona'])->get();
-
-        // Cargar la vista y generar el PDF (A4 vertical)
+        $query = Pedido::with(['user:id,name', 'cliente', 'cliente.persona']);
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('fecha_entrega', '>=', $request->fecha_desde);
+        }
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('fecha_entrega', '<=', $request->fecha_hasta);
+        }
+        $pedidos = $query->get();
         $pdf = PDF::loadView('admin.pedidos.reporte_pdf', compact('pedidos'))
             ->setPaper('a4', 'portrait');
-
-        // Descargar el archivo con una marca de tiempo para evitar colisiones
         return $pdf->download('reporte_pedidos_' . now()->format('Ymd_His') . '.pdf');
     }
 

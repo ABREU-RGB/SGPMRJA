@@ -155,9 +155,17 @@ class InsumoController extends Controller
         return response()->json(['exists' => $query->exists()]);
     }
 
-    public function reportePdf()
+    public function reportePdf(Request $request)
     {
-        $insumos = Insumo::all();
+        $query = Insumo::query();
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+        if ($request->filled('stock')) {
+            if ($request->stock === 'con_stock') $query->where('stock_actual', '>', 0);
+            elseif ($request->stock === 'agotado') $query->where('stock_actual', '<=', 0);
+        }
+        $insumos = $query->get();
         $pdf = \PDF::loadView('admin.insumos.reporte_pdf', compact('insumos'))
             ->setPaper('a4', 'landscape');
         return $pdf->download('insumos_' . now()->format('Y-m-d_H-i-s') . '.pdf');
