@@ -1302,19 +1302,19 @@ header#page-topbar,
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   COTIZACIÓN — WIZARD 3 PASOS  (Cliente · Productos · Resumen)
+   WIZARD UNIFICADO  (Cotizaciones · Pedidos)
    Componentes: stepper, step-content, kpis, empty-state, resumen-card,
    tabla resumen, footer del wizard. Light + dark mode.
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── Stepper visual ─────────────────────────────────────────────── */
-.cot-stepper-wrapper {
+.wiz-stepper-wrapper {
     background: linear-gradient(180deg, #f6f9fd 0%, #ffffff 100%);
     padding: 18px 24px 16px;
     border-bottom: 1px solid rgba(30, 60, 114, 0.08);
 }
 
-.cot-stepper {
+.wiz-stepper {
     display: flex;
     align-items: flex-start;
     max-width: 540px;
@@ -1322,7 +1322,7 @@ header#page-topbar,
     gap: 4px;
 }
 
-.cot-step-marker {
+.wiz-step-marker {
     flex: 0 0 auto;
     background: transparent;
     border: 0;
@@ -1336,9 +1336,9 @@ header#page-topbar,
     transition: color 0.2s ease;
 }
 
-.cot-step-marker:hover { color: #1e3c72; }
+.wiz-step-marker:hover { color: #1e3c72; }
 
-.cot-step-marker .cot-step-dot {
+.wiz-step-marker .wiz-step-dot {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -1354,7 +1354,7 @@ header#page-topbar,
     position: relative;
 }
 
-.cot-step-marker .cot-step-label {
+.wiz-step-marker .wiz-step-label {
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -1362,11 +1362,11 @@ header#page-topbar,
     color: inherit;
 }
 
-.cot-step-marker.is-active {
+.wiz-step-marker.is-active {
     color: #1e3c72;
 }
-.cot-step-marker.is-active .cot-step-label { color: #1e3c72; }
-.cot-step-marker.is-active .cot-step-dot {
+.wiz-step-marker.is-active .wiz-step-label { color: #1e3c72; }
+.wiz-step-marker.is-active .wiz-step-dot {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     border-color: #1e3c72;
     color: #ffffff;
@@ -1374,12 +1374,12 @@ header#page-topbar,
     transform: scale(1.05);
 }
 
-.cot-step-marker.is-complete .cot-step-dot {
+.wiz-step-marker.is-complete .wiz-step-dot {
     background: #00d9a5;
     border-color: #00d9a5;
     color: transparent;
 }
-.cot-step-marker.is-complete .cot-step-dot::after {
+.wiz-step-marker.is-complete .wiz-step-dot::after {
     content: "✓";
     position: absolute;
     inset: 0;
@@ -1390,10 +1390,10 @@ header#page-topbar,
     font-size: 1rem;
     font-weight: 700;
 }
-.cot-step-marker.is-complete { color: #006b52; }
-.cot-step-marker.is-complete .cot-step-label { color: #006b52; }
+.wiz-step-marker.is-complete { color: #006b52; }
+.wiz-step-marker.is-complete .wiz-step-label { color: #006b52; }
 
-.cot-step-line {
+.wiz-step-line {
     flex: 1 1 auto;
     height: 2px;
     background: #e2e8f0;
@@ -1403,7 +1403,7 @@ header#page-topbar,
     overflow: hidden;
 }
 
-.cot-step-line-fill {
+.wiz-step-line-fill {
     display: block;
     height: 100%;
     width: 0%;
@@ -1412,14 +1412,14 @@ header#page-topbar,
 }
 
 /* ── Wizard body & step content ─────────────────────────────────── */
-.cot-wizard-body {
+.wiz-wizard-body {
     padding: 24px 28px !important;
     min-height: 460px;
     background: #fafbfd;
 }
 
-.cot-step-content { display: none; }
-.cot-step-content.is-active {
+.wiz-step-content { display: none; }
+.wiz-step-content.is-active {
     display: block;
     animation: cotStepIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1429,8 +1429,8 @@ header#page-topbar,
     to   { opacity: 1; transform: translateX(0); }
 }
 
-.cot-step-header { margin-bottom: 22px; }
-.cot-step-tag {
+.wiz-step-header { margin-bottom: 22px; }
+.wiz-step-tag {
     display: inline-block;
     font-size: 0.66rem;
     letter-spacing: 0.18em;
@@ -1439,14 +1439,14 @@ header#page-topbar,
     font-weight: 700;
     margin-bottom: 6px;
 }
-.cot-step-title {
+.wiz-step-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: #1e3c72;
     margin: 0 0 4px;
     line-height: 1.2;
 }
-.cot-step-desc {
+.wiz-step-desc {
     font-size: 0.85rem;
     color: #64748b;
     margin: 0;
@@ -1653,7 +1653,7 @@ header#page-topbar,
 [data-bs-theme="dark"] .cot-resumen-unit-note { color: #64748b; }
 
 /* ── Footer del wizard ─────────────────────────────────────────── */
-.cot-wizard-footer {
+.wiz-wizard-footer {
     background: #f8fafc !important;
     border-top: 1px solid rgba(30, 60, 114, 0.1) !important;
     display: flex;
@@ -1663,8 +1663,8 @@ header#page-topbar,
     flex-wrap: wrap;
     gap: 10px;
 }
-.cot-wizard-footer-info { color: #64748b; font-size: 0.78rem; }
-.cot-wizard-step-info {
+.wiz-wizard-footer-info { color: #64748b; font-size: 0.78rem; }
+.wiz-wizard-step-info {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1676,7 +1676,7 @@ header#page-topbar,
     color: #1e3c72;
     font-variant-numeric: tabular-nums;
 }
-.cot-wizard-step-info::before {
+.wiz-wizard-step-info::before {
     content: "PASO";
     font-size: 0.65rem;
     font-weight: 600;
@@ -1684,32 +1684,32 @@ header#page-topbar,
     letter-spacing: 0.12em;
     margin-right: 2px;
 }
-.cot-wizard-footer-actions {
+.wiz-wizard-footer-actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }
 
 /* ── Dark mode — Wizard cotización ───────────────────────────── */
-[data-bs-theme="dark"] .cot-stepper-wrapper {
+[data-bs-theme="dark"] .wiz-stepper-wrapper {
     background: linear-gradient(180deg, #161b26 0%, #0f1521 100%);
     border-bottom-color: rgba(255, 255, 255, 0.06);
 }
-[data-bs-theme="dark"] .cot-step-marker { color: #64748b; }
-[data-bs-theme="dark"] .cot-step-marker:hover { color: #cbd5e1; }
-[data-bs-theme="dark"] .cot-step-marker .cot-step-dot {
+[data-bs-theme="dark"] .wiz-step-marker { color: #64748b; }
+[data-bs-theme="dark"] .wiz-step-marker:hover { color: #cbd5e1; }
+[data-bs-theme="dark"] .wiz-step-marker .wiz-step-dot {
     background: #1f2937;
     border-color: #334155;
     color: #94a3b8;
 }
-[data-bs-theme="dark"] .cot-step-marker.is-active .cot-step-label { color: #cbd5e1; }
-[data-bs-theme="dark"] .cot-step-marker.is-complete .cot-step-label { color: #34d399; }
-[data-bs-theme="dark"] .cot-step-line { background: #334155; }
+[data-bs-theme="dark"] .wiz-step-marker.is-active .wiz-step-label { color: #cbd5e1; }
+[data-bs-theme="dark"] .wiz-step-marker.is-complete .wiz-step-label { color: #34d399; }
+[data-bs-theme="dark"] .wiz-step-line { background: #334155; }
 
-[data-bs-theme="dark"] .cot-wizard-body { background: #0f1521; }
-[data-bs-theme="dark"] .cot-step-title { color: #e2e8f0; }
-[data-bs-theme="dark"] .cot-step-desc { color: #94a3b8; }
-[data-bs-theme="dark"] .cot-step-tag { color: #34d399; }
+[data-bs-theme="dark"] .wiz-wizard-body { background: #0f1521; }
+[data-bs-theme="dark"] .wiz-step-title { color: #e2e8f0; }
+[data-bs-theme="dark"] .wiz-step-desc { color: #94a3b8; }
+[data-bs-theme="dark"] .wiz-step-tag { color: #34d399; }
 
 [data-bs-theme="dark"] .cot-kpi {
     background: #1f2937;
@@ -1738,17 +1738,17 @@ header#page-topbar,
     border-bottom-color: rgba(255, 255, 255, 0.05);
 }
 
-[data-bs-theme="dark"] .cot-wizard-footer {
+[data-bs-theme="dark"] .wiz-wizard-footer {
     background: #0f1521 !important;
     border-top-color: rgba(255, 255, 255, 0.06) !important;
 }
-[data-bs-theme="dark"] .cot-wizard-footer-info { color: #64748b; }
-[data-bs-theme="dark"] .cot-wizard-step-info {
+[data-bs-theme="dark"] .wiz-wizard-footer-info { color: #64748b; }
+[data-bs-theme="dark"] .wiz-wizard-step-info {
     background: #1f2937;
     border-color: rgba(255, 255, 255, 0.08);
     color: #e2e8f0;
 }
-[data-bs-theme="dark"] .cot-wizard-step-info::before { color: #64748b; }
+[data-bs-theme="dark"] .wiz-wizard-step-info::before { color: #64748b; }
 
 /* ════════════════════════════════════════════════════════════════════
    STEP 1 — UX MEJORADA
@@ -6136,4 +6136,255 @@ header#page-topbar,
 [data-bs-theme="dark"] .dash-mini + .dash-mini {
     border-left-color: rgba(255, 255, 255, 0.06);
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   PEDIDO WIZARD — PASO 2: PRODUCTOS
+   Banner importar, tarjetas de producto, KPI total
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Banner importar desde cotización ───────────────────────── */
+.ped-import-cot-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(30,60,114,0.05) 0%, rgba(0,217,165,0.05) 100%);
+    border: 1px dashed rgba(30,60,114,0.28);
+    border-radius: 10px;
+    transition: border-color 0.18s, background 0.18s;
+}
+.ped-import-cot-banner:hover {
+    border-color: rgba(0,217,165,0.5);
+    background: rgba(0,217,165,0.05);
+}
+.ped-import-cot-banner-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(0,217,165,0.14);
+    color: #00b88c;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.ped-import-cot-banner-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-bottom: 2px;
+}
+.ped-import-cot-banner-desc {
+    font-size: 0.74rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* ── Tarjeta de producto ─────────────────────────────────────── */
+.ped-prod-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid rgba(30,60,114,0.12);
+    border-radius: 10px;
+    transition: box-shadow 0.18s;
+}
+.ped-prod-card:hover { box-shadow: 0 4px 14px -6px rgba(30,60,114,0.18); }
+
+.ped-prod-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(30,60,114,0.08);
+    color: #1e3c72;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.ped-prod-meta { flex: 1; min-width: 0; }
+.ped-prod-nombre {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #1e3c72;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+.ped-prod-attrs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+.ped-prod-attr {
+    font-size: 0.72rem;
+    color: #64748b;
+    background: rgba(0,0,0,0.04);
+    border-radius: 4px;
+    padding: 1px 7px;
+}
+.ped-inherited-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(0,217,165,0.14);
+    color: #006b52;
+    border-radius: 4px;
+    padding: 1px 7px;
+}
+.ped-prod-subtotal {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1e3c72;
+    white-space: nowrap;
+    align-self: center;
+    min-width: 76px;
+    text-align: right;
+}
+.ped-prod-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    align-self: center;
+}
+.ped-prod-actions .btn { padding: 3px 8px; font-size: 0.74rem; }
+
+/* ── Dark mode — Paso 2 productos ───────────────────────────── */
+[data-bs-theme="dark"] .ped-import-cot-banner {
+    background: linear-gradient(135deg, rgba(30,60,114,0.14) 0%, rgba(0,217,165,0.08) 100%);
+    border-color: rgba(0,217,165,0.22);
+}
+[data-bs-theme="dark"] .ped-import-cot-banner:hover {
+    border-color: rgba(0,217,165,0.48);
+    background: rgba(0,217,165,0.09);
+}
+[data-bs-theme="dark"] .ped-import-cot-banner-icon {
+    background: rgba(0,217,165,0.18);
+    color: #34d399;
+}
+[data-bs-theme="dark"] .ped-import-cot-banner-title { color: #e2e8f0; }
+[data-bs-theme="dark"] .ped-import-cot-banner-desc  { color: #64748b; }
+
+[data-bs-theme="dark"] .ped-prod-card {
+    background: #1f2937;
+    border-color: rgba(255,255,255,0.07);
+}
+[data-bs-theme="dark"] .ped-prod-card:hover { box-shadow: 0 4px 14px -6px rgba(0,0,0,0.45); }
+[data-bs-theme="dark"] .ped-prod-icon {
+    background: rgba(255,255,255,0.08);
+    color: #cbd5e1;
+}
+[data-bs-theme="dark"] .ped-prod-nombre   { color: #e2e8f0; }
+[data-bs-theme="dark"] .ped-prod-attr     { color: #94a3b8; background: rgba(255,255,255,0.05); }
+[data-bs-theme="dark"] .ped-inherited-badge {
+    background: rgba(0,217,165,0.18);
+    color: #34d399;
+}
+[data-bs-theme="dark"] .ped-prod-subtotal { color: #ffffff; }
+
+/* ── Modo protegido (.ped-wiz-locked): cliente + productos de solo lectura ──
+   Un pedido siempre nace de una cotización (o se está editando uno existente):
+   el cliente y los productos vienen de la cotización y no se modifican aquí.
+   Se oculta el botón "cambiar cliente". Solo fecha entrega, prioridad, estado
+   y pago son editables. La grilla de productos se renderiza sin acciones. */
+.ped-wiz-locked #ped-cliente-change-btn {
+    display: none !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PEDIDO WIZARD — PASO 3: PAGO
+   Métodos de pago — bloques con toggle (se pueden combinar varios)
+   ════════════════════════════════════════════════════════════════════ */
+
+.ped-pago-metodo {
+    border: 1px solid rgba(30,60,114,0.16);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    background: rgba(30,60,114,0.02);
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.ped-pago-metodo.is-active {
+    border-color: rgba(0,217,165,0.5);
+    background: rgba(0,217,165,0.06);
+    box-shadow: 0 1px 8px rgba(0,217,165,0.12);
+}
+.ped-pago-metodo-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.ped-pago-switch {
+    margin: 0;
+    min-height: auto;
+    padding-left: 2.4em;
+}
+.ped-pago-switch .form-check-input {
+    cursor: pointer;
+    width: 2em;
+    height: 1em;
+    margin-left: -2.4em;
+}
+.ped-pago-switch .form-check-input:checked {
+    background-color: #00d9a5;
+    border-color: #00d9a5;
+}
+.ped-pago-switch .form-check-label {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #1e3c72;
+    cursor: pointer;
+}
+.ped-pago-switch .form-check-label i { font-size: 0.92rem; }
+.ped-pago-monto-wrap { width: 150px; flex-shrink: 0; }
+.ped-pago-metodo-extra {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(30,60,114,0.2);
+}
+
+/* ── Dark mode — Paso 3 métodos ──────────────────────────────── */
+[data-bs-theme="dark"] .ped-pago-metodo {
+    border-color: rgba(78,122,199,0.22);
+    background: rgba(78,122,199,0.05);
+}
+[data-bs-theme="dark"] .ped-pago-metodo.is-active {
+    border-color: rgba(110,231,183,0.42);
+    background: rgba(110,231,183,0.08);
+    box-shadow: 0 1px 8px rgba(110,231,183,0.12);
+}
+[data-bs-theme="dark"] .ped-pago-switch .form-check-label { color: #93c5fd; }
+[data-bs-theme="dark"] .ped-pago-metodo-extra { border-top-color: rgba(78,122,199,0.25); }
+
+/* ════════════════════════════════════════════════════════════════════
+   PEDIDO WIZARD — Banner "Datos heredados de cotización" (amber)
+   ════════════════════════════════════════════════════════════════════ */
+.ped-banner-heredado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(245,158,11,0.10);
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+.ped-banner-heredado i { font-size: 1rem; color: #f59e0b; flex-shrink: 0; }
+
+[data-bs-theme="dark"] .ped-banner-heredado {
+    background: rgba(245,158,11,0.12);
+    border-color: rgba(245,158,11,0.28);
+    color: #fcd34d;
+}
+[data-bs-theme="dark"] .ped-banner-heredado i { color: #fbbf24; }
 

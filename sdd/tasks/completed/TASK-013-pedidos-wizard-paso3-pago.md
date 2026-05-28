@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: L (4–8h)
 **Depends-on**: TASK-012
@@ -194,11 +194,9 @@ PedidoWizard.validarPaso3() {
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
+**Completado por**: santiago
+**Fecha**: 2026-05-26
+**Commits**: ver rama `feat/pedidos-wizard`
+**Notas**: CSS `.ped-metodo-chip` / `.ped-metodo-chips` + dark mode. Paso 3 HTML en `modals.blade.php`: cards Total/Abono/Restante (reutilizando `.pago-kpi-box`), chips de método, bloques condicionales Transferencia/Pago Móvil (reutilizando `.metodo-form-block`). Paso 3 IIFE en `scripts/main.blade.php`: `pedSincronizarTotalPago()` expuesto y hookeado en `showStep(3)`, `pedRecalcularRestante()` en tiempo real, toggle chips, show/hide condicionales, reset al abrir, `window.pedPagoState` con getters para TASK-014. `validateStep(3)` en scaffold: abono ≤ total, método requerido si abono > 0, banco+ref requeridos si transferencia/pago_movil.
 
-**Completado por**:
-**Fecha**:
-**Commits**:
-**Notas**:
-
-**Desviaciones del spec**:
+**Desviaciones del spec**: ninguna.

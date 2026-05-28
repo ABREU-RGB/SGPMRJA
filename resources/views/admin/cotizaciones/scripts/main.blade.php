@@ -2792,85 +2792,10 @@
         });
 
         // === CONVERTIR COTIZACIÓN A PEDIDO ===
+        // Redirige al wizard de pedidos pre-hidratado con los datos de la cotización
         $('#cotizaciones-table').on('click', '.convert-to-pedido-btn', function () {
             var cotizacionId = $(this).data('id');
-
-            Swal.fire({
-                title: '¿Convertir a Pedido?',
-                html: '<p>Se creará un nuevo pedido con los datos de esta cotización:</p>' +
-                    '<ul class="text-start"><li>Cliente</li><li>Productos</li><li>Precios</li></ul>' +
-                    '<small class="text-muted">Después podrá editar el pedido para agregar fecha de entrega, abono y método de pago.</small>',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '<i class="ri-exchange-line me-1"></i> Sí, convertir',
-                cancelButtonText: 'Cancelar',
-                customClass: {
-                    confirmButton: 'btn btn-success w-xs me-2',
-                    cancelButton: 'btn btn-light w-xs'
-                },
-                buttonsStyling: false,
-                showCloseButton: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Mostrar loading
-                    Swal.fire({
-                        title: 'Convirtiendo...',
-                        text: 'Creando pedido desde la cotización',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    // Llamar al endpoint para convertir
-                    $.ajax({
-                        url: '/cotizaciones/' + cotizacionId + '/convertir-a-pedido',
-                        method: 'POST',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function (response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Pedido Creado!',
-                                html: '<p>' + response.message + '</p>' +
-                                    '<p class="mt-2">¿Desea ir al pedido creado para completar los datos?</p>',
-                                showCancelButton: true,
-                                confirmButtonText: '<i class="ri-edit-line me-1"></i> Editar Pedido',
-                                cancelButtonText: 'Quedarme aquí',
-                                customClass: {
-                                    confirmButton: 'btn btn-primary me-2',
-                                    cancelButton: 'btn btn-light'
-                                },
-                                buttonsStyling: false
-                            }).then((result) => {
-                                // Recargar la tabla para mostrar el estado actualizado
-                                table.ajax.reload();
-
-                                if (result.isConfirmed) {
-                                    // Redirigir al módulo de pedidos
-                                    window.location.href = '/pedidos?editar=' + response.pedido_id;
-                                }
-                            });
-                        },
-                        error: function (xhr) {
-                            var errorMsg = 'No se pudo convertir la cotización.';
-                            if (xhr.responseJSON && xhr.responseJSON.error) {
-                                errorMsg = xhr.responseJSON.error;
-                            }
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: errorMsg,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                },
-                                buttonsStyling: false
-                            });
-                        }
-                    });
-                }
-            });
+            window.location.href = '/pedidos?convertir=' + cotizacionId;
         });
 
         // === AUTOCOMPLETADO UNIFICADO DE PERSONA (cliente + empleado + proveedor) ===
@@ -4997,21 +4922,21 @@
                 n = Math.max(1, Math.min(TOTAL_STEPS, n));
                 currentStep = n;
 
-                document.querySelectorAll('#showModal .cot-step-content').forEach(function (sec) {
+                document.querySelectorAll('#showModal .wiz-step-content').forEach(function (sec) {
                     var step = parseInt(sec.dataset.step, 10);
                     var active = step === n;
                     sec.classList.toggle('is-active', active);
                     sec.hidden = !active;
                 });
 
-                document.querySelectorAll('#showModal .cot-step-marker').forEach(function (mk) {
+                document.querySelectorAll('#showModal .wiz-step-marker').forEach(function (mk) {
                     var step = parseInt(mk.dataset.step, 10);
                     mk.classList.toggle('is-active', step === n);
                     mk.classList.toggle('is-complete', step < n);
                     mk.setAttribute('aria-selected', step === n ? 'true' : 'false');
                 });
 
-                document.querySelectorAll('#showModal .cot-step-line-fill').forEach(function (lf) {
+                document.querySelectorAll('#showModal .wiz-step-line-fill').forEach(function (lf) {
                     var line = parseInt(lf.dataset.line, 10);
                     lf.style.width = (line < n) ? '100%' : '0%';
                 });
@@ -5238,7 +5163,7 @@
             $('#btn-cot-prev').on('click', prevStep);
 
             // Click en marker del stepper: retroceder libre, avanzar con validación
-            $(document).on('click', '#showModal .cot-step-marker', function () {
+            $(document).on('click', '#showModal .wiz-step-marker', function () {
                 var target = parseInt(this.dataset.step, 10);
                 if (target === currentStep) return;
                 if (target < currentStep) { showStep(target); return; }

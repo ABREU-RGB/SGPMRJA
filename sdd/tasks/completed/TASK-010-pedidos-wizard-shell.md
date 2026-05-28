@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: TASK-009
@@ -164,11 +164,9 @@ Copiar la estructura del wizard de `cotizaciones/modals.blade.php:212-810` como 
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
+**Completado por**: santiago
+**Fecha**: 2026-05-26
+**Commits**: feat(task-010): crear pedidos/modals.blade.php — shell wizard 4 pasos
+**Notas**: 41 checks estructurales PASS vía PHP render. Stepper 4 dots + 3 líneas, secciones ped-wiz-step-1..4, viewModal inline, @include seleccionar_cotizacion. No duplicate IDs. CSS dark mode ya cubierto por TASK-009.
 
-**Completado por**:
-**Fecha**:
-**Commits**:
-**Notas**:
-
-**Desviaciones del spec**:
+**Desviaciones del spec**: ninguna.

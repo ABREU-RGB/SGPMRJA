@@ -17,6 +17,7 @@
 |---|---|
 | [`modal-system.md`](modal-system.md) | Cualquier modal nuevo o modificación de uno existente |
 | [`nested-modals.md`](nested-modals.md) | Cuando vayas a abrir un modal dentro de otro |
+| [`wizard-pattern.md`](wizard-pattern.md) | Formulario complejo multi-paso (stepper `.wiz-*`) |
 | [`sidebar-colors.md`](sidebar-colors.md) | Añadir ítem al sidebar o nueva sección |
 | [`ux-search-filters.md`](ux-search-filters.md) | Implementar búsqueda + filtros en una vista listado |
 

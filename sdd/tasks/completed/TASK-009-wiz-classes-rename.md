@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: none
@@ -155,11 +155,9 @@ Cuando tomes esta task:
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
+**Completado por**: santiago
+**Fecha**: 2026-05-26
+**Commits**: feat(task-009): rename .cot-* → .wiz-* (WIZARD UNIFICADO)
+**Notas**: Rename mecánico ejecutado en los 3 archivos. CSS: 42/42 clases renombradas (0 residual). modals.blade.php: 37/39 clases renombradas; 4 IDs (cot-step-1/2/3/current) preservados per spec. scripts/main.blade.php: 3 class selectors renombrados; 2 ID selectors (#cot-step-1, #cot-step-current) preservados.
 
-**Completado por**:
-**Fecha**:
-**Commits**:
-**Notas**:
-
-**Desviaciones del spec**:
+**Desviaciones del spec**: El criterio "grep -c → 0 0 0" no se alcanza en modals (4) y scripts (2) porque los IDs se mantienen intencionalmente según la restricción explícita del spec ("Decisión: aceptar la inconsistencia menor"). CSS sí es 0.

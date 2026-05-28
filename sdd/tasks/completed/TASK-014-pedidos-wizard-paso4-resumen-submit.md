@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: M (2–4h)
 **Depends-on**: TASK-013
@@ -172,11 +172,9 @@ PedidoWizard.guardar() {
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
+**Completado por**: santiago
+**Fecha**: 2026-05-26
+**Commits**: ver rama `feat/pedidos-wizard`
+**Notas**: Paso 4 HTML en `modals.blade.php` con 4 cards (cliente, datos, productos en tabla, pago) populados por JS. Hook `pedRenderResumen()` inyectado en `showStep(4)`. IIFE paso 4 en `scripts/main.blade.php`: `pedRenderResumen()` expuesto globalmente, `pedConstruirPayload()` construye payload sin `precio_unitario` (stripped por `validated()`), `pedMapErrorsToStep()` mapea errores 422 al paso correcto, submit POST a `pedidos.store` con disable/enable del botón, toast éxito, cierre del modal, `$('#pedidos-table').DataTable().ajax.reload(null, false)`.
 
-**Completado por**:
-**Fecha**:
-**Commits**:
-**Notas**:
-
-**Desviaciones del spec**:
+**Desviaciones del spec**: `precio_unitario` no incluido en el payload porque `StorePedidoRequest` no lo valida y `validated()` lo stripearía — el servidor usa `precio_base` del catálogo. El total en el resumen es estimado (calculado en el cliente con los precios ingresados en el wizard).

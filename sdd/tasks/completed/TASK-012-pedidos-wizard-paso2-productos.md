@@ -2,7 +2,7 @@
 
 **Feature**: FEAT-002 — pedidos-wizard
 **Spec**: `sdd/specs/pedidos-wizard.spec.md`
-**Status**: pending
+**Status**: done
 **Priority**: high
 **Esfuerzo estimado**: L (4–8h)
 **Depends-on**: TASK-011
@@ -161,11 +161,9 @@ PedidoWizard.hidratarDesdeCotizacion(cotizacionId) {
 
 ## Nota de Completitud
 
-*(Llenar al terminar)*
+**Completado por**: santiago
+**Fecha**: 2026-05-26
+**Commits**: ver rama `feat/pedidos-wizard`
+**Notas**: Implementación completa. CSS en `custom.css` (`.ped-import-cot-banner`, `.ped-prod-card`, `.ped-prod-icon`, `.ped-prod-meta`, `.ped-prod-subtotal`, `.ped-inherited-badge`, dark mode). Paso 2 en `modals.blade.php` con banner, KPI bar (reutilizando `cot-kpi-grid`), empty state (reutilizando `cot-empty-state`), lista dinámica y modal `#ped-agregar-producto-modal`. Paso 2 IIFE en `scripts/main.blade.php` con estado `pedProdItems[]`, CRUD completo, autocomplete contra `window.products`, hydratación desde cotización via `window.pedHidratarDesde()`. `validateStep(2)` actualizado en scaffold. `cotizacion_selection.blade.php` actualizado con check `window.pedWizardImportMode` para redirigir a hidratación en lugar de conversión atómica.
 
-**Completado por**:
-**Fecha**:
-**Commits**:
-**Notas**:
-
-**Desviaciones del spec**:
+**Desviaciones del spec**: ninguna.
