@@ -649,74 +649,70 @@
 
 {{-- ═══════════════════════════════════════════════════════════════════
      VIEW MODAL — Detalles del Pedido (read-only)
-     Copiado de pedidos/index.blade.php — se elimina de allí en TASK-017
+     Estándares: emp-icon-box utilities + bg-soft-primary + cot-resumen-card
      ═══════════════════════════════════════════════════════════════════ --}}
 <div class="modal fade atlantico-modal atlantico-modal--op" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalles del Pedido</h5>
+            <div class="modal-header py-2">
+                <h5 class="modal-title mb-0">Detalles del Pedido</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4">
-                <div class="row g-4">
-                    <!-- Columna Izquierda -->
+            <div class="modal-body p-3">
+                <div class="row g-2">
+                    {{-- Columna Izquierda --}}
                     <div class="col-lg-6">
-                        <!-- Card Datos del Cliente -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header border-0 bg-soft-primary">
-                                <h6 class="mb-0 text-atlantico-dark">
-                                    <i class="ri-user-star-line me-2"></i>Información del Cliente
+                        {{-- ── Información del Cliente ──────────────────────────── --}}
+                        <div class="card border-0 shadow-sm mb-2">
+                            <div class="card-header border-0 bg-soft-primary py-2 px-3">
+                                <h6 class="mb-0 text-atlantico-dark fs-13">
+                                    <i class="ri-user-star-line me-1"></i>Información del Cliente
                                 </h6>
                             </div>
-                            <div class="card-body">
-                                <div class="row g-3">
+                            <div class="card-body p-3">
+                                <div class="row g-2">
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-user-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-user-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Cliente</small>
-                                                <span class="fw-semibold" id="view-cliente-nombre">-</span>
+                                                <small class="text-muted d-block fs-12">Cliente</small>
+                                                <span class="fw-semibold fs-13" id="view-cliente-nombre">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(46, 204, 113, 0.1);">
-                                                <i class="ri-bank-card-line" style="color: #2ecc71;"></i>
+                                            <div class="emp-icon-box emp-icon-box--green rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-bank-card-line emp-icon--green"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Documento</small>
-                                                <span class="fw-semibold" id="view-ci-rif">-</span>
+                                                <small class="text-muted d-block fs-12">Documento</small>
+                                                <span class="fw-semibold fs-13" id="view-ci-rif">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(0, 217, 165, 0.1);">
-                                                <i class="ri-mail-line" style="color: #00d9a5;"></i>
+                                            <div class="emp-icon-box emp-icon-box--teal rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-mail-line emp-icon--teal"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Email</small>
-                                                <span class="fw-semibold" id="view-cliente-email">-</span>
+                                                <small class="text-muted d-block fs-12">Email</small>
+                                                <span class="fw-semibold fs-13" id="view-cliente-email">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-phone-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-phone-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Teléfono</small>
-                                                <span class="fw-semibold" id="view-cliente-telefono">-</span>
+                                                <small class="text-muted d-block fs-12">Teléfono</small>
+                                                <span class="fw-semibold fs-13" id="view-cliente-telefono">-</span>
                                             </div>
                                         </div>
                                     </div>
@@ -724,72 +720,67 @@
                             </div>
                         </div>
 
-                        <!-- Card Datos del Pedido -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header border-0 bg-soft-primary">
-                                <h6 class="mb-0 text-atlantico-dark">
-                                    <i class="ri-calendar-todo-line me-2"></i>Datos del Pedido
+                        {{-- ── Datos del Pedido ─────────────────────────────────── --}}
+                        <div class="card border-0 shadow-sm mb-2">
+                            <div class="card-header border-0 bg-soft-primary py-2 px-3">
+                                <h6 class="mb-0 text-atlantico-dark fs-13">
+                                    <i class="ri-calendar-todo-line me-1"></i>Datos del Pedido
                                 </h6>
                             </div>
-                            <div class="card-body">
-                                <div class="row g-3">
+                            <div class="card-body p-3">
+                                <div class="row g-2">
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-calendar-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-calendar-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Fecha Pedido</small>
-                                                <span class="fw-semibold" id="view-fecha-pedido">-</span>
+                                                <small class="text-muted d-block fs-12">Fecha Pedido</small>
+                                                <span class="fw-semibold fs-13" id="view-fecha-pedido">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-calendar-check-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-calendar-check-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Entrega Estimada</small>
-                                                <span class="fw-semibold" id="view-fecha-entrega-estimada">-</span>
+                                                <small class="text-muted d-block fs-12">Entrega Estimada</small>
+                                                <span class="fw-semibold fs-13" id="view-fecha-entrega-estimada">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-flag-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-flag-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Prioridad</small>
-                                                <span class="fw-semibold" id="view-prioridad">-</span>
+                                                <small class="text-muted d-block fs-12">Prioridad</small>
+                                                <span class="fw-semibold fs-13" id="view-prioridad">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-checkbox-circle-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-checkbox-circle-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Estado</small>
-                                                <span class="fw-semibold" id="view-estado">-</span>
+                                                <small class="text-muted d-block fs-12">Estado</small>
+                                                <span class="fw-semibold fs-13" id="view-estado">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-user-settings-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-user-settings-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Creado por</small>
-                                                <span class="fw-semibold" id="view-usuario-creador">-</span>
+                                                <small class="text-muted d-block fs-12">Creado por</small>
+                                                <span class="fw-semibold fs-13" id="view-usuario-creador">-</span>
                                             </div>
                                         </div>
                                     </div>
@@ -797,84 +788,77 @@
                             </div>
                         </div>
 
-                        <!-- Card Datos del Pago -->
-                        <div class="card border-0 shadow-sm mb-4">
-                            <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                <h6 class="mb-0" style="color: #1e3c72;">
-                                    <i class="ri-wallet-line me-2"></i>Datos del Pago
+                        {{-- ── Datos del Pago ───────────────────────────────────── --}}
+                        <div class="card border-0 shadow-sm mb-2">
+                            <div class="card-header border-0 bg-soft-primary py-2 px-3">
+                                <h6 class="mb-0 text-atlantico-dark fs-13">
+                                    <i class="ri-wallet-line me-1"></i>Datos del Pago
                                 </h6>
                             </div>
-                            <div class="card-body">
-                                <div class="row g-3">
+                            <div class="card-body p-3">
+                                <div class="row g-2">
                                     <div class="col-12 col-lg-6">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-bank-card-2-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-bank-card-2-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Método Pago</small>
+                                                <small class="text-muted d-block fs-12">Método Pago</small>
                                                 <div class="d-flex flex-wrap gap-1 mt-1" id="view-metodo-pago">-</div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6 col-lg-3">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-hand-coin-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-hand-coin-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Abono</small>
-                                                <span class="fw-semibold" id="view-abono">-</span>
+                                                <small class="text-muted d-block fs-12">Abono</small>
+                                                <span class="fw-semibold fs-13" id="view-abono">-</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-6 col-lg-3">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                style="width: 32px; height: 32px; background: rgba(30, 60, 114, 0.1);">
-                                                <i class="ri-wallet-2-line" style="color: #1e3c72;"></i>
+                                            <div class="emp-icon-box emp-icon-box--navy rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                <i class="ri-wallet-2-line emp-icon--navy"></i>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Restante</small>
-                                                <span class="fw-semibold" id="view-restante">-</span>
+                                                <small class="text-muted d-block fs-12">Restante</small>
+                                                <span class="fw-semibold fs-13" id="view-restante">-</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row g-3 mt-1">
-                                    <div class="col-12 col-md-6" id="view-bloque-transferencia-container"
-                                        style="display:none;">
-                                        <div class="rounded p-2"
-                                            style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
-                                            <span class="fw-bold d-block mb-2" style="font-size:0.9rem; color:#1e3c72;">
-                                                <i class="ri-bank-card-line me-1" style="font-size:0.9rem;"></i>Transferencia
+                                <div class="row g-2 mt-1">
+                                    <div class="col-12 col-md-6" id="view-bloque-transferencia-container" style="display:none;">
+                                        <div class="rounded p-2 bg-soft-primary border">
+                                            <span class="fw-bold text-atlantico-dark d-block mb-1 fs-12">
+                                                <i class="ri-bank-card-line me-1"></i>Transferencia
                                             </span>
                                             <div class="mb-1">
-                                                <small class="text-muted d-block">Banco</small>
-                                                <span class="fw-semibold" id="view-banco-transferencia">-</span>
+                                                <small class="text-muted d-block fs-12">Banco</small>
+                                                <span class="fw-semibold fs-13" id="view-banco-transferencia">-</span>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Referencia</small>
-                                                <span class="fw-semibold" id="view-referencia-transferencia">-</span>
+                                                <small class="text-muted d-block fs-12">Referencia</small>
+                                                <span class="fw-semibold fs-13" id="view-referencia-transferencia">-</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6" id="view-bloque-pago-movil-container"
-                                        style="display:none;">
-                                        <div class="rounded p-2"
-                                            style="background: rgba(30, 60, 114, 0.06); border: 1px dashed rgba(30, 60, 114, 0.2);">
-                                            <span class="fw-bold d-block mb-2" style="font-size:0.9rem; color:#1e3c72;">
-                                                <i class="ri-smartphone-line me-1" style="font-size:0.9rem;"></i>Pago Móvil
+                                    <div class="col-12 col-md-6" id="view-bloque-pago-movil-container" style="display:none;">
+                                        <div class="rounded p-2 bg-soft-primary border">
+                                            <span class="fw-bold text-atlantico-dark d-block mb-1 fs-12">
+                                                <i class="ri-smartphone-line me-1"></i>Pago Móvil
                                             </span>
                                             <div class="mb-1">
-                                                <small class="text-muted d-block">Banco</small>
-                                                <span class="fw-semibold" id="view-banco-pago-movil">-</span>
+                                                <small class="text-muted d-block fs-12">Banco</small>
+                                                <span class="fw-semibold fs-13" id="view-banco-pago-movil">-</span>
                                             </div>
                                             <div>
-                                                <small class="text-muted d-block">Referencia</small>
-                                                <span class="fw-semibold" id="view-referencia-pago-movil">-</span>
+                                                <small class="text-muted d-block fs-12">Referencia</small>
+                                                <span class="fw-semibold fs-13" id="view-referencia-pago-movil">-</span>
                                             </div>
                                         </div>
                                     </div>
@@ -882,52 +866,43 @@
                             </div>
                         </div>
 
-                        <div class="card border-0"
-                            style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                            <div class="card-body py-3 px-4">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                            style="width:38px;height:38px;background:rgba(255,255,255,0.15);">
-                                            <i class="ri-money-dollar-circle-line text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <span class="text-white-50 d-block"
-                                                style="font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;">Total
-                                                Pedido</span>
-                                            <small class="text-white-50" style="font-size:0.68rem;">
-                                                <i class="ri-refresh-line me-1"></i>Se actualiza automáticamente
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div class="text-end">
-                                        <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;"
-                                            id="view-total-resumen">$0.00</span>
-                                    </div>
-                                </div>
+                        {{-- ── Total (hero gradiente del proyecto) ─────────────── --}}
+                        <div class="cot-resumen-card mb-0">
+                            <div class="cot-resumen-card-header py-2 px-3">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                <span>Total Pedido</span>
+                                <small class="ms-auto text-white-50 fw-normal text-lowercase" style="letter-spacing: 0;">
+                                    <i class="ri-refresh-line me-1"></i>auto
+                                </small>
+                            </div>
+                            <div class="cot-resumen-card-body p-3 text-end">
+                                <span class="fw-bold text-white fs-3 lh-1" id="view-total-resumen">$0.00</span>
+                                <small class="text-white-50 d-block mt-1 fs-12">
+                                    <i class="ri-exchange-dollar-line me-1"></i><span id="view-total-resumen-bs">Bs 0,00</span>
+                                </small>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Columna Derecha: Productos -->
+                    {{-- Columna Derecha: Productos --}}
                     <div class="col-lg-6">
                         <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                <h6 class="mb-0" style="color: #1e3c72;">
-                                    <i class="ri-shopping-bag-3-line me-2"></i>Productos del Pedido
+                            <div class="card-header border-0 bg-soft-primary py-2 px-3">
+                                <h6 class="mb-0 text-atlantico-dark fs-13">
+                                    <i class="ri-shopping-bag-3-line me-1"></i>Productos del Pedido
                                 </h6>
                             </div>
-                            <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                            <div class="card-body p-3" style="max-height: 500px; overflow-y: auto;">
                                 <div id="view-productos-container">
-                                    <!-- Productos se cargan dinámicamente -->
+                                    {{-- Productos se cargan dinámicamente --}}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer bg-light border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <div class="modal-footer bg-light border-0 py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
                     <i class="ri-close-line me-1"></i>Cerrar
                 </button>
             </div>

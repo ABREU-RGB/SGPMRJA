@@ -240,8 +240,10 @@
                     }
                     $('#view-estado').html(`<span class="badge ${estadoBadgeClass}">${data.estado}</span>`);
 
-                    var totalFormatted = parseFloat(data.total).toFixed(2);
-                    $('#view-total-resumen').text('$' + totalFormatted);
+                    var totalUsd = parseFloat(data.total);
+                    $('#view-total-resumen').text('$' + totalUsd.toFixed(2));
+                    var bsLbl = (typeof window.bsEquivalente === 'function') ? window.bsEquivalente(totalUsd) : null;
+                    $('#view-total-resumen-bs').text(bsLbl || 'Sin tasa BCV');
                     $('#view-usuario-creador').text(data.user ? data.user.name : 'N/A');
 
                     // Cargar y mostrar nuevos campos de pago y prioridad

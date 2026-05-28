@@ -169,6 +169,9 @@
                                     <div class="text-end">
                                         <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;"
                                             id="view-total">$0.00</span>
+                                        <small class="text-white-50 d-block mt-1" style="font-size:0.72rem;">
+                                            <i class="ri-exchange-dollar-line me-1"></i><span id="view-total-bs">Bs 0,00</span>
+                                        </small>
                                     </div>
                                 </div>
                             </div>
@@ -606,6 +609,12 @@
                                         <div class="cot-resumen-row cot-resumen-row--total">
                                             <span class="cot-resumen-row-label">Total</span>
                                             <span class="cot-resumen-row-value" id="cot-resumen-total">$0,00</span>
+                                        </div>
+                                        <div class="cot-resumen-row" style="opacity: 0.85;">
+                                            <span class="cot-resumen-row-label" style="font-size: 0.75rem;">
+                                                <i class="ri-exchange-dollar-line me-1"></i>Equivalente Bs
+                                            </span>
+                                            <span class="cot-resumen-row-value" id="cot-resumen-total-bs" style="font-size: 0.85rem; color: rgba(255,255,255,0.85);">Bs 0,00</span>
                                         </div>
                                     </div>
                                 </div>

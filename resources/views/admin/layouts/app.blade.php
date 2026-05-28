@@ -129,6 +129,23 @@
     </div>
     <!-- END layout-wrapper -->
 
+    {{-- ── Tasa BCV global (la inyecta AppServiceProvider via View::composer('admin.*')) ── --}}
+    <script>
+        window.tasaBcv = @if(isset($tasaBcv) && $tasaBcv) {
+            valor: {{ $tasaBcv->valor }},
+            fecha: '{{ $tasaBcv->fecha_bcv->format('Y-m-d') }}',
+            fuente: @json($tasaBcv->fuente ?? '')
+        } @else null @endif;
+
+        // Helper: convierte un monto en USD a string "Bs X.XXX,XX" (formato Venezuela).
+        // Devuelve null si no hay tasa disponible — el caller decide qué mostrar.
+        window.bsEquivalente = function (usd) {
+            if (!window.tasaBcv || !window.tasaBcv.valor) return null;
+            var bs = Number(usd || 0) * Number(window.tasaBcv.valor);
+            return 'Bs ' + bs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        };
+    </script>
+
     <!-- JAVASCRIPT -->
     <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>

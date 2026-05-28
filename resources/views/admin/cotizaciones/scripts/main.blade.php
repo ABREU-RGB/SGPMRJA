@@ -2670,7 +2670,10 @@
                         productosBody.append('<p class="text-muted text-center py-4"><i class="ri-file-list-3-line fs-1 d-block mb-2"></i>No hay productos en esta cotización.</p>');
                     }
                     // Formatear el total
-                    $('#view-total').text(formatMoney(parseFloat(data.total || 0)));
+                    var totalUsd = parseFloat(data.total || 0);
+                    $('#view-total').text(formatMoney(totalUsd));
+                    var bsLbl = (typeof window.bsEquivalente === 'function') ? window.bsEquivalente(totalUsd) : null;
+                    $('#view-total-bs').text(bsLbl || 'Sin tasa BCV');
                     // Establecer enlace PDF
                     $('#view-pdf-btn').attr('href', '/cotizaciones/' + id + '/pdf');
                     $('#viewModal').modal('show');
@@ -5156,6 +5159,9 @@
                 $('#cot-resumen-subtotal').text(formatMoney(subtotal));
                 $('#cot-resumen-iva').text(formatMoney(iva));
                 $('#cot-resumen-total').text(formatMoney(total));
+                // Equivalente en Bs (tasa BCV del día, expuesta por el layout)
+                var bsLabel = (typeof window.bsEquivalente === 'function') ? window.bsEquivalente(total) : null;
+                $('#cot-resumen-total-bs').text(bsLabel || 'Sin tasa BCV');
             }
 
             // === LISTENERS =====================================================
