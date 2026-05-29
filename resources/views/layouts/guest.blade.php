@@ -1,4 +1,3 @@
-@props(['title' => 'Bienvenido de nuevo', 'icon' => 'bx-user-circle'])
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
 <head>
@@ -235,16 +234,6 @@
             color: #dc3545;
         }
 
-        /* Anular el icono SVG que Bootstrap inyecta en inputs .is-invalid */
-        .form-control.is-invalid {
-            background-image: none !important;
-            padding-right: 14px;
-        }
-
-        .pass-wrapper .form-control.is-invalid {
-            padding-right: 44px;
-        }
-
         /* ── Submit button ── */
         .btn-atlantico {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -365,7 +354,7 @@
         <div class="card login-card">
             <!-- Card header -->
             <div class="login-card-header">
-                <h4><i class="bx {{ $icon }}"></i>{{ $title }}</h4>
+                <h4><i class="bx bx-user-circle"></i>Bienvenido de nuevo</h4>
             </div>
 
             <!-- Card body -->

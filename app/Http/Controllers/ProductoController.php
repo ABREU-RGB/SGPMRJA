@@ -19,16 +19,12 @@ class ProductoController extends Controller
 
     public function getProductos(Request $request)
     {
-        $query = $request->has('historial')
-            ? Producto::onlyTrashed()->with('tipoProducto')
-            : Producto::with('tipoProducto');
-
-        // Filtro: Tipo de Producto (Patrón Maestro S-07)
-        if ($request->filled('filter_tipo_producto_id')) {
-            $query->where('tipo_producto_id', $request->filter_tipo_producto_id);
+        if ($request->has('historial')) {
+            $productos = Producto::onlyTrashed()->with('tipoProducto')->get();
+        } else {
+            $productos = Producto::with('tipoProducto')->get();
         }
-
-        return DataTables::of($query)
+        return DataTables::of($productos)
             ->addColumn('tipo_nombre', function ($producto) {
                 return $producto->tipoProducto ? $producto->tipoProducto->nombre : 'Sin tipo';
             })
@@ -56,7 +52,7 @@ class ProductoController extends Controller
         $request->validate([
             'tipo_producto_id' => 'required|exists:tipo_producto,id',
             'modelo' => 'required|string|max:100',
-            'precio_base' => 'required|numeric|min:0.01',
+            'precio_base' => 'required|numeric|min:0',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'tipo_producto_id.required' => 'Debe seleccionar un tipo de producto',
@@ -64,7 +60,6 @@ class ProductoController extends Controller
             'modelo.required' => 'El modelo es obligatorio',
             'precio_base.required' => 'El precio base es obligatorio',
             'precio_base.numeric' => 'El precio debe ser un número',
-            'precio_base.min' => 'El precio base debe ser mayor a cero.',
         ]);
 
         // Obtener tipo de producto y generar código con modelo
@@ -119,10 +114,8 @@ class ProductoController extends Controller
         $request->validate([
             'tipo_producto_id' => 'required|exists:tipo_producto,id',
             'modelo' => 'required|string|max:100',
-            'precio_base' => 'required|numeric|min:0.01',
+            'precio_base' => 'required|numeric|min:0',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'precio_base.min' => 'El precio base debe ser mayor a cero.',
         ]);
 
         $producto = Producto::findOrFail($id);

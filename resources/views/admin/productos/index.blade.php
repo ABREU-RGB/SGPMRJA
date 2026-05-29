@@ -36,14 +36,20 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Toggle Historial -->
                             @if($historial)
-                                <a href="{{ route('productos.index') }}" class="btn-historial btn-historial-volver">
-                                    <i class="ri-arrow-left-line"></i> Solo Activos
+                                <a href="{{ route('productos.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
                                 </a>
                             @else
-                                <a href="{{ route('productos.index', ['historial' => true]) }}" class="btn-historial btn-historial-ver">
-                                    <i class="ri-time-line"></i> Ver Historial
+                                <a href="{{ route('productos.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
                                 </a>
                             @endif
+                            <!-- Buscador Personalizado -->
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar producto...">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
                             @if(!$historial)
                             <div class="d-flex gap-2 align-items-center">
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
@@ -70,62 +76,6 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    {{-- ============================================================
-                         FILTROS — Patrón Maestro S-07 (Colapsable)
-                         Filtros server-side: ajax.reload() con param filter_tipo_producto_id.
-                         CSS genérico en custom.css: .navy-filter-*
-                         ============================================================ --}}
-                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
-                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
-                        <div class="navy-filter-header is-collapsed">
-                            {{-- Búsqueda global (siempre visible) --}}
-                            <div class="navy-header-search">
-                                <i class="ri-search-line"></i>
-                                <input type="text" id="custom-search-input"
-                                    class="navy-search-input"
-                                    placeholder="Buscar producto..."
-                                    autocomplete="off">
-                            </div>
-                            {{-- Divisor vertical --}}
-                            <div class="navy-header-divider"></div>
-                            {{-- Trigger del collapse de filtros --}}
-                            <button class="navy-filter-btn collapsed" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
-                                aria-expanded="false" aria-controls="filters-collapse-body">
-                                <i class="ri-filter-3-line"></i>
-                                <span>Filtros</span>
-                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
-                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
-                            </button>
-                        </div>
-                        {{-- Body: colapsable, oculto por defecto --}}
-                        <div class="collapse" id="filters-collapse-body">
-                            <div class="navy-filter-body">
-                                <div class="row g-2 align-items-end">
-                                    {{-- Filtro: Tipo de Producto (dinámico desde $tiposProducto) --}}
-                                    <div class="col-lg-4 col-md-6">
-                                        <label class="navy-filter-label" for="filter-tipo-producto">
-                                            <i class="ri-price-tag-3-line"></i> Tipo de Producto
-                                        </label>
-                                        <select class="form-select navy-filter-select" id="filter-tipo-producto">
-                                            <option value="">Todos</option>
-                                            @foreach($tiposProducto as $tipo)
-                                                <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                {{-- Botón limpiar --}}
-                                <div class="d-flex justify-content-end mt-2">
-                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
-                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{-- FIN FILTROS --}}
-
                     <table id="productos-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
@@ -262,7 +212,7 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Producto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="productoForm" enctype="multipart/form-data" novalidate>
+                <form id="productoForm" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
@@ -286,8 +236,8 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <button type="button" class="btn btn-outline-primary" id="btn-add-tipo-inline"
-                                                title="Agregar nuevo tipo">
+                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                                data-bs-target="#addTipoModal" title="Agregar nuevo tipo">
                                                 <i class="ri-add-line"></i>
                                             </button>
                                         </div>
@@ -366,7 +316,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <button type="button" class="btn btn-success" id="add-tipo-btn">
+                        <button type="button" class="btn btn-success" id="add-tipo-btn" data-bs-toggle="modal" data-bs-target="#addTipoModal">
                             <i class="ri-add-line me-1"></i>Agregar Tipo
                         </button>
                         <div class="btn-group" role="group" aria-label="Vista de tipos de producto">
@@ -408,7 +358,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="tipoForm" novalidate>
+                <form id="tipoForm">
                     <div class="modal-body">
                         <input type="hidden" id="tipo-id-field" />
                         <div class="modal-form-section mb-0">
@@ -461,6 +411,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
     <script>
@@ -517,12 +468,7 @@
             var table = $('#productos-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: {
-                    url: "{{ route('productos.data') }}" + (esHistorial ? '?historial=true' : ''),
-                    data: function (d) {
-                        d.filter_tipo_producto_id = $('#filter-tipo-producto').val();
-                    }
-                },
+                ajax: "{{ route('productos.data') }}" + (esHistorial ? '?historial=true' : ''),
                 columns: [
                     {
                         data: 'codigo',
@@ -600,49 +546,9 @@
                 language: lenguajeData
             });
 
-            // ══════════════════════════════════════════════════════
-            // BÚSQUEDA + FILTROS — Patrón Maestro S-07
-            // Header unificado: búsqueda global + panel colapsable
-            // Filtros: server-side (ajax.reload con filter_tipo_producto_id)
-            // ══════════════════════════════════════════════════════
-
-            // ── Badge: contador de filtros activos ──
-            function updateFilterBadge() {
-                var count = 0;
-                if ($('#filter-tipo-producto').val() !== '') count++;
-                var $badge = $('#active-filter-count');
-                count > 0 ? $badge.text(count).removeClass('d-none') : $badge.addClass('d-none');
-            }
-
-            // ── Sincronizar clase is-collapsed con el collapse ──
-            $('#filters-collapse-body').on('show.bs.collapse', function () {
-                $('.navy-filter-header').removeClass('is-collapsed');
-            }).on('hidden.bs.collapse', function () {
-                $('.navy-filter-header').addClass('is-collapsed');
-            });
-
-            // ── Búsqueda global (debounce 300ms) ──
-            var searchTimeout = null;
+            // Buscador personalizado
             $('#custom-search-input').on('keyup', function () {
-                clearTimeout(searchTimeout);
-                var val = this.value;
-                searchTimeout = setTimeout(function () {
-                    table.search(val).draw();
-                }, 300);
-            });
-
-            // ── Filtro Tipo Producto (server-side) ──
-            $('#filter-tipo-producto').on('change', function () {
-                table.ajax.reload();
-                updateFilterBadge();
-            });
-
-            // ── Botón limpiar: resetea búsqueda + filtros ──
-            $('#btn-clear-filters').on('click', function () {
-                $('#filter-tipo-producto').val('');
-                $('#custom-search-input').val('');
-                table.search('').ajax.reload();
-                updateFilterBadge();
+                table.search(this.value).draw();
             });
 
             // Sincronizar switch de estado con hidden input
@@ -747,7 +653,7 @@
             $("#productoForm").on("submit", function (e) {
                 e.preventDefault();
 
-                if (!validarFormularioProducto()) {
+                if (!validator.validateAll()) {
                     return;
                 }
                 var id = $("#id-field").val();
@@ -928,83 +834,12 @@
                 $("#estado-label").text("Activo");
                 $("#add-btn").show();
                 $("#edit-btn").hide();
-                $('#productoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
-                $('#productoForm').find('.invalid-feedback').hide();
+                validator.resetValidation();
+                tipoValidator.resetValidation();
             });
 
-            function validarFormularioProducto() {
-                let esValido = true;
-
-                let $tipo = $('#tipo-producto-field');
-                if (!$tipo.val()) {
-                    marcarInvalido($tipo, 'El tipo de producto es obligatorio.');
-                    esValido = false;
-                } else { marcarValido($tipo); }
-
-                let $modelo = $('#modelo-field');
-                let modelo = $modelo.val().trim();
-                if (!modelo) {
-                    marcarInvalido($modelo, 'El modelo es obligatorio.');
-                    esValido = false;
-                } else if (modelo.length < 3) {
-                    marcarInvalido($modelo, 'El modelo debe tener al menos 3 caracteres.');
-                    esValido = false;
-                } else { marcarValido($modelo); }
-
-                let $desc = $('#descripcion-field');
-                let desc = $desc.val().trim();
-                if (!desc) {
-                    marcarInvalido($desc, 'La descripción es obligatoria.');
-                    esValido = false;
-                } else if (desc.length < 10) {
-                    marcarInvalido($desc, 'La descripción debe tener al menos 10 caracteres.');
-                    esValido = false;
-                } else { marcarValido($desc); }
-
-                let $precio = $('#precio-base-field');
-                let precio = parseFloat($precio.val());
-                if (isNaN(precio) || precio <= 0) {
-                    marcarInvalido($precio, 'El precio base debe ser mayor a cero.');
-                    esValido = false;
-                } else { marcarValido($precio); }
-
-                let esCreacion = $('#id-field').val() === '';
-                if (esCreacion) {
-                    let $imagen = $('#imagen-field');
-                    if (!$imagen[0].files || $imagen[0].files.length === 0) {
-                        marcarInvalido($imagen, 'La imagen es obligatoria al crear un producto.');
-                        esValido = false;
-                    } else { marcarValido($imagen); }
-                }
-
-                return esValido;
-            }
-
-            function validarFormularioTipo() {
-                let esValido = true;
-
-                let $nombre = $('#tipo-nombre-field');
-                let nombre = $nombre.val().trim();
-                if (!nombre) {
-                    marcarInvalido($nombre, 'El nombre del tipo es obligatorio.');
-                    esValido = false;
-                } else if (nombre.length < 2) {
-                    marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
-                    esValido = false;
-                } else { marcarValido($nombre); }
-
-                let $prefijo = $('#tipo-prefijo-field');
-                let prefijo = $prefijo.val().trim();
-                if (!prefijo) {
-                    marcarInvalido($prefijo, 'El código prefijo es obligatorio.');
-                    esValido = false;
-                } else if (!/^[a-zA-Z]+$/.test(prefijo)) {
-                    marcarInvalido($prefijo, 'El código prefijo solo puede contener letras.');
-                    esValido = false;
-                } else { marcarValido($prefijo); }
-
-                return esValido;
-            }
+            const validator = new FormValidator('productoForm');
+            const tipoValidator = new FormValidator('tipoForm');
             let tiposHistorial = false;
             let tiposTable = null;
 
@@ -1114,139 +949,50 @@
                 recargarTipos();
             });
 
-            // ══════════════════════════════════════════════════════
-            // VALIDACIONES ONBLUR — Formulario Producto principal
-            // ══════════════════════════════════════════════════════
-
-            // Tipo de Producto — select obligatorio
-            $(document).on('blur', '#tipo-producto-field', function () {
-                if (!$(this).val()) {
-                    marcarInvalido($(this), 'El tipo de producto es obligatorio.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Modelo — mín. 3 chars
-            $(document).on('blur', '#modelo-field', function () {
-                let val = $(this).val().trim();
-                if (!val) {
-                    marcarInvalido($(this), 'El modelo es obligatorio.');
-                } else if (val.length < 3) {
-                    marcarInvalido($(this), 'Mínimo 3 caracteres.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Descripción — mín. 10 chars
-            $(document).on('blur', '#descripcion-field', function () {
-                let val = $(this).val().trim();
-                if (!val) {
-                    marcarInvalido($(this), 'La descripción es obligatoria.');
-                } else if (val.length < 10) {
-                    marcarInvalido($(this), 'Mínimo 10 caracteres.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Precio Base — mayor a cero
-            $(document).on('blur', '#precio-base-field', function () {
-                let val = parseFloat($(this).val());
-                if (isNaN(val) || val <= 0) {
-                    marcarInvalido($(this), 'El precio base debe ser mayor a cero.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Imagen — formato y tamaño (solo en creación)
-            $(document).on('change', '#imagen-field', function () {
-                let esCreacion = $('#id-field').val() === '';
-                let file = this.files[0];
-                if (!file) {
-                    if (esCreacion) marcarInvalido($(this), 'La imagen es obligatoria.');
-                    return;
-                }
-                let tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-                if (!tiposPermitidos.includes(file.type)) {
-                    marcarInvalido($(this), 'Formato no permitido. Use JPG, PNG o GIF.');
-                    return;
-                }
-                if (file.size > 2048 * 1024) {
-                    marcarInvalido($(this), 'La imagen no puede superar 2MB.');
-                    return;
-                }
-                marcarValido($(this));
-            });
-
-            // ══════════════════════════════════════════════════════
-            // VALIDACIONES AJAX onblur — Tipos de Producto
+            // Validaciones AJAX onblur para Tipos de Producto
 
             // 1. Nombre
             $('#tipo-nombre-field').on('blur', function () {
-                let value = $(this).val().trim();
+                let value = $(this).val();
                 let $input = $(this);
+                let $error = $('#tipo-nombre-error');
                 let isEdit = $('#tipo-id-field').val() !== '';
 
-                if (value.length === 0) {
-                    marcarInvalido($input, 'El nombre del tipo es obligatorio.');
-                    return;
+                if (value.length > 0 && !isEdit) {
+                    $.get("{{ route('tipo-productos.check-nombre') }}", { nombre: value }, function (res) {
+                        if (res.exists) {
+                            $input.addClass('is-invalid');
+                            $error.text('Este nombre ya existe').show();
+                            $('#save-tipo-btn').prop('disabled', true);
+                        } else {
+                            $input.removeClass('is-invalid').addClass('is-valid');
+                            $error.hide();
+                            $('#save-tipo-btn').prop('disabled', false);
+                        }
+                    });
                 }
-                if (value.length < 2) {
-                    marcarInvalido($input, 'El nombre debe tener al menos 2 caracteres.');
-                    return;
-                }
-                if (isEdit) {
-                    marcarValido($input);
-                    return;
-                }
-                $.get("{{ route('tipo-productos.check-nombre') }}", { nombre: value }, function (res) {
-                    if (res.exists) {
-                        marcarInvalido($input, 'Este nombre ya está registrado.');
-                        $('#save-tipo-btn').prop('disabled', true);
-                    } else {
-                        marcarValido($input);
-                        $('#save-tipo-btn').prop('disabled', false);
-                    }
-                });
             });
 
-            // 2. Prefijo — sanitizar a mayúsculas en tiempo real
-            $(document).on('input', '#tipo-prefijo-field', function () {
-                this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
-            });
-
+            // 2. Prefijo
             $('#tipo-prefijo-field').on('blur', function () {
+                let value = $(this).val();
                 let $input = $(this);
-                let value = $input.val().trim();
+                let $error = $('#tipo-prefijo-error');
                 let isEdit = $('#tipo-id-field').val() !== '';
 
-                if (!value) {
-                    marcarInvalido($input, 'El código prefijo es obligatorio.');
-                    return;
+                if (value.length > 0 && !isEdit) {
+                    $.get("{{ route('tipo-productos.check-codigo') }}", { codigo: value }, function (res) {
+                        if (res.exists) {
+                            $input.addClass('is-invalid');
+                            $error.text('Este prefijo ya existe').show();
+                            $('#save-tipo-btn').prop('disabled', true);
+                        } else {
+                            $input.removeClass('is-invalid').addClass('is-valid');
+                            $error.hide();
+                            $('#save-tipo-btn').prop('disabled', false);
+                        }
+                    });
                 }
-                if (!/^[a-zA-Z]+$/.test(value)) {
-                    marcarInvalido($input, 'El código prefijo solo puede contener letras.');
-                    return;
-                }
-                if (isEdit) { marcarValido($input); return; }
-
-                $.get("{{ route('tipo-productos.check-codigo') }}", { codigo: value }, function (res) {
-                    if (res.exists) {
-                        marcarInvalido($input, 'Este prefijo ya está registrado.');
-                        $('#save-tipo-btn').prop('disabled', true);
-                    } else {
-                        marcarValido($input);
-                        $('#save-tipo-btn').prop('disabled', false);
-                    }
-                });
-            });
-
-            // Abrir addTipoModal sin data-bs-toggle para no cerrar el padre
-            $('#btn-add-tipo-inline, #add-tipo-btn').on('click', function () {
-                $('#addTipoModal').modal('show');
             });
 
             // Limpiar validaciones al cerrar modal de tipo
@@ -1396,7 +1142,7 @@
             $("#tipoForm").on("submit", function (e) {
                 e.preventDefault();
 
-                if (!validarFormularioTipo()) {
+                if (!tipoValidator.validateAll()) {
                     return;
                 }
 

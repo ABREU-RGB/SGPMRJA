@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
-use App\Models\Empleado;
 use App\Models\Persona;
 use App\Models\Telefono;
 use App\Models\Direccion;
 use App\Http\Requests\StoreClienteRequest;
 use App\Http\Requests\UpdateClienteRequest;
 use App\Services\ClienteService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -108,12 +106,6 @@ class ClienteController extends Controller
         $telefonoPrincipal = $cliente->telefono;
         $direccionPrincipal = $cliente->persona ? $cliente->persona->direccion_principal : null;
 
-        // Detectar si la persona también está en otro módulo
-        $otherRole = null;
-        if ($cliente->persona && Empleado::where('persona_id', $cliente->persona_id)->exists()) {
-            $otherRole = 'empleado';
-        }
-
         // Formatear respuesta para compatibilidad con el frontend existente
         return response()->json([
             'id' => $cliente->id,
@@ -128,7 +120,6 @@ class ClienteController extends Controller
             'estado_territorial' => $direccionPrincipal ? $direccionPrincipal->estado : '',
             'ciudad' => $direccionPrincipal ? $direccionPrincipal->ciudad : '',
             'estatus' => $cliente->estatus,
-            'other_role' => $otherRole,
             // Datos adicionales para UI de múltiples teléfonos/direcciones
             'telefonos' => $cliente->persona ? $cliente->persona->telefonos : [],
             'direcciones' => $cliente->persona ? $cliente->persona->direcciones : [],
@@ -250,31 +241,10 @@ class ClienteController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        // Solo bloquear si ya existe un CLIENTE con ese documento.
-        // Una persona puede ser empleado y cliente al mismo tiempo (persona compartida).
-        $persona = Persona::with(['telefonos', 'direcciones'])->where('documento_identidad', $numero)->first();
-        $exists = $persona && Cliente::where('persona_id', $persona->id)->exists();
+        // Buscar coincidencia exacta en la tabla 'persona'
+        $exists = \App\Models\Persona::where('documento_identidad', $numero)->exists();
 
-        $otherRole = null;
-        $personaData = null;
-        if ($persona && !$exists) {
-            if (Empleado::where('persona_id', $persona->id)->exists()) {
-                $otherRole = 'empleado';
-                $dir = $persona->direccionPrincipal;
-                $personaData = [
-                    'nombre'           => $persona->nombre,
-                    'apellido'         => $persona->apellido ?? '',
-                    'tipo_documento'   => $persona->tipo_documento,
-                    'email'            => $persona->email ?? '',
-                    'telefono'         => $persona->telefonoPrincipal ?? '',
-                    'estado_geografico'=> $persona->estado_geografico ?? ($dir?->estado ?? ''),
-                    'ciudad'           => $dir?->ciudad ?? '',
-                    'direccion'        => $dir?->direccion ?? '',
-                ];
-            }
-        }
-
-        return response()->json(['exists' => $exists, 'other_role' => $otherRole, 'persona' => $personaData]);
+        return response()->json(['exists' => $exists]);
     }
 
     /**
@@ -292,87 +262,7 @@ class ClienteController extends Controller
         $email = $request->input('email');
         if (!$email)
             return response()->json(['exists' => false]);
-
-        $query = \App\Models\Persona::where('email', $email);
-
-        $excludeClienteId = $request->input('exclude_id');
-        if ($excludeClienteId) {
-            $cliente = Cliente::find($excludeClienteId);
-            if ($cliente && $cliente->persona_id) {
-                $query->where('id', '!=', $cliente->persona_id);
-            }
-        }
-
-        return response()->json(['exists' => $query->exists()]);
-    }
-
-    /**
-     * Crear un Cliente reutilizando una Persona existente (empleado, proveedor, etc.).
-     * Usado por el autocompletado de cotizaciones para evitar duplicar identidades.
-     * El tipo_cliente se deriva del tipo_documento: V/E → natural, J → juridico, G → gubernamental.
-     */
-    public function createFromPersona(int $personaId): JsonResponse
-    {
-        $persona = Persona::with(['telefonos', 'direcciones'])->find($personaId);
-
-        if (!$persona) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Persona no encontrada.',
-            ], 404);
-        }
-
-        // Si ya existe un cliente activo vinculado, devolverlo
-        $clienteExistente = Cliente::where('persona_id', $persona->id)
-            ->where('estatus', 1)
-            ->first();
-
-        if ($clienteExistente) {
-            return response()->json([
-                'success'    => true,
-                'message'    => 'La persona ya estaba registrada como cliente activo.',
-                'cliente_id' => $clienteExistente->id,
-                'reused'     => true,
-            ]);
-        }
-
-        // Si existe pero está inhabilitado (estatus 0 o trashed), reactivar
-        $clienteInactivo = Cliente::withTrashed()
-            ->where('persona_id', $persona->id)
-            ->first();
-
-        if ($clienteInactivo) {
-            if ($clienteInactivo->trashed()) {
-                $clienteInactivo->restore();
-            }
-            $clienteInactivo->update(['estatus' => 1]);
-
-            return response()->json([
-                'success'    => true,
-                'message'    => 'Cliente reactivado correctamente.',
-                'cliente_id' => $clienteInactivo->id,
-                'reused'     => true,
-            ]);
-        }
-
-        // Detectar tipo de cliente según prefijo del documento
-        $tipoCliente = match ($persona->tipo_documento) {
-            'J-'    => 'juridico',
-            'G-'    => 'gubernamental',
-            default => 'natural', // V-, E-, sin prefijo
-        };
-
-        $cliente = Cliente::create([
-            'persona_id'   => $persona->id,
-            'tipo_cliente' => $tipoCliente,
-            'estatus'      => 1,
-        ]);
-
-        return response()->json([
-            'success'    => true,
-            'message'    => 'Cliente creado a partir de la persona registrada.',
-            'cliente_id' => $cliente->id,
-            'reused'     => false,
-        ]);
+        $exists = \App\Models\Persona::where('email', $email)->exists();
+        return response()->json(['exists' => $exists]);
     }
 }

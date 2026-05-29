@@ -154,9 +154,6 @@
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
 
-    <!-- Alpine.js (necesario para x-data, x-show, x-init en perfil y otros) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
-
     <!-- Theme Persistence & Icon Sync -->
     <script>
         (function () {
@@ -341,72 +338,20 @@
 
     <!-- Script global para validación de campos -->
     <script>
-        // ============================================================
-        // FUNCIONES GLOBALES DE VALIDACIÓN — disponibles en todos los módulos
-        // ============================================================
-
-        /**
-         * Valida la política de seguridad de contraseña.
-         * Retorna null si es válida, o un mensaje de error con los requisitos faltantes.
-         */
-        function validarContrasena(valor) {
-            if (valor.length === 0) return null;
-            let errores = [];
-            if (valor.length < 8)              errores.push('al menos 8 caracteres');
-            if (!/[A-Z]/.test(valor))          errores.push('una letra mayúscula');
-            if (!/[0-9]/.test(valor))          errores.push('un número');
-            if (!/[^a-zA-Z0-9]/.test(valor))   errores.push('un carácter especial');
-            if (errores.length === 0) return null;
-            return 'La contraseña debe contener ' + errores.join(', ') + '.';
-        }
-
-        function marcarInvalido($campo, mensaje) {
-            $campo.addClass('is-invalid').removeClass('is-valid');
-            let $feedback = $campo.siblings('.invalid-feedback');
-            if ($feedback.length === 0) {
-                $feedback = $campo.parent().find('.invalid-feedback');
-            }
-            if ($feedback.length === 0) {
-                $campo.after('<div class="invalid-feedback">' + mensaje + '</div>');
-            } else {
-                $feedback.text(mensaje).show();
-            }
-        }
-
-        function marcarValido($campo) {
-            $campo.removeClass('is-invalid').addClass('is-valid');
-            $campo.siblings('.invalid-feedback').hide();
-            $campo.parent().find('.invalid-feedback').hide();
-        }
-
-        function limpiarValidacion($campo) {
-            $campo.removeClass('is-invalid is-valid');
-            $campo.siblings('.invalid-feedback').hide();
-            $campo.parent().find('.invalid-feedback').hide();
-        }
-
-        function validarCampoTexto($campo, minLength, mensaje) {
-            let value = $campo.val().trim();
-            if (value.length < minLength) {
-                marcarInvalido($campo, mensaje);
-            } else {
-                marcarValido($campo);
-            }
-        }
-
         $(document).ready(function () {
             // ============================================
             // VALIDACIONES EN TIEMPO REAL (MIENTRAS ESCRIBE)
             // ============================================
 
             // Campos de NOMBRE/APELLIDO - Solo letras y espacios
-            // #razon-social-field excluido — tiene su propio filtro permisivo (permite números)
             const camposNombre = [
                 '#nombre-field',
                 '#apellido-field',
+                '#razon-social-field',
                 '#nombre-contacto-field',
-                'input[name="nombre"]:not(#razon-social-field)',
+                'input[name="nombre"]',
                 'input[name="apellido"]',
+                'input[name="razon_social"]',
                 'input[name="nombre_contacto"]'
             ];
 
@@ -414,11 +359,6 @@
                 $(document).on('input', selector, function () {
                     this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
                 });
-            });
-
-            // Razón Social — permite letras, números, puntos, comas, guiones y espacios
-            $(document).on('input', '#razon-social-field, input[name="razon_social"]', function () {
-                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9.,\-\s]/g, '');
             });
 
             // Campos de DOCUMENTO - Solo números (máximo 10 dígitos)
@@ -464,14 +404,11 @@
                 'input[name="precio"]',
                 'input[name="precio_base"]',
                 'input[name="abono"]',
-                'input[name="total"]',
-                'input[name="costo_unitario"]'
+                'input[name="total"]'
             ];
 
             camposPrecio.forEach(function (selector) {
                 $(document).on('input', selector, function () {
-                    // Los type="number" los maneja el navegador nativamente — tocarlos resetea el cursor
-                    if (this.type === 'number') return;
                     this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
                 });
             });
@@ -483,9 +420,7 @@
                 '#stock_minimo-field',
                 'input[name="cantidad"]',
                 'input[name="stock_actual"]',
-                'input[name="stock_minimo"]',
-                'input[name="cantidad_producida"]',
-                'input[name="cantidad_defectuosa"]'
+                'input[name="stock_minimo"]'
             ];
 
             camposCantidad.forEach(function (selector) {
@@ -494,18 +429,12 @@
                 });
             });
 
-            // Código prefijo de tipo producto - solo letras, mayúsculas automáticas, máx 5
-            $(document).on('input', '#tipo-prefijo-field, input[name="codigo_prefijo"]', function () {
-                this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 5);
-            });
-
             // ============================================
             // VALIDACIONES ONBLUR (AL SALIR DEL CAMPO)
             // ============================================
 
             // Validación de nombres (mínimo 2 caracteres)
-            // Se excluye #razon-social-field — tiene su propio handler en clientes (min 3 chars)
-            $(document).on('blur', '#nombre-field, input[name="nombre"]:not(#razon-social-field)', function () {
+            $(document).on('blur', '#nombre-field, input[name="nombre"]', function () {
                 validarCampoTexto($(this), 2, 'El nombre debe tener al menos 2 caracteres.');
             });
 
@@ -569,198 +498,48 @@
                 }
             });
 
-            // Validación de precio_base (debe ser mayor a cero)
-            $(document).on('blur', '#precio-base-field, input[name="precio_base"]', function () {
-                let value = parseFloat($(this).val());
-                if (isNaN(value) || value <= 0) {
-                    marcarInvalido($(this), 'El precio base debe ser mayor a cero.');
+            // ============================================
+            // FUNCIONES AUXILIARES DE VALIDACIÓN
+            // ============================================
+
+            function validarCampoTexto($campo, minLength, mensaje) {
+                let value = $campo.val().trim();
+                if (value.length < minLength) {
+                    marcarInvalido($campo, mensaje);
                 } else {
-                    marcarValido($(this));
+                    marcarValido($campo);
                 }
-            });
+            }
 
-            // Validación de costo_unitario (debe ser mayor a cero)
-            $(document).on('blur', '#field-costo_unitario, input[name="costo_unitario"]', function () {
-                let value = parseFloat($(this).val());
-                if (isNaN(value) || value <= 0) {
-                    marcarInvalido($(this), 'El costo unitario debe ser mayor a cero.');
+            function marcarInvalido($campo, mensaje) {
+                $campo.addClass('is-invalid').removeClass('is-valid');
+                let $feedback = $campo.siblings('.invalid-feedback');
+                if ($feedback.length === 0) {
+                    $feedback = $campo.parent().find('.invalid-feedback');
+                }
+                if ($feedback.length === 0) {
+                    $campo.after('<div class="invalid-feedback">' + mensaje + '</div>');
                 } else {
-                    marcarValido($(this));
+                    $feedback.text(mensaje).show();
                 }
-            });
+            }
 
-            // Validación de contraseña (política de seguridad ERP)
-            $(document).on('blur', 'input[name="password"]', function () {
-                let value = $(this).val();
-                if (value.length === 0) {
-                    limpiarValidacion($(this));
-                    return;
-                }
-                let error = validarContrasena(value);
-                if (error) {
-                    marcarInvalido($(this), error);
-                } else {
-                    marcarValido($(this));
-                }
-            });
+            function marcarValido($campo) {
+                $campo.removeClass('is-invalid').addClass('is-valid');
+                $campo.siblings('.invalid-feedback').hide();
+                $campo.parent().find('.invalid-feedback').hide();
+            }
 
-            // Validación de confirmación de contraseña
-            $(document).on('blur', 'input[name="password_confirmation"]', function () {
-                let value = $(this).val();
-                let password = $('input[name="password"]').val();
-                if (value.length > 0) {
-                    if (value !== password) {
-                        marcarInvalido($(this), 'Las contraseñas no coinciden.');
-                    } else {
-                        marcarValido($(this));
-                    }
-                } else {
-                    limpiarValidacion($(this));
-                }
-            });
-
-            // Validación de cargo (mínimo 3 caracteres)
-            $(document).on('blur', 'input[name="cargo"]', function () {
-                let value = $(this).val().trim();
-                if (value.length === 0) {
-                    marcarInvalido($(this), 'El cargo es obligatorio.');
-                } else if (value.length < 3) {
-                    marcarInvalido($(this), 'El cargo debe tener al menos 3 caracteres.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Validación de código prefijo (solo letras, máx 5)
-            $(document).on('blur', '#tipo-prefijo-field, input[name="codigo_prefijo"]', function () {
-                let value = $(this).val().trim();
-                if (value.length === 0) {
-                    marcarInvalido($(this), 'El código prefijo es obligatorio.');
-                } else if (!/^[a-zA-Z]+$/.test(value)) {
-                    marcarInvalido($(this), 'El código prefijo solo puede contener letras.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Validación de fecha de nacimiento (mayor de 18 años)
-            $(document).on('blur', 'input[name="fecha_nacimiento"]', function () {
-                let value = $(this).val();
-                if (value) {
-                    let birthDate = new Date(value + 'T00:00:00');
-                    let today = new Date();
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    let m = today.getMonth() - birthDate.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                    }
-                    if (age < 18) {
-                        marcarInvalido($(this), 'El empleado debe ser mayor de 18 años.');
-                    } else {
-                        marcarValido($(this));
-                    }
-                } else {
-                    limpiarValidacion($(this));
-                }
-            });
-
-            // Validación de fecha de ingreso (no puede ser futura)
-            $(document).on('blur', 'input[name="fecha_ingreso"]', function () {
-                let value = $(this).val();
-                if (value) {
-                    let selected = new Date(value + 'T00:00:00');
-                    let today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    if (selected > today) {
-                        marcarInvalido($(this), 'La fecha de ingreso no puede ser futura.');
-                    } else {
-                        marcarValido($(this));
-                    }
-                }
-            });
-
-            // Validación de fecha de producción (no puede ser futura)
-            $(document).on('blur', '#edit_fecha_produccion, input[name="fecha_produccion"]', function () {
-                let value = $(this).val();
-                if (value) {
-                    let selected = new Date(value + 'T00:00:00');
-                    let today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    if (selected > today) {
-                        marcarInvalido($(this), 'La fecha de producción no puede ser futura.');
-                    } else {
-                        marcarValido($(this));
-                    }
-                }
-            });
-
-            // Validación de cantidad producida (mínimo 1)
-            $(document).on('blur', '#edit_cantidad_producida, input[name="cantidad_producida"]', function () {
-                let value = parseFloat($(this).val());
-                if (isNaN(value) || value < 1) {
-                    marcarInvalido($(this), 'La cantidad producida debe ser al menos 1.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Validación de motivo (requerido, máx 500 caracteres)
-            $(document).on('blur', '#field-motivo, textarea[name="motivo"]', function () {
-                let value = $(this).val().trim();
-                if (value.length === 0) {
-                    marcarInvalido($(this), 'El motivo es obligatorio.');
-                } else if (value.length > 500) {
-                    marcarInvalido($(this), 'El motivo no puede superar 500 caracteres.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
+            function limpiarValidacion($campo) {
+                $campo.removeClass('is-invalid is-valid');
+                $campo.siblings('.invalid-feedback').hide();
+                $campo.parent().find('.invalid-feedback').hide();
+            }
 
             // Limpiar validaciones al abrir cualquier modal
             $(document).on('show.bs.modal', '.modal', function () {
                 $(this).find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
                 $(this).find('.invalid-feedback').hide();
-            });
-
-            // ====================================================
-            // FIX: Modales anidados en Bootstrap 5
-            // Regla: los botones que abren modales hijos desde dentro
-            // de un modal padre NO deben usar data-bs-toggle="modal".
-            // En su lugar usan un click handler que llama .modal('show')
-            // directamente. Así Bootstrap nunca ejecuta su lógica de
-            // "cierra el modal abierto antes de abrir el nuevo".
-            //
-            // Estos handlers gestionan el z-index para que el hijo
-            // (1075) aparezca encima del padre (1055) con su backdrop
-            // (1070) entre ambos.
-            // ====================================================
-            $(document).on('show.bs.modal', '.modal', function () {
-                var $nuevo    = $(this);
-                var $abiertos = $('.modal.show').not(this);
-                if ($abiertos.length > 0) {
-                    $nuevo.css('z-index', 1075);
-                    $nuevo.data('parentModals', $abiertos);
-                }
-            });
-
-            $(document).on('shown.bs.modal', '.modal', function () {
-                if ($(this).data('parentModals')) {
-                    $('.modal-backdrop').last().css('z-index', 1070);
-                }
-            });
-
-            $(document).on('hidden.bs.modal', '.modal', function () {
-                var $cerrado = $(this);
-                var $padres  = $cerrado.data('parentModals');
-                if ($padres && $padres.length > 0) {
-                    $cerrado.css('z-index', '');
-                    $cerrado.removeData('parentModals');
-                }
-                // Bootstrap quita `modal-open` del body al cerrar CUALQUIER modal,
-                // incluso si hay padres abiertos. Lo restauramos para mantener scroll-lock.
-                if ($('.modal.show').length > 0) {
-                    $('body').addClass('modal-open');
-                }
             });
         });
     </script>

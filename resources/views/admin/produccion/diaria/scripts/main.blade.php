@@ -1,27 +1,4 @@
 <script>
-    // Validación onblur: cantidad_defectuosa no puede superar cantidad_producida
-    $(document).on('blur', '#edit_cantidad_defectuosa, input[name="cantidad_defectuosa"]', function () {
-        let defectuosa = parseFloat($(this).val());
-        let $producida = $(this).closest('.modal-body, form').find('[name="cantidad_producida"]');
-        let producida = parseFloat($producida.val());
-
-        if (isNaN(defectuosa) || defectuosa < 0) {
-            marcarInvalido($(this), 'La cantidad defectuosa no puede ser negativa.');
-        } else if (!isNaN(producida) && defectuosa > producida) {
-            marcarInvalido($(this), 'La cantidad defectuosa no puede superar la cantidad producida (' + producida + ').');
-        } else {
-            marcarValido($(this));
-        }
-    });
-
-    // Re-validar cantidad_defectuosa cuando el usuario sale de cantidad_producida
-    $(document).on('blur', '#edit_cantidad_producida, input[name="cantidad_producida"]', function () {
-        let $defectuosa = $(this).closest('.modal-body, form').find('[name="cantidad_defectuosa"]');
-        if ($defectuosa.val() !== '') {
-            $defectuosa.trigger('blur');
-        }
-    });
-
     $(document).ready(function () {
         // Inicializar Select2 con dropdownParent para que funcione correctamente en modales
         $('#field-orden_id, #field-empleado_id').select2({

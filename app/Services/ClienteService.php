@@ -30,72 +30,35 @@ class ClienteService
                 $numeroDocumento = $matches[2];
             }
 
-            // Buscar si ya existe una persona con ese documento (ej: es empleado)
-            $persona = Persona::where('documento_identidad', $numeroDocumento)->first();
+            // Crear persona
+            $persona = Persona::create([
+                'nombre' => $data['nombre'],
+                'apellido' => $data['apellido'] ?? '',
+                'documento_identidad' => $numeroDocumento,
+                'tipo_documento' => $tipoDocumento,
+                'email' => $data['email'] ?? null,
+            ]);
 
-            if ($persona) {
-                // La persona ya existe — verificar que no sea ya un cliente
-                if (Cliente::where('persona_id', $persona->id)->exists()) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'documento' => ['Este documento ya está registrado como cliente.'],
-                    ]);
-                }
-                // Reutilizar la persona existente — agregar teléfono/dirección si se proveyeron
-                if (!empty($data['telefono'])) {
-                    Telefono::create([
-                        'persona_id' => $persona->id,
-                        'numero' => $data['telefono'],
-                        'tipo' => 'movil',
-                        'es_principal' => true,
-                    ]);
-                }
-                if (!empty($data['direccion']) || !empty($data['ciudad']) || !empty($data['estado_territorial'])) {
-                    Direccion::create([
-                        'persona_id' => $persona->id,
-                        'direccion' => $data['direccion'] ?? '',
-                        'estado' => $data['estado_territorial'] ?? null,
-                        'ciudad' => $data['ciudad'] ?? null,
-                        'tipo' => 'casa',
-                        'es_principal' => true,
-                    ]);
-                }
-            } else {
-                // Persona nueva — verificar unicidad de email antes de crear
-                if (!empty($data['email']) && Persona::where('email', $data['email'])->exists()) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'email' => ['Este correo ya está registrado.'],
-                    ]);
-                }
-
-                $persona = Persona::create([
-                    'nombre' => $data['nombre'],
-                    'apellido' => $data['apellido'] ?? '',
-                    'documento_identidad' => $numeroDocumento,
-                    'tipo_documento' => $tipoDocumento,
-                    'email' => $data['email'] ?? null,
+            // Crear teléfono principal
+            if (!empty($data['telefono'])) {
+                Telefono::create([
+                    'persona_id' => $persona->id,
+                    'numero' => $data['telefono'],
+                    'tipo' => 'movil',
+                    'es_principal' => true,
                 ]);
+            }
 
-                // Crear teléfono principal
-                if (!empty($data['telefono'])) {
-                    Telefono::create([
-                        'persona_id' => $persona->id,
-                        'numero' => $data['telefono'],
-                        'tipo' => 'movil',
-                        'es_principal' => true,
-                    ]);
-                }
-
-                // Crear dirección principal
-                if (!empty($data['direccion']) || !empty($data['ciudad']) || !empty($data['estado_territorial'])) {
-                    Direccion::create([
-                        'persona_id' => $persona->id,
-                        'direccion' => $data['direccion'] ?? '',
-                        'estado' => $data['estado_territorial'] ?? null,
-                        'ciudad' => $data['ciudad'] ?? null,
-                        'tipo' => 'casa',
-                        'es_principal' => true,
-                    ]);
-                }
+            // Crear dirección principal
+            if (!empty($data['direccion']) || !empty($data['ciudad']) || !empty($data['estado_territorial'])) {
+                Direccion::create([
+                    'persona_id' => $persona->id,
+                    'direccion' => $data['direccion'] ?? '',
+                    'estado' => $data['estado_territorial'] ?? null,
+                    'ciudad' => $data['ciudad'] ?? null,
+                    'tipo' => 'casa',
+                    'es_principal' => true,
+                ]);
             }
 
             // Crear cliente

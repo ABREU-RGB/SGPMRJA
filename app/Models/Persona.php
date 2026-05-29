@@ -45,11 +45,6 @@ class Persona extends Model
         return $this->hasOne(Cliente::class);
     }
 
-    public function proveedor()
-    {
-        return $this->hasOne(Proveedor::class);
-    }
-
     /**
      * Relación con teléfonos (normalizada)
      */

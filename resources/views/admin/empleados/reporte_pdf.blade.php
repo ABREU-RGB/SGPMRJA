@@ -73,8 +73,8 @@
                     <td class="col-codigo">{{ $empleado->codigo_empleado }}</td>
                     <td class="col-nombre">{{ $empleado->persona->nombre }} {{ $empleado->persona->apellido }}</td>
                     <td class="col-documento">{{ $empleado->persona->tipo_documento }}{{ $empleado->persona->documento_identidad }}</td>
-                    <td class="col-cargo">{{ $empleado->cargo?->nombre ?? '—' }}</td>
-                    <td class="col-depto">{{ $empleado->departamento?->nombre ?? '—' }}</td>
+                    <td class="col-cargo">{{ $empleado->cargo }}</td>
+                    <td class="col-depto">{{ $empleado->departamento }}</td>
                     <td class="col-fecha">{{ \Carbon\Carbon::parse($empleado->fecha_ingreso)->format('d/m/Y') }}</td>
                     <td class="col-estatus">
                         <span class="{{ $empleado->estado == 1 ? 'badge-activo' : 'badge-inactivo' }}">

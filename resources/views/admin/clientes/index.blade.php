@@ -36,14 +36,20 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Toggle Historial -->
                             @if($historial)
-                                <a href="{{ route('clientes.index') }}" class="btn-historial btn-historial-volver">
-                                    <i class="ri-arrow-left-line"></i> Solo Activos
+                                <a href="{{ route('clientes.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
                                 </a>
                             @else
-                                <a href="{{ route('clientes.index', ['historial' => true]) }}" class="btn-historial btn-historial-ver">
-                                    <i class="ri-time-line"></i> Ver Historial
+                                <a href="{{ route('clientes.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
                                 </a>
                             @endif
+                            <!-- Buscador Personalizado -->
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
+                                    placeholder="Buscar cliente...">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
                             @if(!$historial)
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
@@ -72,34 +78,22 @@
                          CSS genérico en custom.css: .navy-filter-*
                          ============================================================ --}}
                     <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
-                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
-                        <div class="navy-filter-header is-collapsed">
-                            {{-- Búsqueda global (siempre visible) --}}
-                            <div class="navy-header-search">
-                                <i class="ri-search-line"></i>
-                                <input type="text" id="custom-search-input"
-                                    class="navy-search-input"
-                                    placeholder="Buscar cliente..."
-                                    autocomplete="off">
-                            </div>
-                            {{-- Divisor vertical --}}
-                            <div class="navy-header-divider"></div>
-                            {{-- Trigger del collapse de filtros --}}
-                            <button class="navy-filter-btn collapsed" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
-                                aria-expanded="false" aria-controls="filters-collapse-body">
+                        {{-- Header: siempre visible, actúa como trigger del collapse --}}
+                        <button class="navy-filter-toggle collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                            aria-expanded="false" aria-controls="filters-collapse-body">
+                            <div class="navy-filter-title">
                                 <i class="ri-filter-3-line"></i>
                                 <span>Filtros</span>
-                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
-                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
-                            </button>
-                        </div>
+                            </div>
+                            <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                        </button>
                         {{-- Body: colapsable, oculto por defecto --}}
                         <div class="collapse" id="filters-collapse-body">
                             <div class="navy-filter-body">
                                 <div class="row g-2 align-items-end">
                                     {{-- Filtro 1: Tipo de Cliente --}}
-                                    <div class="col-lg-4 col-md-6">
+                                    <div class="col-lg-3 col-md-6">
                                         <label class="navy-filter-label" for="filter-tipo-cliente">
                                             <i class="ri-user-settings-line"></i> Tipo de Cliente
                                         </label>
@@ -111,7 +105,7 @@
                                         </select>
                                     </div>
                                     {{-- Filtro 2: Estatus (Activo = normal, Inactivo = trashed / SoftDelete) --}}
-                                    <div class="col-lg-4 col-md-6">
+                                    <div class="col-lg-3 col-md-6">
                                         <label class="navy-filter-label" for="filter-estatus">
                                             <i class="ri-shield-check-line"></i> Estatus
                                         </label>
@@ -122,7 +116,7 @@
                                         </select>
                                     </div>
                                     {{-- Filtro 3: Estado Territorial (Venezuela) --}}
-                                    <div class="col-lg-4 col-md-6">
+                                    <div class="col-lg-3 col-md-6">
                                         <label class="navy-filter-label" for="filter-estado-territorial">
                                             <i class="ri-map-pin-line"></i> Estado
                                         </label>
@@ -153,6 +147,17 @@
                                             <option value="Yaracuy">Yaracuy</option>
                                             <option value="Zulia">Zulia</option>
                                         </select>
+                                    </div>
+                                    {{-- Filtro 4: Búsqueda por Cédula/RIF --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-documento">
+                                            <i class="ri-bank-card-line"></i> Cédula / RIF
+                                        </label>
+                                        <div class="position-relative">
+                                            <input type="text" class="form-control navy-filter-input" id="filter-documento"
+                                                data-col-index="0" placeholder="Ej: V-12345678" autocomplete="off">
+                                            <i class="ri-search-line navy-filter-input-icon"></i>
+                                        </div>
                                     </div>
                                 </div>
                                 {{-- Botón limpiar: dentro del body colapsable --}}
@@ -412,23 +417,26 @@
     <div class="modal fade atlantico-modal" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <form id="clienteForm" class="modal-content" novalidate>
+            <form id="clienteForm" class="modal-content">
                 <div class="modal-header bg-light p-3">
                     <h5 class="modal-title" id="modalTitle">Agregar Cliente</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="id-field" />
-                    <div id="edit-shared-persona-notice" class="d-none alert mb-3 py-2 px-3"
-                        style="background:rgba(8,145,178,0.08); border:1px solid rgba(8,145,178,0.3); border-radius:8px; font-size:0.82rem; color:#0891b2;">
-                        <i class="ri-user-shared-line me-1"></i>
-                        Esta persona también está registrada como <strong id="edit-shared-role"></strong>.
-                        Los cambios en datos personales afectarán ambos registros.
-                    </div>
 
                     <div class="modal-form-section">
                         <div class="section-header-compact">
                             <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
+                            <div class="status-inline">
+                                <span class="status-inline-label">Estatus</span>
+                                <div class="form-check form-switch form-switch-success">
+                                    <input type="hidden" name="estatus" value="0" />
+                                    <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
+                                        name="estatus" value="1" checked />
+                                    <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row g-2 mb-0">
@@ -450,21 +458,6 @@
                                     style="margin-top: -6px; display: block; margin-bottom: 6px;">Máximo
                                     10 dígitos</small>
                                 <div id="documento-error" class="invalid-feedback" style="display: none;"></div>
-                                <div id="documento-persona-card" class="d-none mt-2 rounded"
-                                    style="border:1px solid rgba(8,145,178,0.35); background:rgba(8,145,178,0.06); padding:10px 12px;">
-                                    <div style="font-size:0.78rem; font-weight:600; color:#0891b2; margin-bottom:4px;">
-                                        <i class="ri-user-shared-line me-1"></i>
-                                        Persona ya registrada como <span id="persona-card-role" style="text-transform:capitalize;"></span>
-                                    </div>
-                                    <div id="persona-card-data" style="font-size:0.8rem; line-height:1.8; margin-bottom:8px;"></div>
-                                    <button type="button" id="persona-vincular-btn" class="btn btn-sm"
-                                        style="background:#0891b2; color:white; font-size:0.75rem; padding:3px 12px; border-radius:20px;">
-                                        <i class="ri-link me-1"></i>Usar estos datos
-                                    </button>
-                                </div>
-                                <div id="documento-vinculado-notice" class="d-none mt-1" style="font-size:0.78rem; color:#0891b2;">
-                                    <i class="ri-link me-1"></i><span id="documento-vinculado-text"></span>
-                                </div>
                             </div>
                             <div class="col-md-6">
                                 <x-forms.select name="tipo_cliente" label="Tipo de Cliente" required id="tipo_cliente-field"
@@ -490,7 +483,7 @@
                         <div id="campos-razon-social" class="row g-2 mb-0 d-none">
                             <div class="col-12">
                                 <x-forms.input name="nombre" label="Razón Social" placeholder="Razón Social de la empresa"
-                                    maxlength="200" id="razon-social-field" />
+                                    maxlength="200" id="razon-social-field" hint="Se almacenará como nombre del cliente" />
                             </div>
                         </div>
                     </div>
@@ -531,7 +524,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-form-section">
+                    <div class="modal-form-section mb-0">
                         <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
 
                         <div class="row g-2">
@@ -575,15 +568,6 @@
                         </div>
                     </div>
 
-                    <div class="modal-form-section mb-0">
-                        <div class="modal-form-section-title"><i class="ri-shield-check-line"></i>Estatus</div>
-                        <div class="form-check form-switch form-switch-success">
-                            <input type="hidden" name="estatus" value="0" />
-                            <input class="form-check-input" type="checkbox" role="switch" id="estatus-field"
-                                name="estatus" value="1" checked />
-                            <label class="form-check-label" for="estatus-field" id="estatus-label">Activo</label>
-                        </div>
-                    </div>
 
                 </div>
                 <div class="modal-footer bg-light border-0">
@@ -615,9 +599,13 @@
             });
         });
 
-        // Sanitización del número de teléfono (campo visible, solo dígitos, máx 7)
-        $(document).on('input', '#telefono-number-field', function () {
-            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 7);
+        // Validación y formato para el campo de teléfono
+        $(document).on('input', '#telefono-field', function () {
+            let value = this.value.replace(/[^0-9]/g, '');
+            if (value.length > 4) {
+                value = value.slice(0, 4) + '-' + value.slice(4, 11);
+            }
+            this.value = value.slice(0, 12);
         });
 
         // === Capitalizar solo la primera letra del campo dirección ===
@@ -644,53 +632,15 @@
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, maxLen);
         });
 
-        // Vincular persona existente al formulario de cliente
-        $(document).on('click', '#persona-vincular-btn', function () {
-            var p = $(this).data('persona');
-            var role = $(this).data('role');
-
-            if (p.tipo_documento) $('#documento-prefix-field').val(p.tipo_documento);
-
-            // Datos personales
-            $('#nombre-field').val(p.nombre || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
-            $('#apellido-field').val(p.apellido || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
-            $('#razon-social-field').val(p.nombre || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
-            $('#email-field').val(p.email || '').prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
-
-            // Teléfono
-            if (p.telefono && p.telefono.includes('-')) {
-                var parts = p.telefono.split('-');
-                $('#telefono-prefix-field').val(parts[0]).prop('disabled', true);
-                $('#telefono-number-field').val(parts[1]).prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
-            }
-
-            // Dirección
-            if (p.direccion) $('#direccion-field').val(p.direccion).prop('readonly', true).addClass('bg-light').css('cursor', 'not-allowed');
-
-            // Estado y Municipio
-            if (p.estado_geografico) {
-                $('#estado_territorial-field').val(p.estado_geografico).trigger('change');
-                if (p.ciudad) $('#ciudad-field').val(p.ciudad);
-                $('#estado_territorial-field').prop('disabled', true);
-                $('#ciudad-field').prop('disabled', true);
-            }
-
-            // Mostrar aviso y habilitar guardar
-            $('#documento-persona-card').addClass('d-none');
-            $('#documento-vinculado-text').text('Datos vinculados de persona registrada como ' + role + '.');
-            $('#documento-vinculado-notice').removeClass('d-none');
-            $('#add-btn').prop('disabled', false);
-        });
-
         // Validación onblur para nombre
         $(document).on('blur', '#nombre-field', function () {
             let value = $(this).val().trim();
-            if (value.length === 0) {
-                marcarInvalido($(this), 'El nombre es obligatorio.');
-            } else if (value.length < 2) {
-                marcarInvalido($(this), 'El nombre debe tener al menos 2 caracteres.');
+            if (value.length < 2) {
+                $(this).addClass('is-invalid');
+                $('#nombre-error').text('El nombre debe tener al menos 2 caracteres.').show();
             } else {
-                marcarValido($(this));
+                $(this).removeClass('is-invalid').addClass('is-valid');
+                $('#nombre-error').hide();
             }
         });
 
@@ -698,11 +648,11 @@
         $(document).on('blur', '#apellido-field', function () {
             let value = $(this).val().trim();
             if (value.length > 0 && value.length < 2) {
-                marcarInvalido($(this), 'El apellido debe tener al menos 2 caracteres.');
-            } else if (value.length >= 2) {
-                marcarValido($(this));
+                $(this).addClass('is-invalid');
+                $('#apellido-error').text('El apellido debe tener al menos 2 caracteres.').show();
             } else {
-                limpiarValidacion($(this));
+                $(this).removeClass('is-invalid').addClass('is-valid');
+                $('#apellido-error').hide();
             }
         });
 
@@ -729,27 +679,12 @@
                             if (response.exists) {
                                 $input.addClass('is-invalid');
                                 $error.text('Este cliente ya se encuentra registrado.').show();
+                                // Opcional: Deshabilitar el botón de agregar
                                 $('#add-btn').prop('disabled', true);
-                                $('#documento-persona-card').addClass('d-none');
-                                $('#documento-vinculado-notice').addClass('d-none');
                             } else {
                                 $input.removeClass('is-invalid').addClass('is-valid');
                                 $error.hide();
-                                if (response.other_role && response.persona) {
-                                    var p = response.persona;
-                                    var nombreCompleto = p.nombre + (p.apellido ? ' ' + p.apellido : '');
-                                    var detalles = '<strong>' + nombreCompleto + '</strong>';
-                                    if (p.email) detalles += '<br>' + p.email;
-                                    if (p.telefono) detalles += '<br>' + p.telefono;
-                                    $('#persona-card-role').text(response.other_role);
-                                    $('#persona-card-data').html(detalles);
-                                    $('#persona-vincular-btn').data('persona', p).data('role', response.other_role);
-                                    $('#documento-persona-card').removeClass('d-none');
-                                    $('#add-btn').prop('disabled', true);
-                                } else {
-                                    $('#documento-persona-card').addClass('d-none');
-                                    $('#add-btn').prop('disabled', false);
-                                }
+                                $('#add-btn').prop('disabled', false);
                             }
                         },
                         error: function () {
@@ -763,15 +698,16 @@
             }
         });
 
-        // Validación onblur para teléfono (campo visible: solo los 7 dígitos)
-        $(document).on('blur', '#telefono-number-field', function () {
+        // Validación onblur para teléfono
+        $(document).on('blur', '#telefono-field', function () {
             let value = $(this).val().trim();
-            if (value.length === 0) {
-                marcarInvalido($(this), 'El teléfono es obligatorio.');
-            } else if (!/^[0-9]{7}$/.test(value)) {
-                marcarInvalido($(this), 'El número debe tener exactamente 7 dígitos.');
+            let regex = /^[0-9]{4}-[0-9]{7}$/;
+            if (!regex.test(value)) {
+                $(this).addClass('is-invalid');
+                $('#telefono-error').text('El teléfono debe tener el formato 0424-1234567.').show();
             } else {
-                marcarValido($(this));
+                $(this).removeClass('is-invalid').addClass('is-valid');
+                $('#telefono-error').hide();
             }
         });
 
@@ -779,36 +715,49 @@
         $(document).on('blur', '#email-field', function () {
             let value = $(this).val().trim();
             let $input = $(this);
-            let excludeId = $('#id-field').val();
-            let regex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+            let $error = $('#email-error');
+            let isEditMode = $('#id-field').val() !== '';
+            let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (value.length === 0) {
-                limpiarValidacion($input);
-                return;
-            }
-
-            if (!regex.test(value)) {
-                marcarInvalido($input, 'Ingrese un email válido (ej: usuario@dominio.com).');
-                return;
-            }
-
-            $.ajax({
-                url: "{{ route('clientes.check-email') }}",
-                method: 'GET',
-                data: { email: value, exclude_id: excludeId },
-                success: function (response) {
-                    if (response.exists) {
-                        marcarInvalido($input, 'Este correo ya está registrado.');
-                        $('#add-btn').prop('disabled', true);
+            if (value.length > 0) {
+                if (!regex.test(value)) {
+                    $input.addClass('is-invalid');
+                    $error.text('Ingrese un email válido.').show();
+                } else {
+                    // Si formato es válido y NO es edición, verificar duplicado
+                    if (!isEditMode) {
+                        $.ajax({
+                            url: "{{ route('clientes.check-email') }}",
+                            method: 'GET',
+                            data: { email: value },
+                            success: function (response) {
+                                if (response.exists) {
+                                    $input.addClass('is-invalid');
+                                    $error.text('Este correo ya está registrado.').show();
+                                    $('#add-btn').prop('disabled', true);
+                                } else {
+                                    $input.removeClass('is-invalid').addClass('is-valid');
+                                    $error.hide();
+                                    $('#add-btn').prop('disabled', false);
+                                }
+                            },
+                            error: function () {
+                                console.error('Error al verificar email');
+                            }
+                        });
                     } else {
-                        marcarValido($input);
-                        $('#add-btn').prop('disabled', false);
+                        // En modo edición no validamos duplicado (limitación por now)
+                        $input.removeClass('is-invalid').addClass('is-valid');
+                        $error.hide();
                     }
-                },
-                error: function () {
-                    console.error('Error al verificar email');
                 }
-            });
+            } else {
+                // Si está vacío, quitar clases (o mostrar error si required)
+                // Es opcional en el html? No tiene "required" en el html form, pero tiene validator?
+                // En el HTML no tiene 'required'.
+                $input.removeClass('is-invalid').removeClass('is-valid');
+                $error.hide();
+            }
         });
 
         // Limpiar validaciones al abrir modal
@@ -898,22 +847,14 @@
         // Validación onblur para Razón Social (cuando visible)
         $(document).on('blur', '#razon-social-field', function () {
             let value = $(this).val().trim();
-            if (value.length === 0) {
-                marcarInvalido($(this), 'La razón social es obligatoria.');
-            } else if (value.length < 3) {
-                marcarInvalido($(this), 'La razón social debe tener al menos 3 caracteres.');
+            let $input = $(this);
+            let $error = $('#razon-social-error');
+            if (value.length > 0 && value.length < 3) {
+                $input.addClass('is-invalid');
+                $error.text('La razón social debe tener al menos 3 caracteres.').show();
             } else {
-                marcarValido($(this));
-            }
-        });
-
-        // Validación onblur para Tipo de Cliente
-        $(document).on('blur', '#tipo_cliente-field', function () {
-            let value = $(this).val();
-            if (!value) {
-                marcarInvalido($(this), 'Seleccione el tipo de cliente.');
-            } else {
-                marcarValido($(this));
+                $input.removeClass('is-invalid').addClass('is-valid');
+                $error.hide();
             }
         });
     </script>
@@ -921,6 +862,7 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
@@ -983,9 +925,10 @@
                     dataSrc: 'data',
                     data: function (d) {
                         // ── Filtros avanzados: enviar valores al server ──
-                        d.filter_tipo_cliente        = $('#filter-tipo-cliente').val();
-                        d.filter_estatus             = $('#filter-estatus').val();
+                        d.filter_tipo_cliente       = $('#filter-tipo-cliente').val();
+                        d.filter_estatus            = $('#filter-estatus').val();
                         d.filter_estado_territorial  = $('#filter-estado-territorial').val();
+                        d.filter_documento          = $('#filter-documento').val();
                     }
                 },
                 columns: [
@@ -1026,63 +969,44 @@
                 language: lenguajeData
             });
 
-            // ══════════════════════════════════════════════════════
-            // BÚSQUEDA + FILTROS AVANZADOS — Patrón Maestro S-07
-            // Header unificado: búsqueda global + panel colapsable
-            // ══════════════════════════════════════════════════════
-
-            // ── Badge: actualizar contador de filtros activos ──
-            function updateFilterBadge() {
-                var count = 0;
-                if ($('#filter-tipo-cliente').val() !== '')                          count++;
-                if ($('#filter-estatus').val() !== '1')                              count++;
-                if ($('#filter-estado-territorial').val() !== '')                    count++;
-                var $badge = $('#active-filter-count');
-                if (count > 0) {
-                    $badge.text(count).removeClass('d-none');
-                } else {
-                    $badge.addClass('d-none');
-                }
-            }
-
-            // ── Sincronizar clase is-collapsed con el estado del collapse ──
-            $('#filters-collapse-body').on('show.bs.collapse', function () {
-                $('.navy-filter-header').removeClass('is-collapsed');
-            }).on('hidden.bs.collapse', function () {
-                $('.navy-filter-header').addClass('is-collapsed');
+            // Buscador personalizado (búsqueda global)
+            $('#custom-search-input').on('keyup', function () {
+                table.search(this.value).draw();
             });
 
-            // ── Búsqueda global (debounce 300ms) ──
-            var searchTimeout = null;
-            $('#custom-search-input').on('keyup', function () {
-                clearTimeout(searchTimeout);
-                var val = this.value;
-                searchTimeout = setTimeout(function () {
-                    table.search(val).draw();
+            // ══════════════════════════════════════════════════════
+            // FILTROS AVANZADOS — Lógica JS (Patrón Maestro S-07)
+            // Para replicar: copiar este bloque y ajustar los IDs
+            // de los selectores (#filter-xxx) y sus data-col-index.
+            // ══════════════════════════════════════════════════════
+
+            // Aplicar filtros al cambiar cualquier select
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+            });
+
+            // Aplicar filtro de documento con debounce (300ms)
+            var filterDocTimeout = null;
+            $('#filter-documento').on('keyup', function () {
+                clearTimeout(filterDocTimeout);
+                filterDocTimeout = setTimeout(function () {
+                    table.ajax.reload();
                 }, 300);
             });
 
-            // ── Filtros de select: recargar al cambiar ──
-            $('.navy-filter-select').on('change', function () {
-                table.ajax.reload();
-                updateFilterBadge();
-            });
-
-            // ── Si se llegó por toggle historial (?historial=true) ──
+            // Si se llegó por toggle historial (?historial=true), pre-seleccionar "Inactivo"
             @if($historial)
                 $('#filter-estatus').val('0');
                 table.ajax.reload();
-                updateFilterBadge();
             @endif
 
-            // ── Botón limpiar: resetea búsqueda + filtros ──
+            // Botón limpiar filtros
             $('#btn-clear-filters').on('click', function () {
                 $('#filter-tipo-cliente').val('');
                 $('#filter-estatus').val('');
                 $('#filter-estado-territorial').val('');
-                $('#custom-search-input').val('');
-                table.search('').ajax.reload();
-                updateFilterBadge();
+                $('#filter-documento').val('');
+                table.ajax.reload();
             });
 
 
@@ -1098,7 +1022,7 @@
                 $("#clienteForm").trigger("reset");
                 $("#id-field").val("");
                 $("#modalTitle").text("Agregar Cliente");
-                $("#add-btn").show().prop('disabled', false);
+                $("#add-btn").show();
                 $("#edit-btn").hide();
                 $("#documento-prefix-field").val("V-");
                 $("#documento-prefix-field").prop('disabled', false).removeClass('campo-protegido');
@@ -1111,12 +1035,6 @@
                 $("#tipo_cliente-field").val("");
                 $("#razon-social-field").val("");
                 toggleClienteFields();
-                // Desbloquear campos vinculados de persona existente
-                $('#nombre-field, #apellido-field, #razon-social-field, #email-field, #telefono-number-field, #direccion-field').prop('readonly', false).removeClass('bg-light').css('cursor', '');
-                $('#telefono-prefix-field, #estado_territorial-field, #ciudad-field').prop('disabled', false);
-                $('#documento-persona-card').addClass('d-none');
-                $('#documento-vinculado-notice').addClass('d-none');
-                $('#edit-shared-persona-notice').addClass('d-none');
             }
             function setEditMode() {
                 $("#modalTitle").text("Actualizar Cliente");
@@ -1125,10 +1043,6 @@
                 // Bloquear edición de documento
                 $("#documento-prefix-field").prop('disabled', true).addClass('campo-protegido');
                 $("#documento-number-field").prop('disabled', true).addClass('campo-protegido');
-                // Limpiar card de vinculación (por si venía del flujo crear)
-                $('#documento-persona-card').addClass('d-none');
-                $('#documento-vinculado-notice').addClass('d-none');
-                $('#edit-shared-persona-notice').addClass('d-none');
             }
             $("#create-btn").click(function () { resetForm(); });
             $("#showModal").on('hidden.bs.modal', function () { resetForm(); });
@@ -1161,93 +1075,13 @@
                 }
             });
 
-            function validarFormularioCliente() {
-                let esValido = true;
-                let tipo = $('#tipo_cliente-field').val();
-                let esNatural = (tipo === 'natural' || tipo === '');
-
-                if (esNatural) {
-                    let $nombre = $('#nombre-field');
-                    let nombre = $nombre.val().trim();
-                    if (nombre.length === 0) {
-                        marcarInvalido($nombre, 'El nombre es obligatorio.');
-                        esValido = false;
-                    } else if (nombre.length < 2) {
-                        marcarInvalido($nombre, 'El nombre debe tener al menos 2 caracteres.');
-                        esValido = false;
-                    } else { marcarValido($nombre); }
-
-                    let $apellido = $('#apellido-field');
-                    let apellido = $apellido.val().trim();
-                    if (apellido.length === 0) {
-                        marcarInvalido($apellido, 'El apellido es obligatorio.');
-                        esValido = false;
-                    } else if (apellido.length < 2) {
-                        marcarInvalido($apellido, 'El apellido debe tener al menos 2 caracteres.');
-                        esValido = false;
-                    } else { marcarValido($apellido); }
-                } else {
-                    let $razon = $('#razon-social-field');
-                    let razon = $razon.val().trim();
-                    if (razon.length === 0) {
-                        marcarInvalido($razon, 'La razón social es obligatoria.');
-                        esValido = false;
-                    } else if (razon.length < 3) {
-                        marcarInvalido($razon, 'La razón social debe tener al menos 3 caracteres.');
-                        esValido = false;
-                    } else { marcarValido($razon); }
-                }
-
-                let $doc = $('#documento-number-field');
-                let doc = $doc.val().trim();
-                if (doc.length < 6) {
-                    marcarInvalido($doc, 'El documento debe tener entre 6 y ' + getDocMaxLength() + ' dígitos.');
-                    esValido = false;
-                } else { marcarValido($doc); }
-
-                let $tel = $('#telefono-number-field');
-                let tel = $tel.val().trim();
-                if (tel.length === 0) {
-                    marcarInvalido($tel, 'El teléfono es obligatorio.');
-                    esValido = false;
-                } else if (!/^[0-9]{7}$/.test(tel)) {
-                    marcarInvalido($tel, 'El número debe tener exactamente 7 dígitos.');
-                    esValido = false;
-                } else { marcarValido($tel); }
-
-                let $email = $('#email-field');
-                let emailVal = $email.val().trim();
-                let emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
-                if (emailVal.length > 0 && !emailRegex.test(emailVal)) {
-                    marcarInvalido($email, 'Ingrese un email válido (ej: usuario@dominio.com).');
-                    esValido = false;
-                }
-
-                let $dir = $('#direccion-field');
-                if (!$dir.val().trim()) {
-                    marcarInvalido($dir, 'La dirección es obligatoria.');
-                    esValido = false;
-                } else { marcarValido($dir); }
-
-                let $estado = $('#estado_territorial-field');
-                if (!$estado.val()) {
-                    marcarInvalido($estado, 'El estado es obligatorio.');
-                    esValido = false;
-                } else { marcarValido($estado); }
-
-                let $ciudad = $('#ciudad-field');
-                if (!$ciudad.val()) {
-                    marcarInvalido($ciudad, 'El municipio es obligatorio.');
-                    esValido = false;
-                } else { marcarValido($ciudad); }
-
-                return esValido;
-            }
+            const validator = new FormValidator('clienteForm');
 
             $('#add-btn').click(function (e) {
                 e.preventDefault();
 
-                if (!validarFormularioCliente()) {
+                // Validar formulario antes de enviar
+                if (!validator.validateAll()) {
                     return;
                 }
 
@@ -1317,10 +1151,6 @@
                 var id = $(this).data("id");
                 $.get("{{ route('clientes.edit', ':id') }}".replace(':id', id), function (data) {
                     setEditMode();
-                    if (data.other_role) {
-                        $('#edit-shared-role').text(data.other_role);
-                        $('#edit-shared-persona-notice').removeClass('d-none');
-                    }
                     $("#id-field").val(data.id);
                     $("#nombre-field").val(data.nombre || '');
                     $("#apellido-field").val(data.apellido || '');
@@ -1485,8 +1315,7 @@
                 $('#modalTitle').text('Agregar Cliente');
                 $('#add-btn').show();
                 $('#edit-btn').hide();
-                $('#clienteForm').find('input, select, textarea').removeClass('is-invalid is-valid');
-                $('#clienteForm').find('.invalid-feedback').hide();
+                validator.resetValidation();
             });
             $("#edit-btn").on("click", function () { $("#clienteForm").submit(); });
         });

@@ -205,439 +205,235 @@
 </div>
 
 <!-- Modal para agregar/editar Cotización -->
-<!-- ════════════════════════════════════════════════════════════════════
-     Modal Cotización — Wizard 3 pasos (Cliente · Productos · Resumen)
-     IDs de campos preservados para compatibilidad con scripts/main.blade.php
-     ════════════════════════════════════════════════════════════════════ -->
-<div class="modal fade atlantico-modal atlantico-modal--op cot-wizard-modal" id="showModal" tabindex="-1"
-    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade atlantico-modal atlantico-modal--op" id="showModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Nueva Cotización</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="modalTitle">Agregar Cotización</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
-
-            {{-- Stepper visual --}}
-            <div class="cot-stepper-wrapper">
-                <div class="cot-stepper" role="tablist" aria-label="Pasos de la cotización">
-                    <button type="button" class="cot-step-marker is-active" data-step="1" role="tab" aria-selected="true">
-                        <span class="cot-step-dot">1</span>
-                        <span class="cot-step-label">Cliente</span>
-                    </button>
-                    <span class="cot-step-line"><span class="cot-step-line-fill" data-line="1"></span></span>
-                    <button type="button" class="cot-step-marker" data-step="2" role="tab" aria-selected="false">
-                        <span class="cot-step-dot">2</span>
-                        <span class="cot-step-label">Productos</span>
-                    </button>
-                    <span class="cot-step-line"><span class="cot-step-line-fill" data-line="2"></span></span>
-                    <button type="button" class="cot-step-marker" data-step="3" role="tab" aria-selected="false">
-                        <span class="cot-step-dot">3</span>
-                        <span class="cot-step-label">Resumen</span>
-                    </button>
-                </div>
-            </div>
-
-            <form id="cotizacionForm" enctype="multipart/form-data" novalidate>
+            <form id="cotizacionForm" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" id="id-field" />
-                <input type="hidden" id="cliente-id-field" name="cliente_id" />
+                <div class="modal-body p-3">
+                    <input type="hidden" id="id-field" />
+                    <input type="hidden" id="cliente-id-field" name="cliente_id" />
+                    <div class="row g-3 align-items-start">
 
-                <div class="modal-body p-0 cot-wizard-body">
+                        <!-- Columna Izquierda: Datos del Cliente + Estado -->
+                        <div class="col-lg-5"
+                            style="background: rgba(30, 60, 114, 0.025); border-radius: 8px; padding-top: 4px; padding-bottom: 4px;">
 
-                    {{-- ═════════════════════════ PASO 1 — CLIENTE ═════════════════════════ --}}
-                    <section class="cot-step-content is-active" id="cot-step-1" data-step="1">
-                        <div class="cot-step-header">
-                            <span class="cot-step-tag">Paso 1 de 3</span>
-                            <h4 class="cot-step-title">Cliente y datos generales</h4>
-                            <p class="cot-step-desc">Busca el cliente por su documento o créalo en línea, luego define las fechas y la prioridad.</p>
-                        </div>
-
-                        <div class="row g-3">
-                            {{-- Card Cliente --}}
-                            <div class="col-lg-7">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header border-0 bg-soft-primary">
-                                        <h6 class="mb-0 text-atlantico-dark">
-                                            <i class="ri-user-3-line me-2"></i>Datos del Cliente
-                                        </h6>
-                                    </div>
-                                    <div class="card-body">
-                                        {{-- Buscador de documento con icono de lupa --}}
-                                        <label for="ci-rif-number-field" class="form-label small fw-semibold mb-1">
-                                            Documento de identidad <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="position-relative cot-search-doc-wrap">
-                                            <div class="input-group cot-search-doc-group">
-                                                <span class="input-group-text cot-search-doc-icon">
-                                                    <i class="ri-search-2-line"></i>
-                                                </span>
-                                                <select class="form-select" id="ci-rif-prefix-field"
-                                                    name="rif_prefix" style="max-width: 70px;">
-                                                    <option value="V-">V-</option>
-                                                    <option value="J-">J-</option>
-                                                    <option value="E-">E-</option>
-                                                    <option value="G-">G-</option>
-                                                </select>
-                                                <input type="text" id="ci-rif-number-field" name="rif_number"
-                                                    class="form-control"
-                                                    placeholder="Escribí el documento para buscar..."
-                                                    autocomplete="off" required />
-                                                <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
-                                            </div>
-                                            <div id="cliente-autocomplete-list"
-                                                class="list-group position-absolute w-100"
-                                                style="z-index: 1050; top: 100%;"></div>
-                                        </div>
-
-                                        {{-- Hidden inputs (preservados para compat con scripts y submit) --}}
-                                        <input type="hidden" id="cliente-nombre-field" name="cliente_nombre" />
-                                        <input type="hidden" id="cliente-apellido-field" name="cliente_apellido" />
-                                        <input type="hidden" id="cliente-razon-social-display" />
-                                        <input type="hidden" id="cliente-email-field" name="cliente_email" />
-                                        <input type="hidden" id="cliente-telefono-field" name="cliente_telefono" />
-                                        {{-- Wrappers legacy preservados (controlan visibilidad razón social) --}}
-                                        <span id="block-cot-nombre" hidden></span>
-                                        <span id="block-cot-apellido" hidden></span>
-                                        <span id="block-cot-razon-social" class="d-none" hidden></span>
-
-                                        {{-- Empty state — sin cliente seleccionado --}}
-                                        <div class="cot-cliente-empty" id="cot-cliente-empty">
-                                            <div class="cot-cliente-empty-icon">
-                                                <i class="ri-user-search-line"></i>
-                                            </div>
-                                            <p class="cot-cliente-empty-title">Buscá el cliente o creá uno nuevo</p>
-                                            <p class="cot-cliente-empty-desc">
-                                                Escribí el documento arriba para buscar entre clientes, empleados y proveedores existentes.
-                                            </p>
-                                            <button type="button" class="btn btn-outline-success cot-btn-create-cliente"
-                                                id="open-add-cliente-modal">
-                                                <i class="ri-user-add-line me-1"></i>Crear cliente nuevo
-                                            </button>
-                                        </div>
-
-                                        {{-- Loading state — skeleton mientras busca --}}
-                                        <div class="cot-cliente-loading" id="cot-cliente-loading" hidden>
-                                            <div class="cot-skeleton cot-skeleton-circle"></div>
-                                            <div class="flex-grow-1">
-                                                <div class="cot-skeleton cot-skeleton-line cot-skeleton-line-md"></div>
-                                                <div class="cot-skeleton cot-skeleton-line cot-skeleton-line-sm"></div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Selected client card --}}
-                                        <div class="cot-cliente-card" id="cot-cliente-card" hidden>
-                                            <div class="cot-cliente-avatar" id="cot-cliente-avatar"
-                                                data-color-key="default">—</div>
-                                            <div class="cot-cliente-info flex-grow-1">
-                                                <div class="cot-cliente-name-row">
-                                                    <h5 class="cot-cliente-name" id="cot-cliente-name-display">—</h5>
-                                                    <span class="cot-cliente-roles" id="cot-cliente-roles"></span>
-                                                </div>
-                                                <p class="cot-cliente-doc">
-                                                    <i class="ri-bank-card-line"></i>
-                                                    <span id="cot-cliente-doc-display">—</span>
-                                                </p>
-                                                <div class="cot-cliente-contact-row">
-                                                    <span class="cot-cliente-contact-item" id="cot-cliente-tel-wrap">
-                                                        <i class="ri-phone-line"></i>
-                                                        <span id="cot-cliente-tel-display">—</span>
-                                                    </span>
-                                                    <span class="cot-cliente-contact-item" id="cot-cliente-email-wrap">
-                                                        <i class="ri-mail-line"></i>
-                                                        <span id="cot-cliente-email-display">—</span>
-                                                    </span>
-                                                </div>
-                                                <div class="cot-cliente-stats" id="cot-cliente-stats" hidden>
-                                                    <span class="cot-cliente-stat">
-                                                        <i class="ri-file-list-3-line"></i>
-                                                        <strong id="cot-cliente-stat-count">0</strong> cotización(es) previas
-                                                    </span>
-                                                    <span class="cot-cliente-stat-sep">·</span>
-                                                    <span class="cot-cliente-stat" id="cot-cliente-stat-last-wrap" hidden>
-                                                        <i class="ri-time-line"></i>
-                                                        Última: <strong id="cot-cliente-stat-last">—</strong>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <button type="button" class="btn btn-link btn-sm cot-cliente-change-btn"
-                                                id="cot-cliente-change-btn" title="Cambiar cliente">
-                                                <i class="ri-refresh-line me-1"></i>Cambiar
-                                            </button>
-                                        </div>
-                                    </div>
+                            <!-- Card Cliente -->
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header border-0 bg-soft-primary">
+                                    <h6 class="mb-0 text-atlantico-dark">
+                                        <span
+                                            style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">1</span>
+                                        <i class="ri-user-3-line me-2"></i>Datos del Cliente
+                                    </h6>
                                 </div>
-                            </div>
-
-                            {{-- Card Detalles + Estado --}}
-                            <div class="col-lg-5">
-                                <div class="card border-0 shadow-sm mb-3">
-                                    <div class="card-header border-0 bg-soft-primary">
-                                        <h6 class="mb-0 text-atlantico-dark">
-                                            <i class="ri-calendar-event-line me-2"></i>Detalles de la cotización
-                                        </h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-2">
-                                            <div class="col-md-6">
-                                                <label for="fecha-cotizacion-field"
-                                                    class="form-label small fw-semibold mb-1">
-                                                    Fecha emisión <span class="text-danger">*</span>
-                                                </label>
-                                                <input type="date" id="fecha-cotizacion-field" name="fecha_cotizacion"
-                                                    class="form-control form-control-sm" required />
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="fecha-validez-field"
-                                                    class="form-label small fw-semibold mb-1">
-                                                    Fecha validez
-                                                </label>
-                                                <input type="date" id="fecha-validez-field" name="fecha_validez"
-                                                    class="form-control form-control-sm" />
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="cot-date-shortcuts" id="cot-date-shortcuts">
-                                                    <span class="cot-date-shortcuts-label">Validez rápida:</span>
-                                                    <button type="button" class="cot-date-chip" data-days="0">Hoy</button>
-                                                    <button type="button" class="cot-date-chip" data-days="15">+15 días</button>
-                                                    <button type="button" class="cot-date-chip" data-days="30">+30 días</button>
-                                                    <button type="button" class="cot-date-chip" data-days="60">+60 días</button>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 mt-2">
-                                                <label class="form-label small fw-semibold mb-1">Prioridad</label>
-                                                <div class="cot-priority-chips" role="radiogroup" aria-label="Prioridad">
-                                                    <button type="button" class="cot-priority-chip cot-priority-chip--normal is-active"
-                                                        data-value="Normal" role="radio" aria-checked="true">
-                                                        <span class="cot-priority-dot"></span>
-                                                        <span>Normal</span>
-                                                    </button>
-                                                    <button type="button" class="cot-priority-chip cot-priority-chip--alta"
-                                                        data-value="Alta" role="radio" aria-checked="false">
-                                                        <span class="cot-priority-dot"></span>
-                                                        <span>Alta</span>
-                                                    </button>
-                                                    <button type="button" class="cot-priority-chip cot-priority-chip--urgente"
-                                                        data-value="Urgente" role="radio" aria-checked="false">
-                                                        <span class="cot-priority-dot"></span>
-                                                        <span>Urgente</span>
+                                <div class="card-body">
+                                    <div class="row g-2">
+                                        <!-- Documento -->
+                                        <div class="col-12">
+                                            <label for="ci-rif-number-field" class="form-label small fw-semibold mb-1">
+                                                Documento de identidad <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="position-relative">
+                                                <div class="input-group">
+                                                    <select class="form-select" id="ci-rif-prefix-field"
+                                                        name="rif_prefix" style="max-width: 70px;">
+                                                        <option value="V-">V-</option>
+                                                        <option value="J-">J-</option>
+                                                        <option value="E-">E-</option>
+                                                        <option value="G-">G-</option>
+                                                    </select>
+                                                    <input type="text" id="ci-rif-number-field" name="rif_number"
+                                                        class="form-control"
+                                                        placeholder="Buscar cliente por documento..." autocomplete="off"
+                                                        required />
+                                                    <input type="hidden" id="ci-rif-full-field" name="ci_rif" />
+                                                    <button type="button" class="btn btn-outline-success"
+                                                        id="open-add-cliente-modal" title="Agregar nuevo cliente">
+                                                        <i class="ri-user-add-line"></i>
                                                     </button>
                                                 </div>
-                                                <select id="prioridad-field" name="prioridad" class="d-none" tabindex="-1">
-                                                    <option value="Normal" selected>Normal</option>
-                                                    <option value="Alta">Alta</option>
-                                                    <option value="Urgente">Urgente</option>
-                                                </select>
-                                                <small class="text-muted d-block mt-1" style="font-size:0.7rem;">
-                                                    <i class="ri-information-line me-1"></i>Se hereda al pedido al convertir.
-                                                </small>
+                                                <div id="cliente-autocomplete-list"
+                                                    class="list-group position-absolute w-100"
+                                                    style="z-index: 1050; top: 100%;"></div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                {{-- Card Estado (solo edición) --}}
-                                <div class="card border-0 shadow-sm" id="estado-field-wrapper" style="display: none;">
-                                    <div class="card-header border-0 bg-soft-secondary">
-                                        <h6 class="mb-0 text-atlantico-green">
-                                            <i class="ri-flag-line me-2"></i>Estado de la cotización
-                                        </h6>
-                                    </div>
-                                    <div class="card-body py-3">
-                                        <div class="cot-estado-chips" role="radiogroup" aria-label="Estado">
-                                            <button type="button" class="cot-estado-chip cot-estado-chip--pendiente is-active"
-                                                data-value="Pendiente" role="radio" aria-checked="true">Pendiente</button>
-                                            <button type="button" class="cot-estado-chip cot-estado-chip--aprobada"
-                                                data-value="Aprobada" role="radio" aria-checked="false">Aprobada</button>
-                                            <button type="button" class="cot-estado-chip cot-estado-chip--cancelada"
-                                                data-value="Cancelada" role="radio" aria-checked="false">Cancelada</button>
+                                        {{-- Natural: Nombre + Apellido en 2 columnas --}}
+                                        <div class="col-6" id="block-cot-nombre">
+                                            <label for="cliente-nombre-field"
+                                                class="form-label small fw-semibold mb-1">Nombre</label>
+                                            <input type="text" id="cliente-nombre-field" name="cliente_nombre"
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
                                         </div>
-                                        <select id="estado-field" name="estado" class="d-none" tabindex="-1">
-                                            <option value="Pendiente">Pendiente</option>
-                                            <option value="Aprobada">Aprobada</option>
-                                            <option value="Cancelada">Cancelada</option>
-                                        </select>
-                                        <small class="text-muted d-block mt-2">
-                                            <i class="ri-information-line me-1"></i>"Vencida" se asigna automáticamente al pasar la fecha.
-                                        </small>
+                                        <div class="col-6" id="block-cot-apellido">
+                                            <label for="cliente-apellido-field"
+                                                class="form-label small fw-semibold mb-1">Apellido</label>
+                                            <input type="text" id="cliente-apellido-field" name="cliente_apellido"
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
+                                        </div>
+                                        {{-- Jurídico/Gubernamental: Razón Social en ancho completo --}}
+                                        <div class="col-12 d-none" id="block-cot-razon-social">
+                                            <label for="cliente-razon-social-display"
+                                                class="form-label small fw-semibold mb-1">Razón Social</label>
+                                            <input type="text" id="cliente-razon-social-display"
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
+                                        </div>
+                                        <!-- Teléfono + Email -->
+                                        <div class="col-6">
+                                            <label for="cliente-telefono-field"
+                                                class="form-label small fw-semibold mb-1">Teléfono</label>
+                                            <input type="text" id="cliente-telefono-field" name="cliente_telefono"
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="cliente-email-field"
+                                                class="form-label small fw-semibold mb-1">Email</label>
+                                            <input type="email" id="cliente-email-field" name="cliente_email"
+                                                class="form-control form-control-sm bg-light" readonly
+                                                style="cursor: not-allowed;" />
+                                        </div>
+                                        <!-- Fechas -->
+                                        <div class="col-6">
+                                            <label for="fecha-cotizacion-field"
+                                                class="form-label small fw-semibold mb-1">
+                                                Fecha Cotización <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="date" id="fecha-cotizacion-field" name="fecha_cotizacion"
+                                                class="form-control form-control-sm" required />
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="fecha-validez-field" class="form-label small fw-semibold mb-1">
+                                                Fecha Validez
+                                            </label>
+                                            <input type="date" id="fecha-validez-field" name="fecha_validez"
+                                                class="form-control form-control-sm" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
 
-                    {{-- ═════════════════════════ PASO 2 — PRODUCTOS ═════════════════════════ --}}
-                    <section class="cot-step-content" id="cot-step-2" data-step="2" hidden>
-                        <div class="cot-step-header">
-                            <div class="d-flex align-items-end justify-content-between flex-wrap gap-3">
-                                <div>
-                                    <span class="cot-step-tag">Paso 2 de 3</span>
-                                    <h4 class="cot-step-title">Productos de la cotización</h4>
-                                    <p class="cot-step-desc">Explora el catálogo y configura cada prenda con sus colores, tallas y bordados.</p>
+                            <!-- Card Estado (solo visible en edición) -->
+                            <div class="card border-0 shadow-sm mb-3" id="estado-field-wrapper" style="display: none;">
+                                <div class="card-header border-0 bg-soft-secondary">
+                                    <h6 class="mb-0 text-atlantico-green">
+                                        <i class="ri-flag-line me-2"></i>Estado de la Cotización
+                                    </h6>
                                 </div>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <button type="button" class="btn btn-atlantico-brand" id="btn-explorar-catalogo">
-                                        <i class="ri-layout-grid-line me-1"></i>Explorar catálogo
-                                    </button>
-                                    {{-- Botón legacy "Agregar manual" eliminado: el catálogo + configurador
-                                         es el único punto de entrada. Se preserva el ID #add-producto-item
-                                         oculto para no romper handlers existentes que aún lo referencian. --}}
-                                    <button type="button" id="add-producto-item" hidden tabindex="-1"></button>
+                                <div class="card-body py-2">
+                                    <select id="estado-field" name="estado" class="form-select form-select-sm">
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Aprobada">Aprobada</option>
+                                        <option value="Cancelada">Cancelada</option>
+                                    </select>
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="ri-information-line me-1"></i>El estado "Vencida" se asigna
+                                        automáticamente al pasar la fecha de vencimiento
+                                    </small>
                                 </div>
                             </div>
-                        </div>
 
-                        {{-- KPIs --}}
-                        <div class="cot-kpi-grid mb-3">
-                            <div class="cot-kpi">
-                                <span class="cot-kpi-label">Líneas</span>
-                                <span class="cot-kpi-value" id="cot-kpi-items">0</span>
-                            </div>
-                            <div class="cot-kpi">
-                                <span class="cot-kpi-label">Subtotal</span>
-                                <span class="cot-kpi-value" id="cot-kpi-subtotal">$0,00</span>
-                            </div>
-                            <div class="cot-kpi cot-kpi--total">
-                                <span class="cot-kpi-label">Total</span>
-                                <span class="cot-kpi-value" id="cot-kpi-total">$0,00</span>
-                                <input type="hidden" id="total-display-field" />
-                                <span id="total-display-value" hidden>$0,00</span>
-                            </div>
-                        </div>
-
-                        {{-- Empty state --}}
-                        <div class="cot-empty-state" id="cot-empty-state">
-                            <div class="cot-empty-icon">
-                                <i class="ri-shopping-bag-3-line"></i>
-                            </div>
-                            <h5 class="cot-empty-title">Aún no hay productos</h5>
-                            <p class="cot-empty-desc">Explora el catálogo para seleccionar prendas y configurar sus colores, tallas y bordados.</p>
-                            <button type="button" class="btn btn-atlantico-brand" onclick="document.getElementById('btn-explorar-catalogo').click()">
-                                <i class="ri-layout-grid-line me-1"></i>Abrir catálogo
-                            </button>
-                        </div>
-
-                        {{-- Tabla agrupada — bloques por (producto + color + bordados) --}}
-                        <div id="cot-grouped-list" class="cot-grouped-list"></div>
-
-                        {{-- Container de productos (gestionado por scripts/main.blade.php).
-                             Permanentemente oculto: es la fuente de verdad para FormData
-                             pero el usuario nunca interactúa directamente con las cards.
-                             Toda la edición pasa por el catálogo / configurador / acciones
-                             en cada fila de la tabla agrupada. --}}
-                        <div id="productos-container" class="cot-productos-container" hidden></div>
-                    </section>
-
-                    {{-- ═════════════════════════ PASO 3 — RESUMEN ═════════════════════════ --}}
-                    <section class="cot-step-content" id="cot-step-3" data-step="3" hidden>
-                        <div class="cot-step-header">
-                            <span class="cot-step-tag">Paso 3 de 3</span>
-                            <h4 class="cot-step-title">Resumen y notas</h4>
-                            <p class="cot-step-desc">Revisa el desglose, agrega condiciones y finaliza.</p>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-lg-7">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header border-0 bg-soft-primary">
-                                        <h6 class="mb-0 text-atlantico-dark">
-                                            <i class="ri-file-text-line me-2"></i>Notas y condiciones
-                                        </h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <textarea id="notas-field" name="notas" class="form-control"
-                                            rows="5"
-                                            placeholder="Condiciones generales, observaciones, términos especiales..."
-                                            style="resize: vertical; min-height: 110px;"></textarea>
+                            <!-- Card Notas generales / Condiciones (Collapsible) -->
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header border-0 bg-soft-primary" style="cursor: pointer;"
+                                    data-bs-toggle="collapse" data-bs-target="#notasCollapseBody" aria-expanded="false"
+                                    aria-controls="notasCollapseBody">
+                                    <h6
+                                        class="mb-0 text-atlantico-dark d-flex align-items-center justify-content-between">
+                                        <span>
+                                            <i class="ri-file-text-line me-2"></i>Notas generales / Condiciones
+                                        </span>
+                                        <i class="ri-arrow-down-s-line notas-chevron"
+                                            style="font-size:1.1rem; transition: transform 0.3s ease;"></i>
+                                    </h6>
+                                </div>
+                                <div class="collapse" id="notasCollapseBody">
+                                    <div class="card-body pb-2">
+                                        <textarea id="notas-field" name="notas" class="form-control form-control-sm"
+                                            rows="4" placeholder="Condiciones, forma de pago, tiempo de entrega..."
+                                            style="resize: vertical; min-height: 80px;"></textarea>
                                         <small class="text-muted d-block mt-1">
                                             <i class="ri-information-line me-1"></i>Opcional · máx. 2000 caracteres
                                         </small>
-                                        {{-- Wrapper legacy preservado para compatibilidad de IDs --}}
-                                        <div id="notasCollapseBody" class="d-none"></div>
-                                    </div>
-                                </div>
-
-                                <div class="card border-0 shadow-sm mt-3">
-                                    <div class="card-header border-0 bg-soft-primary">
-                                        <h6 class="mb-0 text-atlantico-dark">
-                                            <i class="ri-list-check-2 me-2"></i>Líneas incluidas
-                                        </h6>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive cot-resumen-tabla-wrap">
-                                            <table class="table table-sm mb-0 cot-resumen-tabla">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width:46%">Producto</th>
-                                                        <th class="text-center" style="width:14%">Cant.</th>
-                                                        <th class="text-end" style="width:18%">Unit.</th>
-                                                        <th class="text-end" style="width:22%">Subtotal</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="cot-resumen-lineas">
-                                                    <tr>
-                                                        <td colspan="4" class="text-center text-muted py-3 small">
-                                                            Sin productos agregados
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-5">
-                                <div class="cot-resumen-card">
-                                    <div class="cot-resumen-card-header">
-                                        <i class="ri-money-dollar-circle-line"></i>
-                                        <span>Resumen final</span>
-                                    </div>
-                                    <div class="cot-resumen-card-body">
-                                        <div class="cot-resumen-row">
-                                            <span class="cot-resumen-row-label">Subtotal</span>
-                                            <span class="cot-resumen-row-value" id="cot-resumen-subtotal">$0,00</span>
+                            <!-- Resumen Total -->
+                            <div class="card border-0"
+                                style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                                <div class="card-body py-3 px-4">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width:38px;height:38px;background:rgba(255,255,255,0.15);">
+                                                <i class="ri-money-dollar-circle-line text-white fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-white-50 d-block"
+                                                    style="font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;">Total
+                                                    Cotización</span>
+                                                <small class="text-white-50" style="font-size:0.68rem;">
+                                                    <i class="ri-refresh-line me-1"></i>Se actualiza automáticamente
+                                                </small>
+                                            </div>
                                         </div>
-                                        <div class="cot-resumen-row">
-                                            <span class="cot-resumen-row-label">IVA (16%)</span>
-                                            <span class="cot-resumen-row-value" id="cot-resumen-iva">$0,00</span>
-                                        </div>
-                                        <div class="cot-resumen-divider"></div>
-                                        <div class="cot-resumen-row cot-resumen-row--total">
-                                            <span class="cot-resumen-row-label">Total</span>
-                                            <span class="cot-resumen-row-value" id="cot-resumen-total">$0,00</span>
+                                        <div class="text-end">
+                                            <span class="fw-bold text-white" style="font-size:1.8rem;line-height:1;"
+                                                id="total-display-value">$0,00</span>
+                                            <input type="hidden" id="total-display-field" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </section>
 
-                </div>{{-- /modal-body --}}
+                        <!-- Columna Derecha: Productos -->
+                        <div class="col-lg-7">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header border-0 bg-soft-primary">
+                                    <h6 class="mb-0 text-atlantico-dark">
+                                        <span
+                                            style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#132649;color:#fff;font-size:0.65rem;font-weight:700;margin-right:8px;">2</span>
+                                        <i class="ri-shopping-bag-3-line me-2"></i>Productos de la Cotización
+                                    </h6>
+                                </div>
+                                <div class="card-body p-2"
+                                    style="max-height: 490px; overflow-y: auto; overflow-x: hidden;">
+                                    <div id="productos-container">
+                                        <!-- Productos dinámicos -->
+                                    </div>
+                                    <div class="mt-3 mb-2 text-center px-2">
+                                        <button type="button" class="btn btn-sm btn-soft-success w-100" style="border: 1px dashed #2ecc71;" id="add-producto-item">
+                                            <i class="ri-add-line me-1"></i>Agregar Producto
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="modal-footer cot-wizard-footer">
-                    <div class="cot-wizard-footer-info">
-                        <span class="cot-wizard-step-info">
-                            <span id="cot-step-current">1</span> de 3
-                        </span>
                     </div>
-                    <div class="cot-wizard-footer-actions">
-                        <button type="button" class="btn btn-light cot-wizard-btn-prev" id="btn-cot-prev"
-                            style="display:none;">
-                            <i class="ri-arrow-left-line me-1"></i>Anterior
-                        </button>
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                </div>
+                <div class="modal-footer border-0" style="background: #f8f9fa;">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal"
+                            style="border:1px solid #dee2e6;">
                             <i class="ri-close-line me-1"></i>Cerrar
                         </button>
-                        <button type="button" class="btn btn-atlantico-brand cot-wizard-btn-next" id="btn-cot-next">
-                            Continuar<i class="ri-arrow-right-line ms-1"></i>
+                        <button type="submit" class="btn btn-success px-4" id="add-btn">
+                            <i class="ri-add-line me-1"></i>Agregar
                         </button>
-                        <button type="submit" class="btn btn-success cot-wizard-btn-submit" id="add-btn"
-                            style="display:none;">
-                            <i class="ri-check-line me-1"></i>Crear cotización
-                        </button>
-                        <button type="submit" class="btn btn-success cot-wizard-btn-submit" id="edit-btn"
-                            style="display:none;">
+                        <button type="submit" class="btn btn-success px-4" id="edit-btn" style="display:none;">
                             <i class="ri-save-line me-1"></i>Actualizar
                         </button>
                     </div>
@@ -647,298 +443,24 @@
     </div>
 </div>
 
-{{-- ════════════════════════════════════════════════════════════════════
-     Modal Catálogo de Productos — anidado sobre el wizard
-     Fase 2: grilla con filtros + carrito lateral.
-     Fase 3 conectará el click en card → modal Configurador.
-     ════════════════════════════════════════════════════════════════════ --}}
-<div class="modal fade atlantico-modal atlantico-modal--op cot-catalog-modal" id="catalogoProductosModal"
-    tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="cat-icon-square">
-                        <i class="ri-layout-grid-line"></i>
-                    </div>
-                    <div>
-                        <p class="cat-eyebrow mb-0" id="cat-eyebrow">Catálogo de productos</p>
-                        <h5 class="modal-title m-0" id="catalogoProductosLabel">Selecciona productos</h5>
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body p-0 cat-body">
-
-                {{-- Sidebar filtros --}}
-                <aside class="cat-filters" id="cat-filters">
-                    <div class="cat-filters-header">
-                        <span>Filtros</span>
-                        <button type="button" class="cat-clear-btn" id="cat-clear-filters">Limpiar</button>
-                    </div>
-
-                    <div class="cat-filter-group">
-                        <label class="cat-filter-label" for="cat-search">Buscar</label>
-                        <div class="position-relative">
-                            <i class="ri-search-line cat-search-icon"></i>
-                            <input type="text" id="cat-search" class="cat-search-input"
-                                placeholder="Código, modelo o tipo...">
-                        </div>
-                    </div>
-
-                    <div class="cat-filter-group">
-                        <label class="cat-filter-label">Tipo de producto</label>
-                        <div id="cat-filter-tipos" class="cat-filter-list">
-                            {{-- Renderizado por JS --}}
-                        </div>
-                    </div>
-
-                    <div class="cat-filter-group">
-                        <label class="cat-filter-label">Rango de precio</label>
-                        <div class="cat-price-range">
-                            <input type="number" id="cat-price-min" class="form-control form-control-sm"
-                                placeholder="Min" min="0" step="0.01">
-                            <span class="cat-price-sep">—</span>
-                            <input type="number" id="cat-price-max" class="form-control form-control-sm"
-                                placeholder="Max" min="0" step="0.01">
-                        </div>
-                    </div>
-                </aside>
-
-                {{-- Grilla central --}}
-                <main class="cat-grid-wrap">
-                    <div class="cat-grid-toolbar">
-                        <span class="cat-results-count">
-                            <strong id="cat-results-count">0</strong> resultados
-                        </span>
-                        <select id="cat-sort" class="form-select form-select-sm cat-sort-select">
-                            <option value="relevance">Más relevantes</option>
-                            <option value="price-asc">Precio: menor a mayor</option>
-                            <option value="price-desc">Precio: mayor a menor</option>
-                            <option value="name">Nombre A–Z</option>
-                        </select>
-                    </div>
-
-                    <div class="cat-grid" id="cat-grid">
-                        {{-- Renderizado por JS --}}
-                    </div>
-
-                    <div class="cat-grid-empty d-none" id="cat-grid-empty">
-                        <div class="cat-grid-empty-icon"><i class="ri-search-2-line"></i></div>
-                        <p class="cat-grid-empty-title">Sin resultados</p>
-                        <p class="cat-grid-empty-desc">Ajusta los filtros o cambia la búsqueda.</p>
-                    </div>
-                </main>
-
-                {{-- Carrito lateral --}}
-                <aside class="cat-cart">
-                    <div class="cat-cart-header">
-                        <p class="cat-cart-eyebrow">Selección actual</p>
-                        <h6 class="cat-cart-title">
-                            <span id="cat-cart-count">0</span> productos
-                        </h6>
-                    </div>
-
-                    <div class="cat-cart-list" id="cat-cart-list">
-                        {{-- Items configurados por el usuario (Fase 3+) --}}
-                    </div>
-
-                    <div class="cat-cart-empty" id="cat-cart-empty">
-                        <i class="ri-shopping-cart-2-line"></i>
-                        <p>Configura productos del catálogo<br>para agregarlos a la cotización.</p>
-                    </div>
-
-                    <div class="cat-cart-footer">
-                        <div class="cat-cart-total-row">
-                            <span class="cat-cart-total-label">Estimado</span>
-                            <span class="cat-cart-total-value" id="cat-cart-total">$0,00</span>
-                        </div>
-                        <button type="button" class="btn btn-atlantico-brand w-100" id="btn-cat-confirmar" disabled>
-                            <i class="ri-check-line me-1"></i>Agregar a la cotización
-                        </button>
-                    </div>
-                </aside>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- ════════════════════════════════════════════════════════════════════
-     Modal Configurador de Producto — Fase 3
-     Se abre al clickear una card del catálogo. Color + tallas matrix.
-     Los bordados se configuran por línea desde el paso 2 (Fase 4).
-     ════════════════════════════════════════════════════════════════════ --}}
-<div class="modal fade atlantico-modal atlantico-modal--op cot-config-modal" id="cotConfiguradorModal"
-    tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="d-flex align-items-center gap-3">
-                    <button type="button" class="btn btn-sm cfg-back-btn" id="cfg-back-to-catalog"
-                        title="Volver al catálogo">
-                        <i class="ri-arrow-left-line"></i>
-                    </button>
-                    <div>
-                        <p class="cfg-eyebrow mb-0" id="cfg-eyebrow">Configurar producto</p>
-                        <h5 class="modal-title m-0" id="cfg-title">—</h5>
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body p-0 cfg-body">
-                <div class="cfg-grid">
-
-                    {{-- Columna izquierda: ficha del producto --}}
-                    <aside class="cfg-info">
-                        <div class="cfg-media">
-                            <div class="cfg-media-inner" id="cfg-media-inner">
-                                <i class="ri-t-shirt-2-line"></i>
-                            </div>
-                        </div>
-                        <div class="cfg-info-body">
-                            <p class="cfg-info-codigo" id="cfg-info-codigo">—</p>
-                            <h6 class="cfg-info-modelo" id="cfg-info-modelo">—</h6>
-                            <p class="cfg-info-tipo" id="cfg-info-tipo">—</p>
-                            <div class="cfg-info-price-block">
-                                <span class="cfg-info-price-label">Precio base</span>
-                                <span class="cfg-info-price-value" id="cfg-info-precio">$0,00</span>
-                            </div>
-                            <p class="cfg-info-help">
-                                <i class="ri-information-line me-1"></i>El bordado se configura por
-                                línea en el paso 2 después de confirmar el carrito.
-                            </p>
-                        </div>
-                    </aside>
-
-                    {{-- Columna derecha: configuración --}}
-                    <main class="cfg-form">
-
-                        {{-- 1. Color --}}
-                        <section class="cfg-section">
-                            <header class="cfg-section-header">
-                                <span class="cfg-section-num">1</span>
-                                <div>
-                                    <h6 class="cfg-section-title">Color</h6>
-                                    <p class="cfg-section-desc">Selecciona el color para esta configuración.</p>
-                                </div>
-                                <span class="cfg-color-selected" id="cfg-color-selected">Sin seleccionar</span>
-                            </header>
-                            <div class="cfg-color-grid" id="cfg-color-grid">
-                                {{-- Renderizado por JS --}}
-                            </div>
-                        </section>
-
-                        {{-- 2. Tallas y cantidades --}}
-                        <section class="cfg-section">
-                            <header class="cfg-section-header">
-                                <span class="cfg-section-num">2</span>
-                                <div>
-                                    <h6 class="cfg-section-title">Tallas y cantidades</h6>
-                                    <p class="cfg-section-desc">Indica cuántas unidades de cada talla.</p>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-link cfg-distribute-btn"
-                                    id="cfg-distribute-btn">
-                                    <i class="ri-equalizer-line me-1"></i>Distribuir uniforme
-                                </button>
-                            </header>
-                            <div class="cfg-tallas-grid" id="cfg-tallas-grid">
-                                {{-- Renderizado por JS --}}
-                            </div>
-                            <div class="cfg-tallas-summary" id="cfg-tallas-summary">
-                                <span>Total unidades</span>
-                                <strong id="cfg-tallas-total">0</strong>
-                            </div>
-                        </section>
-
-                        {{-- 3. Precio unitario --}}
-                        <section class="cfg-section">
-                            <header class="cfg-section-header">
-                                <span class="cfg-section-num">3</span>
-                                <div>
-                                    <h6 class="cfg-section-title">Precio unitario</h6>
-                                    <p class="cfg-section-desc">Por defecto usa el precio base del producto. Modifícalo si negociaste otro precio con el cliente.</p>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-link cfg-precio-reset"
-                                    id="cfg-precio-reset" title="Restaurar al precio base">
-                                    <i class="ri-refresh-line me-1"></i>Restaurar
-                                </button>
-                            </header>
-                            <div class="cfg-precio-row">
-                                <div class="cfg-precio-input-wrap">
-                                    <span class="cfg-precio-prefix">$</span>
-                                    <input type="number" id="cfg-precio-input" class="cfg-precio-input"
-                                        min="0" step="0.01" placeholder="0.00" inputmode="decimal">
-                                </div>
-                                <span class="cfg-precio-base-hint">
-                                    Precio base: <strong id="cfg-precio-base-hint-value">$0,00</strong>
-                                </span>
-                            </div>
-                        </section>
-
-                    </main>
-                </div>
-
-                {{-- Footer sticky con resumen y acciones --}}
-                <div class="cfg-actions">
-                    <div class="cfg-actions-summary">
-                        <div class="cfg-summary-item">
-                            <span class="cfg-summary-label">Unidades</span>
-                            <span class="cfg-summary-value" id="cfg-summary-qty">0</span>
-                        </div>
-                        <div class="cfg-summary-item">
-                            <span class="cfg-summary-label">Precio unitario</span>
-                            <span class="cfg-summary-value" id="cfg-summary-unit">$0,00</span>
-                        </div>
-                        <div class="cfg-summary-item cfg-summary-item--total">
-                            <span class="cfg-summary-label">Subtotal</span>
-                            <span class="cfg-summary-value" id="cfg-summary-subtotal">$0,00</span>
-                        </div>
-                    </div>
-                    <div class="cfg-actions-buttons">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                            <i class="ri-close-line me-1"></i>Cancelar
-                        </button>
-                        <button type="button" class="btn btn-atlantico-brand" id="cfg-save-btn" disabled>
-                            <i class="ri-shopping-cart-2-line me-1"></i>
-                            <span id="cfg-save-btn-label">Agregar al carrito</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- ════════════════════════════════════════════════════════════════════
-     Modal Agregar/Editar Cliente — réplica visual del estándar /clientes
-     IDs preservan sufijo "-cliente" para no chocar con el modal padre.
-     ════════════════════════════════════════════════════════════════════ --}}
-<div class="modal fade atlantico-modal" id="modalAddCliente" tabindex="-1" aria-hidden="true"
-    data-bs-backdrop="static" data-bs-keyboard="false">
+<!-- Modal Agregar/Editar Cliente (reutilizado) -->
+<div class="modal fade atlantico-modal atlantico-modal--op" id="modalAddCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form id="clienteFormCotizacion" class="modal-content" novalidate>
-            <div class="modal-header bg-light p-3">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalClienteTitle">Agregar Cliente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <input type="hidden" id="id-field-cliente" />
+            <form id="clienteFormCotizacion">
+                <div class="modal-body">
+                    <input type="hidden" id="id-field-cliente" />
 
-                {{-- 1. Identificación: Documento + Tipo Cliente --}}
-                <div class="modal-form-section">
-                    <div class="section-header-compact">
-                        <div class="modal-form-section-title">
-                            <i class="ri-fingerprint-line"></i>Identificación
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-0">
-                        <div class="col-md-6">
-                            <label for="documento-number-field-cliente" class="form-label required">
-                                Documento (Cédula o RIF)
-                            </label>
+                    <!-- Fila 1: Documento + Tipo Cliente + Estatus -->
+                    <div class="row mb-3">
+                        <div class="col-md-5">
+                            <label for="documento-field-cliente" class="form-label required">Documento (Cédula o
+                                RIF)</label>
                             <div class="input-group">
                                 <select class="form-select" id="documento-prefix-field-cliente"
                                     style="max-width: 70px;">
@@ -951,28 +473,31 @@
                                     placeholder="Nro. documento" maxlength="10" required />
                             </div>
                             <input type="hidden" id="documento-field-cliente" name="documento" />
-                            <small class="text-muted d-block mt-1 mb-1">Máximo 10 dígitos</small>
-                            <div id="documento-error-cliente" class="invalid-feedback" style="display: none;"></div>
+                            <small class="text-muted">Máximo 10 dígitos</small>
+                            <div id="documento-error-cliente" class="invalid-feedback"></div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="tipo_cliente-field-cliente" class="form-label required">Tipo de Cliente</label>
                             <select id="tipo_cliente-field-cliente" name="tipo_cliente" class="form-select" required>
                                 <option value="">Seleccione</option>
                                 <option value="natural">Natural</option>
                                 <option value="juridico">Jurídico</option>
-                                <option value="gubernamental">Gubernamental</option>
                             </select>
                         </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-block">Estatus</label>
+                            <div class="form-check form-switch form-switch-success mt-2">
+                                <input type="hidden" name="estatus" value="0" />
+                                <input class="form-check-input" type="checkbox" role="switch" id="estatus-field-cliente"
+                                    name="estatus" value="1" checked />
+                                <label class="form-check-label" for="estatus-field-cliente"
+                                    id="estatus-label-cliente">Activo</label>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                {{-- 2. Datos del Cliente: Nombre+Apellido (natural) / Razón Social (jurídico/gubernamental) --}}
-                <div class="modal-form-section">
-                    <div class="modal-form-section-title">
-                        <i class="ri-user-3-line"></i>Datos del Cliente
-                    </div>
-
-                    <div id="campos-persona-natural-cliente" class="row g-2 mb-0">
+                    <!-- Fila 2: Nombre + Apellido -->
+                    <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="nombre-field-cliente" class="form-label required">Nombre</label>
                             <input type="text" id="nombre-field-cliente" name="nombre" class="form-control"
@@ -987,21 +512,8 @@
                         </div>
                     </div>
 
-                    <div id="campos-razon-social-cliente" class="row g-2 mb-0 d-none">
-                        <div class="col-12">
-                            <label for="razon-social-field-cliente" class="form-label">Razón Social</label>
-                            <input type="text" id="razon-social-field-cliente" name="nombre" class="form-control"
-                                placeholder="Razón Social de la empresa" maxlength="200" />
-                        </div>
-                    </div>
-                </div>
-
-                {{-- 3. Contacto: Email + Teléfono + Dirección --}}
-                <div class="modal-form-section">
-                    <div class="modal-form-section-title">
-                        <i class="ri-contacts-book-2-line"></i>Contacto
-                    </div>
-                    <div class="row g-2 mb-2">
+                    <!-- Fila 3: Email + Teléfono -->
+                    <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="email-field-cliente" class="form-label">Email</label>
                             <input type="email" id="email-field-cliente" name="email" class="form-control"
@@ -1009,7 +521,7 @@
                             <div id="email-error-cliente" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="telefono-number-field-cliente" class="form-label required">Teléfono</label>
+                            <label for="telefono-field-cliente" class="form-label required">Teléfono</label>
                             <div class="input-group">
                                 <select class="form-select" id="telefono-prefix-field-cliente"
                                     style="max-width: 100px; min-width: 100px;">
@@ -1024,29 +536,26 @@
                                     placeholder="1234567" maxlength="7" required />
                             </div>
                             <input type="hidden" id="telefono-field-cliente" name="telefono" />
-                            <div id="telefono-error-cliente" class="invalid-feedback" style="display: none;"></div>
+                            <div id="telefono-error-cliente" class="invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="row g-2 mb-0">
+
+                    <!-- Fila 4: Dirección -->
+                    <div class="row mb-3">
                         <div class="col-12">
                             <label for="direccion-field-cliente" class="form-label required">Dirección</label>
-                            <textarea id="direccion-field-cliente" name="direccion" class="form-control"
-                                placeholder="Dirección completa" maxlength="500" rows="2" required></textarea>
+                            <input type="text" id="direccion-field-cliente" name="direccion" class="form-control"
+                                placeholder="Dirección completa" maxlength="500" required />
                             <div id="direccion-error-cliente" class="invalid-feedback"></div>
                         </div>
                     </div>
-                </div>
 
-                {{-- 4. Ubicación: Estado + Municipio --}}
-                <div class="modal-form-section">
-                    <div class="modal-form-section-title">
-                        <i class="ri-map-pin-2-line"></i>Ubicación
-                    </div>
-                    <div class="row g-2">
+                    <!-- Fila 5: Estado (Territorio) + Ciudad -->
+                    <div class="row">
                         <div class="col-md-6">
                             <label for="estado_territorial-field-cliente" class="form-label required">Estado</label>
-                            <select name="estado_territorial" id="estado_territorial-field-cliente"
-                                class="form-select" required>
+                            <select name="estado_territorial" id="estado_territorial-field-cliente" class="form-select"
+                                required>
                                 <option value="">Seleccione estado</option>
                                 <option value="Amazonas">Amazonas</option>
                                 <option value="Anzoátegui">Anzoátegui</option>
@@ -1081,37 +590,23 @@
                             </select>
                         </div>
                     </div>
-                </div>
 
-                {{-- 5. Estatus --}}
-                <div class="modal-form-section mb-0">
-                    <div class="modal-form-section-title">
-                        <i class="ri-shield-check-line"></i>Estatus
-                    </div>
-                    <div class="form-check form-switch form-switch-success">
-                        <input type="hidden" name="estatus" value="0" />
-                        <input class="form-check-input" type="checkbox" role="switch" id="estatus-field-cliente"
-                            name="estatus" value="1" checked />
-                        <label class="form-check-label" for="estatus-field-cliente"
-                            id="estatus-label-cliente">Activo</label>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <div class="hstack gap-2 justify-content-end">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            <i class="ri-close-line me-1"></i>Cerrar
+                        </button>
+                        <button type="button" class="btn btn-success" id="add-btn-cliente">
+                            <i class="ri-add-line me-1"></i>Agregar
+                        </button>
+                        <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
+                            <i class="ri-save-line me-1"></i>Actualizar
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            <div class="modal-footer bg-light border-0">
-                <div class="hstack gap-2 justify-content-end">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                        <i class="ri-close-line me-1"></i>Cerrar
-                    </button>
-                    <button type="button" class="btn btn-success" id="add-btn-cliente">
-                        <i class="ri-add-line me-1"></i>Agregar
-                    </button>
-                    <button type="button" class="btn btn-success" id="edit-btn-cliente" style="display: none;">
-                        <i class="ri-save-line me-1"></i>Actualizar
-                    </button>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 

@@ -469,7 +469,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
-                <form id="pedidoForm" enctype="multipart/form-data" novalidate>
+                <form id="pedidoForm" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body p-3">
                         <input type="hidden" id="id-field" />
@@ -800,36 +800,6 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
 
     <script>
-        // Validación onblur: fecha_entrega_estimada debe ser >= fecha_pedido
-        $(document).on('blur', '#fecha-entrega-estimada-field, input[name="fecha_entrega_estimada"]', function () {
-            let entregaVal = $(this).val();
-            let pedidoVal = $('#fecha-pedido-field').val() || $('input[name="fecha_pedido"]').val();
-            if (entregaVal && pedidoVal) {
-                if (entregaVal < pedidoVal) {
-                    marcarInvalido($(this), 'La fecha de entrega no puede ser anterior a la fecha del pedido.');
-                } else {
-                    marcarValido($(this));
-                }
-            } else if (entregaVal) {
-                marcarValido($(this));
-            }
-        });
-
-        // Fecha pedido: obligatoria (solo creación) + re-disparar fecha_entrega
-        $(document).on('blur', '#fecha-pedido-field, input[name="fecha_pedido"]', function () {
-            if (!$(this).prop('readonly')) {
-                if (!$(this).val()) {
-                    marcarInvalido($(this), 'La fecha del pedido es obligatoria.');
-                } else {
-                    marcarValido($(this));
-                }
-            }
-            let $entrega = $('#fecha-entrega-estimada-field');
-            if ($entrega.val()) {
-                $entrega.trigger('blur');
-            }
-        });
-
         // === SISTEMA DE AUTOCORRECCIÓN Y AUTOCOMPLETADO ===
 
         // Diccionarios de datos comunes para autocorrección
@@ -1557,126 +1527,8 @@
                 calculateProductTotals(); // Recalcular total cuando cambia el producto
             });
 
-            // ══════════════════════════════════════════════════════
-            // VALIDACIONES onblur — Pedidos
-            // ══════════════════════════════════════════════════════
-
-            // Abono: 0 ≤ abono ≤ total
-            $(document).on('blur', '#abono-field', function () {
-                let abono = parseFloat($(this).val());
-                let total = parseFloat($('#total-display-field').val()) || 0;
-                if (isNaN(abono) || abono < 0) {
-                    marcarInvalido($(this), 'El abono no puede ser negativo.');
-                } else if (abono > total && total > 0) {
-                    marcarInvalido($(this), 'El abono no puede superar el total del pedido.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Montos de pago: > 0 si el método está activo
-            $(document).on('blur', '.pago-monto-input', function () {
-                let $metodoCheck = $('.metodo-pago-check[data-metodo="' + $(this).attr('id').replace('pago-', '').replace('-monto', '') + '"]');
-                if ($metodoCheck.is(':checked')) {
-                    let val = parseFloat($(this).val());
-                    if (isNaN(val) || val <= 0) {
-                        marcarInvalido($(this), 'El monto debe ser mayor a cero.');
-                    } else {
-                        marcarValido($(this));
-                    }
-                } else {
-                    limpiarValidacion($(this));
-                }
-            });
-
-            // Referencia de transferencia/pago_movil: obligatoria si método activo
-            $(document).on('blur', '#pago-transferencia-referencia, #pago-pago_movil-referencia', function () {
-                let metodo = $(this).attr('id').replace('pago-', '').replace('-referencia', '');
-                let $check = $('.metodo-pago-check[data-metodo="' + metodo + '"]');
-                if ($check.is(':checked') && !$(this).val().trim()) {
-                    marcarInvalido($(this), 'La referencia es obligatoria.');
-                } else {
-                    limpiarValidacion($(this));
-                }
-            });
-
-            function validarFormularioPedido() {
-                let esValido = true;
-
-                // Fecha pedido (obligatoria en modo creación)
-                let $fechaPed = $('#fecha-pedido-field');
-                if (!$fechaPed.prop('readonly')) {
-                    if (!$fechaPed.val()) {
-                        marcarInvalido($fechaPed, 'La fecha del pedido es obligatoria.');
-                        esValido = false;
-                    } else {
-                        marcarValido($fechaPed);
-                    }
-                }
-
-                // Fecha entrega (si se ingresa, debe ser >= fecha pedido)
-                let $fechaEnt = $('#fecha-entrega-estimada-field');
-                let pedidoVal = $fechaPed.val();
-                if ($fechaEnt.val() && pedidoVal && $fechaEnt.val() < pedidoVal) {
-                    marcarInvalido($fechaEnt, 'La fecha de entrega no puede ser anterior a la fecha del pedido.');
-                    esValido = false;
-                } else if ($fechaEnt.val()) {
-                    marcarValido($fechaEnt);
-                }
-
-                // Abono: 0 ≤ abono ≤ total
-                let $abono = $('#abono-field');
-                let abono = parseFloat($abono.val());
-                let total = parseFloat($('#total-display-field').val()) || 0;
-                if (isNaN(abono) || abono < 0) {
-                    marcarInvalido($abono, 'El abono no puede ser negativo.');
-                    esValido = false;
-                } else if (abono > total && total > 0) {
-                    marcarInvalido($abono, 'El abono no puede superar el total del pedido.');
-                    esValido = false;
-                } else {
-                    marcarValido($abono);
-                }
-
-                // Validar campos de cada método de pago activo
-                $('.metodo-pago-check:checked').each(function () {
-                    let metodo = $(this).data('metodo');
-
-                    let $monto = $('#pago-' + metodo + '-monto');
-                    let monto = parseFloat($monto.val());
-                    if (isNaN(monto) || monto <= 0) {
-                        marcarInvalido($monto, 'El monto debe ser mayor a cero.');
-                        esValido = false;
-                    } else {
-                        marcarValido($monto);
-                    }
-
-                    // Transferencia y pago_movil requieren banco y referencia
-                    if (metodo === 'transferencia' || metodo === 'pago_movil') {
-                        let $banco = $('#pago-' + metodo + '-banco');
-                        if (!$banco.val()) {
-                            marcarInvalido($banco, 'El banco es obligatorio.');
-                            esValido = false;
-                        } else {
-                            marcarValido($banco);
-                        }
-
-                        let $ref = $('#pago-' + metodo + '-referencia');
-                        if (!$ref.val().trim()) {
-                            marcarInvalido($ref, 'La referencia es obligatoria.');
-                            esValido = false;
-                        } else {
-                            marcarValido($ref);
-                        }
-                    }
-                });
-
-                return esValido;
-            }
-
             $('#pedidoForm').on('submit', function (e) {
                 e.preventDefault();
-                if (!validarFormularioPedido()) return;
                 let formData = new FormData(this);
                 var id = $('#id-field').val();
                 var url = id ? '/pedidos/' + id : '/pedidos';

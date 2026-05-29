@@ -76,145 +76,44 @@
     <!-- Modal para ver detalles -->
     <div class="modal fade atlantico-modal" id="viewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-light p-3">
-                    <h5 class="modal-title"><i class="ri-archive-line me-2"></i>Detalles del Insumo</h5>
+                    <h5 class="modal-title">Detalles del Insumo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <div class="row g-4">
-
-                        {{-- Columna izquierda: Información General --}}
-                        <div class="col-lg-6">
-                            <div class="card border-0 shadow-sm h-100">
-                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                    <h6 class="mb-0" style="color: #1e3c72;">
-                                        <i class="ri-information-line me-2"></i>Información General
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-box-3-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Nombre</small>
-                                                    <span class="fw-semibold" id="view-nombre">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-price-tag-3-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Tipo</small>
-                                                    <span id="view-tipo">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-scales-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Unidad de Medida</small>
-                                                    <span class="fw-semibold" id="view-unidad-medida">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-building-2-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Proveedor</small>
-                                                    <span class="fw-semibold" id="view-proveedor">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Columna derecha: Inventario y Costo --}}
-                        <div class="col-lg-6">
-                            <div class="card border-0 shadow-sm mb-3">
-                                <div class="card-header border-0" style="background: rgba(30, 60, 114, 0.1);">
-                                    <h6 class="mb-0" style="color: #1e3c72;">
-                                        <i class="ri-bar-chart-grouped-line me-2"></i>Inventario y Costo
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-store-3-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Stock Actual</small>
-                                                    <span class="fw-semibold" id="view-stock-actual">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-alarm-warning-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Stock Mínimo</small>
-                                                    <span class="fw-semibold" id="view-stock-minimo">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                                    style="width:32px;height:32px;background:rgba(30,60,114,0.1);">
-                                                    <i class="ri-money-dollar-circle-line" style="color:#1e3c72;"></i>
-                                                </div>
-                                                <div>
-                                                    <small class="text-muted d-block">Costo Unitario</small>
-                                                    <span class="fw-semibold" id="view-costo-unitario">-</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Tarjeta de Registro --}}
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-body py-2 px-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                                            style="width:28px;height:28px;background:rgba(30,60,114,0.08);">
-                                            <i class="ri-calendar-line" style="color:#1e3c72;font-size:12px;"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block" style="font-size:11px;">Fecha de Registro</small>
-                                            <small class="fw-semibold" id="view-created">-</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>Nombre:</strong>
+                        <p id="view-nombre" class="text-muted mb-0"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Tipo:</strong>
+                        <p id="view-tipo" class="text-muted mb-0"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Unidad de Medida:</strong>
+                        <p id="view-unidad-medida" class="text-muted mb-0"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Stock Actual:</strong>
+                        <p id="view-stock-actual" class="text-muted mb-0"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Stock Mínimo:</strong>
+                        <p id="view-stock-minimo" class="text-muted mb-0"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Costo Unitario:</strong>
+                        <p id="view-costo-unitario" class="text-muted mb-0"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Proveedor:</strong>
+                        <p id="view-proveedor" class="text-muted mb-0"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Fecha de Registro:</strong>
+                        <p id="view-created" class="text-muted mb-0"></p>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
@@ -235,7 +134,7 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Insumo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="insumoForm" novalidate>
+                <form id="insumoForm">
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
@@ -249,14 +148,13 @@
                                 </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="tipo" label="Tipo" required
-                                        :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Boton' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta']" />
+                                        :options="['Tela' => 'Tela', 'Hilo' => 'Hilo', 'Boton' => 'Botón', 'Cierre' => 'Cierre', 'Etiqueta' => 'Etiqueta', 'Otro' => 'Otro']" />
                                 </div>
                             </div>
 
                             <div class="row mb-0">
                                 <div class="col-md-6">
-                                    <x-forms.select name="unidad_medida" label="Unidad de Medida" required
-                                        :options="['Metro' => 'Metro (m)', 'Kg' => 'Kilogramo (Kg)', 'Gramo' => 'Gramo (g)', 'Unidad' => 'Unidad (Und)', 'Rollo' => 'Rollo', 'Cono' => 'Cono', 'Docena' => 'Docena']" />
+                                    <x-forms.input name="unidad_medida" label="Unidad de Medida" required />
                                 </div>
                                 <div class="col-md-6">
                                     <x-forms.select name="proveedor_id" label="Proveedor" required
@@ -321,6 +219,7 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
+    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
     <script src="{{ URL::asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
     <script>
@@ -392,7 +291,8 @@
                                 'Hilo': '<span class="badge-tipo badge-tipo-hilo"><i class="ri-links-line"></i> Hilo</span>',
                                 'Boton': '<span class="badge-tipo badge-tipo-boton"><i class="ri-radio-button-line"></i> Botón</span>',
                                 'Cierre': '<span class="badge-tipo badge-tipo-cierre"><i class="ri-lock-line"></i> Cierre</span>',
-                                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>'
+                                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>',
+                                'Otro': '<span class="badge bg-secondary"><i class="ri-more-line"></i> Otro</span>'
                             };
                             return tipos[data] || '<span class="badge-tipo"><i class="ri-more-line"></i> ' + data + '</span>';
                         }
@@ -442,41 +342,18 @@
                 table.search(this.value).draw();
             });
 
-            function formatDate(dateStr) {
-                if (!dateStr) return 'N/A';
-                if (typeof dateStr === 'string') {
-                    var parts = dateStr.trim().split(' ');
-                    var datePart = parts[0] || '';
-                    if (/^\d{2}\/\d{2}\/\d{4}$/.test(datePart)) return datePart;
-                }
-                var date = new Date(dateStr);
-                if (isNaN(date.getTime())) return dateStr;
-                var day   = String(date.getDate()).padStart(2, '0');
-                var month = String(date.getMonth() + 1).padStart(2, '0');
-                var year  = date.getFullYear();
-                return day + '/' + month + '/' + year;
-            }
-
             // Ver detalles
-            var tipoBadges = {
-                'Tela':     '<span class="badge-tipo badge-tipo-tela"><i class="ri-t-shirt-line"></i> Tela</span>',
-                'Hilo':     '<span class="badge-tipo badge-tipo-hilo"><i class="ri-links-line"></i> Hilo</span>',
-                'Boton':    '<span class="badge-tipo badge-tipo-boton"><i class="ri-radio-button-line"></i> Botón</span>',
-                'Cierre':   '<span class="badge-tipo badge-tipo-cierre"><i class="ri-lock-line"></i> Cierre</span>',
-                'Etiqueta': '<span class="badge-tipo badge-tipo-etiqueta"><i class="ri-price-tag-3-line"></i> Etiqueta</span>'
-            };
-
             $(document).on('click', '.view-item-btn', function () {
                 var id = $(this).data('id');
                 $.get("{{ route('insumos.show', ':id') }}".replace(':id', id), function (data) {
                     $("#view-nombre").text(data.nombre);
-                    $("#view-tipo").html(tipoBadges[data.tipo] || data.tipo);
+                    $("#view-tipo").text(data.tipo);
                     $("#view-unidad-medida").text(data.unidad_medida);
-                    $("#view-stock-actual").text(parseFloat(data.stock_actual).toFixed(2));
-                    $("#view-stock-minimo").text(parseFloat(data.stock_minimo).toFixed(2));
+                    $("#view-stock-actual").text(data.stock_actual);
+                    $("#view-stock-minimo").text(data.stock_minimo);
                     $("#view-costo-unitario").text('$/ ' + parseFloat(data.costo_unitario).toFixed(2));
-                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor asignado');
-                    $("#view-created").text(formatDate(data.created_at));
+                    $("#view-proveedor").text(data.proveedor ? (data.proveedor.persona ? data.proveedor.persona.nombre_completo : 'Sin nombre') : 'Sin proveedor');
+                    $("#view-created").text(data.created_at);
                     $("#viewModal").modal('show');
                 });
             });
@@ -506,7 +383,7 @@
             $("#insumoForm").on("submit", function (e) {
                 e.preventDefault();
 
-                if (!validarFormularioInsumo()) {
+                if (!validator.validateAll()) {
                     return;
                 }
                 var id = $("#id-field").val();
@@ -631,166 +508,10 @@
                 $("#add-btn").show();
                 $("#add-btn").show();
                 $("#edit-btn").hide();
-                $('#insumoForm').find('input, select, textarea').removeClass('is-invalid is-valid');
-                $('#insumoForm').find('.invalid-feedback').hide();
+                validator.resetValidation();
             });
 
-            // ══════════════════════════════════════════════════════
-            // VALIDACIONES ONBLUR
-            // ══════════════════════════════════════════════════════
-
-            // Nombre — mín. 3 chars + AJAX duplicado
-            $(document).on('blur', '#field-nombre', function () {
-                var $input = $(this);
-                var val = $input.val().trim();
-                var excludeId = $('#id-field').val();
-                if (val.length === 0) {
-                    marcarInvalido($input, 'El nombre es obligatorio.');
-                    return;
-                }
-                if (val.length < 3) {
-                    marcarInvalido($input, 'Mínimo 3 caracteres.');
-                    return;
-                }
-                $.get("{{ route('insumos.check-nombre') }}", { nombre: val, exclude_id: excludeId }, function (res) {
-                    if (res.exists) {
-                        marcarInvalido($input, 'Ya existe un insumo con ese nombre.');
-                    } else {
-                        marcarValido($input);
-                    }
-                });
-            });
-
-            // Tipo — obligatorio
-            $(document).on('blur', '#field-tipo', function () {
-                if (!$(this).val()) {
-                    marcarInvalido($(this), 'El tipo es obligatorio.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Unidad de Medida — obligatoria
-            $(document).on('blur', '#field-unidad_medida', function () {
-                if (!$(this).val()) {
-                    marcarInvalido($(this), 'La unidad de medida es obligatoria.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Proveedor — obligatorio
-            $(document).on('blur', '#field-proveedor_id', function () {
-                if (!$(this).val()) {
-                    marcarInvalido($(this), 'El proveedor es obligatorio.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Stock Actual — no negativo
-            $(document).on('blur', '#field-stock_actual', function () {
-                var val = parseFloat($(this).val());
-                if (isNaN(val) || val < 0) {
-                    marcarInvalido($(this), 'El stock no puede ser negativo.');
-                } else {
-                    marcarValido($(this));
-                    // Re-validar stock mínimo si ya tiene valor
-                    var $min = $('#field-stock_minimo');
-                    if ($min.val() !== '') {
-                        var minVal = parseFloat($min.val());
-                        if (!isNaN(minVal) && minVal > val) {
-                            marcarInvalido($min, 'El stock mínimo no puede superar el stock actual.');
-                        } else if (!isNaN(minVal) && minVal >= 0) {
-                            marcarValido($min);
-                        }
-                    }
-                }
-            });
-
-            // Stock Mínimo — no negativo + no mayor al stock actual
-            $(document).on('blur', '#field-stock_minimo', function () {
-                var val = parseFloat($(this).val());
-                var stockActual = parseFloat($('#field-stock_actual').val());
-                if (isNaN(val) || val < 0) {
-                    marcarInvalido($(this), 'El stock mínimo no puede ser negativo.');
-                } else if (!isNaN(stockActual) && val > stockActual) {
-                    marcarInvalido($(this), 'El stock mínimo no puede superar el stock actual.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // Costo Unitario — mayor a 0
-            $(document).on('blur', '#field-costo_unitario', function () {
-                var val = parseFloat($(this).val());
-                if (isNaN(val) || val <= 0) {
-                    marcarInvalido($(this), 'El costo unitario debe ser mayor a cero.');
-                } else {
-                    marcarValido($(this));
-                }
-            });
-
-            // ══════════════════════════════════════════════════════
-            // VALIDACIÓN AL SUBMIT
-            // ══════════════════════════════════════════════════════
-            function validarFormularioInsumo() {
-                let esValido = true;
-
-                let $nombre = $('#field-nombre');
-                let nombre = $nombre.val().trim();
-                if (!nombre) {
-                    marcarInvalido($nombre, 'El nombre es obligatorio.');
-                    esValido = false;
-                } else if (nombre.length < 3) {
-                    marcarInvalido($nombre, 'El nombre debe tener al menos 3 caracteres.');
-                    esValido = false;
-                } else { marcarValido($nombre); }
-
-                let $tipo = $('#field-tipo');
-                if (!$tipo.val()) {
-                    marcarInvalido($tipo, 'El tipo es obligatorio.');
-                    esValido = false;
-                } else { marcarValido($tipo); }
-
-                let $unidad = $('#field-unidad_medida');
-                if (!$unidad.val().trim()) {
-                    marcarInvalido($unidad, 'La unidad de medida es obligatoria.');
-                    esValido = false;
-                } else { marcarValido($unidad); }
-
-                let $proveedor = $('#field-proveedor_id');
-                if (!$proveedor.val()) {
-                    marcarInvalido($proveedor, 'El proveedor es obligatorio.');
-                    esValido = false;
-                } else { marcarValido($proveedor); }
-
-                let $stockActual = $('#field-stock_actual');
-                let stockActual = parseFloat($stockActual.val());
-                if (isNaN(stockActual) || stockActual < 0) {
-                    marcarInvalido($stockActual, 'El stock actual no puede ser negativo.');
-                    esValido = false;
-                } else { marcarValido($stockActual); }
-
-                let $stockMin = $('#field-stock_minimo');
-                let stockMin = parseFloat($stockMin.val());
-                if (isNaN(stockMin) || stockMin < 0) {
-                    marcarInvalido($stockMin, 'El stock mínimo no puede ser negativo.');
-                    esValido = false;
-                } else if (!isNaN(stockActual) && stockActual >= 0 && stockMin > stockActual) {
-                    marcarInvalido($stockMin, 'El stock mínimo no puede superar el stock actual.');
-                    esValido = false;
-                } else { marcarValido($stockMin); }
-
-                let $costo = $('#field-costo_unitario');
-                let costo = parseFloat($costo.val());
-                if (isNaN(costo) || costo <= 0) {
-                    marcarInvalido($costo, 'El costo unitario debe ser mayor a cero.');
-                    esValido = false;
-                } else { marcarValido($costo); }
-
-                return esValido;
-            }
+            const validator = new FormValidator('insumoForm');
         });
     </script>
 @endpush

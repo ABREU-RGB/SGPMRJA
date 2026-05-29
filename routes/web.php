@@ -18,11 +18,8 @@ use App\Http\Controllers\LogoController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\TallaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CargoController;
 use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\EmpleadoController;
-use App\Http\Controllers\PersonaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +39,7 @@ Route::get('/portfolio', [PagesController::class, 'portfolio'])->name('portfolio
 // ============================================
 // RUTAS PROTEGIDAS (Requieren autenticación)
 // ============================================
-Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->group(function () {
+Route::middleware(['auth', 'throttle:60,1'])->group(function () {
 
     // Dashboard - Acceso para todos los usuarios autenticados
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
@@ -50,8 +47,6 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
     // Perfil de usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::patch('/profile/recovery-questions', [ProfileController::class, 'updateRecoveryQuestions'])
-        ->name('profile.recovery-questions.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ============================================
@@ -62,8 +57,6 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::resource('users', UserController::class);
         Route::get('users-data', [UserController::class, 'getUsers'])->name('users.data');
         Route::get('users-check-email', [UserController::class, 'checkEmail'])->name('users.check-email');
-        Route::post('users/{id}/unlock-recovery', [UserController::class, 'unlockRecovery'])->name('users.unlock-recovery');
-        Route::post('users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
 
         // Clientes
         Route::resource('clientes', ClienteController::class);
@@ -71,12 +64,8 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::get('clientes-check-documento', [ClienteController::class, 'checkDocumento'])->name('clientes.check-documento');
         Route::get('clientes-check-email', [ClienteController::class, 'checkEmail'])->name('clientes.check-email');
         Route::get('clientes-search', [ClienteController::class, 'searchAjax'])->name('clientes.search');
-        Route::post('clientes/from-persona/{persona}', [ClienteController::class, 'createFromPersona'])->name('clientes.from-persona');
         Route::get('/clientes/reporte/pdf', [ClienteController::class, 'exportarPDF'])->name('clientes.reporte.pdf');
         Route::post('clientes/{id}/restore', [ClienteController::class, 'restore'])->name('clientes.restore');
-
-        // Búsqueda unificada de personas (cliente + empleado + proveedor) — usado por autocomplete de cotizaciones
-        Route::get('personas-search', [PersonaController::class, 'search'])->name('personas.search');
 
         // Empleados
         Route::resource('empleados', EmpleadoController::class);
@@ -85,25 +74,7 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::get('empleados-check-email', [EmpleadoController::class, 'checkEmail'])->name('empleados.check-email');
         Route::get('empleados-check-codigo', [EmpleadoController::class, 'checkCodigo'])->name('empleados.check-codigo');
         Route::get('/empleados/reporte/pdf', [EmpleadoController::class, 'reportePdf'])->name('empleados.reporte.pdf');
-        Route::get('empleados-get-cargos', [EmpleadoController::class, 'getCargos'])->name('empleados.get-cargos');
-
-        // Departamentos (CRUD — maestro)
-        Route::get('departamentos', [DepartamentoController::class, 'index'])->name('departamentos.index');
-        Route::post('departamentos', [DepartamentoController::class, 'store'])->name('departamentos.store');
-        Route::get('departamentos/{departamento}', [DepartamentoController::class, 'show'])->name('departamentos.show');
-        Route::put('departamentos/{departamento}', [DepartamentoController::class, 'update'])->name('departamentos.update');
-        Route::delete('departamentos/{departamento}', [DepartamentoController::class, 'destroy'])->name('departamentos.destroy');
-        Route::patch('departamentos/{id}/restore', [DepartamentoController::class, 'restore'])->name('departamentos.restore');
-        Route::get('departamentos-check-nombre', [DepartamentoController::class, 'checkNombre'])->name('departamentos.check-nombre');
-
-        // Cargos (CRUD — maestro)
-        Route::get('cargos', [CargoController::class, 'index'])->name('cargos.index');
-        Route::post('cargos', [CargoController::class, 'store'])->name('cargos.store');
-        Route::get('cargos/{cargo}', [CargoController::class, 'show'])->name('cargos.show');
-        Route::put('cargos/{cargo}', [CargoController::class, 'update'])->name('cargos.update');
-        Route::delete('cargos/{cargo}', [CargoController::class, 'destroy'])->name('cargos.destroy');
-        Route::patch('cargos/{id}/restore', [CargoController::class, 'restore'])->name('cargos.restore');
-        Route::get('cargos-check-nombre', [CargoController::class, 'checkNombre'])->name('cargos.check-nombre');
+        Route::post('empleados-store-departamento', [EmpleadoController::class, 'storeDepartamento'])->name('empleados.store-departamento');
 
         // Pedidos (escritura)
         Route::post('pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
@@ -194,7 +165,6 @@ Route::middleware(['auth', 'throttle:60,1', 'recovery.questions.required'])->gro
         Route::resource('insumos', InsumoController::class);
         Route::get('insumos-data', [InsumoController::class, 'getInsumos'])->name('insumos.data');
         Route::get('insumos/reporte/pdf', [InsumoController::class, 'reportePdf'])->name('insumos.reporte.pdf');
-        Route::get('insumos/check-nombre', [InsumoController::class, 'checkNombre'])->name('insumos.check-nombre');
 
         // Órdenes de Producción
         Route::resource('ordenes', OrdenProduccionController::class);

@@ -33,8 +33,8 @@ class AppServiceProvider extends ServiceProvider
         try {
             Type::addType('enum', 'Doctrine\DBAL\Types\StringType');
             DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-        } catch (\Exception $e) {
-            // Silenciar si Doctrine no está disponible o el tipo ya existe
+        } catch (DoctrineException $e) {
+            // Manejar la excepción si el tipo ya está registrado
         }
 
         // Compartir tasa BCV con todas las vistas del admin

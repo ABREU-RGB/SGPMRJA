@@ -191,108 +191,63 @@
     </div>
 </div>
 
-{{-- Overlay entre el wizard modal y el offcanvas de bordados.
-     z-index 1065: por encima del modal (1055) pero debajo del offcanvas (1070).
-     Al hacer clic sobre él se cierra el offcanvas (dismiss intuitivo). --}}
-<div id="bordado-modal-overlay"></div>
-
-{{-- ═══════════════════════════════════════════════════════════════════
-     Offcanvas Configurador de Bordados
-     Reemplaza el modal anidado ubicacionCatalogoModal.
-     data-bs-backdrop="false" + data-bs-scroll="true" permiten que
-     el wizard modal del fondo siga visible mientras el usuario
-     configura el bordado del producto seleccionado.
-     IDs internos preservados: el JS de main.blade.php no cambia su lógica.
-     ═══════════════════════════════════════════════════════════════════ --}}
-<div class="offcanvas offcanvas-end" id="bordadoOffcanvas" tabindex="-1"
-    aria-labelledby="bordadoOffcanvasLabel"
-    data-bs-backdrop="false" data-bs-scroll="true"
-    style="width: 480px; max-width: 95vw; z-index: 1070;">
-
-    {{-- Header: identidad del producto que se está configurando --}}
-    <div class="offcanvas-header bordado-oc-header">
-        <div class="d-flex align-items-center gap-3 flex-grow-1 overflow-hidden">
-            <div class="bordado-oc-icon">
-                <i class="ri-scissors-cut-line"></i>
+<div class="modal fade" id="ubicacionCatalogoModal" tabindex="-1" aria-labelledby="ubicacionCatalogoModalLabel"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" style="z-index: 1070;">
+    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"
+            style="box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(30,60,114,0.22); border-top: 3px solid #00d9a5;">
+            <div class="modal-header p-3" style="background-color: #132649 !important;">
+                <h5 class="modal-title" style="color: #ffffff !important;" id="ubicacionCatalogoModalLabel">
+                    <i class="ri-map-pin-line me-2" style="opacity:0.7;"></i>Configurar Servicio de Bordado
+                </h5>
+                <button type="button" class="btn-close utility-modal-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
-            <div class="overflow-hidden">
-                <p class="bordado-oc-eyebrow mb-0">Servicio de bordado</p>
-                <h6 class="offcanvas-title mb-0 text-truncate" id="bordadoOffcanvasLabel">
-                    <span id="bordado-oc-producto">—</span>
-                </h6>
-                <div class="bordado-oc-color-badge">
-                    <span class="bordado-oc-color-dot" id="bordado-oc-color-dot" style="background:#ccc;"></span>
-                    <span id="bordado-oc-color-name">Sin color</span>
+
+            <div class="modal-body p-3" style="overflow-x: hidden;">
+                <div class="input-group input-group-sm mb-3">
+                    <span class="input-group-text" style="background: rgba(30,60,114,0.1); border-color: #1e3c72;">
+                        <i class="ri-search-line" style="color: #1e3c72;"></i>
+                    </span>
+                    <input type="text" id="buscarUbicacionModal" class="form-control" placeholder="Buscar ubicación..."
+                        style="border-color: #1e3c72;">
+                </div>
+
+                <div class="alert alert-info py-2 px-3 mb-3" style="font-size:0.78rem;">
+                    Asigna logo por cada ubicación, ajusta precio por ubicación y cantidad de bordados por prenda.
+                </div>
+
+                <div id="ubicacionesCatalogoGrid" style="max-height: 280px; overflow-y: auto; overflow-x: hidden;">
+                </div>
+
+                <hr class="my-3">
+
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0" style="font-size:0.85rem;color:#1e3c72;">
+                        <i class="ri-edit-2-line me-1"></i>Ubicaciones personalizadas
+                    </h6>
+                    <button type="button" class="btn btn-sm btn-atlantico-brand" id="agregarUbicacionPersonalizadaBtn">
+                        <i class="ri-add-line"></i> Agregar
+                    </button>
+                </div>
+
+                <div id="ubicacionesPersonalizadasContainer" class="d-flex flex-column gap-2">
+                </div>
+
+                <div class="rounded p-2 mt-3" style="background: rgba(30,60,114,0.06);">
+                    <div class="small text-muted">Recargo unitario del producto</div>
+                    <div class="fw-bold" id="resumenRecargoBordadoModal" style="color:#1e3c72;">$0.00</div>
                 </div>
             </div>
-        </div>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
-            aria-label="Cerrar"></button>
-    </div>
 
-    {{-- Cuerpo: flex column con zona scrollable interna --}}
-    <div class="offcanvas-body p-0 d-flex flex-column" style="overflow: hidden; min-height: 0;">
-
-        {{-- Buscador fijo en la parte superior --}}
-        <div class="bordado-oc-search px-3 pt-3 pb-2">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text bordado-oc-search-icon">
-                    <i class="ri-search-line"></i>
-                </span>
-                <input type="text" id="buscarUbicacionModal" class="form-control"
-                    placeholder="Buscar ubicación por nombre...">
-            </div>
-            <p class="bordado-oc-hint mt-2 mb-0">
-                <i class="ri-information-line me-1"></i>
-                Activa cada ubicación, asígnale un logo y ajusta precio y cantidad de bordados por prenda.
-            </p>
-        </div>
-
-        {{-- Zona scrollable: ubicaciones estándar + personalizadas --}}
-        <div class="flex-grow-1 overflow-auto px-3 py-3" style="min-height: 0;">
-
-            <p class="bordado-oc-section-label mb-2">
-                <i class="ri-map-pin-2-line me-1"></i>Ubicaciones del catálogo
-            </p>
-            <div id="ubicacionesCatalogoGrid" class="d-flex flex-column gap-2"></div>
-
-            <hr class="bordado-oc-divider my-3">
-
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <p class="bordado-oc-section-label mb-0">
-                    <i class="ri-edit-2-line me-1"></i>Ubicaciones personalizadas
-                </p>
-                <button type="button" class="btn btn-sm btn-atlantico-brand" id="agregarUbicacionPersonalizadaBtn">
-                    <i class="ri-add-line me-1"></i>Agregar
-                </button>
-            </div>
-            <div id="ubicacionesPersonalizadasContainer" class="d-flex flex-column gap-2">
-                <small class="text-muted">No hay ubicaciones personalizadas.</small>
-            </div>
-
-        </div>
-
-        {{-- Footer sticky: resumen de recargo + botones de acción --}}
-        <div class="bordado-oc-footer">
-            <div class="bordado-oc-summary mb-2">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="small text-muted">Ubicaciones activas</span>
-                    <span class="fw-semibold small" id="bordado-oc-active-count">0</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="small text-muted">Recargo unitario</span>
-                    <span class="fw-bold bordado-oc-recargo-value" id="resumenRecargoBordadoModal">$0.00</span>
-                </div>
-            </div>
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-light flex-fill" data-bs-dismiss="offcanvas">
-                    <i class="ri-close-line me-1"></i>Cancelar
-                </button>
-                <button type="button" class="btn btn-sm btn-atlantico-brand flex-fill" id="aplicarUbicacionesBordadoBtn">
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-sm btn-success px-3" id="aplicarUbicacionesBordadoBtn">
                     <i class="ri-check-line me-1"></i>Aplicar configuración
                 </button>
+                <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
             </div>
         </div>
-
     </div>
 </div>

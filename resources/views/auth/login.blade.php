@@ -28,10 +28,10 @@
                     autocomplete="username"
                     placeholder="correo@empresa.com"
                 >
+                @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
-            @error('email')
-                <div class="invalid-feedback d-block">{{ $message }}</div>
-            @enderror
         </div>
 
         <!-- Password -->
@@ -54,11 +54,11 @@
                     <button class="btn-show-pass" type="button" id="togglePassword" tabindex="-1" aria-label="Mostrar contraseña">
                         <i class="bx bx-hide" id="toggleIcon"></i>
                     </button>
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
-            @error('password')
-                <div class="invalid-feedback d-block">{{ $message }}</div>
-            @enderror
         </div>
 
         <!-- Remember me -->
@@ -69,8 +69,8 @@
 
         <!-- Actions -->
         <div class="d-flex justify-content-between align-items-center">
-            @if (Route::has('recovery.method'))
-                <a href="{{ route('recovery.method') }}" class="link-atlantico">
+            @if (Route::has('password.request'))
+                <a href="{{ route('password.request') }}" class="link-atlantico">
                     <i class="bx bx-help-circle me-1"></i>¿Olvidaste tu contraseña?
                 </a>
             @endif
