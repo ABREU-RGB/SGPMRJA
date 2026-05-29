@@ -1,17 +1,74 @@
 <style>
-    /* Estilo para item activo (Sombreado azul original) */
+    /* ══════════════════════════════════════════════════════════
+       SIDEBAR — Estándar de color por sección (Light Mode)
+       Refleja los mismos colores que cards y DataTables
+    ══════════════════════════════════════════════════════════ */
+
+    /* Base común: font-weight y border para todos los activos */
     .navbar-nav .nav-link.active {
-        background: rgba(59, 130, 246, 0.15) !important;
-        color: #3b82f6 !important;
-        border-left: 3px solid #3b82f6;
         font-weight: 600;
+        border-left: 3px solid;
     }
 
-    .navbar-nav .nav-link.active i {
-        color: #3b82f6 !important;
+    /* ── GESTIÓN GENERAL — Navy #1e3c72 ── */
+    .section-maestros .nav-link.active {
+        background: rgba(30, 60, 114, 0.12) !important;
+        color: #1e3c72 !important;
+        border-left-color: #1e3c72 !important;
+    }
+    .section-maestros .nav-link.active i {
+        color: #1e3c72 !important;
+    }
+    /* Header del grupo cuando hay subitem activo */
+    .section-maestros.section-is-active > .menu-link {
+        color: #1e3c72 !important;
+        border-left: 3px solid #1e3c72 !important;
+        background: rgba(30, 60, 114, 0.08) !important;
+        font-weight: 600 !important;
+    }
+    .section-maestros.section-is-active > .menu-link i {
+        color: #1e3c72 !important;
     }
 
-    /* Separación entre items y subitems */
+    /* ── GESTIÓN OPERATIVA — Emerald #10b981 ── */
+    .section-operativa .nav-link.active {
+        background: rgba(16, 185, 129, 0.12) !important;
+        color: #059669 !important;
+        border-left-color: #10b981 !important;
+    }
+    .section-operativa .nav-link.active i {
+        color: #10b981 !important;
+    }
+    .section-operativa.section-is-active > .menu-link {
+        color: #059669 !important;
+        border-left: 3px solid #10b981 !important;
+        background: rgba(16, 185, 129, 0.08) !important;
+        font-weight: 600 !important;
+    }
+    .section-operativa.section-is-active > .menu-link i {
+        color: #10b981 !important;
+    }
+
+    /* ── CONSULTAS Y REPORTES — Sky #0ea5e9 ── */
+    .section-reportes .nav-link.active {
+        background: rgba(14, 165, 233, 0.10) !important;
+        color: #0369a1 !important;
+        border-left-color: #0ea5e9 !important;
+    }
+    .section-reportes .nav-link.active i {
+        color: #0ea5e9 !important;
+    }
+    .section-reportes.section-is-active > .menu-link {
+        color: #0369a1 !important;
+        border-left: 3px solid #0ea5e9 !important;
+        background: rgba(14, 165, 233, 0.08) !important;
+        font-weight: 600 !important;
+    }
+    .section-reportes.section-is-active > .menu-link i {
+        color: #0ea5e9 !important;
+    }
+
+    /* ── Espaciado entre items y subitems ── */
     .menu-dropdown {
         margin-top: 8px;
         margin-bottom: 8px;
@@ -19,19 +76,6 @@
         padding-bottom: 4px;
     }
 
-    /* Subitems con el mismo estilo de sombreado azul */
-    .menu-dropdown .nav-link.active {
-        background: rgba(59, 130, 246, 0.15) !important;
-        color: #3b82f6 !important;
-        border-left: 3px solid #3b82f6;
-        font-weight: 600;
-    }
-
-    .menu-dropdown .nav-link.active i {
-        color: #3b82f6 !important;
-    }
-
-    /* Espaciado entre subitems */
     .menu-dropdown .nav-item {
         margin-bottom: 2px;
     }
@@ -39,6 +83,124 @@
     /* Ocultar la línea/guión de los subitems */
     .menu-dropdown .nav-link::before {
         display: none !important;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       Sub-grupo "Recursos Humanos" — header tipo chip + sub-maestros
+       conectados por línea guía vertical (file-tree style)
+       ════════════════════════════════════════════════════════════ */
+
+    /* ── Header del subgrupo ──
+       Estado por defecto (cuando NO estás en módulos de RRHH): neutro y sutil.
+       Estado activo (.is-active): chip navy remarcado con borde y fondo. */
+    .menu-dropdown .nav-item.menu-subtitle {
+        margin: 14px 12px 6px;
+        padding: 6px 10px 6px 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(0, 0, 0, 0.42);
+        background: transparent;
+        border-left: 3px solid transparent;
+        border-radius: 0 4px 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+        transition: color .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .menu-dropdown .nav-item.menu-subtitle::before {
+        content: "\f1ee"; /* ri-team-line */
+        font-family: "remixicon" !important;
+        font-style: normal;
+        font-size: 0.95rem;
+        line-height: 1;
+        color: rgba(0, 0, 0, 0.38);
+        font-weight: normal;
+        letter-spacing: 0;
+        transition: color .15s ease;
+    }
+    .menu-dropdown .nav-item.menu-subtitle > span {
+        flex: 1;
+    }
+
+    /* ── Estado activo: píldora con gradiente navy (mismo del proyecto) ──
+       Se diferencia a propósito del patrón "barra lateral + fondo translúcido"
+       que usan los items normales activos. */
+    .menu-dropdown .nav-item.menu-subtitle.is-active {
+        color: #fff;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border-left-color: transparent;
+        border-radius: 999px;
+        padding: 6px 14px 6px 14px;
+        box-shadow: 0 2px 6px rgba(30, 60, 114, 0.25);
+    }
+    .menu-dropdown .nav-item.menu-subtitle.is-active::before {
+        color: #fff;
+    }
+
+    /* ── Dark mode ── */
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle {
+        color: rgba(255, 255, 255, 0.42);
+    }
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle::before {
+        color: rgba(255, 255, 255, 0.38);
+    }
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle.is-active {
+        color: #fff;
+        background: linear-gradient(135deg, #2a5298 0%, #3b6cb5 100%);
+        box-shadow: 0 2px 8px rgba(147, 197, 253, 0.18);
+    }
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subtitle.is-active::before {
+        color: #fff;
+    }
+
+    /* ── Sub-maestros (Departamentos, Cargos) — hijos de Empleados ──
+       Se les agrega clase .menu-subitem-child en el blade.
+       Visualmente: indentación + línea guía vertical que conecta con
+       Empleados arriba (estilo file-tree de IDE moderno).
+    */
+    .menu-dropdown .nav-item.menu-subitem-child {
+        position: relative;
+        margin-left: 18px;
+    }
+    .menu-dropdown .nav-item.menu-subitem-child > .nav-link {
+        font-size: 0.86rem;
+        padding-left: 20px !important;
+        position: relative;
+    }
+    /* Línea vertical (guide) que conecta padre→hijos.
+       Items intermedios: la línea atraviesa de top a bottom.
+       Último ítem: la línea solo llega hasta el centro (forma en L). */
+    .menu-dropdown .nav-item.menu-subitem-child::before {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: -2px;
+        bottom: 0;
+        width: 1.5px;
+        background: rgba(30, 60, 114, 0.25);
+    }
+    .menu-dropdown .nav-item.menu-subitem-child:last-child::before {
+        bottom: 50%;
+    }
+    /* Conector horizontal (de la línea vertical hacia el ítem) */
+    .menu-dropdown .nav-item.menu-subitem-child::after {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        width: 10px;
+        height: 1.5px;
+        background: rgba(30, 60, 114, 0.25);
+    }
+    /* La línea guía mantiene su color neutro incluso cuando el sub-item está activo,
+       para que solo destaque el item seleccionado y no se vea recargado. */
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subitem-child::before,
+    [data-bs-theme="dark"] .menu-dropdown .nav-item.menu-subitem-child::after {
+        background: rgba(147, 197, 253, 0.25);
     }
 </style>
 <div class="app-menu navbar-menu">
@@ -93,13 +255,13 @@
                         {{-- ================================== --}}
                         {{-- 2. MAESTROS --}}
                         {{-- ================================== --}}
-                        <li class="nav-item">
+                        <li class="nav-item section-maestros {{ request()->is('clientes*', 'productos*', 'proveedores*', 'insumos*', 'empleados*', 'departamentos*', 'cargos*') ? 'section-is-active' : '' }}">
                             <a class="nav-link menu-link" href="#sidebarMaestros" data-bs-toggle="collapse" role="button"
-                                aria-expanded="{{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') ? 'true' : 'false' }}"
+                                aria-expanded="{{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') || request()->is('departamentos*') || request()->is('cargos*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarMaestros">
                                 <i class="ri-database-2-line"></i> <span data-key="t-maestros">Gestión General</span>
                             </a>
-                            <div class="collapse menu-dropdown {{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') ? 'show' : '' }}"
+                            <div class="collapse menu-dropdown {{ request()->is('clientes*') || request()->is('productos*') || request()->is('proveedores*') || request()->is('insumos*') || request()->is('empleados*') || request()->is('departamentos*') || request()->is('cargos*') ? 'show' : '' }}"
                                 id="sidebarMaestros">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
@@ -126,10 +288,24 @@
                                             <i class="ri-archive-line me-1"></i> Insumos
                                         </a>
                                     </li>
+                                    {{-- Subgrupo: Recursos Humanos --}}
+                                    <li class="nav-item menu-subtitle {{ request()->is('empleados*', 'departamentos*', 'cargos*') ? 'is-active' : '' }}"><span>Recursos Humanos</span></li>
                                     <li class="nav-item">
                                         <a href="{{ url('empleados') }}"
                                             class="nav-link {{ request()->is('empleados*') ? 'active' : '' }}">
                                             <i class="ri-user-settings-line me-1"></i> Empleados
+                                        </a>
+                                    </li>
+                                    <li class="nav-item menu-subitem-child">
+                                        <a href="{{ url('departamentos') }}"
+                                            class="nav-link {{ request()->is('departamentos*') ? 'active' : '' }}">
+                                            <i class="ri-building-line me-1"></i> Departamentos
+                                        </a>
+                                    </li>
+                                    <li class="nav-item menu-subitem-child">
+                                        <a href="{{ url('cargos') }}"
+                                            class="nav-link {{ request()->is('cargos*') ? 'active' : '' }}">
+                                            <i class="ri-briefcase-line me-1"></i> Cargos
                                         </a>
                                     </li>
                                 </ul>
@@ -139,7 +315,7 @@
                         {{-- ================================== --}}
                         {{-- 3. TRANSACCIONES --}}
                         {{-- ================================== --}}
-                        <li class="nav-item">
+                        <li class="nav-item section-operativa {{ request()->is('cotizaciones*', 'pedidos*', 'ordenes*', 'calidad*', 'inventario*', 'garantias*') ? 'section-is-active' : '' }}">
                             <a class="nav-link menu-link" href="#sidebarTransacciones" data-bs-toggle="collapse" role="button"
                                 aria-expanded="{{ request()->is('cotizaciones*') || request()->is('pedidos*') || request()->is('ordenes*') || request()->is('calidad*') || request()->is('inventario*') || request()->is('garantias*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarTransacciones">
@@ -193,7 +369,7 @@
                         {{-- ================================== --}}
                         {{-- 4. CONSULTAS Y REPORTES --}}
                         {{-- ================================== --}}
-                        <li class="nav-item">
+                        <li class="nav-item section-reportes {{ request()->is('reportes*') ? 'section-is-active' : '' }}">
                             <a class="nav-link menu-link" href="#sidebarReportes" data-bs-toggle="collapse" role="button"
                                 aria-expanded="{{ request()->is('reportes*') ? 'true' : 'false' }}"
                                 aria-controls="sidebarReportes">

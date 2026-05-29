@@ -36,20 +36,15 @@
                         <div class="flex-shrink-0 d-flex align-items-center gap-3">
                             <!-- Toggle Historial -->
                             @if($historial)
-                                <a href="{{ route('proveedores.index') }}" class="btn btn-outline-primary btn-sm">
-                                    <i class="ri-list-check align-bottom me-1"></i> Solo Activos
+                                <a href="{{ route('proveedores.index') }}" class="btn-historial btn-historial-volver">
+                                    <i class="ri-arrow-left-line"></i> Solo Activos
                                 </a>
                             @else
-                                <a href="{{ route('proveedores.index', ['historial' => true]) }}" class="btn btn-outline-warning btn-sm">
-                                    <i class="ri-history-line align-bottom me-1"></i> Ver Historial (Inactivos)
+                                <a href="{{ route('proveedores.index', ['historial' => true]) }}"
+                                    class="btn-historial btn-historial-ver">
+                                    <i class="ri-time-line"></i> Ver Historial
                                 </a>
                             @endif
-                            <!-- Buscador Personalizado -->
-                            <div class="search-box">
-                                <input type="text" class="form-control form-control-sm" id="custom-search-input"
-                                    placeholder="Buscar proveedor...">
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
                             <div class="d-flex gap-2">
                                 @if(Auth::user()->isAdmin() && !$historial)
                                     <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal" id="create-btn"
@@ -65,7 +60,118 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="proveedores-table" class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
+                    {{-- ============================================================
+                    FILTROS — Patrón Maestro S-07 (Colapsable)
+                    Réplica exacta del patrón de Clientes.
+                    CSS genérico en custom.css: .navy-filter-*
+                    ============================================================ --}}
+                    <div class="advanced-filters-wrapper navy-theme" id="advanced-filters">
+                        {{-- Header unificado: búsqueda global + trigger de filtros --}}
+                        <div class="navy-filter-header is-collapsed">
+                            {{-- Búsqueda global (siempre visible) --}}
+                            <div class="navy-header-search">
+                                <i class="ri-search-line"></i>
+                                <input type="text" id="custom-search-input"
+                                    class="navy-search-input"
+                                    placeholder="Buscar proveedor..."
+                                    autocomplete="off">
+                            </div>
+                            {{-- Divisor vertical --}}
+                            <div class="navy-header-divider"></div>
+                            {{-- Trigger del collapse de filtros --}}
+                            <button class="navy-filter-btn collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#filters-collapse-body"
+                                aria-expanded="false" aria-controls="filters-collapse-body">
+                                <i class="ri-filter-3-line"></i>
+                                <span>Filtros</span>
+                                <span class="navy-filter-badge d-none" id="active-filter-count"></span>
+                                <i class="ri-arrow-down-s-line navy-filter-chevron"></i>
+                            </button>
+                        </div>
+                        {{-- Body: colapsable, oculto por defecto --}}
+                        <div class="collapse" id="filters-collapse-body">
+                            <div class="navy-filter-body">
+                                <div class="row g-2 align-items-end">
+                                    {{-- Filtro 1: Tipo de Proveedor --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-tipo-proveedor">
+                                            <i class="ri-user-settings-line"></i> Tipo de Proveedor
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-tipo-proveedor">
+                                            <option value="">Todos</option>
+                                            <option value="natural">Natural</option>
+                                            <option value="juridico">Jurídico</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 2: Estatus (Activo = normal, Inactivo = trashed / SoftDelete) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estatus">
+                                            <i class="ri-shield-check-line"></i> Estatus
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estatus">
+                                            <option value="">Todos</option>
+                                            <option value="1" selected>Activo</option>
+                                            <option value="0">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 3: Estado Territorial (Venezuela) --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-estado-territorial">
+                                            <i class="ri-map-pin-line"></i> Estado
+                                        </label>
+                                        <select class="form-select navy-filter-select" id="filter-estado-territorial">
+                                            <option value="">Todos</option>
+                                            <option value="Amazonas">Amazonas</option>
+                                            <option value="Anzoátegui">Anzoátegui</option>
+                                            <option value="Apure">Apure</option>
+                                            <option value="Aragua">Aragua</option>
+                                            <option value="Barinas">Barinas</option>
+                                            <option value="Bolívar">Bolívar</option>
+                                            <option value="Carabobo">Carabobo</option>
+                                            <option value="Cojedes">Cojedes</option>
+                                            <option value="Delta Amacuro">Delta Amacuro</option>
+                                            <option value="Distrito Capital">Distrito Capital</option>
+                                            <option value="Falcón">Falcón</option>
+                                            <option value="Guárico">Guárico</option>
+                                            <option value="La Guaira">La Guaira</option>
+                                            <option value="Lara">Lara</option>
+                                            <option value="Mérida">Mérida</option>
+                                            <option value="Miranda">Miranda</option>
+                                            <option value="Monagas">Monagas</option>
+                                            <option value="Nueva Esparta">Nueva Esparta</option>
+                                            <option value="Portuguesa">Portuguesa</option>
+                                            <option value="Sucre">Sucre</option>
+                                            <option value="Táchira">Táchira</option>
+                                            <option value="Trujillo">Trujillo</option>
+                                            <option value="Yaracuy">Yaracuy</option>
+                                            <option value="Zulia">Zulia</option>
+                                        </select>
+                                    </div>
+                                    {{-- Filtro 4: Búsqueda por Cédula/RIF --}}
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="navy-filter-label" for="filter-documento">
+                                            <i class="ri-bank-card-line"></i> Cédula / RIF
+                                        </label>
+                                        <div class="position-relative">
+                                            <input type="text" class="form-control navy-filter-input" id="filter-documento"
+                                                placeholder="Ej: J-12345678" autocomplete="off">
+                                            <i class="ri-search-line navy-filter-input-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- Botón limpiar: dentro del body colapsable --}}
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-navy-outline btn-sm" id="btn-clear-filters">
+                                        <i class="ri-refresh-line me-1"></i>Limpiar filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- FIN FILTROS --}}
+
+                    <table id="proveedores-table"
+                        class="table table-bordered table-striped table-sm align-middle table-operativa table-maestro">
                         <thead>
                             <tr>
                                 <th>Documento</th>
@@ -165,7 +271,8 @@
                                                     <i class="ri-bank-card-line" style="color: #1e3c72;"></i>
                                                 </div>
                                                 <div>
-                                                    <small class="text-muted d-block" id="view-label-documento">Documento</small>
+                                                    <small class="text-muted d-block"
+                                                        id="view-label-documento">Documento</small>
                                                     <span class="fw-semibold" id="view-documento">-</span>
                                                 </div>
                                             </div>
@@ -320,7 +427,7 @@
                     <h5 class="modal-title" id="modalTitle">Agregar Proveedor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="proveedorForm">
+                <form id="proveedorForm" novalidate>
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="id-field" />
@@ -329,19 +436,36 @@
                             <div class="modal-form-section-title"><i class="ri-fingerprint-line"></i>Identificación</div>
 
                             <div class="row mb-0">
-                                <div class="col-md-6">
-                                    <x-forms.select name="tipo_proveedor" label="Tipo de Proveedor" required id="tipo-proveedor-field"
-                                        :options="['juridico' => 'Jurídico (Empresa)', 'natural' => 'Natural (Persona)']"
-                                        placeholder="" />
+                                {{-- Documento del proveedor: RIF si jurídico, Cédula si natural. Se togglea por JS según
+                                tipo. --}}
+                                <div class="col-md-6 js-tipo-juridico">
+                                    <x-forms.input name="rif_number" label="RIF" id="rif-number-field"
+                                        placeholder="Ej: 123456789" maxlength="9" required prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
+                                                <option value="J-">J-</option>
+                                                <option value="G-">G-</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
+                                    <input type="hidden" id="rif-field" name="rif" />
+                                </div>
+                                <div class="col-md-6 js-tipo-natural" style="display: none;">
+                                    <x-forms.input name="documento_identidad_number" label="Documento de Identidad"
+                                        id="documento-identidad-field" maxlength="8" placeholder="Ej: 12345678" required
+                                        prependRaw="true">
+                                        <x-slot:prepend>
+                                            <select class="form-select" id="tipo-documento-field" name="tipo_documento"
+                                                style="max-width: 80px;">
+                                                <option value="V-">V-</option>
+                                                <option value="E-">E-</option>
+                                            </select>
+                                        </x-slot:prepend>
+                                    </x-forms.input>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label d-block">Estatus</label>
-                                    <div class="form-check form-switch form-switch-success mt-2">
-                                        <input type="hidden" name="estado" value="0" />
-                                        <input class="form-check-input" type="checkbox" role="switch" id="estado-field"
-                                            name="estado" value="1" checked />
-                                        <label class="form-check-label" for="estado-field" id="estado-label">Activo</label>
-                                    </div>
+                                    <x-forms.select name="tipo_proveedor" label="Tipo de Proveedor" required
+                                        id="tipo-proveedor-field" :options="['juridico' => 'Jurídico (Empresa)', 'natural' => 'Natural (Persona)']" placeholder="" />
                                 </div>
                             </div>
                         </div>
@@ -349,33 +473,90 @@
                         <!-- CAMPOS PARA PROVEEDOR JURÍDICO (EMPRESA) -->
                         <div id="campos-juridico">
                             <div class="modal-form-section">
-                                <div class="modal-form-section-title"><i class="ri-building-line"></i>Datos Empresariales</div>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="rif_number" label="RIF" id="rif-number-field" placeholder="Ej: 123456789" maxlength="9" required prependRaw="true">
-                                            <x-slot:prepend>
-                                                <select class="form-select" id="rif-prefix-field" style="max-width: 80px;">
-                                                    <option value="J-">J-</option>
-                                                    <option value="G-">G-</option>
-                                                </select>
-                                            </x-slot:prepend>
-                                        </x-forms.input>
-                                        <input type="hidden" id="rif-field" name="rif" />
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="razon_social" label="Razón Social" maxlength="200" placeholder="Nombre de la empresa" id="razon-social-field" />
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <x-forms.input name="direccion" label="Dirección" maxlength="500" placeholder="Dirección de la empresa" id="direccion-jur-field" />
+                                <div class="modal-form-section-title"><i class="ri-building-line"></i>Datos Empresariales
                                 </div>
 
                                 <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
+                                        <x-forms.input name="razon_social" label="Razón Social" maxlength="200"
+                                            placeholder="Nombre de la empresa" id="razon-social-field" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="direccion" label="Dirección" maxlength="500"
+                                            placeholder="Dirección de la empresa" id="direccion-jur-field" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-contacts-book-line"></i>Contacto</div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="telefono_jur_number" label="Teléfono"
+                                            id="telefono-jur-number-field" maxlength="7" placeholder="1234567" required
+                                            prependRaw="true">
+                                            <x-slot:prepend>
+                                                <select class="form-select" id="telefono-jur-prefix-field"
+                                                    style="max-width: 100px; min-width: 100px;">
+                                                    <option value="0212">0212</option>
+                                                    <option value="0251">0251</option>
+                                                    <option value="0241">0241</option>
+                                                    <option value="0255">0255</option>
+                                                    <option value="0412">0412</option>
+                                                    <option value="0414">0414</option>
+                                                    <option value="0424" selected>0424</option>
+                                                    <option value="0416">0416</option>
+                                                    <option value="0426">0426</option>
+                                                </select>
+                                            </x-slot:prepend>
+                                        </x-forms.input>
+                                        <input type="hidden" id="telefono-jur-field" name="telefono" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="email" label="Email" type="email"
+                                            placeholder="correo@empresa.com" id="email-jur-field" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-user-follow-line"></i>Contacto Secundario
+                                </div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="contacto" label="Persona de Contacto" maxlength="100"
+                                            placeholder="Nombre del contacto" id="contacto-field" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="telefono_contacto_number" label="Teléfono de Contacto"
+                                            id="telefono-contacto-number-field" maxlength="7" placeholder="1234567"
+                                            prependRaw="true">
+                                            <x-slot:prepend>
+                                                <select class="form-select" id="telefono-contacto-prefix-field"
+                                                    style="max-width: 100px; min-width: 100px;">
+                                                    <option value="0412">0412</option>
+                                                    <option value="0414">0414</option>
+                                                    <option value="0424" selected>0424</option>
+                                                    <option value="0416">0416</option>
+                                                    <option value="0426">0426</option>
+                                                </select>
+                                            </x-slot:prepend>
+                                        </x-forms.input>
+                                        <input type="hidden" id="telefono-contacto-field" name="telefono_contacto" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-form-section">
+                                <div class="modal-form-section-title"><i class="ri-map-pin-2-line"></i>Ubicación</div>
+
+                                <div class="row mb-0">
+                                    <div class="col-md-6 mb-3">
                                         <label for="estado-territorial-jur-field" class="form-label">Estado</label>
-                                        <select id="estado-territorial-jur-field" name="estado_territorial" class="form-select">
+                                        <select id="estado-territorial-jur-field" name="estado_territorial"
+                                            class="form-select">
                                             <option value="">Seleccione estado</option>
                                             <option value="Amazonas">Amazonas</option>
                                             <option value="Anzoátegui">Anzoátegui</option>
@@ -410,56 +591,6 @@
                                         </select>
                                     </div>
                                 </div>
-
-                                <div class="row mb-0">
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="telefono_jur_number" label="Teléfono" id="telefono-jur-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
-                                            <x-slot:prepend>
-                                                <select class="form-select" id="telefono-jur-prefix-field"
-                                                    style="max-width: 100px; min-width: 100px;">
-                                                    <option value="0212">0212</option>
-                                                    <option value="0251">0251</option>
-                                                    <option value="0241">0241</option>
-                                                    <option value="0255">0255</option>
-                                                    <option value="0412">0412</option>
-                                                    <option value="0414">0414</option>
-                                                    <option value="0424" selected>0424</option>
-                                                    <option value="0416">0416</option>
-                                                    <option value="0426">0426</option>
-                                                </select>
-                                            </x-slot:prepend>
-                                        </x-forms.input>
-                                        <input type="hidden" id="telefono-jur-field" name="telefono" />
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="email" label="Email" type="email" placeholder="correo@empresa.com" id="email-jur-field" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="modal-form-section">
-                                <div class="modal-form-section-title"><i class="ri-user-follow-line"></i>Contacto Secundario</div>
-
-                                <div class="row mb-0">
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="contacto" label="Persona de Contacto" maxlength="100" placeholder="Nombre del contacto" id="contacto-field" />
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="telefono_contacto_number" label="Teléfono de Contacto" id="telefono-contacto-number-field" maxlength="7" placeholder="1234567" prependRaw="true">
-                                            <x-slot:prepend>
-                                                <select class="form-select" id="telefono-contacto-prefix-field"
-                                                    style="max-width: 100px; min-width: 100px;">
-                                                    <option value="0412">0412</option>
-                                                    <option value="0414">0414</option>
-                                                    <option value="0424" selected>0424</option>
-                                                    <option value="0416">0416</option>
-                                                    <option value="0426">0426</option>
-                                                </select>
-                                            </x-slot:prepend>
-                                        </x-forms.input>
-                                        <input type="hidden" id="telefono-contacto-field" name="telefono_contacto" />
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -468,33 +599,31 @@
                             <div class="modal-form-section">
                                 <div class="modal-form-section-title"><i class="ri-user-3-line"></i>Datos Personales</div>
 
-                                <div class="row mb-0">
+                                <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <x-forms.input name="nombre" label="Nombre" maxlength="100" placeholder="Nombre" id="nombre-field" />
+                                        <x-forms.input name="nombre" label="Nombre" maxlength="100" placeholder="Nombre"
+                                            id="nombre-field" />
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <x-forms.input name="apellido" label="Apellido" maxlength="100" placeholder="Apellido" id="apellido-field" />
+                                        <x-forms.input name="apellido" label="Apellido" maxlength="100"
+                                            placeholder="Apellido" id="apellido-field" />
                                     </div>
+                                </div>
+
+                                <div class="mb-0">
+                                    <x-forms.input name="direccion" label="Dirección" maxlength="255"
+                                        placeholder="Dirección completa" id="direccion-nat-field" />
                                 </div>
                             </div>
 
                             <div class="modal-form-section">
                                 <div class="modal-form-section-title"><i class="ri-contacts-book-line"></i>Contacto</div>
 
-                                <div class="row">
+                                <div class="row mb-0">
                                     <div class="col-md-6 mb-3">
-                                        <x-forms.input name="documento_identidad_number" label="Documento de Identidad" id="documento-identidad-field" maxlength="8" placeholder="Ej: 12345678" required prependRaw="true">
-                                            <x-slot:prepend>
-                                                <select class="form-select" id="tipo-documento-field" name="tipo_documento"
-                                                    style="max-width: 80px;">
-                                                    <option value="V-">V-</option>
-                                                    <option value="E-">E-</option>
-                                                </select>
-                                            </x-slot:prepend>
-                                        </x-forms.input>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <x-forms.input name="telefono_nat_number" label="Teléfono" id="telefono-nat-number-field" maxlength="7" placeholder="1234567" required prependRaw="true">
+                                        <x-forms.input name="telefono_nat_number" label="Teléfono"
+                                            id="telefono-nat-number-field" maxlength="7" placeholder="1234567" required
+                                            prependRaw="true">
                                             <x-slot:prepend>
                                                 <select class="form-select" id="telefono-nat-prefix-field"
                                                     style="max-width: 100px; min-width: 100px;">
@@ -509,14 +638,10 @@
                                         </x-forms.input>
                                         <input type="hidden" id="telefono-nat-field" name="telefono" />
                                     </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <x-forms.input name="email" label="Email" type="email" placeholder="correo@email.com" id="email-nat-field" />
-                                </div>
-
-                                <div class="mb-0">
-                                    <x-forms.input name="direccion" label="Dirección" maxlength="255" placeholder="Dirección completa" id="direccion-nat-field" />
+                                    <div class="col-md-6 mb-3">
+                                        <x-forms.input name="email" label="Email" type="email"
+                                            placeholder="correo@email.com" id="email-nat-field" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -564,6 +689,16 @@
                             </div>
                         </div>
 
+                        <div class="modal-form-section mb-0">
+                            <div class="modal-form-section-title"><i class="ri-shield-check-line"></i>Estatus</div>
+                            <div class="form-check form-switch form-switch-success">
+                                <input type="hidden" name="estado" value="0" />
+                                <input class="form-check-input" type="checkbox" role="switch" id="estado-field"
+                                    name="estado" value="1" checked />
+                                <label class="form-check-label" for="estado-field" id="estado-label">Activo</label>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="modal-footer bg-light border-0">
                         <div class="hstack gap-2 justify-content-end">
@@ -571,7 +706,8 @@
                                 <i class="ri-close-line me-1"></i>Cerrar
                             </button>
                             <x-ui.button-save id="add-btn" text="Agregar" icon="ri-add-line" loading-text="Agregando..." />
-                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line" loading-text="Actualizando..." style="display: none;" />
+                            <x-ui.button-save id="edit-btn" text="Actualizar" icon="ri-save-line"
+                                loading-text="Actualizando..." style="display: none;" />
                         </div>
                     </div>
                 </form>
@@ -590,7 +726,6 @@
 
     <script>
         $(document).ready(function () {
-            var esHistorial = {{ $historial ? 'true' : 'false' }};
 
             function generateButtons(proveedorId, isTrashed) {
                 // Si el registro está inhabilitado (trashed), mostrar botón "Ver" + "Restaurar"
@@ -623,34 +758,38 @@
                     '</div>';
             }
 
-            // Toggle campos según tipo de proveedor
-            // Gestiona visibilidad Y atributos de validación HTML5 para evitar
-            // "An invalid form control with name='' is not focusable" (Obs. resuelta)
+            // Toggle campos según tipo de proveedor.
+            // Los selectores incluyen tanto los bloques grandes (#campos-juridico/#campos-natural)
+            // como los wrappers del RIF/Documento dentro de la sección Identificación
+            // (.js-tipo-juridico/.js-tipo-natural).
             function toggleCampos() {
                 var tipo = $('#tipo-proveedor-field').val();
+                var $jur = $('#campos-juridico, .js-tipo-juridico');
+                var $nat = $('#campos-natural, .js-tipo-natural');
+
                 if (tipo === 'natural') {
-                    $('#campos-juridico').hide();
-                    $('#campos-natural').show();
-                    // Desactivar validaciones del bloque JURÍDICO oculto
-                    $('#campos-juridico').find('[required]').each(function () {
+                    $jur.hide();
+                    $nat.show();
+                    // Desactivar validaciones del bloque JURÍDICO oculto (incluye RIF en Identificación)
+                    $jur.find('[required]').each(function () {
                         $(this).removeAttr('required').attr('data-required', 'true');
                     });
-                    // Restaurar validaciones del bloque NATURAL visible
-                    $('#campos-natural').find('[data-required]').each(function () {
+                    // Restaurar validaciones del bloque NATURAL visible (incluye Documento en Identificación)
+                    $nat.find('[data-required]').each(function () {
                         $(this).attr('required', 'required').removeAttr('data-required');
                     });
                     // Limpiar campos jurídicos
                     $('#rif-number-field, #razon-social-field, #direccion-jur-field, #telefono-jur-field, #email-jur-field, #contacto-field, #telefono-contacto-field, #estado-territorial-jur-field').val('');
                     $('#ciudad-jur-field').empty().append('<option value="">Primero seleccione un estado</option>');
                 } else {
-                    $('#campos-juridico').show();
-                    $('#campos-natural').hide();
-                    // Desactivar validaciones del bloque NATURAL oculto
-                    $('#campos-natural').find('[required]').each(function () {
+                    $jur.show();
+                    $nat.hide();
+                    // Desactivar validaciones del bloque NATURAL oculto (incluye Documento en Identificación)
+                    $nat.find('[required]').each(function () {
                         $(this).removeAttr('required').attr('data-required', 'true');
                     });
-                    // Restaurar validaciones del bloque JURÍDICO visible
-                    $('#campos-juridico').find('[data-required]').each(function () {
+                    // Restaurar validaciones del bloque JURÍDICO visible (incluye RIF en Identificación)
+                    $jur.find('[data-required]').each(function () {
                         $(this).attr('required', 'required').removeAttr('data-required');
                     });
                     // Limpiar campos naturales
@@ -707,7 +846,17 @@
             });
 
             var table = $('#proveedores-table').DataTable({
-                ajax: { url: "{{ route('proveedores.data') }}" + (esHistorial ? '?historial=true' : ''), dataSrc: 'data' },
+                ajax: {
+                    url: "{{ route('proveedores.data') }}",
+                    dataSrc: 'data',
+                    data: function (d) {
+                        // ── Filtros avanzados: enviar valores al server ──
+                        d.filter_tipo_proveedor = $('#filter-tipo-proveedor').val();
+                        d.filter_estatus = $('#filter-estatus').val();
+                        d.filter_estado_territorial = $('#filter-estado-territorial').val();
+                        d.filter_documento = $('#filter-documento').val();
+                    }
+                },
                 columns: [
                     { data: 'documento_display', name: 'rif' },
                     { data: 'nombre_display', name: 'razon_social' },
@@ -745,9 +894,75 @@
                 language: lenguajeData
             });
 
-            // Buscador personalizado
+            // ══════════════════════════════════════════════════════
+            // BÚSQUEDA + FILTROS AVANZADOS — Patrón Maestro S-07
+            // Header unificado: búsqueda global + panel colapsable
+            // ══════════════════════════════════════════════════════
+
+            // ── Badge: actualizar contador de filtros activos ──
+            function updateFilterBadge() {
+                var count = 0;
+                if ($('#filter-tipo-proveedor').val() !== '')        count++;
+                if ($('#filter-estatus').val() !== '1')              count++;
+                if ($('#filter-estado-territorial').val() !== '')    count++;
+                if ($('#filter-documento').val() !== '')             count++;
+                var $badge = $('#active-filter-count');
+                if (count > 0) {
+                    $badge.text(count).removeClass('d-none');
+                } else {
+                    $badge.addClass('d-none');
+                }
+            }
+
+            // ── Sincronizar clase is-collapsed con el estado del collapse ──
+            $('#filters-collapse-body').on('show.bs.collapse', function () {
+                $('.navy-filter-header').removeClass('is-collapsed');
+            }).on('hidden.bs.collapse', function () {
+                $('.navy-filter-header').addClass('is-collapsed');
+            });
+
+            // ── Búsqueda global (debounce 300ms) ──
+            var searchTimeout = null;
             $('#custom-search-input').on('keyup', function () {
-                table.search(this.value).draw();
+                clearTimeout(searchTimeout);
+                var val = this.value;
+                searchTimeout = setTimeout(function () {
+                    table.search(val).draw();
+                }, 300);
+            });
+
+            // ── Filtros de select: recargar al cambiar ──
+            $('.navy-filter-select').on('change', function () {
+                table.ajax.reload();
+                updateFilterBadge();
+            });
+
+            // ── Filtro documento con debounce (300ms) ──
+            var filterDocTimeout = null;
+            $('#filter-documento').on('keyup', function () {
+                clearTimeout(filterDocTimeout);
+                filterDocTimeout = setTimeout(function () {
+                    table.ajax.reload();
+                    updateFilterBadge();
+                }, 300);
+            });
+
+            // ── Si se llegó por toggle historial (?historial=true) ──
+            @if($historial)
+                $('#filter-estatus').val('0');
+                table.ajax.reload();
+                updateFilterBadge();
+            @endif
+
+            // ── Botón limpiar: resetea búsqueda + filtros ──
+            $('#btn-clear-filters').on('click', function () {
+                $('#filter-tipo-proveedor').val('');
+                $('#filter-estatus').val('');
+                $('#filter-estado-territorial').val('');
+                $('#filter-documento').val('');
+                $('#custom-search-input').val('');
+                table.search('').ajax.reload();
+                updateFilterBadge();
             });
 
             // Ver detalles
@@ -836,7 +1051,7 @@
                             var municipios = getMunicipios(data.estado_territorial);
                             var select = $("#ciudad-field");
                             select.empty().append('<option value="">Seleccione municipio</option>');
-                            municipios.forEach(function(m) {
+                            municipios.forEach(function (m) {
                                 select.append('<option value="' + m + '">' + m + '</option>');
                             });
                             select.val(data.ciudad);
@@ -861,7 +1076,7 @@
                             var municipios = getMunicipios(data.estado_territorial);
                             var select = $("#ciudad-jur-field");
                             select.empty().append('<option value="">Seleccione municipio</option>');
-                            municipios.forEach(function(m) {
+                            municipios.forEach(function (m) {
                                 select.append('<option value="' + m + '">' + m + '</option>');
                             });
                             select.val(data.ciudad);
@@ -913,6 +1128,8 @@
             // Enviar formulario
             $("#proveedorForm").on("submit", function (e) {
                 e.preventDefault();
+
+                if (!validarFormularioProveedor()) return;
 
                 var id = $("#id-field").val();
                 var url = id ? "{{ route('proveedores.update', ':id') }}".replace(':id', id) : "{{ route('proveedores.store') }}";
@@ -1111,7 +1328,7 @@
                 $("#id-field").val("");
                 $("#tipo-proveedor-field").val("juridico");
                 toggleCampos();
-                $("#add-btn").show();
+                $("#add-btn").show().prop('disabled', false);
                 $("#edit-btn").hide();
                 // Desbloquear campos de documento
                 $("#tipo-proveedor-field").prop('disabled', false).removeClass('campo-protegido');
@@ -1125,86 +1342,271 @@
                 $('#add-btn').prop('disabled', false);
             });
 
-            // Validaciones AJAX onblur
+            // ══════════════════════════════════════════════════════
+            // VALIDACIONES ONBLUR — Patrón marcarInvalido/marcarValido
+            // ══════════════════════════════════════════════════════
 
-            // 1. RIF (Juridicio)
-            $('#rif-number-field').on('blur', function () {
-                let number = $(this).val();
-                let prefix = $('#rif-prefix-field').val();
-                let fullRif = prefix + number;
-                let $input = $(this);
-                let isEdit = $('#id-field').val() !== '';
+            var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
-                if (number.length > 5 && !isEdit) {
-                    $.get("{{ route('proveedores.check-rif') }}", { rif: fullRif }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            // Agregar feedback si no existe
-                            if ($input.next('.invalid-feedback').length === 0) {
-                                $input.parent().after('<div class="invalid-feedback d-block">Este RIF ya está registrado</div>');
-                            } else {
-                                $input.next('.invalid-feedback').text('Este RIF ya está registrado').show();
-                            }
-                            $('#add-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $input.next('.invalid-feedback').hide();
-                            $input.parent().next('.invalid-feedback').hide();
-                            $('#add-btn').prop('disabled', false);
-                        }
-                    });
+            // Sanitización en tiempo real — solo letras y espacios
+            $(document).on('input', '#nombre-field, #apellido-field, #contacto-field', function () {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+            // Solo dígitos en campos numéricos de teléfono y documento
+            $(document).on('input', '#telefono-jur-number-field, #telefono-nat-number-field, #telefono-contacto-number-field', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 7);
+            });
+            $(document).on('input', '#documento-identidad-field', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+            });
+            $(document).on('input', '#rif-number-field', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);
+            });
+
+            // 1. RIF (Jurídico) — longitud mínima + AJAX duplicado
+            $(document).on('blur', '#rif-number-field', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var isEdit = $('#id-field').val() !== '';
+                if (val.length === 0) {
+                    marcarInvalido($input, 'El RIF es obligatorio.');
+                    return;
+                }
+                if (val.length < 5) {
+                    marcarInvalido($input, 'El RIF debe tener al menos 5 dígitos.');
+                    return;
+                }
+                if (isEdit) { marcarValido($input); return; }
+                var fullRif = $('#rif-prefix-field').val() + val;
+                $.get("{{ route('proveedores.check-rif') }}", { rif: fullRif }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este RIF ya está registrado.');
+                        $('#add-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#add-btn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // 2. Razón Social (Jurídico)
+            $(document).on('blur', '#razon-social-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'La Razón Social es obligatoria.');
+                } else if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
                 }
             });
 
-            // 2. Documento (Natural)
-            $('#documento-identidad-field').on('blur', function () {
-                let val = $(this).val();
-                let $input = $(this);
-                let isEdit = $('#id-field').val() !== '';
-
-                if (val.length > 5 && !isEdit) {
-                    $.get("{{ route('proveedores.check-documento') }}", { numero: val }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            if ($input.parent().next('.invalid-feedback').length === 0) {
-                                $input.parent().after('<div class="invalid-feedback d-block">Este documento ya está registrado</div>');
-                            } else {
-                                $input.parent().next('.invalid-feedback').text('Este documento ya está registrado').show();
-                            }
-                            $('#add-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $input.parent().next('.invalid-feedback').hide();
-                            $('#add-btn').prop('disabled', false);
-                        }
-                    });
+            // 3. Nombre (Natural)
+            $(document).on('blur', '#nombre-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El nombre es obligatorio.');
+                } else if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
                 }
             });
 
-            // 3. Email (Ambos)
-            $('#email-jur-field, #email-nat-field').on('blur', function () {
-                let val = $(this).val();
-                let $input = $(this);
-                let isEdit = $('#id-field').val() !== '';
-
-                if (val.includes('@') && !isEdit) {
-                    $.get("{{ route('proveedores.check-email') }}", { email: val }, function (res) {
-                        if (res.exists) {
-                            $input.addClass('is-invalid');
-                            if ($input.next('.invalid-feedback').length === 0) {
-                                $input.after('<div class="invalid-feedback">Este correo ya está registrado</div>');
-                            } else {
-                                $input.next('.invalid-feedback').text('Este correo ya está registrado').show();
-                            }
-                            $('#add-btn').prop('disabled', true);
-                        } else {
-                            $input.removeClass('is-invalid').addClass('is-valid');
-                            $input.next('.invalid-feedback').hide();
-                            $('#add-btn').prop('disabled', false);
-                        }
-                    });
+            // 4. Apellido (Natural)
+            $(document).on('blur', '#apellido-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El apellido es obligatorio.');
+                } else if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
                 }
             });
+
+            // 5. Documento de Identidad (Natural) — longitud + AJAX duplicado
+            $(document).on('blur', '#documento-identidad-field', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var isEdit = $('#id-field').val() !== '';
+                if (val.length === 0) {
+                    marcarInvalido($input, 'El documento es obligatorio.');
+                    return;
+                }
+                if (val.length < 6) {
+                    marcarInvalido($input, 'El documento debe tener al menos 6 dígitos.');
+                    return;
+                }
+                if (isEdit) { marcarValido($input); return; }
+                $.get("{{ route('proveedores.check-documento') }}", { numero: val }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este documento ya está registrado.');
+                        $('#add-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#add-btn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // 6. Teléfono principal — Jurídico
+            $(document).on('blur', '#telefono-jur-number-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El teléfono es obligatorio.');
+                } else if (!/^[0-9]{7}$/.test(val)) {
+                    marcarInvalido($(this), 'Debe tener exactamente 7 dígitos.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 7. Teléfono principal — Natural
+            $(document).on('blur', '#telefono-nat-number-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'El teléfono es obligatorio.');
+                } else if (!/^[0-9]{7}$/.test(val)) {
+                    marcarInvalido($(this), 'Debe tener exactamente 7 dígitos.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 8. Teléfono de Contacto (Jurídico, opcional)
+            $(document).on('blur', '#telefono-contacto-number-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) { limpiarValidacion($(this)); return; }
+                if (!/^[0-9]{7}$/.test(val)) {
+                    marcarInvalido($(this), 'Debe tener exactamente 7 dígitos.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 9. Email — Jurídico y Natural (formato + AJAX duplicado con exclude_id en edición)
+            $(document).on('blur', '#email-jur-field, #email-nat-field', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var excludeId = $('#id-field').val();
+                if (val.length === 0) { limpiarValidacion($input); return; }
+                if (!emailRegex.test(val)) {
+                    marcarInvalido($input, 'Ingrese un email válido (ej: correo@dominio.com).');
+                    return;
+                }
+                $.get("{{ route('proveedores.check-email') }}", { email: val, exclude_id: excludeId }, function (res) {
+                    if (res.exists) {
+                        marcarInvalido($input, 'Este correo ya está registrado.');
+                        $('#add-btn').prop('disabled', true);
+                    } else {
+                        marcarValido($input);
+                        $('#add-btn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // 10. Dirección — Jurídico
+            $(document).on('blur', '#direccion-jur-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'La dirección es obligatoria.');
+                } else if (val.length < 5) {
+                    marcarInvalido($(this), 'Mínimo 5 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 11. Dirección — Natural
+            $(document).on('blur', '#direccion-nat-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) {
+                    marcarInvalido($(this), 'La dirección es obligatoria.');
+                } else if (val.length < 5) {
+                    marcarInvalido($(this), 'Mínimo 5 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // 12. Persona de Contacto (Jurídico, opcional)
+            $(document).on('blur', '#contacto-field', function () {
+                var val = $(this).val().trim();
+                if (val.length === 0) { limpiarValidacion($(this)); return; }
+                if (val.length < 2) {
+                    marcarInvalido($(this), 'Mínimo 2 caracteres.');
+                } else {
+                    marcarValido($(this));
+                }
+            });
+
+            // ══════════════════════════════════════════════════════
+            // VALIDACIÓN AL SUBMIT
+            // ══════════════════════════════════════════════════════
+            function validarFormularioProveedor() {
+                var esValido = true;
+                var tipo = $('#tipo-proveedor-field').val();
+
+                if (tipo === 'juridico') {
+                    var $rif = $('#rif-number-field');
+                    if ($rif.val().trim().length < 5) {
+                        marcarInvalido($rif, 'El RIF debe tener al menos 5 dígitos.');
+                        esValido = false;
+                    }
+                    var $razon = $('#razon-social-field');
+                    if ($razon.val().trim().length < 2) {
+                        marcarInvalido($razon, 'La Razón Social es obligatoria.');
+                        esValido = false;
+                    }
+                    var $telJur = $('#telefono-jur-number-field');
+                    if (!/^[0-9]{7}$/.test($telJur.val().trim())) {
+                        marcarInvalido($telJur, 'El teléfono debe tener 7 dígitos.');
+                        esValido = false;
+                    }
+                    var $dirJur = $('#direccion-jur-field');
+                    if ($dirJur.val().trim().length < 5) {
+                        marcarInvalido($dirJur, 'La dirección es obligatoria (mín. 5 caracteres).');
+                        esValido = false;
+                    }
+                } else {
+                    var $nombre = $('#nombre-field');
+                    if ($nombre.val().trim().length < 2) {
+                        marcarInvalido($nombre, 'El nombre es obligatorio.');
+                        esValido = false;
+                    }
+                    var $apellido = $('#apellido-field');
+                    if ($apellido.val().trim().length < 2) {
+                        marcarInvalido($apellido, 'El apellido es obligatorio.');
+                        esValido = false;
+                    }
+                    var $doc = $('#documento-identidad-field');
+                    if ($doc.val().trim().length < 6) {
+                        marcarInvalido($doc, 'El documento debe tener al menos 6 dígitos.');
+                        esValido = false;
+                    }
+                    var $telNat = $('#telefono-nat-number-field');
+                    if (!/^[0-9]{7}$/.test($telNat.val().trim())) {
+                        marcarInvalido($telNat, 'El teléfono debe tener 7 dígitos.');
+                        esValido = false;
+                    }
+                    var $dirNat = $('#direccion-nat-field');
+                    if ($dirNat.val().trim().length < 5) {
+                        marcarInvalido($dirNat, 'La dirección es obligatoria (mín. 5 caracteres).');
+                        esValido = false;
+                    }
+                }
+
+                // Email opcional — si tiene valor debe tener formato válido
+                var emailActivo = tipo === 'juridico' ? $('#email-jur-field') : $('#email-nat-field');
+                var emailVal = emailActivo.val().trim();
+                if (emailVal.length > 0 && !emailRegex.test(emailVal)) {
+                    marcarInvalido(emailActivo, 'Ingrese un email válido.');
+                    esValido = false;
+                }
+
+                return esValido;
+            }
 
         });
     </script>

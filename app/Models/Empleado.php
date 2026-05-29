@@ -16,8 +16,8 @@ class Empleado extends Model
         'persona_id',
         'codigo_empleado',
         'fecha_ingreso',
-        'cargo',
-        'departamento',
+        'cargo_id',
+        'departamento_id',
         'salario',
         'estado'
     ];
@@ -28,10 +28,19 @@ class Empleado extends Model
         'estado' => 'boolean'
     ];
 
-    // Relación
     public function persona()
     {
         return $this->belongsTo(Persona::class);
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class);
+    }
+
+    public function departamento()
+    {
+        return $this->belongsTo(Departamento::class);
     }
 
     // Accessors para compatibilidad con tablas normalizadas

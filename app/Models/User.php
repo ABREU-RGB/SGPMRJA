@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -28,6 +29,10 @@ class User extends Authenticatable
         'email',
         'password',
         'estado',
+        'recovery_locked_until',
+        'recovery_failed_attempts',
+        'recovery_must_reset_questions',
+        'password_reset_by_admin',
     ];
 
     /**
@@ -60,6 +65,21 @@ class User extends Authenticatable
     public function getDireccionAttribute()
     {
         return $this->persona ? $this->persona->direccion_principal : null;
+    }
+
+    /**
+     * URL segura del avatar: verifica existencia física del archivo.
+     * Si no existe, devuelve un avatar generado con la inicial del usuario.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+
+        // Fallback: avatar con inicial vía ui-avatars.com
+        $name = urlencode($this->name ?? 'U');
+        return "https://ui-avatars.com/api/?name={$name}&color=FFFFFF&background=1e3c72&bold=true&size=128";
     }
 
     public function ordenesCreadas()
@@ -116,7 +136,49 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'recovery_locked_until' => 'datetime',
+        'recovery_must_reset_questions' => 'boolean',
+        'password_reset_by_admin' => 'boolean',
     ];
 
+    /**
+     * Preguntas de seguridad configuradas por el usuario (1 a 3).
+     */
+    public function recoveryQuestions()
+    {
+        return $this->hasMany(UserRecoveryQuestion::class)->orderBy('orden');
+    }
 
+    /**
+     * Bitácora de intentos de recuperación.
+     */
+    public function recoveryAttempts()
+    {
+        return $this->hasMany(RecoveryAttempt::class);
+    }
+
+    /**
+     * Indica si el usuario tiene las 3 preguntas de seguridad configuradas.
+     */
+    public function hasRecoveryQuestionsConfigured(): bool
+    {
+        return $this->recoveryQuestions()->count() === 3;
+    }
+
+    /**
+     * Indica si el usuario está bajo bloqueo temporal de recuperación.
+     */
+    public function isRecoveryLocked(): bool
+    {
+        return $this->recovery_locked_until !== null
+            && $this->recovery_locked_until->isFuture();
+    }
+
+    /**
+     * Indica si el usuario alcanzó el bloqueo total (requiere admin).
+     */
+    public function isRecoveryHardLocked(): bool
+    {
+        return $this->recovery_failed_attempts >= config('recovery_questions.max_attempts_hard_lock', 10);
+    }
 }

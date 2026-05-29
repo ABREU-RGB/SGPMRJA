@@ -6,7 +6,7 @@
                 <h5 class="modal-title" id="modalTitle">Nueva Orden de Producción</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="ordenForm">
+            <form id="ordenForm" novalidate>
                 @csrf
                 <div class="modal-body">
                     <input type="hidden" id="id-field" />

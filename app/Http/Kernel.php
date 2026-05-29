@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\CheckAdminRole::class,
         'role' => \App\Http\Middleware\CheckRole::class,
+        'recovery.questions.required' => \App\Http\Middleware\EnsureRecoveryQuestionsConfigured::class,
     ];
 }

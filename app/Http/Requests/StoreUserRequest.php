@@ -14,12 +14,28 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:user',
-            'password' => 'required|string|min:8|confirmed',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'role' => 'required|in:Administrador,Supervisor',
-            'estado' => 'nullable|boolean',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:user',
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).*$/'],
+            'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'role'     => 'required|in:Administrador,Supervisor',
+            'estado'   => 'nullable|boolean',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required'      => 'El nombre es obligatorio.',
+            'email.required'     => 'El email es obligatorio.',
+            'email.email'        => 'Ingrese un email válido.',
+            'email.unique'       => 'Este correo ya está registrado.',
+            'password.required'  => 'La contraseña es obligatoria.',
+            'password.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.regex'     => 'La contraseña debe incluir al menos una mayúscula, un número y un carácter especial.',
+            'role.required'      => 'El rol es obligatorio.',
+            'role.in'            => 'El rol seleccionado no es válido.',
         ];
     }
 }

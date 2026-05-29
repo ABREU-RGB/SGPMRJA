@@ -16,35 +16,65 @@ class EmpleadoService
     public function crear(array $data): int
     {
         return DB::transaction(function () use ($data) {
-            $persona = Persona::create([
-                'nombre' => $data['nombre'],
-                'apellido' => $data['apellido'],
-                'documento_identidad' => $data['documento_identidad'],
-                'tipo_documento' => $data['tipo_documento'],
-                'email' => $data['email'] ?? null,
-                'estado_geografico' => $data['estado_geografico'] ?? null,
-                'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
-                'genero' => $data['genero'] ?? null,
-            ]);
+            // Buscar si ya existe una persona con ese documento (ej: es cliente)
+            $persona = Persona::where('documento_identidad', $data['documento_identidad'])->first();
 
-            $this->crearTelefono($persona->id, $data);
-            $this->crearDireccion($persona->id, $data);
+            if ($persona) {
+                // La persona ya existe — verificar que no sea ya un empleado
+                if (Empleado::where('persona_id', $persona->id)->exists()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'documento_identidad' => ['Este documento ya pertenece a un empleado registrado.'],
+                    ]);
+                }
+                // Reutilizar la persona existente — agregar teléfono/dirección si se proveyeron
+                $this->crearTelefono($persona->id, $data);
+                $this->crearDireccion($persona->id, $data);
+            } else {
+                // Persona nueva — verificar unicidad de email antes de crear
+                if (!empty($data['email']) && Persona::where('email', $data['email'])->exists()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'email' => ['Este correo ya está registrado.'],
+                    ]);
+                }
 
-            // Auto-generar código de empleado si no se proporciona
+                $persona = Persona::create([
+                    'nombre' => $data['nombre'],
+                    'apellido' => $data['apellido'],
+                    'documento_identidad' => $data['documento_identidad'],
+                    'tipo_documento' => $data['tipo_documento'],
+                    'email' => $data['email'] ?? null,
+                    'estado_geografico' => $data['estado_geografico'] ?? null,
+                    'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
+                    'genero' => $data['genero'] ?? null,
+                ]);
+
+                $this->crearTelefono($persona->id, $data);
+                $this->crearDireccion($persona->id, $data);
+            }
+
+            // Auto-generar código de empleado si no se proporciona.
+            // Importante: incluir trashed en el cálculo, porque la UNIQUE constraint
+            // de la DB cuenta los soft-deleted aunque el modelo los oculte.
             $codigoEmpleado = $data['codigo_empleado'] ?? null;
             if (!$codigoEmpleado) {
-                $ultimoCodigo = Empleado::max('codigo_empleado');
+                $ultimoCodigo = Empleado::withTrashed()->max('codigo_empleado');
                 $numero = $ultimoCodigo ? ((int) substr($ultimoCodigo, 4) + 1) : 1;
-                $codigoEmpleado = 'EMP-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+
+                // Defensa extra contra colisiones (registros restaurados, etc.)
+                do {
+                    $codigoEmpleado = 'EMP-' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+                    $existe = Empleado::withTrashed()->where('codigo_empleado', $codigoEmpleado)->exists();
+                    $numero++;
+                } while ($existe);
             }
 
             $empleado = Empleado::create([
-                'persona_id' => $persona->id,
+                'persona_id'      => $persona->id,
                 'codigo_empleado' => $codigoEmpleado,
-                'fecha_ingreso' => $data['fecha_ingreso'],
-                'cargo' => $data['cargo'],
-                'departamento' => $data['departamento'],
-                'estado' => $data['estado'],
+                'fecha_ingreso'   => $data['fecha_ingreso'],
+                'cargo_id'        => $data['cargo_id'],
+                'departamento_id' => $data['departamento_id'],
+                'estado'          => $data['estado'],
             ]);
 
             return $empleado->id;
@@ -75,10 +105,10 @@ class EmpleadoService
 
             $empleado->update([
                 'codigo_empleado' => $data['codigo_empleado'],
-                'fecha_ingreso' => $data['fecha_ingreso'],
-                'cargo' => $data['cargo'],
-                'departamento' => $data['departamento'],
-                'estado' => $data['estado'],
+                'fecha_ingreso'   => $data['fecha_ingreso'],
+                'cargo_id'        => $data['cargo_id'],
+                'departamento_id' => $data['departamento_id'],
+                'estado'          => $data['estado'],
             ]);
         });
     }
